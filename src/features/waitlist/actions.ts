@@ -3,6 +3,7 @@
 import { after } from "next/server";
 import { CONSENT_VERSIONS } from "@/config/consent";
 import { subscribeToNewsletter } from "@/features/newsletter/resend";
+import { sendWaitlistConfirmation } from "./send-confirmation";
 import { isLocale } from "@/i18n/config";
 import type { Enums } from "@/lib/supabase/database.types";
 import { createClient } from "@/lib/supabase/server";
@@ -63,7 +64,10 @@ export async function joinWaitlist(_prev: WaitlistState, form: FormData): Promis
     console.error("waitlist insert failed", error.code, error.message);
     return { status: "error", error: "generic", values };
   }
-  // Consent is now on record; hand the subscriber to the newsletter tool after the response is sent.
-  if (values.marketing) after(() => subscribeToNewsletter(values.email, locale));
+  // After the response is sent: confirm the sign-up by email and, with consent on record, add to the newsletter.
+  after(async () => {
+    await sendWaitlistConfirmation({ locale, email: values.email, segment: values.segment, newsletter: values.marketing });
+    if (values.marketing) await subscribeToNewsletter(values.email, locale);
+  });
   return { status: "ok", already: false };
 }

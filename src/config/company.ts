@@ -25,6 +25,8 @@ export const CONTACT = {
   hello: "hello@keyfly.app",
   /** Sender for transactional email (Resend, mail.keyfly.app). Replies go to support. */
   transactionalFrom: "Keyfly <noreply@mail.keyfly.app>",
+  /** Sender for emails people expect from us (waitlist confirmation, news). Replies go to support. */
+  updatesFrom: "Keyfly <hello@mail.keyfly.app>",
   replyTo: "support@keyfly.app",
 } as const;
 

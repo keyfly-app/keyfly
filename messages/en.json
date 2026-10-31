@@ -218,5 +218,45 @@
     "updated": "Effective: {date}",
     "imprintTitle": "Imprint",
     "privacyTitle": "Privacy notice – waitlist and newsletter"
+  },
+  "emails": {
+    "waitlistConfirmation": {
+      "subject": "You're on the Keyfly waitlist",
+      "preheader": "We'll let you know first when we launch.",
+      "label": "CONFIRMATION",
+      "titleStart": "You're on",
+      "titleHighlight": "the list.",
+      "lead": "Thanks for signing up! As soon as Keyfly launches, you'll be the first to hear, at this email address.",
+      "summaryTitle": "Your sign-up",
+      "rows": {
+        "email": "Email",
+        "segment": "Interested as",
+        "newsletter": "Newsletter",
+        "date": "Date"
+      },
+      "newsletterYes": "Yes, please",
+      "newsletterNo": "No",
+      "nextTitle": "What's next?",
+      "steps": {
+        "notify": {
+          "title": "We'll notify you",
+          "text": "Before launch we email you with all the details."
+        },
+        "offer": {
+          "title": "You request an offer",
+          "text": "Rent, deposit, income check: about 3 minutes."
+        },
+        "move": {
+          "title": "You move in",
+          "text": "A small monthly fee instead of a deposit; your money stays with you."
+        }
+      },
+      "cta": "See how it works",
+      "note": "Questions? Just reply to this email; a real person reads it.",
+      "signName": "Tibor",
+      "signRole": "founder of Keyfly",
+      "why": "You are receiving this email because you joined the Keyfly waitlist on keyfly.app. If this was not you, write to us and we will delete your data.",
+      "privacy": "Privacy notice"
+    }
   }
 }

@@ -4,7 +4,7 @@
  */
 export const CONSENT_VERSIONS = {
   /** Privacy notice for the waitlist (public page /adatvedelem, /en/privacy). */
-  waitlistPrivacy: "waitlist-privacy-2026-10-31",
+  waitlistPrivacy: "waitlist-privacy-2026-10-31.2",
   /** Newsletter checkbox on the coming-soon page (messages: waitlist.marketingConsent). */
   newsletter: "newsletter-2026-10-31",
 } as const;

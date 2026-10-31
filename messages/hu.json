@@ -218,5 +218,45 @@
     "updated": "Hatályos: {date}",
     "imprintTitle": "Impresszum",
     "privacyTitle": "Adatkezelési tájékoztató – várólista és hírlevél"
+  },
+  "emails": {
+    "waitlistConfirmation": {
+      "subject": "Fent vagy a Keyfly várólistáján",
+      "preheader": "Elsőként szólunk, amikor indulunk.",
+      "label": "VISSZAIGAZOLÁS",
+      "titleStart": "Fent vagy",
+      "titleHighlight": "a listán.",
+      "lead": "Köszönjük, hogy feliratkoztál! Amint elindul a Keyfly, elsőként neked szólunk ezen az e-mail-címen.",
+      "summaryTitle": "A feliratkozásod",
+      "rows": {
+        "email": "E-mail-cím",
+        "segment": "Kiként érdekel",
+        "newsletter": "Hírlevél",
+        "date": "Időpont"
+      },
+      "newsletterYes": "Kérted",
+      "newsletterNo": "Nem kérted",
+      "nextTitle": "Mi jön most?",
+      "steps": {
+        "notify": {
+          "title": "Értesítünk",
+          "text": "Indulás előtt e-mailt küldünk a pontos részletekkel."
+        },
+        "offer": {
+          "title": "Ajánlatot kérsz",
+          "text": "Lakbér, kaució, jövedelemigazolás: kb. 3 perc."
+        },
+        "move": {
+          "title": "Beköltözöl",
+          "text": "Kaució helyett kis havi díj, a pénzed nálad marad."
+        }
+      },
+      "cta": "Nézd meg, hogyan működik",
+      "note": "Kérdésed van? Válaszolj erre a levélre, személyesen olvassuk.",
+      "signName": "Tibor",
+      "signRole": "a Keyfly alapítója",
+      "why": "Azért kapod ezt a levelet, mert feliratkoztál a Keyfly várólistájára a keyfly.app oldalon. Ha nem te voltál, írj nekünk, és töröljük az adataidat.",
+      "privacy": "Adatkezelési tájékoztató"
+    }
   }
 }
