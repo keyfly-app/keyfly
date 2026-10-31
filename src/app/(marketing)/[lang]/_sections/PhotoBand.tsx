@@ -1,6 +1,6 @@
 import Image from "next/image";
 import { getTranslations } from "next-intl/server";
-import { AiImageBadge } from "@/components/site/AiImageBadge";
+import { AiImageLabel } from "@/components/site/AiImageLabel";
 import { PHOTOS } from "@/content/photos";
 
 /** Full-width campaign photo with the key message, right below the hero. */
@@ -9,11 +9,8 @@ export async function PhotoBand() {
 
   return (
     <section aria-labelledby="band-title" className="pb-[clamp(56px,7vw,96px)]">
-      <div className="mx-auto max-w-[1200px] px-4 sm:px-6">
-        <figure
-          data-reveal
-          className="relative h-[600px] overflow-hidden rounded-[32px] bg-ink sm:h-[clamp(440px,44vw,600px)]"
-        >
+      <div data-reveal className="mx-auto max-w-[1200px] px-4 sm:px-6">
+        <figure className="relative h-[600px] overflow-hidden rounded-[32px] bg-ink sm:h-[clamp(440px,44vw,600px)]">
           <Image
             src={PHOTOS.moveIn.src}
             alt={t("alt")}
@@ -48,8 +45,8 @@ export async function PhotoBand() {
               {t("lead")}
             </p>
           </figcaption>
-          <AiImageBadge />
         </figure>
+        <AiImageLabel className="mt-2.5 mr-1.5" />
       </div>
     </section>
   );

@@ -8,7 +8,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   return (Object.keys(PUBLIC_PAGES) as PublicPage[]).flatMap((page) =>
     LOCALES.map((locale) => ({
       url: url(page, locale),
-      priority: page === "home" ? 1 : 0.3,
+      priority: page === "home" ? 1 : page === "pro" ? 0.8 : 0.3,
       alternates: {
         languages: { ...Object.fromEntries(LOCALES.map((l) => [l, url(page, l)])), "x-default": url(page, DEFAULT_LOCALE) },
       },

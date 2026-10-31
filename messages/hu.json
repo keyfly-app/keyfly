@@ -8,7 +8,8 @@
     "privacyNotice": "Adatkezelési tájékoztató",
     "legalNav": "Jogi információk",
     "languageNav": "Nyelv / Language",
-    "aiImage": "AI-generált kép"
+    "aiImage": "AI-generált kép",
+    "proLabel": "PRO"
   },
   "meta": {
     "title": "Albérlet kaució nélkül – Keyfly",
@@ -135,6 +136,151 @@
       "lead": "Iratkozz fel a várólistára, és az indulásról elsőként értesítünk."
     }
   },
+  "pro": {
+    "meta": {
+      "title": "Keyfly Pro – bérbeadói kezelőfelület",
+      "description": "A bérbeadás minden ügye egy helyen: ingatlanok, bérlők, szerződések, fizetési értesítők, mérőállások és hibabejelentések. A Keyfly-fedezet a bérbeadónak ingyenes."
+    },
+    "eyebrow": "KEYFLY PRO · HAMAROSAN",
+    "teaserEyebrow": "BÉRBEADÓKNAK · KEYFLY PRO",
+    "title": "A bérbeadás minden ügye. <mark>Egy helyen.</mark>",
+    "lead": "A Keyfly Pro a bérbeadók kezelőfelülete: ingatlanok, bérlők, szerződések, fizetési értesítők és mérőállások rendezetten, automatikus emlékeztetőkkel.",
+    "details": "Részletek és csomagok",
+    "signup": "Feliratkozom",
+    "heroSignup": "Érdekel, feliratkozom",
+    "plansLink": "Csomagok",
+    "preview": {
+      "photoAlt": "Elegáns bérbeadó hölgy egy felújított budapesti lakás márványasztalánál a laptopján intézi az ügyeit.",
+      "label": "INGATLAN",
+      "status": "Keyfly-fedezet aktív",
+      "address": "Király u. 12. · 2/4",
+      "tenant": "Bérlő",
+      "tenantName": "Kovács Anna",
+      "rent": "Bérleti díj",
+      "rentValue": "{amount} / hó",
+      "leaseEnd": "Lejárat",
+      "meterTitle": "Mérőállás beérkezett",
+      "meterText": "Víz · fotóval · ma 8:12",
+      "paymentTitle": "Fizetési értesítő elküldve",
+      "paymentText": "November · határidő: {date}"
+    },
+    "featuresEyebrow": "FUNKCIÓK",
+    "featuresTitle": "Minden, amivel a bérbeadás jár.",
+    "features": {
+      "properties": {
+        "title": "Ingatlanok",
+        "short": "Cím térképpel, alapterület, fotók, kulcsok, mérőórák, közművek.",
+        "items": [
+          "Cím Google Maps-térképpel, alapterület, fotók",
+          "Kulcsok, mérőórák gyári számmal",
+          "Közműszolgáltatók egy helyen"
+        ]
+      },
+      "tenants": {
+        "title": "Bérlők és szerződések",
+        "short": "Bérlő, díj, közös költség, fedezet, lejárat – emlékeztetővel.",
+        "items": [
+          "Bérlő adatai, bérleti díj, közös költség",
+          "Kaució vagy Keyfly-fedezet",
+          "Kezdet, lejárat, felmondási idő",
+          "Emlékeztető a lejárat előtt 90 és 30 nappal, és az éves díjemeléskor"
+        ]
+      },
+      "documents": {
+        "title": "Dokumentumtár",
+        "short": "Szerződés, leltárív, átadás-átvétel fotókkal – sablonokkal.",
+        "items": [
+          "Szerződés, leltárív",
+          "Átadás-átvételi jegyzőkönyv fotókkal és mérőállásokkal",
+          "Kitölthető sablonok"
+        ]
+      },
+      "payments": {
+        "title": "Fizetési értesítő",
+        "short": "Havi díjbekérő a bérlőnek, „fizetve” jelölés, emlékeztető késéskor.",
+        "items": [
+          "Havi díjbekérő e-mail: összeg, határidő, számlaszám, közlemény",
+          "„Fizetve” jelölés",
+          "Automatikus emlékeztető, ha a bérlő késik"
+        ]
+      },
+      "meters": {
+        "title": "Mérőóra-leolvasás",
+        "short": "A bérlő fotóval küldi be az óraállást, te látod a fogyasztást.",
+        "items": [
+          "Havi emlékeztető a bérlőnek",
+          "Az óraállást a telefonjával, fotóval küldi be",
+          "Te látod az előzményeket és a fogyasztást"
+        ]
+      },
+      "repairs": {
+        "title": "Hibabejelentés",
+        "short": "A bérlő fotóval jelzi a hibát, te követed a javítást.",
+        "items": [
+          "A bérlő fotóval jelzi, ha valami elromlott",
+          "Követhető, hol tart a javítás"
+        ]
+      },
+      "tenantSpace": {
+        "title": "Bérlői felület",
+        "short": "A bérlőnek ingyenes: szerződés, értesítők, óraállás egy helyen.",
+        "items": [
+          "A bérlőnek ingyenes",
+          "Itt látja a szerződését és az értesítőket",
+          "Itt küldi be az óraállást"
+        ]
+      }
+    },
+    "plansEyebrow": "CSOMAGOK",
+    "plansTitle": "A fedezet ingyenes. A kényelem a Pro.",
+    "plans": {
+      "basic": {
+        "label": "KEYFLY ALAP",
+        "price": "Ingyenes",
+        "sub": "Korlátlan ingatlan",
+        "items": [
+          "Keyfly-fedezet minden ingatlanodra",
+          "Bérlő meghívása, fedezet igazolása",
+          "Kárbejelentés online",
+          "Ingatlanjaid listája"
+        ]
+      },
+      "pro": {
+        "label": "KEYFLY PRO",
+        "badge": "Bérbeadóknak",
+        "price": "Ár: hamarosan",
+        "sub": "5 ingatlanig egy díj, 15-ig ingatlanonként bővíthető",
+        "items": [
+          "Minden, ami az Alapban",
+          "Ingatlanok és bérlők, emlékeztetőkkel",
+          "Dokumentumtár és sablonok",
+          "Fizetési értesítő",
+          "Mérőóra-leolvasás fotóval",
+          "Hibabejelentés",
+          "Ingyenes bérlői felület"
+        ]
+      },
+      "business": {
+        "label": "KEYFLY BUSINESS",
+        "badge": "Ingatlankezelőknek",
+        "price": "Ár: hamarosan",
+        "sub": "15 ingatlan felett, csapatoknak",
+        "items": [
+          "Minden, ami a Pro-ban",
+          "Felhasználókezelés és jogosultságok",
+          "Több kolléga, közös munka",
+          "Tulajdonosonkénti portfólió és havi kimutatás",
+          "Tömeges értesítők, Excel-export",
+          "Saját logó a leveleken"
+        ]
+      }
+    },
+    "plansNote": "A Keyfly-fedezet díját a bérlő fizeti, a bérbeadónak minden csomagban ingyenes. A fedezet a Pro és a Business nélkül is igényelhető. Az árakat indulás előtt tesszük közzé.",
+    "cta": {
+      "title": "Érdekel a Pro vagy a Business?",
+      "text": "Iratkozz fel bérbeadóként vagy ingatlanirodaként, és jelöld be, hogy a kezelőfelület is érdekel."
+    }
+  },
   "waitlist": {
     "legend": "Kiként érdekel a Keyfly?",
     "segments": {
@@ -149,6 +295,10 @@
     "submitting": "Küldés…",
     "privacyConsent": "Elolvastam az <link>adatkezelési tájékoztatót</link>, és hozzájárulok, hogy a Keyfly e-mailben értesítsen az indulásról.",
     "marketingConsent": "A Keyfly hírlevelét is kérem: termékújdonságok és hasznos bérlési tudnivalók. Bármikor leiratkozhatok.",
+    "proInterest": {
+      "label": "Érdekel a Keyfly Pro / Business kezelőfelület is",
+      "hint": "Indulás előtt külön értesítünk róla, és elsőként próbálhatod ki."
+    },
     "compact": {
       "segmentLabel": "Kiként érdekel?",
       "submit": "Feliratkozom",

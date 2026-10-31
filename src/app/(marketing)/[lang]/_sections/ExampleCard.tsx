@@ -2,7 +2,7 @@ import { getTranslations } from "next-intl/server";
 import { LogoMark } from "@/components/Logo";
 import type { Locale } from "@/i18n/config";
 import { money } from "@/lib/format";
-import { EXAMPLE, EXAMPLE_DEPOSIT } from "./example";
+import { EXAMPLE, EXAMPLE_DEPOSIT } from "@/content/example";
 
 /** Worked example: rent, the deposit you no longer pay, the monthly fee. */
 export async function ExampleCard({ locale }: { locale: Locale }) {

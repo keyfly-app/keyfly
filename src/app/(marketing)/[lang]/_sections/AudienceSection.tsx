@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { getTranslations } from "next-intl/server";
 import { Icon } from "@/components/Icon";
-import { AiImageBadge } from "@/components/site/AiImageBadge";
+import { AiImageLabel } from "@/components/site/AiImageLabel";
 import { PHOTOS } from "@/content/photos";
 
 const TENANT_ITEMS = ["upfront", "savings", "online"] as const;
@@ -85,8 +85,8 @@ function Card({
             {photo.lines[1]}
           </span>
         </figcaption>
-        <AiImageBadge />
       </figure>
+      <AiImageLabel onDark={dark} className="-mt-3.5 -mb-3" />
       <div className="flex flex-col gap-2.5">
         <span className={`text-[13px] font-bold tracking-[1.5px] ${dark ? "text-lime" : "text-brand"}`}>{label}</span>
         <h3 className="font-display text-[clamp(26px,2.4vw,34px)] leading-[1.1] font-bold tracking-[-0.02em]">{title}</h3>

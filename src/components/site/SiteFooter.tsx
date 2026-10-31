@@ -5,8 +5,19 @@ import { COMPANY, CONTACT } from "@/config/company";
 import { CompactWaitlistForm } from "@/features/waitlist/WaitlistForm";
 import { publicHref, type Locale } from "@/i18n/config";
 
-/** Public-site footer: waitlist call to action (optional), logo, company name and legal links. */
-export async function SiteFooter({ locale, withSignup = true }: { locale: Locale; withSignup?: boolean }) {
+/**
+ * Public-site footer: waitlist call to action (optional), logo, company name and legal links.
+ * `signupFor="landlords"` (Pro page) preselects the landlord segment and tags the sign-up source.
+ */
+export async function SiteFooter({
+  locale,
+  withSignup = true,
+  signupFor = "everyone",
+}: {
+  locale: Locale;
+  withSignup?: boolean;
+  signupFor?: "everyone" | "landlords";
+}) {
   const t = await getTranslations("comingSoon.footer");
   const c = await getTranslations("common");
   const link = "inline-flex min-h-11 items-center text-fog no-underline hover:text-white";
@@ -15,7 +26,7 @@ export async function SiteFooter({ locale, withSignup = true }: { locale: Locale
     <footer className="on-dark bg-ink text-white">
       <div className="mx-auto flex max-w-[1200px] flex-col gap-12 px-4 pt-16 pb-8 sm:gap-20 sm:px-6 sm:pt-26">
         {withSignup && (
-          <div className="flex flex-wrap items-end gap-x-16 gap-y-8">
+          <div id="signup" className="flex scroll-mt-6 flex-wrap items-end gap-x-16 gap-y-8">
             <div data-reveal className="flex min-w-0 flex-[1_1_380px] flex-col gap-3.5">
               <h2 className="font-display text-[clamp(34px,4.4vw,60px)] leading-[1.04] font-bold tracking-[-0.03em]">
                 {t.rich("title", { mark: (chunks) => <span className="marker-in">{chunks}</span> })}
@@ -23,7 +34,16 @@ export async function SiteFooter({ locale, withSignup = true }: { locale: Locale
               <p className="text-lg text-fog">{t("lead")}</p>
             </div>
             <div data-reveal style={{ "--d": 1 } as React.CSSProperties} className="min-w-0 flex-[1.2_1_460px]">
-              <CompactWaitlistForm locale={locale} privacyHref={publicHref("privacy", locale)} />
+              {signupFor === "landlords" ? (
+                <CompactWaitlistForm
+                  locale={locale}
+                  privacyHref={publicHref("privacy", locale)}
+                  source="pro-footer"
+                  defaultSegment="landlord"
+                />
+              ) : (
+                <CompactWaitlistForm locale={locale} privacyHref={publicHref("privacy", locale)} />
+              )}
             </div>
           </div>
         )}

@@ -30,7 +30,7 @@ export function PrivacyContent({ locale }: { locale: Locale }) {
           <li>
             <strong>Várólista.</strong> E-mail-címed, hogy kiként érdeklődsz (bérlő, bérbeadó, ingatlaniroda, cég), a
             választott nyelv, a feliratkozás időpontja és helye az oldalon, a hirdetési linkben esetleg szereplő
-            kampánykód, valamint az elfogadott tájékoztató verziója. Cél: a feliratkozás e-mailes visszaigazolása és értesítés a Keyfly indulásáról. Jogalap: a
+            kampánykód, az elfogadott tájékoztató verziója, valamint – ha bérbeadóként vagy ingatlanirodaként bejelölöd – az, hogy a Keyfly Pro / Business kezelőfelület is érdekel. Cél: a feliratkozás e-mailes visszaigazolása, értesítés a Keyfly indulásáról, és ha kérted, a Keyfly Pro / Business kezelőfelületről. Jogalap: a
             hozzájárulásod (GDPR 6. cikk (1) bekezdés a) pont).
           </li>
           <li>
@@ -122,8 +122,10 @@ export function PrivacyContent({ locale }: { locale: Locale }) {
       <ul>
         <li>
           <strong>Waitlist.</strong> Your email address, how you are interested (tenant, landlord, agency, company), your
-          chosen language, when and where on the page you signed up, any campaign code in the link you followed, and the
-          version of this notice you accepted. Purpose: to confirm your sign-up by email and to tell you when Keyfly launches. Legal basis: your consent (GDPR
+          chosen language, when and where on the page you signed up, any campaign code in the link you followed, the
+          version of this notice you accepted and – if you tick it as a landlord or agency – that you are interested in the
+          Keyfly Pro / Business workspace. Purpose: to confirm your sign-up by email, to tell you when Keyfly launches and, if
+          you asked, about the Keyfly Pro / Business workspace. Legal basis: your consent (GDPR
           Art. 6(1)(a)).
         </li>
         <li>

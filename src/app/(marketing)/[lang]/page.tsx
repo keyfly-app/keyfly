@@ -10,6 +10,7 @@ import { AudienceSection } from "./_sections/AudienceSection";
 import { ExampleCard } from "./_sections/ExampleCard";
 import { FaqSection } from "./_sections/FaqSection";
 import { PhotoBand } from "./_sections/PhotoBand";
+import { ProTeaser } from "./_sections/ProTeaser";
 import { StepsSection } from "./_sections/StepsSection";
 import { StructuredData } from "./_sections/StructuredData";
 import { TrustSection } from "./_sections/TrustSection";
@@ -27,7 +28,7 @@ export default async function ComingSoon({ params }: { params: Promise<{ lang: s
 
   return (
     <div className="overflow-x-clip">
-      <SiteHeader locale={locale} page="home" />
+      <SiteHeader locale={locale} page="home" signupHref="#waitlist" />
       <main>
         <section className="relative">
           <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden">
@@ -51,6 +52,7 @@ export default async function ComingSoon({ params }: { params: Promise<{ lang: s
         <AudienceSection />
         <StepsSection />
         <TrustSection locale={locale} />
+        <ProTeaser locale={locale} />
         <FaqSection locale={locale} />
       </main>
       <SiteFooter locale={locale} />

@@ -54,6 +54,38 @@ const PATHS = {
   ),
   check: <path d="m5 12.5 4.5 4.5L19 7.5" />,
   sparkle: <path d="M12 3.5l2 5.4 5.5 2.1-5.5 2.1-2 5.4-2-5.4-5.5-2.1 5.5-2.1z" />,
+  map: (
+    <>
+      <path d="M12 21s-6.5-5.6-6.5-11a6.5 6.5 0 1 1 13 0c0 5.4-6.5 11-6.5 11z" />
+      <circle cx="12" cy="10" r="2.4" />
+    </>
+  ),
+  user: (
+    <>
+      <circle cx="12" cy="8" r="4" />
+      <path d="M4 20a8 8 0 0 1 16 0" />
+    </>
+  ),
+  bell: (
+    <>
+      <path d="M6 16v-5a6 6 0 1 1 12 0v5l1.5 2h-15z" />
+      <path d="M10 20.5a2 2 0 0 0 4 0" />
+    </>
+  ),
+  gauge: (
+    <>
+      <path d="M4 16a8 8 0 1 1 16 0" />
+      <path d="m12 16 4-5" />
+      <circle cx="12" cy="16" r="1.3" />
+    </>
+  ),
+  wrench: <path d="M14.7 6.3a4 4 0 0 0-5.4 5.1L4 16.7 7.3 20l5.3-5.3a4 4 0 0 0 5.1-5.4l-2.6 2.6-2.4-.6-.6-2.4z" />,
+  arrow: (
+    <>
+      <path d="M5 12h14" />
+      <path d="m13 6 6 6-6 6" />
+    </>
+  ),
 } as const;
 
 export type IconName = keyof typeof PATHS;

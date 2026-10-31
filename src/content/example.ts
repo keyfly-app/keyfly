@@ -1,4 +1,4 @@
-/** Illustrative figures used on the coming-soon page (example card, FAQ, trust section). Not an offer. */
+/** Illustrative figures used on the public pages (example card, FAQ, trust section, Pro preview). Not an offer. */
 export const EXAMPLE = {
   rent: 350_000,
   depositMonths: 3,

@@ -3,7 +3,7 @@ import { Icon } from "@/components/Icon";
 import { CONTACT } from "@/config/company";
 import type { Locale } from "@/i18n/config";
 import { money } from "@/lib/format";
-import { EXAMPLE } from "./example";
+import { EXAMPLE } from "@/content/example";
 
 export const FAQ_QUESTIONS = ["launch", "cost", "refund", "claim", "landlord"] as const;
 

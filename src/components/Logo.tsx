@@ -40,3 +40,19 @@ export function LogoFull({ height = 34, light = false }: { height?: number; ligh
     </svg>
   );
 }
+
+/** Keyfly Pro lockup (approved variant A): the full logo followed by a lime tag. Sizes follow the logo height. */
+export function LogoPro({ height = 28, label }: { height?: number; label: string }) {
+  return (
+    <span className="inline-flex items-center" style={{ gap: height * 0.16 }}>
+      <LogoFull height={height} />
+      <span
+        aria-hidden="true"
+        className="rounded-full bg-lime font-display leading-none font-bold text-ink"
+        style={{ fontSize: height * 0.37, letterSpacing: height * 0.026, padding: `${height * 0.155}px ${height * 0.3}px` }}
+      >
+        {label}
+      </span>
+    </span>
+  );
+}

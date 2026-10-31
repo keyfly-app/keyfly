@@ -7,12 +7,12 @@ import { sendWaitlistConfirmation } from "./send-confirmation";
 import { isLocale } from "@/i18n/config";
 import type { Enums } from "@/lib/supabase/database.types";
 import { createClient } from "@/lib/supabase/server";
-import { WAITLIST_SEGMENTS, WAITLIST_SOURCES, type WaitlistSource } from "./config";
+import { PRO_SEGMENTS, WAITLIST_SEGMENTS, WAITLIST_SOURCES, type WaitlistSource } from "./config";
 
 type Segment = Enums<"waitlist_segment">;
 
 /** What the visitor sent, echoed back so the form keeps its values after a validation error. */
-export type WaitlistValues = { email: string; segment: Segment; marketing: boolean; privacy: boolean };
+export type WaitlistValues = { email: string; segment: Segment; marketing: boolean; privacy: boolean; pro: boolean };
 
 export type WaitlistState =
   | { status: "idle" }
@@ -30,6 +30,7 @@ export async function joinWaitlist(_prev: WaitlistState, form: FormData): Promis
     segment: String(form.get("segment") ?? "") as Segment,
     marketing: form.get("marketing") === "on",
     privacy: form.get("privacy") === "on",
+    pro: form.get("pro") === "on",
   };
   const locale = isLocale(form.get("locale")) ? (form.get("locale") as Enums<"locale">) : "hu";
   const rawSource = String(form.get("source") ?? "");
@@ -40,6 +41,9 @@ export async function joinWaitlist(_prev: WaitlistState, form: FormData): Promis
   if (!EMAIL_RE.test(values.email) || values.email.length > 254) return { status: "error", error: "email", values };
   if (!WAITLIST_SEGMENTS.includes(values.segment)) return { status: "error", error: "segment", values };
   if (!values.privacy) return { status: "error", error: "privacy", values };
+
+  // The Pro box stays in the form when the visitor switches back to "tenant"; it only counts for landlords and agencies.
+  const pro = values.pro && PRO_SEGMENTS.includes(values.segment);
 
   const utm: Record<string, string> = {};
   for (const key of ["utm_source", "utm_medium", "utm_campaign"]) {
@@ -55,6 +59,8 @@ export async function joinWaitlist(_prev: WaitlistState, form: FormData): Promis
     privacy_notice_version: CONSENT_VERSIONS.waitlistPrivacy,
     marketing_consent: values.marketing,
     marketing_consent_version: values.marketing ? CONSENT_VERSIONS.newsletter : null,
+    pro_interest: pro,
+    pro_interest_version: pro ? CONSENT_VERSIONS.proInterest : null,
     source,
     utm: Object.keys(utm).length ? utm : null,
   });

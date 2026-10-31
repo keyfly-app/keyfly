@@ -449,6 +449,8 @@ export type Database = {
           marketing_consent: boolean;
           marketing_consent_version: string | null;
           privacy_notice_version: string;
+          pro_interest: boolean;
+          pro_interest_version: string | null;
           segment: Database["public"]["Enums"]["waitlist_segment"];
           source: string | null;
           utm: Json | null;
@@ -461,6 +463,8 @@ export type Database = {
           marketing_consent?: boolean;
           marketing_consent_version?: string | null;
           privacy_notice_version: string;
+          pro_interest?: boolean;
+          pro_interest_version?: string | null;
           segment?: Database["public"]["Enums"]["waitlist_segment"];
           source?: string | null;
           utm?: Json | null;
@@ -473,6 +477,8 @@ export type Database = {
           marketing_consent?: boolean;
           marketing_consent_version?: string | null;
           privacy_notice_version?: string;
+          pro_interest?: boolean;
+          pro_interest_version?: string | null;
           segment?: Database["public"]["Enums"]["waitlist_segment"];
           source?: string | null;
           utm?: Json | null;

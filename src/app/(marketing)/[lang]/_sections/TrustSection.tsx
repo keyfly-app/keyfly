@@ -1,11 +1,11 @@
 import Image from "next/image";
 import { getTranslations } from "next-intl/server";
 import { Icon } from "@/components/Icon";
-import { AiImageBadge } from "@/components/site/AiImageBadge";
+import { AiImageLabel } from "@/components/site/AiImageLabel";
+import { EXAMPLE_DEPOSIT } from "@/content/example";
 import { PHOTOS } from "@/content/photos";
 import type { Locale } from "@/i18n/config";
 import { money } from "@/lib/format";
-import { EXAMPLE_DEPOSIT } from "./example";
 
 /** Tenant and landlord on the same side: key-handover photo with a floating confirmation chip. */
 export async function TrustSection({ locale }: { locale: Locale }) {
@@ -21,30 +21,28 @@ export async function TrustSection({ locale }: { locale: Locale }) {
           </h2>
           <p className="text-[clamp(18px,1.6vw,22px)] leading-normal text-muted">{t("lead")}</p>
         </div>
-        <figure
-          data-reveal
-          style={{ "--d": 1 } as React.CSSProperties}
-          className="relative h-[clamp(360px,36vw,520px)] min-w-0 flex-[1.35_1_520px] overflow-hidden rounded-[32px] bg-ink"
-        >
-          <Image
-            src={PHOTOS.keyHandover.src}
-            alt={t("alt")}
-            fill
-            sizes="(max-width: 960px) 100vw, 680px"
-            placeholder="blur"
-            className={`photo-zoom object-cover ${PHOTOS.keyHandover.focus}`}
-          />
-          <div className="chip-in absolute bottom-4 left-4 z-[2] flex items-center gap-3 rounded-[20px] bg-surface py-3 pr-4.5 pl-3 shadow-[0_18px_40px_-18px_rgba(12,31,25,.55)] sm:bottom-7 sm:left-7">
-            <span aria-hidden="true" className="flex size-10 flex-none items-center justify-center rounded-xl bg-lime text-ink">
-              <Icon name="check" size={18} strokeWidth={2.6} />
-            </span>
-            <span className="flex flex-col gap-0.5">
-              <b className="text-[15px] text-ink">{t("chipTitle")}</b>
-              <span className="text-[13px] text-muted">{t("chipText", { amount: money(EXAMPLE_DEPOSIT, locale) })}</span>
-            </span>
-          </div>
-          <AiImageBadge />
-        </figure>
+        <div data-reveal style={{ "--d": 1 } as React.CSSProperties} className="min-w-0 flex-[1.35_1_520px]">
+          <figure className="relative h-[clamp(360px,36vw,520px)] overflow-hidden rounded-[32px] bg-ink">
+            <Image
+              src={PHOTOS.keyHandover.src}
+              alt={t("alt")}
+              fill
+              sizes="(max-width: 960px) 100vw, 680px"
+              placeholder="blur"
+              className={`photo-zoom object-cover ${PHOTOS.keyHandover.focus}`}
+            />
+            <div className="chip-in absolute bottom-4 left-4 z-[2] flex items-center gap-3 rounded-[20px] bg-surface py-3 pr-4.5 pl-3 shadow-[0_18px_40px_-18px_rgba(12,31,25,.55)] sm:bottom-7 sm:left-7">
+              <span aria-hidden="true" className="flex size-10 flex-none items-center justify-center rounded-xl bg-lime text-ink">
+                <Icon name="check" size={18} strokeWidth={2.6} />
+              </span>
+              <span className="flex flex-col gap-0.5">
+                <b className="text-[15px] text-ink">{t("chipTitle")}</b>
+                <span className="text-[13px] text-muted">{t("chipText", { amount: money(EXAMPLE_DEPOSIT, locale) })}</span>
+              </span>
+            </div>
+          </figure>
+          <AiImageLabel className="mt-2.5 mr-1.5" />
+        </div>
       </div>
     </section>
   );

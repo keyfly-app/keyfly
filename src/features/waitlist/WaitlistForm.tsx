@@ -1,20 +1,25 @@
 "use client";
 
-import { Suspense, useActionState, useId } from "react";
+import { Suspense, useActionState, useId, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { Icon } from "@/components/Icon";
 import type { Locale } from "@/i18n/config";
 import { joinWaitlist, type WaitlistState } from "./actions";
-import { WAITLIST_SEGMENTS, type WaitlistSource } from "./config";
+import type { Enums } from "@/lib/supabase/database.types";
+import { PRO_SEGMENTS, WAITLIST_SEGMENTS, type WaitlistSource } from "./config";
+
+type Segment = Enums<"waitlist_segment">;
 
 type Props = { locale: Locale; privacyHref: string };
+type CompactProps = Props & { source?: WaitlistSource; defaultSegment?: Segment };
 
-/** Full sign-up form (hero): segment chips, email, privacy consent, optional newsletter. */
+/** Full sign-up form (hero): segment chips, Pro interest (landlords, agencies), email, privacy consent, optional newsletter. */
 export function WaitlistForm({ locale, privacyHref }: Props) {
   const t = useTranslations("waitlist");
   const [state, action, pending] = useActionState<WaitlistState, FormData>(joinWaitlist, { status: "idle" });
+  const [segment, setSegment] = useState<Segment>("tenant");
   const id = useId();
   if (state.status === "ok") return <Success already={state.already} />;
 
@@ -32,23 +37,25 @@ export function WaitlistForm({ locale, privacyHref }: Props) {
       <fieldset className="min-w-0">
         <legend className="text-sm font-semibold">{t("legend")}</legend>
         <div className="mt-2.5 flex flex-wrap gap-2">
-          {WAITLIST_SEGMENTS.map((segment) => (
+          {WAITLIST_SEGMENTS.map((option) => (
             <label
-              key={segment}
+              key={option}
               className="inline-flex min-h-11 cursor-pointer items-center rounded-full border-[1.5px] border-line bg-surface px-4.5 text-[15px] font-semibold transition-colors hover:border-brand/40 has-checked:border-brand has-checked:bg-brand has-checked:text-white has-focus-visible:outline-3 has-focus-visible:outline-offset-2 has-focus-visible:outline-brand"
             >
               <input
                 type="radio"
                 name="segment"
-                value={segment}
-                defaultChecked={(values?.segment ?? "tenant") === segment}
+                value={option}
+                checked={segment === option}
+                onChange={() => setSegment(option)}
                 className="sr-only"
               />
-              {t(`segments.${segment}`)}
+              {t(`segments.${option}`)}
             </label>
           ))}
         </div>
       </fieldset>
+      {PRO_SEGMENTS.includes(segment) && <ProInterest defaultChecked={values?.pro} />}
 
       <div className="flex flex-col gap-2">
         <label htmlFor={`${id}-email`} className="text-sm font-semibold">
@@ -91,10 +98,11 @@ export function WaitlistForm({ locale, privacyHref }: Props) {
   );
 }
 
-/** Compact sign-up form (footer, on dark): segment chips, email, privacy consent. */
-export function CompactWaitlistForm({ locale, privacyHref }: Props) {
+/** Compact sign-up form (footer, on dark): segment chips, Pro interest (landlords, agencies), email, privacy consent. */
+export function CompactWaitlistForm({ locale, privacyHref, source = "coming-soon-footer", defaultSegment = "tenant" }: CompactProps) {
   const t = useTranslations("waitlist");
   const [state, action, pending] = useActionState<WaitlistState, FormData>(joinWaitlist, { status: "idle" });
+  const [segment, setSegment] = useState<Segment>(defaultSegment);
   const id = useId();
   if (state.status === "ok") return <Success already={state.already} compact />;
 
@@ -105,27 +113,29 @@ export function CompactWaitlistForm({ locale, privacyHref }: Props) {
 
   return (
     <form action={action} noValidate className="flex flex-col gap-3.5">
-      <HiddenFields locale={locale} source="coming-soon-footer" />
+      <HiddenFields locale={locale} source={source} />
       <fieldset className="min-w-0">
         <legend className="sr-only">{t("compact.segmentLabel")}</legend>
         <div className="flex flex-wrap gap-2">
-          {WAITLIST_SEGMENTS.map((segment) => (
+          {WAITLIST_SEGMENTS.map((option) => (
             <label
-              key={segment}
+              key={option}
               className="inline-flex min-h-11 cursor-pointer items-center rounded-full border-[1.5px] border-night-line px-4 text-[15px] font-semibold transition-colors hover:border-lime has-checked:border-lime has-checked:bg-lime has-checked:text-ink has-focus-visible:outline-3 has-focus-visible:outline-offset-2 has-focus-visible:outline-lime"
             >
               <input
                 type="radio"
                 name="segment"
-                value={segment}
-                defaultChecked={(values?.segment ?? "tenant") === segment}
+                value={option}
+                checked={segment === option}
+                onChange={() => setSegment(option)}
                 className="sr-only"
               />
-              {t(`segments.${segment}`)}
+              {t(`segments.${option}`)}
             </label>
           ))}
         </div>
       </fieldset>
+      {PRO_SEGMENTS.includes(segment) && <ProInterest defaultChecked={values?.pro} onDark />}
       <div className="flex flex-wrap gap-2.5">
         <label htmlFor={`${id}-email`} className="sr-only">
           {t("emailLabel")}
@@ -156,6 +166,31 @@ export function CompactWaitlistForm({ locale, privacyHref }: Props) {
       {error === "privacy" && <FieldError id={`${id}-privacy-error`} message={t("errors.privacy")} className="pl-8" onDark />}
       {(error === "segment" || error === "generic") && <FormError message={t(`errors.${error}`)} />}
     </form>
+  );
+}
+
+/** Opt-in to hear about the Keyfly Pro / Business workspace – unticked by default (consent must be active). */
+function ProInterest({ defaultChecked, onDark = false }: { defaultChecked?: boolean; onDark?: boolean }) {
+  const t = useTranslations("waitlist.proInterest");
+  const id = useId();
+  return (
+    <label
+      className={`flex cursor-pointer items-start gap-3 rounded-[18px] px-4.5 py-4 ${onDark ? "border border-night-line bg-night" : "bg-lime-soft"}`}
+    >
+      <input
+        type="checkbox"
+        name="pro"
+        defaultChecked={defaultChecked}
+        aria-describedby={`${id}-hint`}
+        className={`mt-0.5 size-5 flex-none ${onDark ? "accent-lime" : "accent-brand"}`}
+      />
+      <span className="flex flex-col gap-1">
+        <span className={`text-[15px] font-bold ${onDark ? "text-white" : "text-ink"}`}>{t("label")}</span>
+        <span id={`${id}-hint`} className={`text-sm leading-snug ${onDark ? "text-fog" : "text-ink-soft"}`}>
+          {t("hint")}
+        </span>
+      </span>
+    </label>
   );
 }
 

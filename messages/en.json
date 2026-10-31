@@ -8,7 +8,8 @@
     "privacyNotice": "Privacy notice",
     "legalNav": "Legal information",
     "languageNav": "Nyelv / Language",
-    "aiImage": "AI-generated image"
+    "aiImage": "AI-generated image",
+    "proLabel": "PRO"
   },
   "meta": {
     "title": "Rent without a deposit in Hungary – Keyfly",
@@ -135,6 +136,151 @@
       "lead": "Join the waitlist and we'll let you know first when we launch."
     }
   },
+  "pro": {
+    "meta": {
+      "title": "Keyfly Pro – the landlord workspace",
+      "description": "Everything about letting in one place: properties, tenants, leases, payment reminders, meter readings and repair requests. Keyfly cover is free for landlords."
+    },
+    "eyebrow": "KEYFLY PRO · COMING SOON",
+    "teaserEyebrow": "FOR LANDLORDS · KEYFLY PRO",
+    "title": "Everything about letting. <mark>In one place.</mark>",
+    "lead": "Keyfly Pro is the workspace for landlords: properties, tenants, leases, payment reminders and meter readings, neatly organised with automatic reminders.",
+    "details": "Details and plans",
+    "signup": "Get notified",
+    "heroSignup": "I’m interested – notify me",
+    "plansLink": "Plans",
+    "preview": {
+      "photoAlt": "An elegant landlady at the marble table of a renovated Budapest apartment, working on her laptop.",
+      "label": "PROPERTY",
+      "status": "Keyfly cover active",
+      "address": "Király u. 12. · 2/4",
+      "tenant": "Tenant",
+      "tenantName": "Anna Kovács",
+      "rent": "Rent",
+      "rentValue": "{amount} / month",
+      "leaseEnd": "Lease ends",
+      "meterTitle": "Meter reading received",
+      "meterText": "Water · with photo · today 8:12",
+      "paymentTitle": "Payment reminder sent",
+      "paymentText": "November · due {date}"
+    },
+    "featuresEyebrow": "FEATURES",
+    "featuresTitle": "Everything that comes with letting.",
+    "features": {
+      "properties": {
+        "title": "Properties",
+        "short": "Address with a map, floor area, photos, keys, meters, utilities.",
+        "items": [
+          "Address with a Google Maps map, floor area, photos",
+          "Keys, meters with serial numbers",
+          "Utility providers in one place"
+        ]
+      },
+      "tenants": {
+        "title": "Tenants and leases",
+        "short": "Tenant, rent, service charge, cover, lease end – with reminders.",
+        "items": [
+          "Tenant details, rent, service charge",
+          "Deposit or Keyfly cover",
+          "Start, end and notice period",
+          "Reminders 90 and 30 days before the lease ends, and at the yearly rent review"
+        ]
+      },
+      "documents": {
+        "title": "Document vault",
+        "short": "Lease, inventory, handover report with photos – with templates.",
+        "items": [
+          "Lease, inventory",
+          "Handover report with photos and meter readings",
+          "Ready-to-fill templates"
+        ]
+      },
+      "payments": {
+        "title": "Payment reminders",
+        "short": "A monthly payment request to your tenant, “paid” marking, a nudge when late.",
+        "items": [
+          "Monthly payment request by email: amount, due date, account number, reference",
+          "“Paid” marking",
+          "Automatic reminder if the tenant is late"
+        ]
+      },
+      "meters": {
+        "title": "Meter readings",
+        "short": "Your tenant sends the reading with a photo, you see the usage.",
+        "items": [
+          "A monthly reminder to the tenant",
+          "They send the reading from their phone, with a photo",
+          "You see the history and the usage"
+        ]
+      },
+      "repairs": {
+        "title": "Repair requests",
+        "short": "Your tenant reports a problem with a photo, you follow the repair.",
+        "items": [
+          "Your tenant reports a problem with a photo",
+          "You can follow the repair through"
+        ]
+      },
+      "tenantSpace": {
+        "title": "Tenant space",
+        "short": "Free for tenants: lease, reminders and meter readings in one place.",
+        "items": [
+          "Free for the tenant",
+          "They see their lease and reminders",
+          "They send meter readings here"
+        ]
+      }
+    },
+    "plansEyebrow": "PLANS",
+    "plansTitle": "The cover is free. The convenience is Pro.",
+    "plans": {
+      "basic": {
+        "label": "KEYFLY BASIC",
+        "price": "Free",
+        "sub": "Unlimited properties",
+        "items": [
+          "Keyfly cover for all your properties",
+          "Invite your tenant, confirm the cover",
+          "Report a claim online",
+          "A list of your properties"
+        ]
+      },
+      "pro": {
+        "label": "KEYFLY PRO",
+        "badge": "For landlords",
+        "price": "Price: coming soon",
+        "sub": "One fee up to 5 properties, add more up to 15",
+        "items": [
+          "Everything in Basic",
+          "Properties and tenants, with reminders",
+          "Document vault and templates",
+          "Payment reminders",
+          "Meter readings with photos",
+          "Repair requests",
+          "Free tenant space"
+        ]
+      },
+      "business": {
+        "label": "KEYFLY BUSINESS",
+        "badge": "For property managers",
+        "price": "Price: coming soon",
+        "sub": "Above 15 properties, for teams",
+        "items": [
+          "Everything in Pro",
+          "User management and permissions",
+          "Several colleagues, shared work",
+          "Portfolio per owner and monthly statements",
+          "Bulk reminders, Excel export",
+          "Your logo on emails"
+        ]
+      }
+    },
+    "plansNote": "The Keyfly cover is paid by the tenant and is free for landlords in every plan. The cover is available without Pro or Business too. Prices will be published before launch.",
+    "cta": {
+      "title": "Interested in Pro or Business?",
+      "text": "Join as a landlord or agency and tick the box to hear about the workspace."
+    }
+  },
   "waitlist": {
     "legend": "I'm interested as a",
     "segments": {
@@ -149,6 +295,10 @@
     "submitting": "Sending…",
     "privacyConsent": "I have read the <link>privacy notice</link> and agree that Keyfly may email me about the launch.",
     "marketingConsent": "I'd also like the Keyfly newsletter: product news and practical renting insights. I can unsubscribe at any time.",
+    "proInterest": {
+      "label": "I’m also interested in the Keyfly Pro / Business workspace",
+      "hint": "We will tell you about it separately before launch, and you can try it first."
+    },
     "compact": {
       "segmentLabel": "I'm interested as a",
       "submit": "Join",

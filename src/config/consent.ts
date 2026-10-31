@@ -4,7 +4,9 @@
  */
 export const CONSENT_VERSIONS = {
   /** Privacy notice for the waitlist (public page /adatvedelem, /en/privacy). */
-  waitlistPrivacy: "waitlist-privacy-2026-10-31.2",
+  waitlistPrivacy: "waitlist-privacy-2026-10-31.3",
   /** Newsletter checkbox on the coming-soon page (messages: waitlist.marketingConsent). */
   newsletter: "newsletter-2026-10-31",
+  /** Keyfly Pro / Business interest checkbox for landlords and agencies (messages: waitlist.proInterest). */
+  proInterest: "pro-interest-2026-10-31",
 } as const;
