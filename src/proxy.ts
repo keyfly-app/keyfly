@@ -134,5 +134,5 @@ async function refreshSession(request: NextRequest, response: NextResponse) {
 }
 
 export const config = {
-  matcher: ["/((?!_next/static|_next/image|favicon.svg|apple-touch-icon.png|og.png|robots.txt).*)"],
+  matcher: ["/((?!_next/static|_next/image|email/|favicon.svg|apple-touch-icon.png|og.png|robots.txt).*)"],
 };
