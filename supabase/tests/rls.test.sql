@@ -85,7 +85,7 @@ select tests.throws($$insert into public.waitlist (email, segment, privacy_notic
 select tests.throws('select * from public.waitlist', 'anon cannot read the waitlist');
 select tests.throws($$insert into public.waitlist (email, segment, privacy_notice_version) values ('NEW@example.com', 'tenant', 'v1')$$, 'same email cannot join the same segment twice');
 select tests.throws($$insert into public.waitlist (email, privacy_notice_version) values ('not-an-email', 'v1')$$, 'invalid email is rejected');
-select tests.throws($$insert into public.waitlist (email, segment, privacy_notice_version, email_provider_contact_id) values ('y@example.com', 'tenant', 'v1', 'abc')$$, 'anon cannot set server-only columns');
+select tests.throws($$insert into public.waitlist (email, segment, privacy_notice_version, created_at) values ('y@example.com', 'tenant', 'v1', now() - interval '1 year')$$, 'anon cannot set server-only columns');
 rollback;
 
 -- ---------- Tenant (Anna) -----------------------------------------------------

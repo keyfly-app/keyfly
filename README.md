@@ -18,6 +18,7 @@ One codebase, one database, three surfaces. Working rules: see `CLAUDE.md`.
 |---|---|
 | Company, contact and brand facts | `src/config/company.ts` |
 | Consent text versions | `src/config/consent.ts` |
+| Newsletter lists (Resend segments per language) | `src/config/newsletter.ts` |
 | Design tokens (colours, fonts) | `src/app/globals.css` (`@theme`) – mirrors the Keyfly design system |
 | All UI copy, Hungarian + English | `messages/hu.json`, `messages/en.json` (keys must match: `npm run i18n:check`) |
 | Number, money and date formats | `src/lib/format.ts` |
@@ -75,6 +76,7 @@ On Vercel preview URLs (`*.vercel.app`) the app surfaces live under `/portal` an
 | `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | prod publishable key | staging publishable key |
 | `NEXT_PUBLIC_APP_ENV` | `production` | `staging` |
 | `STAGING_BASIC_AUTH` | – | `user:password` |
+| `RESEND_API_KEY` | Resend key (newsletter sync), sensitive | – (sign-ups are not synced) |
 
 The publishable key is public; RLS is what protects data. **Service-role keys never go into the repo or the browser.**
 

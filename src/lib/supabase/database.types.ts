@@ -444,7 +444,6 @@ export type Database = {
         Row: {
           created_at: string;
           email: string;
-          email_provider_contact_id: string | null;
           id: string;
           locale: Database["public"]["Enums"]["locale"];
           marketing_consent: boolean;
@@ -457,7 +456,6 @@ export type Database = {
         Insert: {
           created_at?: string;
           email: string;
-          email_provider_contact_id?: string | null;
           id?: string;
           locale?: Database["public"]["Enums"]["locale"];
           marketing_consent?: boolean;
@@ -470,7 +468,6 @@ export type Database = {
         Update: {
           created_at?: string;
           email?: string;
-          email_provider_contact_id?: string | null;
           id?: string;
           locale?: Database["public"]["Enums"]["locale"];
           marketing_consent?: boolean;
