@@ -1,7 +1,7 @@
-name: Adatbázis telepítés
+name: Database deploy
 
 # main → keyfly-prod, staging → keyfly-staging
-# Szükséges GitHub secrets: SUPABASE_ACCESS_TOKEN, SUPABASE_DB_PASSWORD_PROD, SUPABASE_DB_PASSWORD_STAGING
+# Required GitHub secrets: SUPABASE_ACCESS_TOKEN, SUPABASE_DB_PASSWORD_PROD, SUPABASE_DB_PASSWORD_STAGING
 on:
   push:
     branches: [main, staging]
@@ -22,11 +22,11 @@ jobs:
       SUPABASE_DB_PASSWORD: ${{ github.ref_name == 'main' && secrets.SUPABASE_DB_PASSWORD_PROD || secrets.SUPABASE_DB_PASSWORD_STAGING }}
     steps:
       - uses: actions/checkout@v4
-      - name: Titkok ellenőrzése
+      - name: Check secrets
         id: check
         run: |
           if [ -z "$SUPABASE_ACCESS_TOKEN" ] || [ -z "$SUPABASE_DB_PASSWORD" ]; then
-            echo "::warning::Hiányzó Supabase titkok – a migrációt most kihagyjuk. Lásd README: Adatbázis telepítés."
+            echo "::warning::Supabase secrets missing – skipping migrations. See README: Automatic migrations."
             echo "skip=true" >> "$GITHUB_OUTPUT"
           fi
       - uses: supabase/setup-cli@v1

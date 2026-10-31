@@ -1,23 +1,27 @@
-const huf = new Intl.NumberFormat("hu-HU", { maximumFractionDigits: 0 });
+import type { Locale } from "@/i18n/config";
 
-export const ft = (n: number | null | undefined) => (n == null ? "–" : `${huf.format(n)} Ft`);
-export const datum = (iso: string | null | undefined) =>
-  iso ? new Date(iso).toLocaleDateString("hu-HU", { year: "numeric", month: "2-digit", day: "2-digit" }) : "–";
+const NBSP = " ";
 
-export const APPLICATION_STATUS: Record<string, string> = {
-  draft: "Piszkozat",
-  submitted: "Beküldve",
-  verifying: "Ellenőrzés alatt",
-  approved: "Ajánlat kész",
-  declined: "Elutasítva",
-  accepted: "Elfogadva",
-  expired: "Lejárt",
-  cancelled: "Visszavonva",
-};
+/** Money in whole forints. hu: "1 050 000 Ft" (non-breaking spaces), en: "HUF 1,050,000". */
+export function money(amount: number | null | undefined, locale: Locale): string {
+  if (amount == null) return "–";
+  if (locale === "en") return `HUF${NBSP}${new Intl.NumberFormat("en-GB").format(amount)}`;
+  const digits = new Intl.NumberFormat("hu-HU", { useGrouping: true }).format(amount).replace(/\s/g, NBSP);
+  return `${digits}${NBSP}Ft`;
+}
 
-export const SEGMENT: Record<string, string> = {
-  tenant: "Bérlő",
-  landlord: "Bérbeadó",
-  agent: "Ingatlaniroda",
-  company: "Cég",
-};
+/** Plain number with the locale's grouping, e.g. hu "350 000", en "350,000". */
+export function number(value: number, locale: Locale): string {
+  const out = new Intl.NumberFormat(locale === "en" ? "en-GB" : "hu-HU").format(value);
+  return out.replace(/\s/g, NBSP);
+}
+
+/** Date. hu: "2026. 12. 01.", en: "1 Dec 2026". Always shown in Budapest time. */
+export function date(iso: string | null | undefined, locale: Locale): string {
+  if (!iso) return "–";
+  const d = new Date(iso);
+  if (locale === "en") {
+    return new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "short", year: "numeric", timeZone: "Europe/Budapest" }).format(d);
+  }
+  return new Intl.DateTimeFormat("hu-HU", { year: "numeric", month: "2-digit", day: "2-digit", timeZone: "Europe/Budapest" }).format(d);
+}

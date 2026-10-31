@@ -1,0 +1,91 @@
+{
+  "common": {
+    "brand": "Keyfly",
+    "comingSoon": "Coming soon",
+    "privacy": "Privacy",
+    "imprint": "Imprint",
+    "backHome": "Back to the homepage",
+    "signOut": "Sign out",
+    "language": "Language"
+  },
+  "meta": {
+    "title": "Keyfly – Move in without a deposit",
+    "description": "Keyfly replaces the rental deposit: you don't have to set aside a fortune, and your landlord stays just as protected."
+  },
+  "comingSoon": {
+    "eyebrow": "KEYFLY INSTEAD OF A DEPOSIT",
+    "title": "Move in without a deposit.",
+    "lead": "For a flat renting at HUF {rent}, a three-month deposit is {deposit}. With Keyfly that money stays with you – and your landlord is still fully protected.",
+    "example": {
+      "label": "EXAMPLE",
+      "rent": "Rent",
+      "deposit": "Deposit (3 months)",
+      "fee": "Keyfly fee",
+      "perMonth": "/ month",
+      "keep": "You keep: {amount}",
+      "disclaimer": "Illustrative example. Your exact fee is set after the check."
+    },
+    "points": {
+      "money": { "title": "No need to save up a fortune", "text": "Pay a small monthly fee instead of a deposit. Your money stays with you – for the move, furniture or a safety cushion." },
+      "landlord": { "title": "Your landlord stays protected", "text": "They get a coverage certificate from an insurer. If something goes wrong, they're paid quickly, without paperwork." },
+      "fast": { "title": "A few minutes, on your phone", "text": "Fill it in, confirm your income and see your offer straight away. No bank branch, no queues." }
+    }
+  },
+  "waitlist": {
+    "whoLabel": "Who should we notify?",
+    "segments": { "tenant": "I'm a tenant", "landlord": "I'm a landlord", "agent": "I'm with an agency", "company": "We're a company" },
+    "emailLabel": "Your email",
+    "emailPlaceholder": "name@example.com",
+    "submit": "Notify me at launch",
+    "submitting": "Sending…",
+    "privacyConsent": "I accept the <link>privacy notice</link>.",
+    "marketingConsent": "Send me occasional, useful news about renting (unsubscribe any time).",
+    "success": { "title": "Thanks, you're on the list!", "already": "You're already on the list.", "text": "We'll tell you first when we launch. Until then, keep your deposit money safe in your account." },
+    "errors": { "email": "That doesn't look like a valid email address.", "segment": "Choose who the sign-up is for.", "privacy": "Please accept the privacy notice to sign up.", "generic": "Something went wrong. Please try again in a minute." }
+  },
+  "auth": {
+    "portalTitle": "Sign in to Keyfly",
+    "portalText": "For tenants, landlords and partners.",
+    "adminTitle": "Keyfly admin",
+    "adminText": "Keyfly staff only.",
+    "emailLabel": "Email",
+    "submit": "Send sign-in link",
+    "submitting": "Sending…",
+    "hint": "No password needed: we'll email you a one-time link.",
+    "sentTitle": "Your sign-in link is on its way.",
+    "sentText": "Check your inbox (and spam folder) and click the link.",
+    "linkExpired": "That link has expired or was already used. Request a new one.",
+    "errors": { "email": "Enter a valid email address.", "noAccount": "There's no account for this email address.", "generic": "We couldn't send the sign-in link. Please try again shortly." }
+  },
+  "portal": {
+    "greeting": "Hi{name, select, none {} other { {name}}}!",
+    "intro": "Your quote requests and coverage certificates in one place.",
+    "applications": "My quote requests",
+    "noApplications": "No quote requests yet. Online quotes will start here soon.",
+    "addressLater": "Address to follow",
+    "applicationLine": "{rent} / month · deposit {deposit} · {date}",
+    "policies": "My coverage certificates",
+    "noPolicies": "No active coverage yet.",
+    "coverage": "Coverage: {amount}",
+    "perMonth": "month",
+    "perYear": "year"
+  },
+  "admin": {
+    "noAccessTitle": "No access",
+    "noAccessText": "This area is for Keyfly staff only. If that's a mistake, ask an admin.",
+    "overview": "Overview",
+    "stats": { "waitlist": "Waitlist", "applications": "Quote requests", "policies": "Policies", "claims": "Claims" },
+    "waitlistTitle": "Waitlist – latest 50",
+    "columns": { "email": "Email", "segment": "Who", "newsletter": "Newsletter", "date": "Date" },
+    "yes": "yes",
+    "waitlistEmpty": "Nobody has signed up yet.",
+    "recentApplications": "Recent quote requests",
+    "applicationsEmpty": "No quote requests yet."
+  },
+  "status": {
+    "draft": "Draft", "submitted": "Submitted", "verifying": "Checking", "approved": "Offer ready",
+    "declined": "Declined", "accepted": "Accepted", "expired": "Expired", "cancelled": "Cancelled"
+  },
+  "segments": { "tenant": "Tenant", "landlord": "Landlord", "agent": "Agency", "company": "Company" },
+  "notFound": { "title": "This page doesn't exist." }
+}

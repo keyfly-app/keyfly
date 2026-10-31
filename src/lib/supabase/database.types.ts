@@ -1,4 +1,4 @@
-/* Generálva a Supabase sémából. Frissítés: npm run db:types (supabase link után). */
+/* Generated from the Supabase schema. Refresh with: npm run db:types (after supabase link). */
 export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[];
 
 export type Database = {
@@ -19,6 +19,7 @@ export type Database = {
           id: string;
           landlord_email: string | null;
           landlord_kind: Database["public"]["Enums"]["landlord_kind"];
+          locale: Database["public"]["Enums"]["locale"];
           max_coverage: number | null;
           monthly_rent: number;
           move_in_date: string | null;
@@ -47,6 +48,7 @@ export type Database = {
           id?: string;
           landlord_email?: string | null;
           landlord_kind?: Database["public"]["Enums"]["landlord_kind"];
+          locale?: Database["public"]["Enums"]["locale"];
           max_coverage?: number | null;
           monthly_rent: number;
           move_in_date?: string | null;
@@ -75,6 +77,7 @@ export type Database = {
           id?: string;
           landlord_email?: string | null;
           landlord_kind?: Database["public"]["Enums"]["landlord_kind"];
+          locale?: Database["public"]["Enums"]["locale"];
           max_coverage?: number | null;
           monthly_rent?: number;
           move_in_date?: string | null;
@@ -249,7 +252,6 @@ export type Database = {
           certificate_path: string | null;
           coverage_amount: number;
           created_at: string;
-          default: string | null;
           end_date: string | null;
           id: string;
           insurer: string | null;
@@ -313,7 +315,7 @@ export type Database = {
           email: string | null;
           full_name: string | null;
           id: string;
-          locale: string;
+          locale: Database["public"]["Enums"]["locale"];
           phone: string | null;
           updated_at: string;
         };
@@ -323,7 +325,7 @@ export type Database = {
           email?: string | null;
           full_name?: string | null;
           id: string;
-          locale?: string;
+          locale?: Database["public"]["Enums"]["locale"];
           phone?: string | null;
           updated_at?: string;
         };
@@ -333,7 +335,7 @@ export type Database = {
           email?: string | null;
           full_name?: string | null;
           id?: string;
-          locale?: string;
+          locale?: Database["public"]["Enums"]["locale"];
           phone?: string | null;
           updated_at?: string;
         };
@@ -440,34 +442,40 @@ export type Database = {
       };
       waitlist: {
         Row: {
-          company: string | null;
-          consent_marketing: boolean;
           created_at: string;
           email: string;
+          email_provider_contact_id: string | null;
           id: string;
-          name: string | null;
+          locale: Database["public"]["Enums"]["locale"];
+          marketing_consent: boolean;
+          marketing_consent_version: string | null;
+          privacy_notice_version: string;
           segment: Database["public"]["Enums"]["waitlist_segment"];
           source: string | null;
           utm: Json | null;
         };
         Insert: {
-          company?: string | null;
-          consent_marketing?: boolean;
           created_at?: string;
           email: string;
+          email_provider_contact_id?: string | null;
           id?: string;
-          name?: string | null;
+          locale?: Database["public"]["Enums"]["locale"];
+          marketing_consent?: boolean;
+          marketing_consent_version?: string | null;
+          privacy_notice_version: string;
           segment?: Database["public"]["Enums"]["waitlist_segment"];
           source?: string | null;
           utm?: Json | null;
         };
         Update: {
-          company?: string | null;
-          consent_marketing?: boolean;
           created_at?: string;
           email?: string;
+          email_provider_contact_id?: string | null;
           id?: string;
-          name?: string | null;
+          locale?: Database["public"]["Enums"]["locale"];
+          marketing_consent?: boolean;
+          marketing_consent_version?: string | null;
+          privacy_notice_version?: string;
           segment?: Database["public"]["Enums"]["waitlist_segment"];
           source?: string | null;
           utm?: Json | null;
@@ -483,6 +491,7 @@ export type Database = {
       claim_status: "submitted" | "in_review" | "approved" | "paid" | "rejected" | "recovering" | "closed";
       employment_type: "employee" | "self_employed" | "student" | "retired" | "other";
       landlord_kind: "private" | "company";
+      locale: "hu" | "en";
       org_role: "owner" | "admin" | "agent";
       org_type: "agency" | "property_manager" | "company";
       policy_status: "pending_payment" | "active" | "cancelled" | "ended" | "claimed";

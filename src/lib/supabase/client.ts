@@ -2,7 +2,7 @@
 import { createBrowserClient } from "@supabase/ssr";
 import type { Database } from "./database.types";
 
-/** Böngészőoldali Supabase kliens (csak a publishable kulcsot ismeri). */
+/** Browser Supabase client (knows only the publishable key). */
 export function createClient() {
   return createBrowserClient<Database>(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,

@@ -1,0 +1,91 @@
+{
+  "common": {
+    "brand": "Keyfly",
+    "comingSoon": "Hamarosan",
+    "privacy": "Adatkezelés",
+    "imprint": "Impresszum",
+    "backHome": "Vissza a főoldalra",
+    "signOut": "Kilépés",
+    "language": "Nyelv"
+  },
+  "meta": {
+    "title": "Keyfly – Költözz be kaució nélkül",
+    "description": "A Keyfly kiváltja a lakásbérlési kauciót: neked nem kell milliókat félretenned, a bérbeadód pedig ugyanúgy biztonságban van."
+  },
+  "comingSoon": {
+    "eyebrow": "KAUCIÓ HELYETT KEYFLY",
+    "title": "Költözz be kaució nélkül.",
+    "lead": "Egy {rent} forintos albérletnél a háromhavi kaució {deposit}. A Keyflyjal ez a pénz nálad marad, a bérbeadód mégis teljes biztonságban van.",
+    "example": {
+      "label": "PÉLDA",
+      "rent": "Bérleti díj",
+      "deposit": "Kaució (3 hónap)",
+      "fee": "Keyfly díj",
+      "perMonth": "/ hó",
+      "keep": "Nálad marad: {amount}",
+      "disclaimer": "Illusztratív példa. A pontos díj az ellenőrzés után derül ki."
+    },
+    "points": {
+      "money": { "title": "Nem kell milliókat félretenned", "text": "Kaució helyett kis havi díjat fizetsz. A pénzed nálad marad: költözésre, bútorra, tartaléknak." },
+      "landlord": { "title": "A bérbeadód ugyanúgy védve van", "text": "Biztosítói fedezeti igazolást kap. Ha baj van, gyorsan és papírmunka nélkül kártalanítjuk." },
+      "fast": { "title": "Pár perc, telefonról", "text": "Kitöltöd, igazolod a jövedelmed, és azonnal látod az ajánlatot. Nincs bankfiók, nincs sorban állás." }
+    }
+  },
+  "waitlist": {
+    "whoLabel": "Kinek szóljunk?",
+    "segments": { "tenant": "Bérlő vagyok", "landlord": "Bérbeadó vagyok", "agent": "Ingatlanirodától jöttem", "company": "Cég vagyunk" },
+    "emailLabel": "E-mail címed",
+    "emailPlaceholder": "nev@pelda.hu",
+    "submit": "Szólj, ha indultok",
+    "submitting": "Küldés…",
+    "privacyConsent": "Elfogadom az <link>adatkezelési tájékoztatót</link>.",
+    "marketingConsent": "Kérek ritka, hasznos híreket a bérlésről (bármikor leiratkozhatok).",
+    "success": { "title": "Köszönjük, fent vagy a listán!", "already": "Már a listán vagy.", "text": "Elsőként szólunk, amikor indulunk. Addig is: a kauciódat nyugodtan tartsd még a számládon." },
+    "errors": { "email": "Ez nem tűnik érvényes e-mail címnek.", "segment": "Válaszd ki, kinek szól a feliratkozás.", "privacy": "A feliratkozáshoz fogadd el az adatkezelési tájékoztatót.", "generic": "Valami hiba történt. Próbáld újra egy perc múlva." }
+  },
+  "auth": {
+    "portalTitle": "Belépés a Keyflyba",
+    "portalText": "Bérlőknek, bérbeadóknak és partnereinknek.",
+    "adminTitle": "Keyfly admin",
+    "adminText": "Csak Keyfly-munkatársaknak.",
+    "emailLabel": "E-mail cím",
+    "submit": "Belépési link küldése",
+    "submitting": "Küldés…",
+    "hint": "Jelszó nem kell: e-mailben küldünk egy egyszer használatos linket.",
+    "sentTitle": "Elküldtük a belépési linket.",
+    "sentText": "Nézd meg a postafiókod (a spam mappát is), és kattints a linkre.",
+    "linkExpired": "A link lejárt vagy már felhasználtad. Kérj újat.",
+    "errors": { "email": "Adj meg egy érvényes e-mail címet.", "noAccount": "Ehhez az e-mail címhez nem tartozik fiók.", "generic": "Nem sikerült elküldeni a belépési linket. Próbáld újra kicsit később." }
+  },
+  "portal": {
+    "greeting": "Szia{name, select, none {} other {, {name}}}!",
+    "intro": "Itt látod az ajánlatkéréseidet és a fedezeti igazolásaidat.",
+    "applications": "Ajánlatkéréseim",
+    "noApplications": "Még nincs ajánlatkérésed. Az online ajánlatkérés hamarosan itt indul.",
+    "addressLater": "Cím később",
+    "applicationLine": "{rent} / hó · kaució {deposit} · {date}",
+    "policies": "Fedezeti igazolásaim",
+    "noPolicies": "Még nincs aktív fedezeted.",
+    "coverage": "Fedezet: {amount}",
+    "perMonth": "hó",
+    "perYear": "év"
+  },
+  "admin": {
+    "noAccessTitle": "Nincs hozzáférésed",
+    "noAccessText": "Ez a felület csak Keyfly-munkatársaknak szól. Ha tévedés, szólj egy adminnak.",
+    "overview": "Áttekintés",
+    "stats": { "waitlist": "Várólista", "applications": "Ajánlatkérés", "policies": "Kötvény", "claims": "Kárigény" },
+    "waitlistTitle": "Várólista – legutóbbi 50",
+    "columns": { "email": "E-mail", "segment": "Ki", "newsletter": "Hírlevél", "date": "Dátum" },
+    "yes": "igen",
+    "waitlistEmpty": "Még senki nem iratkozott fel.",
+    "recentApplications": "Friss ajánlatkérések",
+    "applicationsEmpty": "Még nincs ajánlatkérés."
+  },
+  "status": {
+    "draft": "Piszkozat", "submitted": "Beküldve", "verifying": "Ellenőrzés alatt", "approved": "Ajánlat kész",
+    "declined": "Elutasítva", "accepted": "Elfogadva", "expired": "Lejárt", "cancelled": "Visszavonva"
+  },
+  "segments": { "tenant": "Bérlő", "landlord": "Bérbeadó", "agent": "Ingatlaniroda", "company": "Cég" },
+  "notFound": { "title": "Ez az oldal nem létezik." }
+}

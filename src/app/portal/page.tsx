@@ -1,6 +1,8 @@
 import { redirect } from "next/navigation";
+import { getLocale, getTranslations } from "next-intl/server";
 import { Shell } from "@/components/Shell";
-import { APPLICATION_STATUS, datum, ft } from "@/lib/format";
+import { isLocale } from "@/i18n/config";
+import { date, money } from "@/lib/format";
 import { siteHref } from "@/lib/site-href";
 import { createClient } from "@/lib/supabase/server";
 
@@ -11,63 +13,66 @@ export default async function PortalHome() {
   const { data: claims } = await supabase.auth.getClaims();
   if (!claims) redirect(await siteHref("portal", "/login"));
 
+  const raw = await getLocale();
+  const locale = isLocale(raw) ? raw : "hu";
+  const t = await getTranslations("portal");
+  const status = await getTranslations("status");
+
   const [{ data: profile }, { data: applications }, { data: policies }] = await Promise.all([
     supabase.from("profiles").select("full_name, email").single(),
     supabase.from("applications").select("id, status, monthly_rent, deposit_amount, address_text, created_at").order("created_at", { ascending: false }),
     supabase.from("policies").select("id, policy_number, status, coverage_amount, premium_amount, billing_period"),
   ]);
 
-  const firstName = profile?.full_name?.split(" ").at(-1);
+  // Hungarian names are "Family Given": greet with the last word; English with the first.
+  const parts = profile?.full_name?.trim().split(/\s+/) ?? [];
+  const name = (locale === "hu" ? parts.at(-1) : parts[0]) ?? "none";
 
   return (
     <Shell site="portal" email={profile?.email}>
-      <h1 className="font-display text-4xl font-bold">Szia{firstName ? `, ${firstName}` : ""}!</h1>
-      <p className="mt-2 text-muted">Itt látod az ajánlatkéréseidet és a fedezeti igazolásaidat.</p>
+      <h1 className="font-display text-4xl font-bold">{t("greeting", { name })}</h1>
+      <p className="mt-2 text-muted">{t("intro")}</p>
 
       <section className="mt-8 grid gap-6 lg:grid-cols-2">
         <div className="rounded-3xl bg-white p-6">
-          <h2 className="font-display text-xl font-bold">Ajánlatkéréseim</h2>
+          <h2 className="font-display text-xl font-bold">{t("applications")}</h2>
           {applications?.length ? (
             <ul className="mt-4 divide-y divide-line">
               {applications.map((a) => (
                 <li key={a.id} className="flex items-center justify-between gap-4 py-3">
                   <div>
-                    <p className="font-semibold">{a.address_text ?? "Cím később"}</p>
+                    <p className="font-semibold">{a.address_text ?? t("addressLater")}</p>
                     <p className="text-sm text-muted">
-                      {ft(a.monthly_rent)} / hó · kaució {ft(a.deposit_amount)} · {datum(a.created_at)}
+                      {t("applicationLine", { rent: money(a.monthly_rent, locale), deposit: money(a.deposit_amount, locale), date: date(a.created_at, locale) })}
                     </p>
                   </div>
-                  <span className="rounded-full bg-mint px-3 py-1 text-sm font-semibold text-green">
-                    {APPLICATION_STATUS[a.status]}
-                  </span>
+                  <span className="rounded-full bg-mint px-3 py-1 text-sm font-semibold text-green">{status(a.status)}</span>
                 </li>
               ))}
             </ul>
           ) : (
-            <p className="mt-4 rounded-2xl bg-paper p-5 text-muted">
-              Még nincs ajánlatkérésed. Az online ajánlatkérés hamarosan itt indul.
-            </p>
+            <p className="mt-4 rounded-2xl bg-paper p-5 text-muted">{t("noApplications")}</p>
           )}
         </div>
 
         <div className="rounded-3xl bg-white p-6">
-          <h2 className="font-display text-xl font-bold">Fedezeti igazolásaim</h2>
+          <h2 className="font-display text-xl font-bold">{t("policies")}</h2>
           {policies?.length ? (
             <ul className="mt-4 divide-y divide-line">
               {policies.map((p) => (
                 <li key={p.id} className="flex items-center justify-between py-3">
                   <div>
                     <p className="font-semibold">{p.policy_number}</p>
-                    <p className="text-sm text-muted">Fedezet: {ft(p.coverage_amount)}</p>
+                    <p className="text-sm text-muted">{t("coverage", { amount: money(p.coverage_amount, locale) })}</p>
                   </div>
                   <span className="text-sm font-semibold">
-                    {ft(p.premium_amount)} / {p.billing_period === "monthly" ? "hó" : "év"}
+                    {money(p.premium_amount, locale)} / {p.billing_period === "monthly" ? t("perMonth") : t("perYear")}
                   </span>
                 </li>
               ))}
             </ul>
           ) : (
-            <p className="mt-4 rounded-2xl bg-paper p-5 text-muted">Még nincs aktív fedezeted.</p>
+            <p className="mt-4 rounded-2xl bg-paper p-5 text-muted">{t("noPolicies")}</p>
           )}
         </div>
       </section>

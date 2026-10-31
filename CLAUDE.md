@@ -35,5 +35,4 @@ staging.keyfly.app incl. a real phone → merge to `main` → record decisions i
 | Supabase | `keyfly-prod` (hieyofnjtrqnffzebxgg) | `keyfly-staging` (doriyqslvarvucbwlczq) |
 | Domains | keyfly.app, app., admin. | staging., app-staging., admin-staging. |
 
-Known debt (cleanup round pending): Hungarian comments/policy names/test labels and hardcoded Hungarian UI copy
-in the initial scaffold; no i18n yet; company data not yet centralised.
+Single sources of truth: see README (company.ts, consent.ts, globals.css tokens, messages/*.json, format.ts).

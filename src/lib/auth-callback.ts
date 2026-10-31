@@ -1,12 +1,12 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import { hrefFor } from "@/lib/sites";
+import { hrefFor, type AppSite } from "@/lib/sites";
 
 /**
- * A belépési linkből visszatérve beváltja a kódot munkamenetre.
- * A felhasználó a látható domainen marad (pl. app.keyfly.app/), a belső /portal előtagot a proxy kezeli.
+ * Exchanges the code from a sign-in link for a session.
+ * The user stays on the visible host (e.g. app.keyfly.app/); the proxy handles the internal /portal prefix.
  */
-export async function handleAuthCallback(request: NextRequest, site: "portal" | "admin") {
+export async function handleAuthCallback(request: NextRequest, site: AppSite) {
   const { searchParams } = request.nextUrl;
   const code = searchParams.get("code");
   const nextParam = searchParams.get("next") ?? "/";
@@ -21,5 +21,5 @@ export async function handleAuthCallback(request: NextRequest, site: "portal" | 
     const { error } = await supabase.auth.exchangeCodeForSession(code);
     if (!error) return NextResponse.redirect(new URL(hrefFor(site, next, host), origin));
   }
-  return NextResponse.redirect(new URL(hrefFor(site, "/login", host) + "?hiba=link", origin));
+  return NextResponse.redirect(new URL(hrefFor(site, "/login", host) + "?error=link", origin));
 }

@@ -1,5 +1,5 @@
--- Minimális Supabase-utánzat sima Postgreshez (CI-ben, Docker nélkül).
--- Valódi Supabase-en NEM kell futtatni – ott ezek mind léteznek.
+-- Minimal Supabase stand-in for plain Postgres (CI, no Docker).
+-- Never run this on a real Supabase project – all of this already exists there.
 
 create role anon nologin noinherit;
 create role authenticated nologin noinherit;
@@ -34,8 +34,8 @@ $$;
 grant usage on schema storage to anon, authenticated, service_role;
 grant select, insert, delete on storage.objects to authenticated;
 
--- Supabase alapértelmezés: minden új public tábla minden API-szerepkörnek jár.
--- (A migrációnk ezt szándékosan visszavonja – a teszt ezt is ellenőrzi.)
+-- Supabase default: every new public table is granted to every API role.
+-- (Our migrations deliberately revoke this – the tests check it.)
 grant usage on schema public to anon, authenticated, service_role;
 alter default privileges in schema public grant all on tables to anon, authenticated, service_role;
 alter default privileges in schema public grant all on sequences to anon, authenticated, service_role;

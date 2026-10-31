@@ -1,9 +1,9 @@
 import "server-only";
 import { headers } from "next/headers";
-import { hrefFor, type Site } from "@/lib/sites";
+import { hrefFor, type AppSite } from "@/lib/sites";
 
-/** Szerveroldali link a megadott felületen belül, az aktuális domainhez igazítva. */
-export async function siteHref(site: Exclude<Site, "marketing">, path: string) {
+/** Server-side link inside an app surface, adjusted to the current host. */
+export async function siteHref(site: AppSite, path: string) {
   const h = await headers();
   return hrefFor(site, path, h.get("host"));
 }

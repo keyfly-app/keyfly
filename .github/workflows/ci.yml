@@ -7,7 +7,7 @@ on:
 
 jobs:
   app:
-    name: Lint, típusok, build
+    name: Lint, types, build
     runs-on: ubuntu-latest
     env:
       NEXT_PUBLIC_SUPABASE_URL: https://example.supabase.co
@@ -24,7 +24,7 @@ jobs:
       - run: npm run build
 
   database:
-    name: Migrációk + jogosultsági tesztek
+    name: Migrations + access-control tests
     runs-on: ubuntu-latest
     services:
       postgres:

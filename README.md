@@ -1,83 +1,82 @@
 # Keyfly
 
-Kaució helyett biztosítás lakásbérlőknek. Egy kódbázis, egy adatbázis, három felület.
+Deposit-replacement insurance for renters in Hungary, operated by Plattio Magyarország Kft.
+One codebase, one database, three surfaces. Working rules: see `CLAUDE.md`.
 
-| Domain | Felület | Mappa | Kinek |
+| Host | Surface | Folder | Audience |
 |---|---|---|---|
-| `keyfly.app` | Publikus oldal (most: „Hamarosan” + várólista) | `src/app/(marketing)` | mindenki |
-| `app.keyfly.app` | Ügyfélfelület | `src/app/portal` | bérlő, bérbeadó, ingatlaniroda |
-| `admin.keyfly.app` | Back office | `src/app/admin` | Keyfly-munkatársak |
-| `staging.keyfly.app`, `app-staging.`, `admin-staging.` | Teszt (jelszóval védve) | `staging` ág | csak mi |
+| `keyfly.app` (hu), `keyfly.app/en` | Public site (now: coming soon + waitlist) | `src/app/(marketing)/[lang]` | everyone |
+| `app.keyfly.app` | Customer app | `src/app/portal` | tenants, landlords, agencies |
+| `admin.keyfly.app` | Back office | `src/app/admin` | Keyfly staff |
+| `staging.`, `app-staging.`, `admin-staging.keyfly.app` | Staging (password-protected) | `staging` branch | team |
 
-A domain alapján a `src/proxy.ts` dönti el, melyik felület jelenik meg (`src/lib/sites.ts`).
+`src/proxy.ts` picks the surface by host (`src/lib/sites.ts`) and maps public URLs to `/[lang]/<page>` (`src/i18n/config.ts`).
 
-## Környezetek
+## Single sources of truth
 
-| | Éles | Staging |
+| What | Where |
+|---|---|
+| Company, contact and brand facts | `src/config/company.ts` |
+| Consent text versions | `src/config/consent.ts` |
+| Design tokens (colours, fonts) | `src/app/globals.css` (`@theme`) – mirrors the Keyfly design system |
+| All UI copy, Hungarian + English | `messages/hu.json`, `messages/en.json` (keys must match: `npm run i18n:check`) |
+| Number, money and date formats | `src/lib/format.ts` |
+
+## Environments
+
+| | Production | Staging |
 |---|---|---|
-| Git ág | `main` | `staging` |
-| Supabase projekt | `keyfly-prod` (`hieyofnjtrqnffzebxgg`) | `keyfly-staging` (`doriyqslvarvucbwlczq`) |
-| Régió | EU – Frankfurt | EU – Frankfurt |
-| Vercel | Production | Preview (minden nem-`main` ág) |
+| Branch | `main` | `staging` |
+| Supabase | `keyfly-prod` (`hieyofnjtrqnffzebxgg`) | `keyfly-staging` (`doriyqslvarvucbwlczq`) |
+| Region | EU – Frankfurt | EU – Frankfurt |
+| Vercel | Production | Preview (every non-`main` branch) |
 
-Munkamenet: új funkció → ág a `staging`-ből → PR a `staging`-be (CI fut) → staging.keyfly.app-on kipróbáljuk → PR a `main`-be → élesedik.
+Flow: branch from `staging` → PR into `staging` (CI) → test on staging.keyfly.app → PR into `main` → live.
 
-## Adatbázis
+## Database
 
-- Séma: `supabase/migrations/` – minden változás új migrációs fájl, régit soha nem szerkesztünk.
-- Jogosultságok: Row Level Security minden táblán. Alapból senki nem lát semmit, minden hozzáférést egy policy ad:
-  - **bérlő** – saját profil, ajánlatkérések, kötvények, a vele szembeni kárigények
-  - **bérbeadó** – saját ingatlanok, az azokra szóló kötvények, kárbejelentés; a bérlő jövedelmét *nem* látja
-  - **ingatlaniroda** – a szervezete ingatlanai és az általa hozott ajánlatkérések
-  - **munkatárs** (`staff` tábla) – minden; munkatársat felvenni csak `superadmin` tud
-- Az ajánlat mezőit (díj, döntés) csak munkatárs vagy a szerver írhatja – ezt trigger is védi.
-- Tesztek: `supabase/tests/rls.test.sql` (52 ellenőrzés). Futtatás bármilyen üres Postgresen:
+- Schema in `supabase/migrations/` – every change is a new migration; never edit an applied one.
+- Row Level Security on every table; nothing is visible unless a policy grants it.
+- Offer fields and decisions are written only by staff or the server (also enforced by a trigger).
+- Tests: `supabase/tests/rls.test.sql`, runnable on any empty Postgres:
   `DATABASE_URL=postgresql://postgres:postgres@localhost:5432/postgres npm run db:test`
 
-### Első superadmin beállítása
+### First superadmin
 
-1. Lépj be egyszer az app.keyfly.app-on a saját e-mail címeddel (létrejön a fiókod).
-2. Supabase → `keyfly-prod` → SQL Editor:
+1. Sign in once at app.keyfly.app with the admin address (creates the account).
+2. Supabase → `keyfly-prod` → SQL editor:
    ```sql
    insert into public.staff (user_id, role)
-   select id, 'superadmin' from auth.users where email = 'TE@keyfly.app';
+   select id, 'superadmin' from auth.users where email = 'admin@keyfly.app';
    ```
-3. Ezután az admin.keyfly.app beenged.
 
-### Adatbázis telepítés (automatikus)
+### Automatic migrations
 
-A `.github/workflows/db-deploy.yml` a `main` ágra érkező migrációkat az éles, a `staging` ágra érkezőket a staging adatbázisra tölti. Ehhez a GitHub repó *Settings → Secrets and variables → Actions* alatt kell:
+`.github/workflows/db-deploy.yml` pushes migrations on `main` to production and on `staging` to staging. It needs GitHub
+secrets `SUPABASE_ACCESS_TOKEN`, `SUPABASE_DB_PASSWORD_PROD`, `SUPABASE_DB_PASSWORD_STAGING`; without them the step is skipped.
 
-- `SUPABASE_ACCESS_TOKEN` – supabase.com → Account → Access Tokens
-- `SUPABASE_DB_PASSWORD_PROD`, `SUPABASE_DB_PASSWORD_STAGING` – projekt → Database → Settings → Reset database password
-
-Amíg ezek nincsenek beállítva, a lépés figyelmeztetéssel kimarad (nem bukik el).
-
-## Helyi fejlesztés
+## Local development
 
 ```bash
 npm install
-cp .env.example .env.local      # staging Supabase-re mutat
+cp .env.example .env.local      # points at staging Supabase
 npm run dev
 ```
 
-- http://localhost:3000 – publikus oldal
-- http://app.localhost:3000 – ügyfélfelület
-- http://admin.localhost:3000 – admin
+http://localhost:3000 (hu), http://localhost:3000/en, http://app.localhost:3000, http://admin.localhost:3000.
+On Vercel preview URLs (`*.vercel.app`) the app surfaces live under `/portal` and `/admin`.
 
-Vercel előnézeti linken (`*.vercel.app`) a felületek a `/portal` és `/admin` útvonalon érhetők el.
+## Environment variables (Vercel)
 
-## Környezeti változók (Vercel)
-
-| Név | Production | Preview |
+| Name | Production | Preview |
 |---|---|---|
 | `NEXT_PUBLIC_SUPABASE_URL` | prod URL | staging URL |
-| `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | prod publishable | staging publishable |
+| `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | prod publishable key | staging publishable key |
 | `NEXT_PUBLIC_APP_ENV` | `production` | `staging` |
-| `STAGING_BASIC_AUTH` | – | `felhasznalo:jelszo` |
+| `STAGING_BASIC_AUTH` | – | `user:password` |
 
-A publishable kulcs nyilvános, a védelmet az RLS adja. **Service role kulcs soha nem kerül a repóba vagy a böngészőbe.**
+The publishable key is public; RLS is what protects data. **Service-role keys never go into the repo or the browser.**
 
-## Technológia
+## Stack
 
-Next.js 16 (App Router) · React 19 · Tailwind CSS 4 · Supabase (Postgres, Auth, Storage) · Vercel · GitHub Actions
+Next.js 16 · React 19 · next-intl · Tailwind CSS 4 · Supabase (Postgres, Auth, Storage) · Resend · Vercel · GitHub Actions

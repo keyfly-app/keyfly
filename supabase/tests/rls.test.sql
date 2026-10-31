@@ -1,6 +1,6 @@
--- Jogosultsági tesztek. Futtatás: scripts/test-db.sh
--- Minden blokk egy szerepben fut (anon / adott felhasználó), és hibát dob, ha valami
--- olyat lát vagy tehet meg, amit nem szabadna.
+-- Access-control tests. Run with: scripts/test-db.sh
+-- Each block runs as one role (anon / a given user) and fails loudly if that role
+-- can see or do something it must not.
 \set ON_ERROR_STOP on
 set client_min_messages = notice;
 
@@ -20,7 +20,7 @@ begin
     raise notice 'ok  % (%)', label, sqlerrm;
     return;
   end;
-  raise exception 'FAIL: % – nem dobott hibát', label;
+  raise exception 'FAIL: % – did not raise', label;
 end $$;
 
 create or replace function tests.act_as(uid uuid) returns void language plpgsql as $$
@@ -32,27 +32,27 @@ end $$;
 grant usage on schema tests to anon, authenticated;
 grant execute on all functions in schema tests to anon, authenticated;
 
--- ---------- Tesztadatok (postgres-ként, RLS nélkül) -----------------------
+-- ---------- Fixtures (as postgres, RLS bypassed) ----------------------------
 
 insert into auth.users (id, email, raw_user_meta_data) values
-  ('00000000-0000-0000-0000-0000000000a1', 'anna@pelda.hu',   '{"full_name":"Kovács Anna"}'),
-  ('00000000-0000-0000-0000-0000000000a2', 'bela@pelda.hu',   '{"full_name":"Nagy Béla"}'),
-  ('00000000-0000-0000-0000-0000000000b1', 'peter@pelda.hu',  '{"full_name":"Szabó Péter"}'),
-  ('00000000-0000-0000-0000-0000000000c1', 'iroda@pelda.hu',  '{"full_name":"Iroda Ügynök"}'),
-  ('00000000-0000-0000-0000-0000000000d1', 'tibi@keyfly.app', '{"full_name":"Superadmin"}'),
-  ('00000000-0000-0000-0000-0000000000d2', 'help@keyfly.app', '{"full_name":"Support"}');
+  ('00000000-0000-0000-0000-0000000000a1', 'anna@example.com',  '{"full_name":"Anna Kovács"}'),
+  ('00000000-0000-0000-0000-0000000000a2', 'bela@example.com',  '{"full_name":"Béla Nagy","locale":"en"}'),
+  ('00000000-0000-0000-0000-0000000000b1', 'peter@example.com', '{"full_name":"Péter Szabó"}'),
+  ('00000000-0000-0000-0000-0000000000c1', 'agent@example.com', '{"full_name":"Agency Agent"}'),
+  ('00000000-0000-0000-0000-0000000000d1', 'admin@example.com', '{"full_name":"Superadmin"}'),
+  ('00000000-0000-0000-0000-0000000000d2', 'help@example.com',  '{"full_name":"Support"}');
 
 insert into public.staff (user_id, role) values
   ('00000000-0000-0000-0000-0000000000d1', 'superadmin'),
   ('00000000-0000-0000-0000-0000000000d2', 'support');
 
 insert into public.organizations (id, name, type) values
-  ('00000000-0000-0000-0000-00000000f001', 'Minta Ingatlaniroda', 'agency');
+  ('00000000-0000-0000-0000-00000000f001', 'Example Agency', 'agency');
 insert into public.organization_members (org_id, user_id, role) values
   ('00000000-0000-0000-0000-00000000f001', '00000000-0000-0000-0000-0000000000c1', 'agent');
 
 insert into public.properties (id, owner_user_id, address_line) values
-  ('00000000-0000-0000-0000-00000000e001', '00000000-0000-0000-0000-0000000000b1', 'Minta utca 12. 3/2');
+  ('00000000-0000-0000-0000-00000000e001', '00000000-0000-0000-0000-0000000000b1', 'Example street 12. 3/2');
 
 insert into public.applications (id, tenant_id, property_id, referred_by_org_id, status, monthly_rent, deposit_months) values
   ('00000000-0000-0000-0000-00000000a001', '00000000-0000-0000-0000-0000000000a1', '00000000-0000-0000-0000-00000000e001', '00000000-0000-0000-0000-00000000f001', 'submitted', 350000, 3),
@@ -62,97 +62,102 @@ insert into public.applications (id, tenant_id, property_id, referred_by_org_id,
 insert into public.policies (id, application_id, tenant_id, property_id, status, coverage_amount, premium_amount) values
   ('00000000-0000-0000-0000-00000000b001', '00000000-0000-0000-0000-00000000a003', '00000000-0000-0000-0000-0000000000a1', '00000000-0000-0000-0000-00000000e001', 'active', 1050000, 5250);
 
--- ---------- Alapok ----------------------------------------------------------
+-- ---------- Basics ------------------------------------------------------------
 
-select tests.ok((select count(*) from public.profiles) = 6, 'regisztrációkor létrejön a profil');
-select tests.ok((select full_name from public.profiles where email = 'anna@pelda.hu') = 'Kovács Anna', 'a név átjön a regisztrációból');
-select tests.ok((select deposit_amount from public.applications where id = '00000000-0000-0000-0000-00000000a001') = 1050000, 'kaució = bérleti díj × hónap');
-select tests.ok((select policy_number from public.policies limit 1) ~ '^KF-\d{4}-\d{6}$', 'kötvényszám formátuma KF-ÉÉÉÉ-000000');
-select tests.ok((select count(*) from public.audit_log where entity = 'applications') >= 3, 'az ajánlatkérések naplózódnak');
+select tests.ok((select count(*) from public.profiles) = 6, 'sign-up creates a profile');
+select tests.ok((select full_name from public.profiles where email = 'anna@example.com') = 'Anna Kovács', 'name is copied from sign-up metadata');
+select tests.ok((select locale from public.profiles where email = 'bela@example.com') = 'en', 'locale is copied from sign-up metadata');
+select tests.ok((select deposit_amount from public.applications where id = '00000000-0000-0000-0000-00000000a001') = 1050000, 'deposit = rent × months');
+select tests.ok((select policy_number from public.policies limit 1) ~ '^KF-\d{4}-\d{6}$', 'policy number format KF-YYYY-000000');
+select tests.ok((select count(*) from public.audit_log where entity = 'applications') >= 3, 'quote requests are audited');
 
--- ---------- Látogató (anon) ------------------------------------------------
+-- ---------- Visitor (anon) ----------------------------------------------------
 
 begin;
 select tests.act_as(null);
-select tests.throws('select * from public.applications', 'anon nem olvas ajánlatkérést');
-select tests.throws('select * from public.profiles', 'anon nem olvas profilt');
-insert into public.waitlist (email, segment, source) values ('uj@pelda.hu', 'tenant', 'hamarosan');
-select tests.ok(true, 'anon feliratkozhat a várólistára');
-select tests.throws('select * from public.waitlist', 'anon nem olvassa a várólistát');
-select tests.throws($$insert into public.waitlist (email, segment) values ('UJ@pelda.hu', 'tenant')$$, 'ugyanaz az e-mail nem iratkozhat fel kétszer');
-select tests.throws($$insert into public.waitlist (email) values ('nem-email')$$, 'érvénytelen e-mail elutasítva');
+select tests.throws('select * from public.applications', 'anon cannot read quote requests');
+select tests.throws('select * from public.profiles', 'anon cannot read profiles');
+insert into public.waitlist (email, segment, locale, privacy_notice_version, source) values ('new@example.com', 'tenant', 'hu', '2026-10-31', 'coming-soon');
+select tests.ok(true, 'anon can join the waitlist');
+insert into public.waitlist (email, segment, locale, privacy_notice_version, marketing_consent, marketing_consent_version) values ('news@example.com', 'landlord', 'en', '2026-10-31', true, 'newsletter-2026-10-31');
+select tests.ok(true, 'anon can join with newsletter consent');
+select tests.throws($$insert into public.waitlist (email, segment, privacy_notice_version, marketing_consent) values ('x@example.com', 'tenant', 'v1', true)$$, 'newsletter consent requires the consent text version');
+select tests.throws('select * from public.waitlist', 'anon cannot read the waitlist');
+select tests.throws($$insert into public.waitlist (email, segment, privacy_notice_version) values ('NEW@example.com', 'tenant', 'v1')$$, 'same email cannot join the same segment twice');
+select tests.throws($$insert into public.waitlist (email, privacy_notice_version) values ('not-an-email', 'v1')$$, 'invalid email is rejected');
+select tests.throws($$insert into public.waitlist (email, segment, privacy_notice_version, email_provider_contact_id) values ('y@example.com', 'tenant', 'v1', 'abc')$$, 'anon cannot set server-only columns');
 rollback;
 
--- ---------- Bérlő (Anna) ---------------------------------------------------
+-- ---------- Tenant (Anna) -----------------------------------------------------
 
 begin;
 select tests.act_as('00000000-0000-0000-0000-0000000000a1');
-select tests.ok((select count(*) from public.applications) = 2, 'bérlő csak a saját 2 kérését látja');
-select tests.ok((select count(*) from public.profiles) = 1, 'bérlő csak a saját profilját látja');
-select tests.ok((select count(*) from public.policies) = 1, 'bérlő látja a saját kötvényét');
-select tests.ok((select count(*) from public.properties) = 0, 'bérlő nem látja a bérbeadó ingatlantábláját');
-select tests.ok((select count(*) from public.staff) = 0, 'bérlő nem látja a munkatársakat');
-select tests.ok((select count(*) from public.audit_log) = 0, 'bérlő nem látja a naplót');
+select tests.ok((select count(*) from public.applications) = 2, 'tenant sees only her 2 requests');
+select tests.ok((select count(*) from public.profiles) = 1, 'tenant sees only her profile');
+select tests.ok((select count(*) from public.policies) = 1, 'tenant sees her policy');
+select tests.ok((select count(*) from public.properties) = 0, 'tenant cannot see the landlord property table');
+select tests.ok((select count(*) from public.staff) = 0, 'tenant cannot see staff');
+select tests.ok((select count(*) from public.audit_log) = 0, 'tenant cannot see the audit log');
 update public.applications set monthly_rent = 360000 where id = '00000000-0000-0000-0000-00000000a001';
-select tests.ok((select monthly_rent from public.applications where id = '00000000-0000-0000-0000-00000000a001') = 360000, 'bérlő módosíthatja a beküldött kérést');
-select tests.throws($$update public.applications set quoted_premium_monthly = 1 where id = '00000000-0000-0000-0000-00000000a001'$$, 'bérlő nem írhatja át a díjat');
-select tests.throws($$update public.applications set status = 'approved' where id = '00000000-0000-0000-0000-00000000a001'$$, 'bérlő nem hagyhatja jóvá magát');
-select tests.throws($$insert into public.applications (tenant_id, monthly_rent) values ('00000000-0000-0000-0000-0000000000a2', 100000)$$, 'bérlő nem indíthat kérést más nevében');
-select tests.throws($$insert into public.applications (tenant_id, monthly_rent, quoted_rate_pct) values ('00000000-0000-0000-0000-0000000000a1', 100000, 1)$$, 'bérlő nem adhat meg saját díjat');
+select tests.ok((select monthly_rent from public.applications where id = '00000000-0000-0000-0000-00000000a001') = 360000, 'tenant can edit a submitted request');
+select tests.throws($$update public.applications set quoted_premium_monthly = 1 where id = '00000000-0000-0000-0000-00000000a001'$$, 'tenant cannot change the premium');
+select tests.throws($$update public.applications set status = 'approved' where id = '00000000-0000-0000-0000-00000000a001'$$, 'tenant cannot approve herself');
+select tests.throws($$insert into public.applications (tenant_id, monthly_rent) values ('00000000-0000-0000-0000-0000000000a2', 100000)$$, 'tenant cannot create a request for someone else');
+select tests.throws($$insert into public.applications (tenant_id, monthly_rent, quoted_rate_pct) values ('00000000-0000-0000-0000-0000000000a1', 100000, 1)$$, 'tenant cannot set her own rate');
 insert into public.applications (tenant_id, monthly_rent) values ('00000000-0000-0000-0000-0000000000a1', 300000);
-select tests.ok(true, 'bérlő indíthat saját kérést');
-select tests.throws($$update public.profiles set email = 'x@y.hu' where id = '00000000-0000-0000-0000-0000000000a1'$$, 'bérlő nem írhatja át a belépési e-mailjét');
-update public.profiles set phone = '+36301234567' where id = '00000000-0000-0000-0000-0000000000a1';
-select tests.ok(true, 'bérlő módosíthatja a telefonszámát');
-select tests.throws($$insert into public.claims (policy_id, submitted_by, reason, amount_claimed) values ('00000000-0000-0000-0000-00000000b001', '00000000-0000-0000-0000-0000000000a1', 'x', 1000)$$, 'bérlő nem jelenthet kárt');
-select tests.throws($$insert into public.verifications (application_id, method, status) values ('00000000-0000-0000-0000-00000000a001', 'manual', 'passed')$$, 'bérlő nem igazolhatja saját magát');
-select tests.throws($$insert into public.staff (user_id, role) values ('00000000-0000-0000-0000-0000000000a1', 'superadmin')$$, 'bérlő nem teheti magát adminná');
-insert into storage.objects (bucket_id, name) values ('documents', '00000000-0000-0000-0000-0000000000a1/igazolas.pdf');
-select tests.ok(true, 'bérlő a saját mappájába feltölthet');
-select tests.throws($$insert into storage.objects (bucket_id, name) values ('documents', '00000000-0000-0000-0000-0000000000a2/x.pdf')$$, 'bérlő nem tölthet más mappájába');
+select tests.ok(true, 'tenant can create her own request');
+select tests.throws($$update public.profiles set email = 'x@y.hu' where id = '00000000-0000-0000-0000-0000000000a1'$$, 'tenant cannot change her login email');
+update public.profiles set phone = '+36301234567', locale = 'en' where id = '00000000-0000-0000-0000-0000000000a1';
+select tests.ok(true, 'tenant can change phone and language');
+select tests.throws($$insert into public.claims (policy_id, submitted_by, reason, amount_claimed) values ('00000000-0000-0000-0000-00000000b001', '00000000-0000-0000-0000-0000000000a1', 'x', 1000)$$, 'tenant cannot file a claim');
+select tests.throws($$insert into public.verifications (application_id, method, status) values ('00000000-0000-0000-0000-00000000a001', 'manual', 'passed')$$, 'tenant cannot verify herself');
+select tests.throws($$insert into public.staff (user_id, role) values ('00000000-0000-0000-0000-0000000000a1', 'superadmin')$$, 'tenant cannot make herself admin');
+insert into storage.objects (bucket_id, name) values ('documents', '00000000-0000-0000-0000-0000000000a1/certificate.pdf');
+select tests.ok(true, 'tenant can upload to her own folder');
+select tests.throws($$insert into storage.objects (bucket_id, name) values ('documents', '00000000-0000-0000-0000-0000000000a2/x.pdf')$$, 'tenant cannot upload to another folder');
 rollback;
 
--- ---------- Másik bérlő (Béla) ---------------------------------------------
+-- ---------- Another tenant (Béla) -----------------------------------------------
 
 begin;
 select tests.act_as('00000000-0000-0000-0000-0000000000a2');
-select tests.ok((select count(*) from public.applications) = 1, 'Béla csak a saját kérését látja');
-select tests.ok((select count(*) from public.policies) = 0, 'Béla nem látja Anna kötvényét');
-select tests.ok((select count(*) from public.claims) = 0, 'Béla nem lát kárigényt');
+select tests.ok((select count(*) from public.applications) = 1, 'Béla sees only his request');
+select tests.ok((select count(*) from public.policies) = 0, 'Béla cannot see Anna''s policy');
+select tests.ok((select count(*) from public.claims) = 0, 'Béla sees no claims');
 rollback;
 
--- ---------- Bérbeadó (Péter) -----------------------------------------------
+-- ---------- Landlord (Péter) -----------------------------------------------------
 
 begin;
 select tests.act_as('00000000-0000-0000-0000-0000000000b1');
-select tests.ok((select count(*) from public.applications) = 0, 'bérbeadó nem látja a bérlő jövedelmi adatait');
-select tests.ok((select count(*) from public.properties) = 1, 'bérbeadó látja a saját ingatlanát');
-select tests.ok((select count(*) from public.policies) = 1, 'bérbeadó látja a lakására szóló kötvényt');
-select tests.throws($$insert into public.claims (policy_id, submitted_by, reason, amount_claimed, amount_paid) values ('00000000-0000-0000-0000-00000000b001', '00000000-0000-0000-0000-0000000000b1', 'x', 1000, 1000)$$, 'bérbeadó nem írhatja be a kifizetett összeget');
-insert into public.claims (policy_id, submitted_by, reason, amount_claimed) values ('00000000-0000-0000-0000-00000000b001', '00000000-0000-0000-0000-0000000000b1', 'Elmaradt lakbér', 350000);
-select tests.ok((select count(*) from public.claims) = 1, 'bérbeadó kárt jelenthet és látja');
+select tests.ok((select count(*) from public.applications) = 0, 'landlord cannot see tenant income data');
+select tests.ok((select count(*) from public.properties) = 1, 'landlord sees his property');
+select tests.ok((select count(*) from public.policies) = 1, 'landlord sees the policy on his property');
+select tests.throws($$insert into public.claims (policy_id, submitted_by, reason, amount_claimed, amount_paid) values ('00000000-0000-0000-0000-00000000b001', '00000000-0000-0000-0000-0000000000b1', 'x', 1000, 1000)$$, 'landlord cannot set the paid amount');
+insert into public.claims (policy_id, submitted_by, reason, amount_claimed) values ('00000000-0000-0000-0000-00000000b001', '00000000-0000-0000-0000-0000000000b1', 'Unpaid rent', 350000);
+select tests.ok((select count(*) from public.claims) = 1, 'landlord can file and see a claim');
 update public.claims set status = 'paid';
-select tests.ok((select status from public.claims limit 1) = 'submitted', 'bérbeadó nem állíthatja kifizetettre');
+select tests.ok((select status from public.claims limit 1) = 'submitted', 'landlord cannot mark a claim as paid');
 select tests.act_as('00000000-0000-0000-0000-0000000000a1');
-select tests.ok((select count(*) from public.claims) = 1, 'a bérlő látja a vele szembeni kárigényt');
+select tests.ok((select count(*) from public.claims) = 1, 'tenant sees the claim against her');
 rollback;
 
--- ---------- Ingatlaniroda ügynöke ------------------------------------------
+-- ---------- Agency agent -----------------------------------------------------------
 
 begin;
 select tests.act_as('00000000-0000-0000-0000-0000000000c1');
-select tests.ok((select count(*) from public.applications) = 1, 'iroda csak az általa hozott kérést látja');
-select tests.ok((select count(*) from public.organizations) = 1, 'iroda látja a saját szervezetét');
-select tests.throws($$insert into public.organization_members (org_id, user_id, role) values ('00000000-0000-0000-0000-00000000f001', '00000000-0000-0000-0000-0000000000a2', 'admin')$$, 'egyszerű ügynök nem vehet fel tagot');
+select tests.ok((select count(*) from public.applications) = 1, 'agency sees only the request it referred');
+select tests.ok((select count(*) from public.organizations) = 1, 'agency sees its own organisation');
+select tests.throws($$insert into public.organization_members (org_id, user_id, role) values ('00000000-0000-0000-0000-00000000f001', '00000000-0000-0000-0000-0000000000a2', 'admin')$$, 'plain agent cannot add members');
 rollback;
 
--- ---------- Munkatársak ----------------------------------------------------
+-- ---------- Staff ------------------------------------------------------------------
 
 begin;
 select tests.act_as('00000000-0000-0000-0000-0000000000d2');
-select tests.ok((select count(*) from public.applications) = 3, 'support munkatárs mindent lát');
-select tests.ok((select count(*) from public.waitlist) >= 0, 'munkatárs olvassa a várólistát');
-select tests.throws($$insert into public.staff (user_id, role) values ('00000000-0000-0000-0000-0000000000a2', 'admin')$$, 'support nem vehet fel munkatársat');
+select tests.ok((select count(*) from public.applications) = 3, 'support staff sees everything');
+select tests.ok((select count(*) from public.waitlist) >= 0, 'staff can read the waitlist');
+select tests.throws($$insert into public.staff (user_id, role) values ('00000000-0000-0000-0000-0000000000a2', 'admin')$$, 'support cannot add staff');
 rollback;
 
 begin;
@@ -161,16 +166,16 @@ update public.applications
   set status = 'approved', quoted_rate_pct = 6, quoted_premium_monthly = 5250, quoted_premium_yearly = 63000,
       max_coverage = 1200000, offer_expires_at = now() + interval '7 days', decided_at = now()
   where id = '00000000-0000-0000-0000-00000000a001';
-select tests.ok((select status from public.applications where id = '00000000-0000-0000-0000-00000000a001') = 'approved', 'superadmin ajánlatot adhat');
+select tests.ok((select status from public.applications where id = '00000000-0000-0000-0000-00000000a001') = 'approved', 'superadmin can issue an offer');
 insert into public.staff (user_id, role) values ('00000000-0000-0000-0000-0000000000c1', 'ops');
-select tests.ok(true, 'superadmin munkatársat vehet fel');
-select tests.ok((select count(*) from public.audit_log where entity = 'applications') >= 4, 'a státuszváltás naplózódik');
+select tests.ok(true, 'superadmin can add staff');
+select tests.ok((select count(*) from public.audit_log where entity = 'applications') >= 4, 'status changes are audited');
 rollback;
 
--- ---------- Alapértelmezett jogok visszavonva ------------------------------
+-- ---------- Default privileges revoked -------------------------------------------
 
-select tests.ok(not has_table_privilege('anon', 'public.applications', 'select'), 'anon-nak nincs olvasási joga az ajánlatkérésekre');
-select tests.ok(not has_table_privilege('anon', 'public.audit_log', 'insert'), 'anon nem ír naplót');
-select tests.ok(not has_column_privilege('authenticated', 'public.profiles', 'email', 'update'), 'e-mail nem módosítható az API-n át');
+select tests.ok(not has_table_privilege('anon', 'public.applications', 'select'), 'anon has no select on applications');
+select tests.ok(not has_table_privilege('anon', 'public.audit_log', 'insert'), 'anon cannot write the audit log');
+select tests.ok(not has_column_privilege('authenticated', 'public.profiles', 'email', 'update'), 'login email is not updatable via the API');
 
-\echo '=== MINDEN JOGOSULTSÁGI TESZT RENDBEN ==='
+\echo '=== ALL ACCESS-CONTROL TESTS PASSED ==='

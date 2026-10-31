@@ -1,6 +1,8 @@
 import { redirect } from "next/navigation";
+import { getLocale, getTranslations } from "next-intl/server";
 import { Shell } from "@/components/Shell";
-import { APPLICATION_STATUS, datum, SEGMENT } from "@/lib/format";
+import { isLocale } from "@/i18n/config";
+import { date } from "@/lib/format";
 import { siteHref } from "@/lib/site-href";
 import { createClient } from "@/lib/supabase/server";
 
@@ -11,13 +13,20 @@ export default async function AdminHome() {
   const { data: claims } = await supabase.auth.getClaims();
   if (!claims) redirect(await siteHref("admin", "/login"));
 
+  const raw = await getLocale();
+  const locale = isLocale(raw) ? raw : "hu";
+  const t = await getTranslations("admin");
+  const status = await getTranslations("status");
+  const segments = await getTranslations("segments");
+  const email = claims.claims.email as string | undefined;
+
   const { data: me } = await supabase.from("staff").select("role").eq("user_id", claims.claims.sub).maybeSingle();
   if (!me) {
     return (
-      <Shell site="admin" badge="ADMIN" email={claims.claims.email as string | undefined}>
+      <Shell site="admin" badge="ADMIN" email={email}>
         <div className="mx-auto mt-6 max-w-md rounded-3xl bg-white p-7">
-          <h1 className="font-display text-2xl font-bold">Nincs hozzáférésed</h1>
-          <p className="mt-2 text-muted">Ez a felület csak Keyfly-munkatársaknak szól. Ha tévedés, szólj egy adminnak.</p>
+          <h1 className="font-display text-2xl font-bold">{t("noAccessTitle")}</h1>
+          <p className="mt-2 text-muted">{t("noAccessText")}</p>
         </div>
       </Shell>
     );
@@ -31,24 +40,24 @@ export default async function AdminHome() {
     count("applications"),
     count("policies"),
     count("claims"),
-    supabase.from("waitlist").select("id, email, segment, consent_marketing, created_at").order("created_at", { ascending: false }).limit(50),
-    supabase.from("applications").select("id, status, monthly_rent, created_at").order("created_at", { ascending: false }).limit(10),
+    supabase.from("waitlist").select("id, email, segment, marketing_consent, created_at").order("created_at", { ascending: false }).limit(50),
+    supabase.from("applications").select("id, status, created_at").order("created_at", { ascending: false }).limit(10),
   ]);
 
   const stats = [
-    { label: "Várólista", value: waitlist.count ?? 0 },
-    { label: "Ajánlatkérés", value: apps.count ?? 0 },
-    { label: "Kötvény", value: pols.count ?? 0 },
-    { label: "Kárigény", value: clms.count ?? 0 },
-  ];
+    { key: "waitlist", value: waitlist.count ?? 0 },
+    { key: "applications", value: apps.count ?? 0 },
+    { key: "policies", value: pols.count ?? 0 },
+    { key: "claims", value: clms.count ?? 0 },
+  ] as const;
 
   return (
-    <Shell site="admin" badge={`ADMIN · ${me.role.toUpperCase()}`} email={claims.claims.email as string | undefined}>
-      <h1 className="font-display text-3xl font-bold">Áttekintés</h1>
+    <Shell site="admin" badge={`ADMIN · ${me.role.toUpperCase()}`} email={email}>
+      <h1 className="font-display text-3xl font-bold">{t("overview")}</h1>
       <div className="mt-6 grid grid-cols-2 gap-4 lg:grid-cols-4">
         {stats.map((s) => (
-          <div key={s.label} className="rounded-3xl bg-white p-5">
-            <p className="text-sm font-semibold text-muted">{s.label}</p>
+          <div key={s.key} className="rounded-3xl bg-white p-5">
+            <p className="text-sm font-semibold text-muted">{t(`stats.${s.key}`)}</p>
             <p className="font-display mt-1 text-4xl font-bold">{s.value}</p>
           </div>
         ))}
@@ -56,28 +65,28 @@ export default async function AdminHome() {
 
       <section className="mt-8 grid gap-6 lg:grid-cols-[1.4fr_1fr]">
         <div className="overflow-x-auto rounded-3xl bg-white p-6">
-          <h2 className="font-display text-xl font-bold">Várólista – legutóbbi 50</h2>
+          <h2 className="font-display text-xl font-bold">{t("waitlistTitle")}</h2>
           <table className="mt-4 w-full text-left text-sm">
             <thead className="text-muted">
               <tr>
-                <th className="py-2 font-semibold">E-mail</th>
-                <th className="py-2 font-semibold">Ki</th>
-                <th className="py-2 font-semibold">Hírlevél</th>
-                <th className="py-2 font-semibold">Dátum</th>
+                <th className="py-2 font-semibold">{t("columns.email")}</th>
+                <th className="py-2 font-semibold">{t("columns.segment")}</th>
+                <th className="py-2 font-semibold">{t("columns.newsletter")}</th>
+                <th className="py-2 font-semibold">{t("columns.date")}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-line">
               {latest?.map((w) => (
                 <tr key={w.id}>
                   <td className="py-2.5 font-medium">{w.email}</td>
-                  <td className="py-2.5">{SEGMENT[w.segment]}</td>
-                  <td className="py-2.5">{w.consent_marketing ? "igen" : "–"}</td>
-                  <td className="py-2.5 text-muted">{datum(w.created_at)}</td>
+                  <td className="py-2.5">{segments(w.segment)}</td>
+                  <td className="py-2.5">{w.marketing_consent ? t("yes") : "–"}</td>
+                  <td className="py-2.5 text-muted">{date(w.created_at, locale)}</td>
                 </tr>
               ))}
               {!latest?.length && (
                 <tr>
-                  <td colSpan={4} className="py-6 text-center text-muted">Még senki nem iratkozott fel.</td>
+                  <td colSpan={4} className="py-6 text-center text-muted">{t("waitlistEmpty")}</td>
                 </tr>
               )}
             </tbody>
@@ -85,15 +94,15 @@ export default async function AdminHome() {
         </div>
 
         <div className="rounded-3xl bg-white p-6">
-          <h2 className="font-display text-xl font-bold">Friss ajánlatkérések</h2>
+          <h2 className="font-display text-xl font-bold">{t("recentApplications")}</h2>
           <ul className="mt-4 divide-y divide-line text-sm">
             {recentApps?.map((a) => (
               <li key={a.id} className="flex justify-between py-2.5">
-                <span>{datum(a.created_at)}</span>
-                <span className="font-semibold">{APPLICATION_STATUS[a.status]}</span>
+                <span>{date(a.created_at, locale)}</span>
+                <span className="font-semibold">{status(a.status)}</span>
               </li>
             ))}
-            {!recentApps?.length && <li className="py-6 text-center text-muted">Még nincs ajánlatkérés.</li>}
+            {!recentApps?.length && <li className="py-6 text-center text-muted">{t("applicationsEmpty")}</li>}
           </ul>
         </div>
       </section>

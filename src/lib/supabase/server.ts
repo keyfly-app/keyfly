@@ -4,7 +4,7 @@ import { cookies } from "next/headers";
 import type { Database } from "./database.types";
 import { supabaseEnv } from "./env";
 
-/** Szerveroldali Supabase kliens a bejelentkezett felhasználó nevében (RLS érvényes). */
+/** Server-side Supabase client acting as the signed-in user (RLS applies). */
 export async function createClient() {
   const cookieStore = await cookies();
   const { url, key } = supabaseEnv();
@@ -18,7 +18,7 @@ export async function createClient() {
         try {
           cookiesToSet.forEach(({ name, value, options }) => cookieStore.set(name, value, options));
         } catch {
-          // Server Componentből hívva nem lehet sütit írni – a proxy frissíti a munkamenetet.
+          // Server Components cannot set cookies – the proxy refreshes the session instead.
         }
       },
     },
