@@ -17,6 +17,9 @@ light film grain, candid moments; wardrobe in brand deep green with a small lime
 | `tenant-family-arrival-1x1-{a,b}.jpg` | 1:1 · 1360×1360 | tenant (family) | Family arrives, daughter runs into the empty room | top-left |
 | `tenant-morning-window-9x16-{a,b}.jpg` | 9:16 · 1296×2304 | tenant | Woman with coffee at the window, Danube view | top + bottom (stories) |
 | `landlord-doorway-16x9-{a,b}.jpg` | 16:9 · 2304×1296 | landlord | Landlord in the doorway of his renovated flat | left |
+| `tenant-meter-reading-3x2-{a,b}.jpg` | 3:2 · 2016×1344 | tenant (Pro) | Tenant photographs the water meter with her phone | left |
+| `landlord-kitchen-laptop-3x2-{a,b}.jpg` | 3:2 · 2016×1344 | landlord (Pro) | Landlady at the kitchen table with laptop, folder and keys | left |
+| `manager-office-3x2-{a,b}.jpg` | 3:2 · 2016×1344 | property manager | Property manager with a tablet in front of a key cabinet | left |
 
 In use (registry: `src/content/photos.ts`, every placement labelled "AI-generált kép" / "AI-generated image"):
 home photo band, waitlist email (`public/email/move-in.jpg`) and share images (`public/og/`) – move-in couple a;
@@ -42,5 +45,11 @@ the composition note and "No text, no logos, no watermarks."
   daughter (lime-green cardigan) runs ahead; father in forest-green sweater; late-morning light; 35mm f/2.8.
 - **Morning window** – late-twenties woman (forest-green cardigan) with a coffee mug at an open window over the
   Danube; boxes and a lime-green plant; early golden light; 50mm f/2; space top and bottom.
+- **Meter reading** – late-twenties tenant (forest-green sweater) crouches in a Budapest hallway photographing the
+  wall water meter with her phone; meter and screen out of focus; 35mm f/2; subject right half.
+- **Landlord at home** – early-fifties landlady (forest-green cardigan) at a kitchen table with laptop (screen away),
+  coffee, document folder, keys, lime-green plant; morning light; 50mm f/2.
+- **Property manager** – mid-thirties manager (navy blazer) with a tablet in a small office, key cabinet with blank
+  tags behind, forest-green armchair; 50mm f/2.2; subject right third.
 - **Landlord** – late-forties landlord (navy knit polo, chinos), arms loosely crossed, key ring in hand, in the
   doorway of a bright renovated living room with a forest-green sofa; clean daylight; 50mm f/2.2; subject right third.
