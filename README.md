@@ -7,7 +7,7 @@ Kaució helyett biztosítás lakásbérlőknek. Egy kódbázis, egy adatbázis, 
 | `keyfly.app` | Publikus oldal (most: „Hamarosan” + várólista) | `src/app/(marketing)` | mindenki |
 | `app.keyfly.app` | Ügyfélfelület | `src/app/portal` | bérlő, bérbeadó, ingatlaniroda |
 | `admin.keyfly.app` | Back office | `src/app/admin` | Keyfly-munkatársak |
-| `staging.keyfly.app` | Teszt (jelszóval védve) | `staging` ág | csak mi |
+| `staging.keyfly.app`, `app-staging.`, `admin-staging.` | Teszt (jelszóval védve) | `staging` ág | csak mi |
 
 A domain alapján a `src/proxy.ts` dönti el, melyik felület jelenik meg (`src/lib/sites.ts`).
 
