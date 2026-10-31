@@ -5,16 +5,12 @@ import { isPreviewHost, PRODUCTION_HOSTS, resolveSite, SITE_PATH_PREFIX } from "
 
 /**
  * Runs before every request:
- *  1. staging password protection (STAGING_BASIC_AUTH)
- *  2. routes the request to the right surface by host (keyfly.app / app. / admin.)
- *  3. maps public URLs to the internal /[lang]/<page> routes (hu default, en under /en)
+ *  1. routes the request to the right surface by host (keyfly.app / app. / admin.)
+ *  2. maps public URLs to the internal /[lang]/<page> routes (hu default, en under /en)
  *     and remembers the visitor's language choice (?lang= from the switch → cookie)
- *  4. refreshes the Supabase session on surfaces that need sign-in
+ *  3. refreshes the Supabase session on surfaces that need sign-in
  */
 export async function proxy(request: NextRequest) {
-  const auth = stagingAuth(request);
-  if (auth) return auth;
-
   const host = request.headers.get("host");
   const site = resolveSite(host);
   const { pathname, search } = request.nextUrl;
@@ -98,18 +94,6 @@ function setLocaleCookie(response: NextResponse, locale: Locale, host: string | 
     httpOnly: true,
     secure: hostname !== "localhost" && hostname !== "127.0.0.1",
     domain: hostname.endsWith("keyfly.app") ? ".keyfly.app" : undefined,
-  });
-}
-
-function stagingAuth(request: NextRequest) {
-  const expected = process.env.STAGING_BASIC_AUTH; // "user:password"
-  if (!expected) return null;
-  const header = request.headers.get("authorization") ?? "";
-  const [scheme, encoded] = header.split(" ");
-  if (scheme === "Basic" && encoded && atob(encoded) === expected) return null;
-  return new NextResponse("Keyfly staging – sign-in required.", {
-    status: 401,
-    headers: { "WWW-Authenticate": 'Basic realm="Keyfly staging", charset="UTF-8"' },
   });
 }
 

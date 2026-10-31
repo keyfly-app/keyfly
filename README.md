@@ -8,7 +8,7 @@ One codebase, one database, three surfaces. Working rules: see `CLAUDE.md`.
 | `keyfly.app` (hu), `keyfly.app/en` | Public site: coming soon + waitlist, privacy notice, imprint | `src/app/(marketing)/[lang]` | everyone |
 | `app.keyfly.app` | Customer app | `src/app/portal` | tenants, landlords, agencies |
 | `admin.keyfly.app` | Back office | `src/app/admin` | Keyfly staff |
-| `staging.`, `app-staging.`, `admin-staging.keyfly.app` | Staging (password-protected) | `staging` branch | team |
+| `staging.`, `app-staging.`, `admin-staging.keyfly.app` | Staging (Vercel login required) | `staging` branch | team |
 
 `src/proxy.ts` picks the surface by host (`src/lib/sites.ts`) and maps public URLs to `/[lang]/<page>` (`src/i18n/config.ts`).
 
@@ -75,7 +75,6 @@ On Vercel preview URLs (`*.vercel.app`) the app surfaces live under `/portal` an
 | `NEXT_PUBLIC_SUPABASE_URL` | prod URL | staging URL |
 | `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | prod publishable key | staging publishable key |
 | `NEXT_PUBLIC_APP_ENV` | `production` | `staging` |
-| `STAGING_BASIC_AUTH` | – | `user:password` |
 | `RESEND_API_KEY` | Resend key (newsletter sync), sensitive | – (sign-ups are not synced) |
 
 The publishable key is public; RLS is what protects data. **Service-role keys never go into the repo or the browser.**
