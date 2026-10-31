@@ -19,6 +19,7 @@ light film grain, candid moments; wardrobe in brand deep green with a small lime
 | `landlord-doorway-16x9-{a,b}.jpg` | 16:9 · 2304×1296 | landlord | Landlord in the doorway of his renovated flat | left |
 | `tenant-meter-reading-3x2-{a,b}.jpg` | 3:2 · 2016×1344 | tenant (Pro) | Tenant photographs the water meter with her phone | left |
 | `landlord-kitchen-laptop-3x2-{a,b}.jpg` | 3:2 · 2016×1344 | landlord (Pro) | Landlady at the kitchen table with laptop, folder and keys | left |
+| `landlord-upscale-3x2-{a,b}.jpg` | 3:2 · 2016×1344 | landlord (Pro) | Elegant landlady with laptop in an upscale renovated flat (marble table) | left |
 | `manager-office-3x2-{a,b}.jpg` | 3:2 · 2016×1344 | property manager | Property manager with a tablet in front of a key cabinet | left |
 
 In use (registry: `src/content/photos.ts`, every placement labelled "AI-generált kép" / "AI-generated image"):
