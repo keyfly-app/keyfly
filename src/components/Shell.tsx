@@ -17,7 +17,7 @@ export async function Shell({ site, badge, email, children }: { site: AppSite; b
             <form action={signOut} className="flex items-center gap-4 text-sm">
               <input type="hidden" name="site" value={site} />
               <span className="hidden text-muted sm:inline">{email}</span>
-              <button type="submit" className="font-semibold hover:text-green">{t("signOut")}</button>
+              <button type="submit" className="font-semibold hover:text-brand">{t("signOut")}</button>
             </form>
           )}
         </div>

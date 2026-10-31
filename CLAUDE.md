@@ -10,8 +10,9 @@ https://claude.ai/artifact/AttVCwnk4JJP3kqG7mV1Ns
 - **Every UI is bilingual** (hu default at `/`, en at `/en`). No user-facing string in components – all copy comes
   from message files by key, both languages filled. Use the handbook glossary for terms.
 - **Single source of truth**: company data, brand tokens and copy each live in one central file. Never hardcode.
-- **Design first**: every feature starts with a design in the Keyfly design canvas (desktop 1440 + mobile 390,
-  all states, both languages) and is built only after approval. Use only design-system tokens and components.
+- **Design and copy first**: every feature – and every change the owner asks for – is first shown in the Keyfly
+  design canvas (desktop 1440 + mobile 390, all states, both languages, final wording) and coded only after the
+  owner has reviewed and approved it. Use only design-system tokens (`globals.css`) and components.
 - **Mobile first, WCAG 2.2 AA**: no horizontal scroll 320–1440 px, 44×44 px touch targets, labelled fields,
   visible focus, 4.5:1 text contrast, keyboard and screen-reader friendly.
 - **Voice**: informal "te" (tegezés) everywhere, for tenants and companies alike. Formats: `1 050 000 Ft`
@@ -36,3 +37,9 @@ staging.keyfly.app incl. a real phone → merge to `main` → record decisions i
 | Domains | keyfly.app, app., admin. | staging., app-staging., admin-staging. |
 
 Single sources of truth: see README (company.ts, consent.ts, globals.css tokens, messages/*.json, format.ts).
+Long-form legal documents (privacy notice, imprint) live in `src/content/legal/` – HU binding, EN informative.
+
+## Code layout
+- `src/app` routes and their page-only sections (`_sections/`); `src/components` shared UI (`site/` = public header, footer, legal frame);
+  `src/features/<name>` feature logic + UI (e.g. `waitlist`); `src/lib` helpers; `src/config` facts and versions.
+- Keep it clean: no dead code or unused message keys, no hardcoded colors outside tokens, small components.

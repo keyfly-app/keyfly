@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { NextIntlClientProvider } from "next-intl";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { RootDocument } from "@/components/RootDocument";
-import { isLocale, LOCALES, publicHref } from "@/i18n/config";
+import { isLocale, LOCALES } from "@/i18n/config";
 import { baseMetadata, baseViewport } from "@/lib/metadata";
 
 export const viewport = baseViewport;
@@ -16,10 +16,7 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: str
   const { lang } = await params;
   if (!isLocale(lang)) return {};
   const t = await getTranslations({ locale: lang, namespace: "meta" });
-  return {
-    ...baseMetadata(t("title"), t("description")),
-    alternates: { languages: { hu: publicHref("home", "hu"), en: publicHref("home", "en") } },
-  };
+  return baseMetadata(t("title"), t("description"));
 }
 
 export default async function PublicLayout({

@@ -46,7 +46,7 @@ export default async function PortalHome() {
                       {t("applicationLine", { rent: money(a.monthly_rent, locale), deposit: money(a.deposit_amount, locale), date: date(a.created_at, locale) })}
                     </p>
                   </div>
-                  <span className="rounded-full bg-mint px-3 py-1 text-sm font-semibold text-green">{status(a.status)}</span>
+                  <span className="rounded-full bg-mist px-3 py-1 text-sm font-semibold text-brand">{status(a.status)}</span>
                 </li>
               ))}
             </ul>

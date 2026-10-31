@@ -15,7 +15,7 @@ export default async function Login({ searchParams }: { searchParams: Promise<{ 
     <Shell site="portal">
       <LoginCard title={t("portalTitle")} text={t("portalText")}>
         {error === "link" && (
-          <p className="mb-4 rounded-2xl bg-warn px-4 py-3 text-sm font-semibold text-[#6B3D00]">{t("linkExpired")}</p>
+          <p className="mb-4 rounded-2xl bg-warning-soft px-4 py-3 text-sm font-semibold text-warning-ink">{t("linkExpired")}</p>
         )}
         <LoginForm site="portal" />
       </LoginCard>

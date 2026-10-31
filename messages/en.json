@@ -1,47 +1,145 @@
 {
   "common": {
     "brand": "Keyfly",
-    "comingSoon": "Coming soon",
     "privacy": "Privacy",
     "imprint": "Imprint",
     "backHome": "Back to the homepage",
     "signOut": "Sign out",
-    "language": "Language"
+    "privacyNotice": "Privacy notice",
+    "legalNav": "Legal information",
+    "languageNav": "Nyelv / Language"
   },
   "meta": {
     "title": "Keyfly – Move in without a deposit",
-    "description": "Keyfly replaces the rental deposit: you don't have to set aside a fortune, and your landlord stays just as protected."
+    "description": "Keyfly replaces the rental deposit: you pay a small monthly fee and your landlord receives insurance cover instead. Join the waitlist."
   },
   "comingSoon": {
-    "eyebrow": "KEYFLY INSTEAD OF A DEPOSIT",
-    "title": "Move in without a deposit.",
-    "lead": "For a flat renting at HUF {rent}, a three-month deposit is {deposit}. With Keyfly that money stays with you – and your landlord is still fully protected.",
+    "launchBadge": "Launching soon",
+    "launchBadgeShort": "Soon",
+    "headerCta": "Get notified",
+    "homeLabel": "Keyfly – home",
+    "titleStart": "Move in",
+    "titleHighlight": "without a deposit.",
+    "lead": "Keyfly replaces the rental deposit. Instead of setting aside hundreds of thousands of forints up front, you pay a small monthly fee, and your landlord receives insurance cover in its place.",
     "example": {
-      "label": "EXAMPLE",
-      "rent": "Rent",
+      "label": "WORKED EXAMPLE",
+      "rent": "Monthly rent",
       "deposit": "Deposit (3 months)",
       "fee": "Keyfly fee",
       "perMonth": "/ month",
+      "approx": "approx. {amount}",
       "keep": "You keep: {amount}",
-      "disclaimer": "Illustrative example. Your exact fee is set after the check."
+      "disclaimer": "Illustrative example. Your fee is set by individual assessment and shown in your offer."
     },
-    "points": {
-      "money": { "title": "No need to save up a fortune", "text": "Pay a small monthly fee instead of a deposit. Your money stays with you – for the move, furniture or a safety cushion." },
-      "landlord": { "title": "Your landlord stays protected", "text": "They get a coverage certificate from an insurer. If something goes wrong, they're paid quickly, without paperwork." },
-      "fast": { "title": "A few minutes, on your phone", "text": "Fill it in, confirm your income and see your offer straight away. No bank branch, no queues." }
+    "audience": {
+      "eyebrow": "WHO IT'S FOR",
+      "title": "It pays off for both sides.",
+      "lead": "Keyfly gives tenants financial headroom and landlords insurance cover. The same security, with less money tied up.",
+      "tenant": {
+        "label": "FOR TENANTS",
+        "title": "Your money stays with you.",
+        "items": {
+          "upfront": "No need to set aside several months' rent at once.",
+          "savings": "Instead of a deposit you pay a small monthly fee, and your savings stay available to you.",
+          "online": "You get your offer online in a few minutes and see the exact fee before you accept."
+        }
+      },
+      "landlord": {
+        "label": "FOR LANDLORDS",
+        "title": "Insurance cover, no deposit.",
+        "items": {
+          "cover": "You're covered up to the deposit amount, and the insurer pays out on a valid claim.",
+          "admin": "No deposit to hold or settle, and you can report a claim online.",
+          "free": "It's free for you, and you can choose from a wider pool of reliable tenants."
+        }
+      }
+    },
+    "steps": {
+      "eyebrow": "REQUESTING AN OFFER",
+      "title": "An offer in a few minutes.",
+      "durationValue": "3",
+      "durationUnit": "min",
+      "durationText": "Roughly how long it takes to request an offer. No paperwork, no branch visit, right from your phone.",
+      "items": {
+        "details": {
+          "title": "Your rental details",
+          "text": "Enter the rent, the deposit amount and your planned move-in date.",
+          "time": "about 1 min"
+        },
+        "income": {
+          "title": "Income check",
+          "text": "Through a secure bank connection, on your own bank's site. No documents to collect.",
+          "time": "about 2 min"
+        },
+        "offer": {
+          "title": "Instant offer",
+          "text": "See your cover and monthly fee right away. Once you accept, your landlord receives the insurer's certificate of cover.",
+          "time": "instant"
+        }
+      }
+    },
+    "faq": {
+      "title": "Frequently asked questions",
+      "lead": "Can't find your answer? Write to us and we'll reply within one working day.",
+      "items": {
+        "launch": {
+          "q": "When does Keyfly launch?",
+          "a": "We're preparing for launch and will announce the date once every condition is confirmed. People on the waitlist hear first."
+        },
+        "cost": {
+          "q": "How much does it cost?",
+          "a": "The fee depends on the deposit amount and an individual assessment. With {rent} rent and a three-month deposit, it's roughly {fee} a month. You see the exact fee in your offer before you accept."
+        },
+        "refund": {
+          "q": "Is the fee refunded like a deposit?",
+          "a": "No. The fee is the price of the service, not a deposit. In return, the full deposit amount stays with you and is yours to use."
+        },
+        "claim": {
+          "q": "What happens if the landlord suffers a loss?",
+          "a": "On a valid claim, the insurer compensates the landlord and then recovers the amount from you. Keyfly replaces paying a deposit, not your responsibility as a tenant."
+        },
+        "landlord": {
+          "q": "What does the landlord need to do?",
+          "a": "Simply accept the insurer's certificate of cover instead of a deposit. The service is free for them."
+        }
+      }
+    },
+    "footer": {
+      "title": "Be among the first.",
+      "lead": "Join the waitlist and we'll let you know first when we launch."
     }
   },
   "waitlist": {
-    "whoLabel": "Who should we notify?",
-    "segments": { "tenant": "I'm a tenant", "landlord": "I'm a landlord", "agent": "I'm with an agency", "company": "We're a company" },
-    "emailLabel": "Your email",
+    "legend": "I'm interested as a",
+    "segments": {
+      "tenant": "Tenant",
+      "landlord": "Landlord",
+      "agent": "Agency",
+      "company": "Company"
+    },
+    "emailLabel": "Your email address",
     "emailPlaceholder": "name@example.com",
-    "submit": "Notify me at launch",
+    "submit": "Join the waitlist",
     "submitting": "Sending…",
-    "privacyConsent": "I accept the <link>privacy notice</link>.",
-    "marketingConsent": "Send me occasional, useful news about renting (unsubscribe any time).",
-    "success": { "title": "Thanks, you're on the list!", "already": "You're already on the list.", "text": "We'll tell you first when we launch. Until then, keep your deposit money safe in your account." },
-    "errors": { "email": "That doesn't look like a valid email address.", "segment": "Choose who the sign-up is for.", "privacy": "Please accept the privacy notice to sign up.", "generic": "Something went wrong. Please try again in a minute." }
+    "privacyConsent": "I have read the <link>privacy notice</link> and agree that Keyfly may email me about the launch.",
+    "marketingConsent": "I'd also like the Keyfly newsletter: product news and practical renting insights. I can unsubscribe at any time.",
+    "compact": {
+      "segmentLabel": "I'm interested as a",
+      "submit": "Join",
+      "privacyConsent": "I have read the <link>privacy notice</link> and agree to be notified."
+    },
+    "success": {
+      "title": "Thank you, you're on the waitlist.",
+      "text": "We'll let you know first when we launch.",
+      "alreadyTitle": "This address is already on the waitlist.",
+      "alreadyText": "There's nothing else to do. We'll let you know first when we launch."
+    },
+    "errors": {
+      "email": "Please enter a valid email address.",
+      "segment": "Please choose how you're interested in Keyfly.",
+      "privacy": "To join, please accept the privacy notice.",
+      "generic": "We couldn't add you just now. Please try again in a few minutes."
+    }
   },
   "auth": {
     "portalTitle": "Sign in to Keyfly",
@@ -55,7 +153,11 @@
     "sentTitle": "Your sign-in link is on its way.",
     "sentText": "Check your inbox (and spam folder) and click the link.",
     "linkExpired": "That link has expired or was already used. Request a new one.",
-    "errors": { "email": "Enter a valid email address.", "noAccount": "There's no account for this email address.", "generic": "We couldn't send the sign-in link. Please try again shortly." }
+    "errors": {
+      "email": "Enter a valid email address.",
+      "noAccount": "There's no account for this email address.",
+      "generic": "We couldn't send the sign-in link. Please try again shortly."
+    }
   },
   "portal": {
     "greeting": "Hi{name, select, none {} other { {name}}}!",
@@ -74,18 +176,47 @@
     "noAccessTitle": "No access",
     "noAccessText": "This area is for Keyfly staff only. If that's a mistake, ask an admin.",
     "overview": "Overview",
-    "stats": { "waitlist": "Waitlist", "applications": "Quote requests", "policies": "Policies", "claims": "Claims" },
+    "stats": {
+      "waitlist": "Waitlist",
+      "applications": "Quote requests",
+      "policies": "Policies",
+      "claims": "Claims"
+    },
     "waitlistTitle": "Waitlist – latest 50",
-    "columns": { "email": "Email", "segment": "Who", "newsletter": "Newsletter", "date": "Date" },
+    "columns": {
+      "email": "Email",
+      "segment": "Who",
+      "newsletter": "Newsletter",
+      "date": "Date"
+    },
     "yes": "yes",
     "waitlistEmpty": "Nobody has signed up yet.",
     "recentApplications": "Recent quote requests",
     "applicationsEmpty": "No quote requests yet."
   },
   "status": {
-    "draft": "Draft", "submitted": "Submitted", "verifying": "Checking", "approved": "Offer ready",
-    "declined": "Declined", "accepted": "Accepted", "expired": "Expired", "cancelled": "Cancelled"
+    "draft": "Draft",
+    "submitted": "Submitted",
+    "verifying": "Checking",
+    "approved": "Offer ready",
+    "declined": "Declined",
+    "accepted": "Accepted",
+    "expired": "Expired",
+    "cancelled": "Cancelled"
   },
-  "segments": { "tenant": "Tenant", "landlord": "Landlord", "agent": "Agency", "company": "Company" },
-  "notFound": { "title": "This page doesn't exist." }
+  "segments": {
+    "tenant": "Tenant",
+    "landlord": "Landlord",
+    "agent": "Agency",
+    "company": "Company"
+  },
+  "notFound": {
+    "title": "This page doesn't exist."
+  },
+  "legal": {
+    "bindingNote": "This is an informative translation. The Hungarian version is legally binding.",
+    "updated": "Effective: {date}",
+    "imprintTitle": "Imprint",
+    "privacyTitle": "Privacy notice – waitlist and newsletter"
+  }
 }

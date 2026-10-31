@@ -14,7 +14,7 @@ export default function NotFound() {
     <div className="mx-auto flex min-h-dvh max-w-md flex-col items-start justify-center gap-4 px-4">
       <LogoFull height={28} />
       <h1 className="font-display text-4xl font-bold">{t("title")}</h1>
-      <Link href={publicHref("home", locale)} className="rounded-full bg-green px-6 py-3 font-bold text-white">
+      <Link href={publicHref("home", locale)} className="rounded-full bg-brand px-6 py-3 font-bold text-white">
         {c("backHome")}
       </Link>
     </div>

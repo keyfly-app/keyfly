@@ -29,14 +29,14 @@ export function LoginForm({ site, next = "/" }: { site: AppSite; next?: string }
           type="email"
           required
           autoComplete="email"
-          className="mt-1.5 h-13 w-full rounded-2xl border-[1.5px] border-line px-4 text-[17px] font-medium focus:border-green"
+          className="mt-1.5 h-13 w-full rounded-2xl border-[1.5px] border-line px-4 text-[17px] font-medium focus:border-brand"
         />
       </label>
-      <button type="submit" disabled={pending} className="h-13 w-full rounded-full bg-green font-bold text-white hover:bg-green-dark disabled:opacity-60">
+      <button type="submit" disabled={pending} className="h-13 w-full rounded-full bg-brand font-bold text-white hover:bg-brand-dark disabled:opacity-60">
         {pending ? t("submitting") : t("submit")}
       </button>
       {state.status === "error" && (
-        <p role="alert" className="rounded-2xl bg-warn px-4 py-3 text-sm font-semibold text-[#6B3D00]">
+        <p role="alert" className="rounded-2xl bg-warning-soft px-4 py-3 text-sm font-semibold text-warning-ink">
           {t(`errors.${state.error}`)}
         </p>
       )}

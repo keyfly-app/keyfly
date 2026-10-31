@@ -5,7 +5,7 @@ One codebase, one database, three surfaces. Working rules: see `CLAUDE.md`.
 
 | Host | Surface | Folder | Audience |
 |---|---|---|---|
-| `keyfly.app` (hu), `keyfly.app/en` | Public site (now: coming soon + waitlist) | `src/app/(marketing)/[lang]` | everyone |
+| `keyfly.app` (hu), `keyfly.app/en` | Public site: coming soon + waitlist, privacy notice, imprint | `src/app/(marketing)/[lang]` | everyone |
 | `app.keyfly.app` | Customer app | `src/app/portal` | tenants, landlords, agencies |
 | `admin.keyfly.app` | Back office | `src/app/admin` | Keyfly staff |
 | `staging.`, `app-staging.`, `admin-staging.keyfly.app` | Staging (password-protected) | `staging` branch | team |
@@ -21,6 +21,7 @@ One codebase, one database, three surfaces. Working rules: see `CLAUDE.md`.
 | Design tokens (colours, fonts) | `src/app/globals.css` (`@theme`) – mirrors the Keyfly design system |
 | All UI copy, Hungarian + English | `messages/hu.json`, `messages/en.json` (keys must match: `npm run i18n:check`) |
 | Number, money and date formats | `src/lib/format.ts` |
+| Legal documents (privacy notice, imprint), hosting provider | `src/content/legal/` |
 
 ## Environments
 
