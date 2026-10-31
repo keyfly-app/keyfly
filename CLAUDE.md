@@ -24,6 +24,10 @@ https://claude.ai/artifact/AttVCwnk4JJP3kqG7mV1Ns
 design → approval → branch from `staging` → CI green (lint, types, build, DB tests) → check on
 staging.keyfly.app incl. a real phone → merge to `main` → record decisions in the handbook's decision log.
 
+## Accounts (all owned by Plattio Magyarország Kft.)
+- GitHub: `keyfly-app/keyfly` · Vercel team `keyfly` · Supabase org "Keyfly (Plattio Magyarország Kft.)"
+- Email: Google Workspace (support@keyfly.app; hello@, tibor@ aliases) · Resend `mail.keyfly.app` (eu-west-1)
+
 ## Environments
 | | Production | Staging |
 |---|---|---|
