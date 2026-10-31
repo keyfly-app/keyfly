@@ -53,6 +53,7 @@ const PATHS = {
     </>
   ),
   check: <path d="m5 12.5 4.5 4.5L19 7.5" />,
+  sparkle: <path d="M12 3.5l2 5.4 5.5 2.1-5.5 2.1-2 5.4-2-5.4-5.5-2.1 5.5-2.1z" />,
 } as const;
 
 export type IconName = keyof typeof PATHS;

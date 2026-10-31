@@ -18,6 +18,10 @@ light film grain, candid moments; wardrobe in brand deep green with a small lime
 | `tenant-morning-window-9x16-{a,b}.jpg` | 9:16 · 1296×2304 | tenant | Woman with coffee at the window, Danube view | top + bottom (stories) |
 | `landlord-doorway-16x9-{a,b}.jpg` | 16:9 · 2304×1296 | landlord | Landlord in the doorway of his renovated flat | left |
 
+In use (registry: `src/content/photos.ts`, every placement labelled "AI-generált kép" / "AI-generated image"):
+home photo band, waitlist email (`public/email/move-in.jpg`) and share images (`public/og/`) – move-in couple a;
+audience cards – first evening b, landlord a; trust section – key handover a.
+
 Ad formats: crop 3:2 / 16:9 to 1.91:1 (1200×628) for Google Display and Meta link ads; 1:1 and 4:5 for feeds;
 9:16 for stories and reels.
 

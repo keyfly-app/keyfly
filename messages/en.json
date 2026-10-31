@@ -7,7 +7,8 @@
     "signOut": "Sign out",
     "privacyNotice": "Privacy notice",
     "legalNav": "Legal information",
-    "languageNav": "Nyelv / Language"
+    "languageNav": "Nyelv / Language",
+    "aiImage": "AI-generated image"
   },
   "meta": {
     "title": "Rent without a deposit in Hungary – Keyfly",
@@ -31,6 +32,13 @@
       "keep": "You keep: {amount}",
       "disclaimer": "Illustrative example. Your fee is set by individual assessment and shown in your offer."
     },
+    "band": {
+      "eyebrow": "NO DEPOSIT",
+      "line1": "You get the keys.",
+      "line2": "You keep the deposit.",
+      "lead": "A small monthly fee instead of a deposit, so your savings stay yours.",
+      "alt": "A young couple laughing and holding up the key to their new rental in a bright Budapest apartment, among moving boxes."
+    },
     "audience": {
       "eyebrow": "WHO IT'S FOR",
       "title": "It pays off for <mark>both sides.</mark>",
@@ -42,6 +50,11 @@
           "upfront": "No need to set aside several months' rent at once.",
           "savings": "Instead of a deposit you pay a small monthly fee, and your savings stay available to you.",
           "online": "You get your offer online in a few minutes and see the exact fee before you accept."
+        },
+        "photo": {
+          "line1": "First night in your new place.",
+          "line2": "No deposit.",
+          "alt": "A young man sitting on the parquet floor of his new flat, eating dinner next to the moving boxes."
         }
       },
       "landlord": {
@@ -51,6 +64,11 @@
           "cover": "You're covered up to the deposit amount, and the insurer pays out on a valid claim.",
           "admin": "No deposit to hold or settle, and you can report a claim online.",
           "free": "It's free for you, and you can choose from a wider pool of reliable tenants."
+        },
+        "photo": {
+          "line1": "Covered.",
+          "line2": "No deposit to manage.",
+          "alt": "A smiling landlord in the doorway of his renovated, furnished flat, holding the keys."
         }
       }
     },
@@ -77,6 +95,14 @@
           "time": "instant"
         }
       }
+    },
+    "trust": {
+      "eyebrow": "TENANT + LANDLORD",
+      "title": "Tenant and landlord. <mark>Finally on the same side.</mark>",
+      "lead": "The tenant moves in without a deposit, and the landlord is protected by insurance cover. Both sign the lease with more peace of mind.",
+      "chipTitle": "Keys handed over, no deposit",
+      "chipText": "{amount} stays with the tenant",
+      "alt": "A landlady hands the apartment key to a young tenant in the doorway of a Budapest courtyard building."
     },
     "faq": {
       "title": "Frequently asked questions",
@@ -227,6 +253,8 @@
       "titleStart": "You're on",
       "titleHighlight": "the list.",
       "lead": "Thanks for signing up! As soon as Keyfly launches, you'll be the first to hear, at this email address.",
+      "photoAlt": "A young couple laughing and holding up the key to their new rental.",
+      "photoCaption": "Illustration · AI-generated image",
       "summaryTitle": "Your sign-up",
       "rows": {
         "email": "Email",

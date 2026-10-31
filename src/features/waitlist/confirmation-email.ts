@@ -36,6 +36,7 @@ type Input = {
  * Waitlist confirmation email (approved design: canvas "Visszaigazoló levél").
  * Light-first on purpose: Gmail's mobile dark mode inverts colours but not images, so the hero is a light card
  * (inverts to dark cleanly) and the images are self-contained (logo in a dark pill, brand mark) with transparent edges.
+ * The photo carries no text (images are often blocked by default) and is labelled as AI-generated.
  */
 export function waitlistConfirmationEmail({ locale, email, segment, newsletter, signedUpAt }: Input) {
   const messages = locale === "en" ? en : hu;
@@ -118,6 +119,11 @@ export function waitlistConfirmationEmail({ locale, email, segment, newsletter, 
     <img src="${url("/email/mark.png")}" width="56" height="56" alt="" style="display:block;border:0;margin-top:24px;">
     <h1 class="kf-hero-text" style="margin:18px 0 0;font:bold 44px/1.04 ${DISPLAY};letter-spacing:-1.2px;color:${C.ink};">${esc(t("titleStart"))} <span class="kf-hero-accent" style="color:${C.brand};white-space:nowrap;">${esc(t("titleHighlight"))}</span></h1>
     <p class="kf-hero-muted" style="margin:16px 0 0;font:16px/1.6 ${SANS};color:${C.inkSoft};">${esc(t("lead"))}</p>
+  </td></tr>
+
+  <tr><td style="padding:16px 0 0;">
+    <img src="${url("/email/move-in.jpg")}" width="600" height="326" alt="${esc(t("photoAlt"))}" style="display:block;width:100%;max-width:600px;height:auto;border:0;border-radius:22px;">
+    <div class="kf-muted" style="padding:8px 8px 0;font:11px/1.4 ${SANS};color:${C.muted};">${esc(t("photoCaption"))}</div>
   </td></tr>
 
   <tr><td style="padding:24px 16px 0;" class="kf-pad">

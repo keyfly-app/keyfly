@@ -9,8 +9,10 @@ import { publicPageMetadata } from "@/lib/metadata";
 import { AudienceSection } from "./_sections/AudienceSection";
 import { ExampleCard } from "./_sections/ExampleCard";
 import { FaqSection } from "./_sections/FaqSection";
+import { PhotoBand } from "./_sections/PhotoBand";
 import { StepsSection } from "./_sections/StepsSection";
 import { StructuredData } from "./_sections/StructuredData";
+import { TrustSection } from "./_sections/TrustSection";
 
 export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }): Promise<Metadata> {
   const { lang } = await params;
@@ -45,8 +47,10 @@ export default async function ComingSoon({ params }: { params: Promise<{ lang: s
             <ExampleCard locale={locale} />
           </div>
         </section>
+        <PhotoBand />
         <AudienceSection />
         <StepsSection />
+        <TrustSection locale={locale} />
         <FaqSection locale={locale} />
       </main>
       <SiteFooter locale={locale} />

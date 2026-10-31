@@ -7,7 +7,8 @@
     "signOut": "Kilépés",
     "privacyNotice": "Adatkezelési tájékoztató",
     "legalNav": "Jogi információk",
-    "languageNav": "Nyelv / Language"
+    "languageNav": "Nyelv / Language",
+    "aiImage": "AI-generált kép"
   },
   "meta": {
     "title": "Albérlet kaució nélkül – Keyfly",
@@ -31,6 +32,13 @@
       "keep": "Nálad marad: {amount}",
       "disclaimer": "Tájékoztató jellegű számpélda. A díjat egyéni elbírálás alapján, az ajánlatban határozzuk meg."
     },
+    "band": {
+      "eyebrow": "KAUCIÓ NÉLKÜL",
+      "line1": "A kulcs nálad.",
+      "line2": "A kaució is.",
+      "lead": "Kaució helyett kis havi díjat fizetsz, a megtakarításod a tiéd marad.",
+      "alt": "Fiatal pár nevetve mutatja fel új albérletük kulcsát egy világos budapesti lakásban, költözős dobozok között."
+    },
     "audience": {
       "eyebrow": "KINEK SZÓL",
       "title": "Mindkét félnek <mark>megéri.</mark>",
@@ -42,6 +50,11 @@
           "upfront": "Nem kell egyszerre több havi lakbérnek megfelelő összeget félretenned.",
           "savings": "Kaució helyett kis havi díjat fizetsz, a megtakarításod szabadon felhasználható marad.",
           "online": "Az ajánlatot online, néhány perc alatt megkapod, és elfogadás előtt pontosan látod a díjat."
+        },
+        "photo": {
+          "line1": "Első este az új helyen.",
+          "line2": "Kaució nélkül.",
+          "alt": "Fiatal férfi a parkettán ülve vacsorázik az új lakásában, a dobozok mellett."
         }
       },
       "landlord": {
@@ -51,6 +64,11 @@
           "cover": "A kaució összegéig biztosítói fedezetet kapsz: jogos kár esetén a biztosító térít.",
           "admin": "Nem kell letétet kezelned és elszámolnod, a kárigényt online jelentheted be.",
           "free": "Számodra díjmentes, és szélesebb körből választhatsz megbízható bérlőt."
+        },
+        "photo": {
+          "line1": "Fedezet van.",
+          "line2": "Letétkezelés nincs.",
+          "alt": "Mosolygó bérbeadó a felújított, berendezett lakása ajtajában, kezében a kulcsokkal."
         }
       }
     },
@@ -77,6 +95,14 @@
           "time": "azonnal"
         }
       }
+    },
+    "trust": {
+      "eyebrow": "BÉRLŐ + BÉRBEADÓ",
+      "title": "Bérlő és bérbeadó. <mark>Végre egy oldalon.</mark>",
+      "lead": "A bérlő kaució nélkül költözik be, a bérbeadót biztosítói fedezet védi. Mindkét fél nyugodtabban írja alá a szerződést.",
+      "chipTitle": "Kulcs átadva, kaució nélkül",
+      "chipText": "{amount} maradt a bérlőnél",
+      "alt": "Bérbeadó hölgy átadja a lakás kulcsát a fiatal bérlőnek egy budapesti gangos ház ajtajában."
     },
     "faq": {
       "title": "Gyakori kérdések",
@@ -227,6 +253,8 @@
       "titleStart": "Fent vagy",
       "titleHighlight": "a listán.",
       "lead": "Köszönjük, hogy feliratkoztál! Amint elindul a Keyfly, elsőként neked szólunk ezen az e-mail-címen.",
+      "photoAlt": "Fiatal pár nevetve mutatja fel új albérletük kulcsát.",
+      "photoCaption": "Illusztráció · AI-generált kép",
       "summaryTitle": "A feliratkozásod",
       "rows": {
         "email": "E-mail-cím",

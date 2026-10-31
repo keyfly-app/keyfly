@@ -17,7 +17,7 @@ function openGraph(locale: Locale, url?: string): NonNullable<Metadata["openGrap
     locale: OG_LOCALE[locale],
     alternateLocale: LOCALES.filter((l) => l !== locale).map((l) => OG_LOCALE[l]),
     url,
-    images: [{ url: `/og/${locale}.png`, width: 1200, height: 630 }],
+    images: [{ url: `/og/${locale}.jpg`, width: 1200, height: 630 }],
   };
 }
 
