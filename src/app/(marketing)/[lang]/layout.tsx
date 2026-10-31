@@ -16,7 +16,7 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: str
   const { lang } = await params;
   if (!isLocale(lang)) return {};
   const t = await getTranslations({ locale: lang, namespace: "meta" });
-  return baseMetadata(t("title"), t("description"));
+  return baseMetadata(t("title"), t("description"), lang);
 }
 
 export default async function PublicLayout({

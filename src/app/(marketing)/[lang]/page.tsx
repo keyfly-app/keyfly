@@ -5,15 +5,16 @@ import { RevealObserver } from "@/components/site/RevealObserver";
 import { SiteHeader } from "@/components/site/SiteHeader";
 import { WaitlistForm } from "@/features/waitlist/WaitlistForm";
 import { isLocale, publicHref, type Locale } from "@/i18n/config";
-import { publicAlternates } from "@/lib/metadata";
+import { publicPageMetadata } from "@/lib/metadata";
 import { AudienceSection } from "./_sections/AudienceSection";
 import { ExampleCard } from "./_sections/ExampleCard";
 import { FaqSection } from "./_sections/FaqSection";
 import { StepsSection } from "./_sections/StepsSection";
+import { StructuredData } from "./_sections/StructuredData";
 
 export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }): Promise<Metadata> {
   const { lang } = await params;
-  return { alternates: publicAlternates("home", isLocale(lang) ? lang : "hu") };
+  return publicPageMetadata("home", isLocale(lang) ? lang : "hu");
 }
 
 export default async function ComingSoon({ params }: { params: Promise<{ lang: string }> }) {
@@ -50,6 +51,7 @@ export default async function ComingSoon({ params }: { params: Promise<{ lang: s
       </main>
       <SiteFooter locale={locale} />
       <RevealObserver />
+      <StructuredData locale={locale} />
     </div>
   );
 }

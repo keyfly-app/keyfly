@@ -4,13 +4,13 @@ import { LegalPage } from "@/components/site/LegalPage";
 import { LEGAL_EFFECTIVE } from "@/content/legal/hosting";
 import { ImprintContent } from "@/content/legal/Imprint";
 import { isLocale, type Locale } from "@/i18n/config";
-import { publicAlternates } from "@/lib/metadata";
+import { publicPageMetadata } from "@/lib/metadata";
 
 export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }): Promise<Metadata> {
   const { lang } = await params;
   const locale: Locale = isLocale(lang) ? lang : "hu";
   const t = await getTranslations({ locale, namespace: "legal" });
-  return { title: t("imprintTitle"), alternates: publicAlternates("imprint", locale) };
+  return { title: t("imprintTitle"), ...publicPageMetadata("imprint", locale) };
 }
 
 export default async function Imprint({ params }: { params: Promise<{ lang: string }> }) {

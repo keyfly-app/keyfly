@@ -5,11 +5,16 @@ import type { Locale } from "@/i18n/config";
 import { money } from "@/lib/format";
 import { EXAMPLE } from "./example";
 
-const QUESTIONS = ["launch", "cost", "refund", "claim", "landlord"] as const;
+export const FAQ_QUESTIONS = ["launch", "cost", "refund", "claim", "landlord"] as const;
+
+/** Numbers quoted in the answers, from the same worked example as the hero card. */
+export function faqValues(locale: Locale) {
+  return { rent: money(EXAMPLE.rent, locale), fee: money(EXAMPLE.monthlyFee, locale) };
+}
 
 export async function FaqSection({ locale }: { locale: Locale }) {
   const t = await getTranslations("comingSoon.faq");
-  const values = { rent: money(EXAMPLE.rent, locale), fee: money(EXAMPLE.monthlyFee, locale) };
+  const values = faqValues(locale);
 
   return (
     <section aria-labelledby="faq-title" className="py-[clamp(72px,9vw,128px)]">
@@ -28,7 +33,7 @@ export async function FaqSection({ locale }: { locale: Locale }) {
           </a>
         </div>
         <div className="min-w-0 flex-[2_1_520px] border-t border-line">
-          {QUESTIONS.map((key, i) => (
+          {FAQ_QUESTIONS.map((key, i) => (
             <details
               key={key}
               open={i === 0}
