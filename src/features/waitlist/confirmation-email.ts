@@ -10,13 +10,14 @@ import en from "../../../messages/en.json";
 /** Design-system colours (mirror globals.css tokens – email clients cannot read CSS variables). */
 const C = {
   ink: "#0C1F19",
+  inkSoft: "#2E3D37",
   muted: "#4D5B55",
   paper: "#F5F7F2",
   surface: "#FFFFFF",
   line: "#DCE3DD",
   brand: "#0E5A43",
   lime: "#C9F27B",
-  fog: "#C7D3CC",
+  limeSoft: "#EAF8D0",
 } as const;
 
 const SANS = "Arial, Helvetica, sans-serif";
@@ -31,7 +32,11 @@ type Input = {
   signedUpAt: Date;
 };
 
-/** Waitlist confirmation email (approved design: canvas "Visszaigazoló levél"). Images have baked dark backgrounds for dark mode. */
+/**
+ * Waitlist confirmation email (approved design: canvas "Visszaigazoló levél").
+ * Light-first on purpose: Gmail's mobile dark mode inverts colours but not images, so the hero is a light card
+ * (inverts to dark cleanly) and the images are self-contained (logo in a dark pill, brand mark) with transparent edges.
+ */
 export function waitlistConfirmationEmail({ locale, email, segment, newsletter, signedUpAt }: Input) {
   const messages = locale === "en" ? en : hu;
   const t = createTranslator({ locale, messages, namespace: "emails.waitlistConfirmation" });
@@ -87,6 +92,10 @@ export function waitlistConfirmationEmail({ locale, email, segment, newsletter, 
     .kf-text { color: #EEF3EF !important; }
     .kf-muted { color: #A9B8B0 !important; }
     .kf-line { border-color: #24392F !important; }
+    .kf-hero { background: #1B342C !important; }
+    .kf-hero-text { color: #FFFFFF !important; }
+    .kf-hero-accent { color: ${C.lime} !important; }
+    .kf-hero-muted { color: #C7D3CC !important; }
   }
   @media (max-width: 620px) {
     .kf-pad { padding-left: 20px !important; padding-right: 20px !important; }
@@ -101,16 +110,14 @@ export function waitlistConfirmationEmail({ locale, email, segment, newsletter, 
 <tr><td align="center" style="padding:16px 8px 32px;">
 <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="width:100%;max-width:600px;">
 
-  <tr><td style="background:${C.ink};border-radius:28px 28px 0 0;padding:22px 40px 8px;" class="kf-pad">
+  <tr><td class="kf-hero kf-pad" style="background:${C.limeSoft};border-radius:28px;padding:24px 40px 44px;">
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr>
-      <td><img src="${url("/email/logo-on-ink.png")}" width="86" height="24" alt="Keyfly" style="display:block;border:0;"></td>
-      <td align="right" style="font:bold 11px ${SANS};letter-spacing:1.4px;color:#A9B8B0;">${esc(t("label"))}</td>
+      <td><img src="${url("/email/logo-pill.png")}" width="104" height="38" alt="Keyfly" style="display:block;border:0;"></td>
+      <td align="right" class="kf-hero-muted" style="font:bold 11px ${SANS};letter-spacing:1.4px;color:${C.inkSoft};">${esc(t("label"))}</td>
     </tr></table>
-  </td></tr>
-  <tr><td style="background:${C.ink};border-radius:0 0 28px 28px;padding:16px 40px 44px;" class="kf-pad">
-    <img src="${url("/email/check-on-ink.png")}" width="56" height="56" alt="" style="display:block;border:0;">
-    <h1 style="margin:18px 0 0;font:bold 44px/1.04 ${DISPLAY};letter-spacing:-1.2px;color:#FFFFFF;">${esc(t("titleStart"))} <span style="color:${C.lime};white-space:nowrap;">${esc(t("titleHighlight"))}</span></h1>
-    <p style="margin:16px 0 0;font:16px/1.6 ${SANS};color:${C.fog};">${esc(t("lead"))}</p>
+    <img src="${url("/email/mark.png")}" width="56" height="56" alt="" style="display:block;border:0;margin-top:24px;">
+    <h1 class="kf-hero-text" style="margin:18px 0 0;font:bold 44px/1.04 ${DISPLAY};letter-spacing:-1.2px;color:${C.ink};">${esc(t("titleStart"))} <span class="kf-hero-accent" style="color:${C.brand};white-space:nowrap;">${esc(t("titleHighlight"))}</span></h1>
+    <p class="kf-hero-muted" style="margin:16px 0 0;font:16px/1.6 ${SANS};color:${C.inkSoft};">${esc(t("lead"))}</p>
   </td></tr>
 
   <tr><td style="padding:24px 16px 0;" class="kf-pad">
