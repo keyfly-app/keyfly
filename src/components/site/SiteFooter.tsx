@@ -16,13 +16,13 @@ export async function SiteFooter({ locale, withSignup = true }: { locale: Locale
       <div className="mx-auto flex max-w-[1200px] flex-col gap-12 px-4 pt-16 pb-8 sm:gap-20 sm:px-6 sm:pt-26">
         {withSignup && (
           <div className="flex flex-wrap items-end gap-x-16 gap-y-8">
-            <div className="reveal flex min-w-0 flex-[1_1_380px] flex-col gap-3.5">
+            <div data-reveal className="flex min-w-0 flex-[1_1_380px] flex-col gap-3.5">
               <h2 className="font-display text-[clamp(34px,4.4vw,60px)] leading-[1.04] font-bold tracking-[-0.03em]">
-                {t("title")}
+                {t.rich("title", { mark: (chunks) => <span className="marker-in">{chunks}</span> })}
               </h2>
               <p className="text-lg text-fog">{t("lead")}</p>
             </div>
-            <div className="reveal min-w-0 flex-[1.2_1_460px]">
+            <div data-reveal style={{ "--d": 1 } as React.CSSProperties} className="min-w-0 flex-[1.2_1_460px]">
               <CompactWaitlistForm locale={locale} privacyHref={publicHref("privacy", locale)} />
             </div>
           </div>

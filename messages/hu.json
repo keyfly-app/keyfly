@@ -33,7 +33,7 @@
     },
     "audience": {
       "eyebrow": "KINEK SZÓL",
-      "title": "Mindkét félnek megéri.",
+      "title": "Mindkét félnek <mark>megéri.</mark>",
       "lead": "A bérlőnek pénzügyi mozgásteret, a bérbeadónak biztosítói fedezetet ad. Ugyanaz a biztonság, kevesebb lekötött pénzzel.",
       "tenant": {
         "label": "BÉRLŐKNEK",
@@ -105,7 +105,7 @@
       }
     },
     "footer": {
-      "title": "Légy az elsők között.",
+      "title": "Légy az <mark>elsők között.</mark>",
       "lead": "Iratkozz fel a várólistára, és az indulásról elsőként értesítünk."
     }
   },

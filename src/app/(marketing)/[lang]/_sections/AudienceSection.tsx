@@ -11,10 +11,10 @@ export async function AudienceSection() {
   return (
     <section aria-labelledby="audience-title" className="border-t border-line bg-surface py-[clamp(72px,9vw,128px)]">
       <div className="mx-auto flex max-w-[1200px] flex-col gap-10 px-4 sm:gap-14 sm:px-6">
-        <div className="reveal flex max-w-[760px] flex-col gap-4">
+        <div data-reveal className="flex max-w-[760px] flex-col gap-4">
           <span className="text-[13px] font-bold tracking-[1.5px] text-brand">{t("eyebrow")}</span>
           <h2 id="audience-title" className="font-display text-[clamp(34px,4.4vw,60px)] leading-[1.04] font-bold tracking-[-0.03em]">
-            {t("title")}
+            {t.rich("title", { mark: (chunks) => <span className="marker-in">{chunks}</span> })}
           </h2>
           <p className="text-[clamp(18px,1.6vw,22px)] leading-normal text-muted">{t("lead")}</p>
         </div>
@@ -31,6 +31,7 @@ export async function AudienceSection() {
             title={t("landlord.title")}
             items={LANDLORD_ITEMS.map((k) => t(`landlord.items.${k}`))}
             dark
+            delay={1}
           />
         </div>
       </div>
@@ -38,10 +39,26 @@ export async function AudienceSection() {
   );
 }
 
-function Card({ icon, label, title, items, dark = false }: { icon: IconName; label: string; title: string; items: string[]; dark?: boolean }) {
+function Card({
+  icon,
+  label,
+  title,
+  items,
+  dark = false,
+  delay = 0,
+}: {
+  icon: IconName;
+  label: string;
+  title: string;
+  items: string[];
+  dark?: boolean;
+  delay?: number;
+}) {
   return (
     <article
-      className={`reveal flex flex-col gap-6 rounded-[32px] p-7 transition-transform duration-300 ease-out hover:-translate-y-1 sm:p-12 ${
+      data-reveal
+      style={{ "--d": delay } as React.CSSProperties}
+      className={`flex flex-col gap-6 rounded-[32px] p-7 transition-transform duration-300 ease-out hover:-translate-y-1 sm:p-12 ${
         dark ? "on-dark bg-ink text-white" : "border border-line bg-paper"
       }`}
     >
@@ -56,11 +73,11 @@ function Card({ icon, label, title, items, dark = false }: { icon: IconName; lab
         <h3 className="font-display text-[clamp(26px,2.4vw,34px)] leading-[1.1] font-bold tracking-[-0.02em]">{title}</h3>
       </div>
       <ul className={`flex flex-col gap-4 text-[17px] leading-normal ${dark ? "text-fog" : "text-ink-soft"}`}>
-        {items.map((item) => (
-          <li key={item} className="flex items-start gap-3.5">
+        {items.map((item, i) => (
+          <li key={item} style={{ "--d": delay + i } as React.CSSProperties} className="flex items-start gap-3.5">
             <span
               aria-hidden="true"
-              className={`mt-px flex size-7 flex-none items-center justify-center rounded-full ${dark ? "bg-lime text-ink" : "bg-mist text-brand"}`}
+              className={`pop-in mt-px flex size-7 flex-none items-center justify-center rounded-full ${dark ? "bg-lime text-ink" : "bg-mist text-brand"}`}
             >
               <Icon name="check" size={16} strokeWidth={2.6} />
             </span>

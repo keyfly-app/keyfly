@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { SiteFooter } from "@/components/site/SiteFooter";
+import { RevealObserver } from "@/components/site/RevealObserver";
 import { SiteHeader } from "@/components/site/SiteHeader";
 import { WaitlistForm } from "@/features/waitlist/WaitlistForm";
 import { isLocale, publicHref, type Locale } from "@/i18n/config";
@@ -48,6 +49,7 @@ export default async function ComingSoon({ params }: { params: Promise<{ lang: s
         <FaqSection locale={locale} />
       </main>
       <SiteFooter locale={locale} />
+      <RevealObserver />
     </div>
   );
 }

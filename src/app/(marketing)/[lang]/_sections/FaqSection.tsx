@@ -14,7 +14,7 @@ export async function FaqSection({ locale }: { locale: Locale }) {
   return (
     <section aria-labelledby="faq-title" className="py-[clamp(72px,9vw,128px)]">
       <div className="mx-auto flex max-w-[1200px] flex-wrap items-start gap-x-20 gap-y-8 px-4 sm:px-6">
-        <div className="reveal flex min-w-0 flex-[1_1_300px] flex-col gap-5">
+        <div data-reveal className="flex min-w-0 flex-[1_1_300px] flex-col gap-5">
           <h2 id="faq-title" className="font-display text-[clamp(34px,4.4vw,60px)] leading-[1.04] font-bold tracking-[-0.03em]">
             {t("title")}
           </h2>
@@ -27,9 +27,15 @@ export async function FaqSection({ locale }: { locale: Locale }) {
             {CONTACT.hello}
           </a>
         </div>
-        <div className="reveal min-w-0 flex-[2_1_520px] border-t border-line">
+        <div className="min-w-0 flex-[2_1_520px] border-t border-line">
           {QUESTIONS.map((key, i) => (
-            <details key={key} open={i === 0} className="group border-b border-line py-5.5">
+            <details
+              key={key}
+              open={i === 0}
+              data-reveal
+              style={{ "--d": i } as React.CSSProperties}
+              className="group border-b border-line py-5.5"
+            >
               <summary className="flex cursor-pointer list-none items-center justify-between gap-5 font-display text-xl leading-snug font-semibold [&::-webkit-details-marker]:hidden">
                 {t(`items.${key}.q`)}
                 <span

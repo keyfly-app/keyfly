@@ -91,7 +91,7 @@ export function WaitlistForm({ locale, privacyHref }: Props) {
   );
 }
 
-/** Compact sign-up form (footer, on dark): segment select, email, privacy consent. */
+/** Compact sign-up form (footer, on dark): segment chips, email, privacy consent. */
 export function CompactWaitlistForm({ locale, privacyHref }: Props) {
   const t = useTranslations("waitlist");
   const [state, action, pending] = useActionState<WaitlistState, FormData>(joinWaitlist, { status: "idle" });
@@ -106,22 +106,27 @@ export function CompactWaitlistForm({ locale, privacyHref }: Props) {
   return (
     <form action={action} noValidate className="flex flex-col gap-3.5">
       <HiddenFields locale={locale} source="coming-soon-footer" />
-      <div className="flex flex-wrap gap-2.5">
-        <label htmlFor={`${id}-segment`} className="sr-only">
-          {t("compact.segmentLabel")}
-        </label>
-        <select
-          id={`${id}-segment`}
-          name="segment"
-          defaultValue={values?.segment ?? "tenant"}
-          className={`${field} flex-[0_1_190px] px-3.5 text-[15px] font-semibold`}
-        >
+      <fieldset className="min-w-0">
+        <legend className="sr-only">{t("compact.segmentLabel")}</legend>
+        <div className="flex flex-wrap gap-2">
           {WAITLIST_SEGMENTS.map((segment) => (
-            <option key={segment} value={segment}>
+            <label
+              key={segment}
+              className="inline-flex min-h-11 cursor-pointer items-center rounded-full border-[1.5px] border-night-line px-4 text-[15px] font-semibold transition-colors hover:border-lime has-checked:border-lime has-checked:bg-lime has-checked:text-ink has-focus-visible:outline-3 has-focus-visible:outline-offset-2 has-focus-visible:outline-lime"
+            >
+              <input
+                type="radio"
+                name="segment"
+                value={segment}
+                defaultChecked={(values?.segment ?? "tenant") === segment}
+                className="sr-only"
+              />
               {t(`segments.${segment}`)}
-            </option>
+            </label>
           ))}
-        </select>
+        </div>
+      </fieldset>
+      <div className="flex flex-wrap gap-2.5">
         <label htmlFor={`${id}-email`} className="sr-only">
           {t("emailLabel")}
         </label>

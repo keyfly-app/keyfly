@@ -33,7 +33,7 @@
     },
     "audience": {
       "eyebrow": "WHO IT'S FOR",
-      "title": "It pays off for both sides.",
+      "title": "It pays off for <mark>both sides.</mark>",
       "lead": "Keyfly gives tenants financial headroom and landlords insurance cover. The same security, with less money tied up.",
       "tenant": {
         "label": "FOR TENANTS",
@@ -105,7 +105,7 @@
       }
     },
     "footer": {
-      "title": "Be among the first.",
+      "title": "Be among <mark>the first.</mark>",
       "lead": "Join the waitlist and we'll let you know first when we launch."
     }
   },
