@@ -5,8 +5,10 @@ import { SIGN_UP_OPEN } from "@/config/auth";
 import { Button, ButtonLink, Notice, PageTitle } from "@/components/ui/form";
 import { signOut } from "@/features/auth/actions";
 import { AnswerForm, type CompanyAccount } from "@/features/invitations/AnswerForm";
-import { isLocale, type Locale } from "@/i18n/config";
-import { date, money } from "@/lib/format";
+import { LandlordTakeOver, type LandlordAccount, type LandlordProperty } from "@/features/lease-requests/LandlordTakeOver";
+import { isLocale } from "@/i18n/config";
+import { ADDRESS_COLUMNS, addressFromRow, streetLine } from "@/lib/address";
+import { date, dateBeforeSuffix, money, sentence } from "@/lib/format";
 import { siteHref } from "@/lib/site-href";
 import { createClient } from "@/lib/supabase/server";
 
@@ -16,12 +18,6 @@ export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("invite");
   // The token is in the URL: never pass it on to another site.
   return { title: t("label"), referrer: "no-referrer", robots: { index: false } };
-}
-
-/** "Valid until": hu "2026. 11. 08-ig" (no closing dot before the suffix), en "8 Nov 2026". */
-function untilDate(iso: string, locale: Locale) {
-  const d = date(iso, locale);
-  return locale === "hu" ? d.replace(/\.$/, "") : d;
 }
 
 export default async function Invite({ params }: { params: Promise<{ token: string }> }) {
@@ -87,6 +83,53 @@ export default async function Invite({ params }: { params: Promise<{ token: stri
     );
   }
 
+  if (inv.kind === "lease_landlord") {
+    const [{ data: details }, { data: memberships }] = await Promise.all([
+      supabase.rpc("lease_request_preview", { p_token: token }),
+      supabase
+        .from("account_members")
+        .select(`role, property_scope, accounts!inner(id, name, plan, archived_at, properties(id, archived_at, ${ADDRESS_COLUMNS}))`)
+        .eq("user_id", auth.claims.sub)
+        .in("role", ["owner", "admin", "manager"])
+        .is("accounts.archived_at", null),
+    ]);
+    const request = details?.[0];
+    if (!request) {
+      return (
+        <AuthLayout>
+          <PageTitle eyebrow={t("label")}>{t("closed.title")}</PageTitle>
+          <p className="text-[15px] text-muted">{t("closed.text")}</p>
+          <div className="mt-auto pt-4">
+            <ButtonLink href={homeHref}>{t("declined.continue")}</ButtonLink>
+          </div>
+        </AuthLayout>
+      );
+    }
+    // Properties come back through RLS: a manager with a selected scope only sees (and may only link) those.
+    const accounts: LandlordAccount[] = [];
+    const properties: LandlordProperty[] = [];
+    for (const m of memberships ?? []) {
+      const live = m.accounts.properties.filter((p) => !p.archived_at);
+      accounts.push({ id: m.accounts.id, name: m.accounts.name, plan: m.accounts.plan, propertyCount: live.length });
+      for (const p of live) properties.push({ id: p.id, accountId: m.accounts.id, label: streetLine(addressFromRow(p)) });
+    }
+    return (
+      <AuthLayout>
+        <LandlordTakeOver
+          token={token}
+          requestId={request.request_id}
+          tenantName={request.tenant_name}
+          address={streetLine(addressFromRow(request))}
+          proposed={{ startDate: request.start_date, endDate: request.end_date, monthlyRent: request.monthly_rent, deposit: request.deposit_amount }}
+          accounts={accounts}
+          properties={properties}
+          validUntil={dateBeforeSuffix(inv.expires_at, locale)}
+          homeHref={homeHref}
+        />
+      </AuthLayout>
+    );
+  }
+
   let companies: CompanyAccount[] | undefined;
   if (inv.kind === "lease_tenant") {
     const { data } = await supabase
@@ -117,7 +160,7 @@ export default async function Invite({ params }: { params: Promise<{ token: stri
   return (
     <AuthLayout>
       <PageTitle eyebrow={t("label")}>{title}</PageTitle>
-      <p className="text-sm text-muted">{intro}</p>
+      <p className="text-sm text-muted">{sentence(intro)}</p>
       {details.length > 0 && (
         <dl className="rounded-2xl border border-line bg-surface px-4 py-1">
           {details.map(([k, v], i) => (
@@ -128,7 +171,7 @@ export default async function Invite({ params }: { params: Promise<{ token: stri
           ))}
         </dl>
       )}
-      <AnswerForm token={token} companies={companies} validUntil={untilDate(inv.expires_at, locale)} homeHref={homeHref} />
+      <AnswerForm token={token} companies={companies} validUntil={dateBeforeSuffix(inv.expires_at, locale)} homeHref={homeHref} />
     </AuthLayout>
   );
 }

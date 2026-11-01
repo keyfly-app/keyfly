@@ -480,6 +480,271 @@
       "generic": "Valami nem sikerült. Próbáld újra."
     }
   },
+  "leaseRequest": {
+    "homeTitle": "Otthonom",
+    "homeEmpty": "Bérelsz, de a bérbeadód még nincs a Keyflyon? Hívd meg, és rögzítsétek együtt a bérletet.",
+    "inviteLandlord": "Bérbeadó meghívása",
+    "next": "Tovább",
+    "back": "Vissza",
+    "progressLabel": "Lépés",
+    "stepCount": "{step} / {total}",
+    "steps": {
+      "home": "Lakás",
+      "lease": "Bérlet",
+      "landlord": "Bérbeadó"
+    },
+    "address": {
+      "title": "Bérbeadó meghívása",
+      "lead": "Melyik lakást béreled?",
+      "postalCode": "Irányítószám",
+      "city": "Település",
+      "streetName": "Közterület neve",
+      "streetType": "Közterület jellege",
+      "houseNumber": "Házszám",
+      "building": "Épület",
+      "staircase": "Lépcsőház",
+      "floor": "Emelet",
+      "door": "Ajtó",
+      "floorNone": "Nincs megadva",
+      "floorNumbered": "{number}. emelet",
+      "floors": {
+        "basement": "Pince, alagsor",
+        "ground": "Földszint",
+        "raised_ground": "Magasföldszint",
+        "mezzanine": "Félemelet",
+        "attic": "Tetőtér"
+      }
+    },
+    "terms": {
+      "title": "A bérlet adatai",
+      "lead": "Add meg, amit tudsz. A bérbeadó ellenőrzi.",
+      "start": "Kezdés",
+      "duration": "Időtartam",
+      "fixed": "Határozott",
+      "openEnded": "Határozatlan",
+      "end": "Lejárat",
+      "rent": "Havi bérleti díj",
+      "deposit": "Kaució (nem kötelező)",
+      "depositTip": "Ha a szerződés kauciót ír elő, az összege.",
+      "currency": "Ft"
+    },
+    "landlord": {
+      "title": "Ki a bérbeadód?",
+      "email": "Bérbeadó e-mail-címe",
+      "name": "Bérbeadó neve (nem kötelező)",
+      "summary": "Összegzés",
+      "submit": "Meghívó küldése",
+      "submitting": "Küldés…",
+      "free": "A bérbeadónak díjmentes",
+      "freeTip": "A bérlet a bérbeadó jóváhagyásával jön létre."
+    },
+    "rows": {
+      "property": "Ingatlan",
+      "rent": "Havi bérleti díj",
+      "start": "Kezdés",
+      "end": "Lejárat",
+      "deposit": "Kaució",
+      "paymentDay": "Fizetési határidő",
+      "landlord": "Bérbeadó",
+      "sent": "Elküldve",
+      "expires": "Meghívó lejár"
+    },
+    "paymentDayValue": "Minden hónap {day}.",
+    "status": {
+      "pending_landlord": "Bérbeadóra vár",
+      "pending_tenant": "Jóváhagyásodra vár",
+      "confirmed": "Létrejött",
+      "declined": "Elutasítva",
+      "cancelled": "Visszavonva",
+      "expired": "Lejárt meghívó"
+    },
+    "card": {
+      "label": "Bérlet",
+      "open": "Részletek"
+    },
+    "waiting": {
+      "text": "Ha a bérbeadó jóváhagyja, értesítünk. Ha módosít valamit, azt neked is jóvá kell hagynod.",
+      "expiredText": "A meghívó lejárt. Ha emlékeztetőt küldesz, a bérbeadó új linket kap, amely 7 napig érvényes.",
+      "remind": "Emlékeztető küldése",
+      "reminded": "Elküldtük az emlékeztetőt.",
+      "cancel": "Meghívó visszavonása",
+      "sent": "Elküldtük a meghívót a bérbeadónak."
+    },
+    "outcome": {
+      "confirmed": "A bérbeadó jóváhagyta, a bérlet létrejött.",
+      "declined": "A bérbeadó elutasította a meghívót.",
+      "cancelled": "A meghívót visszavontad, a bérlet nem jött létre."
+    },
+    "reconfirm": {
+      "banner": "A bérbeadó módosította a feltételeket.",
+      "title": "Módosított feltételek",
+      "lead": "{name} ezekkel a feltételekkel hagyta jóvá a bérletet:",
+      "changed": "Módosult",
+      "added": "Új",
+      "accept": "Elfogadás",
+      "decline": "Elutasítás",
+      "declineNote": "Ha elutasítod, a bérlet nem jön létre."
+    },
+    "landlordSide": {
+      "title": "Bérlet átvétele",
+      "intro": "{name} meghívott bérbeadóként.",
+      "account": "Fiók",
+      "accountTip": "Ez a fiók kezeli a bérletet. Olyan fiókot választhatsz, amelyben tulajdonos, admin vagy kezelő vagy.",
+      "accountHint": "{plan} · {count} ingatlan",
+      "plans": {
+        "basic": "Alap",
+        "pro": "Pro",
+        "business": "Business"
+      },
+      "property": "Ingatlan",
+      "newProperty": "Új ingatlan",
+      "newPropertyHint": "A bérlő által megadott címmel",
+      "existingProperty": "Meglévő ingatlan",
+      "existingPropertyHint": "Válassz a fiók ingatlanjai közül",
+      "propertySelect": "Melyik ingatlan?",
+      "noProperties": "Ebben a fiókban még nincs ingatlan.",
+      "toReview": "Tovább az ellenőrzéshez",
+      "decline": "Elutasítás",
+      "reviewTitle": "Feltételek ellenőrzése",
+      "reviewLead": "Javítsd, ami nem pontos. Ha módosítasz, a bérlő is jóváhagyja.",
+      "changedNote": "Módosítva · a bérlő ezt adta meg: {value}",
+      "addedNote": "Új feltétel · a bérlő is jóváhagyja",
+      "deposit": "Kaució",
+      "paymentDay": "Fizetési határidő",
+      "paymentDayNone": "Nincs megadva",
+      "submit": "Jóváhagyás és küldés",
+      "submitting": "Küldés…",
+      "doneTitle": "Létrejött a bérlet",
+      "doneText": "{name} bérlőként szerepel a bérletben.",
+      "sentTitle": "Elküldtük a bérlőnek",
+      "sentText": "A bérlet {name} jóváhagyásával jön létre.",
+      "continue": "Tovább a Keyflyba"
+    },
+    "errors": {
+      "required": "Töltsd ki ezt a mezőt.",
+      "postalCode": "Adj meg 4 jegyű irányítószámot.",
+      "amount": "Adj meg egy összeget forintban.",
+      "date": "Adj meg egy dátumot.",
+      "endBeforeStart": "A lejárat nem lehet a kezdés előtt.",
+      "ended": "Lejárt bérletet nem rögzíthetsz.",
+      "email": "Adj meg egy érvényes e-mail-címet.",
+      "self": "A bérbeadó e-mail-címe nem lehet a tiéd.",
+      "tooMany": "Egyszerre legfeljebb 5 meghívód lehet folyamatban.",
+      "reminderTooSoon": "Emlékeztetőt naponta egyszer küldhetsz.",
+      "reminderLimit": "Már 3 emlékeztetőt küldtél. Ha kell, vond vissza a meghívót, és küldj újat.",
+      "closed": "Ez a kérés már lezárult.",
+      "overlaps": "Erre az ingatlanra ebben az időszakban már van bérlet.",
+      "property": "Ez az ingatlan nem ehhez a fiókhoz tartozik.",
+      "account": "Ezzel a fiókkal nem veheted át a bérletet. Olyat válassz, amelyben tulajdonos, admin vagy kezelő vagy.",
+      "ownAccount": "A bérlő fiókjával nem lehetsz bérbeadó.",
+      "generic": "Valami nem sikerült. Próbáld újra."
+    }
+  },
+  "invitationEmails": {
+    "common": {
+      "fallback": "Ha a gomb nem működik, másold be ezt a linket a böngésződbe:",
+      "privacy": "Adatkezelési tájékoztató",
+      "taxNumber": "Adószám",
+      "validUntil": "A meghívó {date}-ig érvényes.",
+      "validHours": "A meghívó {hours} óráig érvényes.",
+      "openEnded": "Határozatlan",
+      "accessAll": "Minden ingatlan",
+      "accessSelected": "{count} ingatlan",
+      "signInNote": "A megnyitáshoz lépj be, vagy hozz létre fiókot ezzel az e-mail-címmel: {email}",
+      "rows": {
+        "account": "Fiók",
+        "role": "Szerepkör",
+        "access": "Hozzáférés",
+        "property": "Ingatlan",
+        "rent": "Havi bérleti díj",
+        "start": "Kezdés",
+        "end": "Lejárat"
+      }
+    },
+    "member": {
+      "subject": "Meghívó a Keyflyra: {account}",
+      "preheader": "{name} meghívott a csapatába.",
+      "title": "Csatlakozz a csapathoz",
+      "lead": "{name} meghívott ebbe a Keyfly-fiókba: {account}.",
+      "cta": "Meghívó megnyitása",
+      "why": "Azért kapod ezt a levelet, mert {name} meghívott a Keyflyra. Ha nem ismered, hagyd figyelmen kívül: a meghívó magától lejár."
+    },
+    "tenant": {
+      "subject": "Hagyd jóvá a bérletedet: {address}",
+      "preheader": "{name} rögzítette a bérletet.",
+      "title": "Hagyd jóvá a bérletedet",
+      "lead": "{name} rögzítette a bérletedet a Keyflyon. Nézd át az adatokat, és hagyd jóvá.",
+      "cta": "Bérlet megnyitása",
+      "why": "Azért kapod ezt a levelet, mert {name} bérlőként megadta az e-mail-címedet. Ha nem rólad van szó, hagyd figyelmen kívül: a meghívó magától lejár."
+    },
+    "landlord": {
+      "subject": "{name} meghívott bérbeadóként",
+      "reminderSubject": "Emlékeztető: {name} meghívott bérbeadóként",
+      "preheader": "Ellenőrizd és hagyd jóvá a bérletet.",
+      "title": "Vedd át a bérletet",
+      "lead": "{name}, a bérlőd, rögzítette a bérletet a Keyflyon. Ellenőrizd az adatokat, és hagyd jóvá.",
+      "note": "A Keyfly a bérbeadóknak díjmentes.",
+      "cta": "Meghívó megnyitása",
+      "why": "Azért kapod ezt a levelet, mert {name} bérbeadóként megadta az e-mail-címedet. Ha nem rólad van szó, hagyd figyelmen kívül: a meghívó magától lejár."
+    },
+    "occupant": {
+      "subject": "{name} meghívott a bérletébe",
+      "preheader": "Csatlakozz {role, select, co_tenant {bérlőtársként} other {lakóként}}.",
+      "title": "Csatlakozz a bérlethez",
+      "lead": "{name} meghívott {role, select, co_tenant {bérlőtársként} other {lakóként}} ebbe a bérletbe: {address}.",
+      "cta": "Meghívó megnyitása",
+      "why": "Azért kapod ezt a levelet, mert {name} meghívott a Keyflyra. Ha nem ismered, hagyd figyelmen kívül: a meghívó magától lejár."
+    },
+    "staff": {
+      "subject": "Meghívó a Keyfly csapatába",
+      "preheader": "{name} meghívott az adminba.",
+      "title": "Csatlakozz a Keyfly csapatához",
+      "lead": "{name} meghívott a Keyfly adminba.",
+      "note": "A belépéshez kétlépcsős azonosítás kell. Készíts elő egy hitelesítő alkalmazást a telefonodon.",
+      "cta": "Meghívó megnyitása",
+      "why": "Azért kapod ezt a levelet, mert a Keyfly egyik szuperadminja meghívott erre a @keyfly.app címre. Ha tévedésnek gondolod, szólj neki.",
+      "roles": {
+        "superadmin": "Szuperadmin",
+        "admin": "Admin",
+        "insurance": "Biztosítás",
+        "support": "Ügyfélszolgálat",
+        "finance": "Pénzügy"
+      }
+    },
+    "leaseApproved": {
+      "subject": "Létrejött a bérleted: {address}",
+      "preheader": "{name} jóváhagyta a bérletet.",
+      "title": "Létrejött a bérleted",
+      "lead": "{name} jóváhagyta a bérletet a Keyflyon. Az adatait bármikor megnézheted a fiókodban.",
+      "cta": "Bérlet megnyitása",
+      "why": "Azért kapod ezt a levelet, mert meghívtad a bérbeadódat a Keyflyra."
+    },
+    "termsChanged": {
+      "subject": "Módosított feltételek: {address}",
+      "preheader": "Nézd át, és döntsd el, elfogadod-e.",
+      "title": "A bérbeadód módosította a feltételeket",
+      "lead": "{name} módosított feltételekkel hagyta jóvá a bérletet. Nézd át őket: a bérlet a te jóváhagyásoddal jön létre.",
+      "cta": "Feltételek megnyitása",
+      "why": "Azért kapod ezt a levelet, mert meghívtad a bérbeadódat a Keyflyra."
+    },
+    "termsAccepted": {
+      "subject": "{name} elfogadta a feltételeket: {address}",
+      "preheader": "A bérlet létrejött.",
+      "title": "Létrejött a bérlet",
+      "lead": "{name} elfogadta a módosított feltételeket, a bérlet létrejött a Keyflyon.",
+      "cta": "Tovább a Keyflyba",
+      "why": "Azért kapod ezt a levelet, mert jóváhagytad ezt a bérletet a Keyflyon."
+    },
+    "requestCancelled": {
+      "subjectWithdrawn": "{name} visszavonta a meghívót",
+      "subjectDeclined": "{name} nem fogadta el a feltételeket: {address}",
+      "preheader": "A bérlet nem jön létre.",
+      "title": "A bérlet nem jön létre",
+      "leadWithdrawn": "{name} visszavonta a meghívót, a link már nem működik. Nincs további teendőd.",
+      "leadDeclined": "{name} nem fogadta el a módosított feltételeket, ezért a bérlet nem jön létre.",
+      "why": "Azért kapod ezt a levelet, mert {name} meghívott bérbeadóként a Keyflyra."
+    }
+  },
   "portal": {
     "greeting": "Szia{name, select, none {} other {, {name}}}!",
     "intro": {
