@@ -10,7 +10,7 @@ import { isLocale } from "@/i18n/config";
 import { date, money, number } from "@/lib/format";
 import type { Enums } from "@/lib/supabase/database.types";
 import { takeOverLease, type TakeOverState } from "./actions";
-import { ChangeNote, DetailRows, MoneyField, Segmented } from "./ui";
+import { ChangeNote, DetailRows, LATEST_DATE, MoneyField, Segmented } from "./ui";
 import { clearError, hasErrors, parseAmount, validateTerms, type Errors, type Values } from "./validate";
 
 export type LandlordAccount = { id: string; name: string; plan: Enums<"account_plan">; propertyCount: number };
@@ -287,12 +287,12 @@ export function LandlordTakeOver({
       />
       <div className={values.term === "open" ? "" : "grid grid-cols-2 gap-2.5"}>
         <div className="flex flex-col gap-1.5">
-          <TextField id={`${id}-start`} type="date" label={t("terms.start")} value={values.startDate} onChange={(e) => set("startDate")(e.target.value)} error={err("startDate")} />
+          <TextField id={`${id}-start`} type="date" max={LATEST_DATE} label={t("terms.start")} value={values.startDate} onChange={(e) => set("startDate")(e.target.value)} error={err("startDate")} />
           {notes.startDate && <ChangeNote id={`${id}-start-note`}>{notes.startDate}</ChangeNote>}
         </div>
         {values.term !== "open" && (
           <div className="flex flex-col gap-1.5">
-            <TextField id={`${id}-end`} type="date" label={t("terms.end")} value={values.endDate} min={values.startDate || undefined}
+            <TextField id={`${id}-end`} type="date" max={LATEST_DATE} label={t("terms.end")} value={values.endDate} min={values.startDate || undefined}
               onChange={(e) => set("endDate")(e.target.value)} error={err("endDate")} />
             {notes.endDate && <ChangeNote id={`${id}-end-note`}>{notes.endDate}</ChangeNote>}
           </div>

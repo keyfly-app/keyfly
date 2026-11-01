@@ -70,13 +70,13 @@ export function withDot(value: string): string {
 }
 
 export function streetLine(a: AddressParts): string {
-  const parts = [`${a.streetName} ${a.streetType} ${a.houseNumber}`];
+  const parts = [`${a.streetName} ${a.streetType} ${withDot(a.houseNumber)}`];
   if (a.building) parts.push(`${a.building} ép.`);
-  if (a.staircase) parts.push(`${a.staircase} lph.`);
+  if (a.staircase) parts.push(`${withDot(a.staircase)} lph.`);
   if (a.floorType === "numbered") {
     if (a.floorNumber) parts.push(`${a.floorNumber}. em.`);
   } else if (a.floorType) parts.push(FLOOR_SHORT[a.floorType]);
-  if (a.door) parts.push(a.door);
+  if (a.door) parts.push(withDot(a.door));
   return parts.join(" ");
 }
 

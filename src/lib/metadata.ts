@@ -45,3 +45,11 @@ export function publicPageMetadata(page: PublicPage, locale: Locale): Metadata {
     openGraph: openGraph(locale, canonical),
   };
 }
+
+/**
+ * Title for the page that shares a segment with the root layout (e.g. the portal home):
+ * the layout's "%s · Keyfly" template only applies to child segments, so the suffix is added here.
+ */
+export function rootSegmentTitle(title: string): Metadata["title"] {
+  return { absolute: `${title} · ${BRAND.name}` };
+}

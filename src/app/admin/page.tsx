@@ -5,6 +5,7 @@ import { Shell } from "@/components/Shell";
 import { TextLink } from "@/components/ui/form";
 import { isLocale } from "@/i18n/config";
 import { date } from "@/lib/format";
+import { rootSegmentTitle } from "@/lib/metadata";
 import { siteHref } from "@/lib/site-href";
 import { createClient } from "@/lib/supabase/server";
 
@@ -12,7 +13,7 @@ export const dynamic = "force-dynamic";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("admin");
-  return { title: t("overview"), robots: { index: false } };
+  return { title: rootSegmentTitle(t("overview")), robots: { index: false } };
 }
 
 export default async function AdminHome() {

@@ -3,6 +3,10 @@ import type { Enums } from "@/lib/supabase/database.types";
 
 /** Small building blocks of the lease request screens (approved design: canvas "A bérlő hívja meg a bérbeadót"). */
 
+/** Upper bound for date inputs: keeps browsers from accepting five- or six-digit years while typing. */
+export const LATEST_DATE = "9999-12-31";
+
+
 export function StepBar({ step, total, name, label, count }: { step: number; total: number; name: string; label: string; count: string }) {
   return (
     <div className="flex flex-col gap-2.5">
@@ -140,7 +144,7 @@ export function DetailRows({ rows }: { rows: [string, React.ReactNode][] }) {
       {rows.map(([k, v], i) => (
         <div key={k} className={`flex gap-3 py-2.75 text-sm ${i ? "border-t border-line" : ""}`}>
           <dt className="w-32 flex-none text-muted">{k}</dt>
-          <dd className="min-w-0 font-medium tabular-nums">{v}</dd>
+          <dd className="min-w-0 font-medium tabular-nums [overflow-wrap:anywhere]">{v}</dd>
         </div>
       ))}
     </dl>

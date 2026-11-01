@@ -10,7 +10,7 @@ import { FLOOR_NUMBERS, STREET_TYPES, fullAddress } from "@/lib/address";
 import { date, money, number } from "@/lib/format";
 import type { Enums } from "@/lib/supabase/database.types";
 import { createLeaseRequest, type RequestState } from "./actions";
-import { MoneyField, Segmented, StepBar, DetailRows } from "./ui";
+import { DetailRows, LATEST_DATE, MoneyField, Segmented, StepBar } from "./ui";
 import {
   ADDRESS_FIELDS,
   LANDLORD_FIELDS,
@@ -189,7 +189,7 @@ export function RequestWizard({ myEmail }: { myEmail: string }) {
 
       {step === 1 && (
         <>
-          <TextField id={`${id}-start`} type="date" label={t("terms.start")} value={values.startDate} onChange={(e) => set("startDate")(e.target.value)} error={err("startDate")} />
+          <TextField id={`${id}-start`} type="date" max={LATEST_DATE} label={t("terms.start")} value={values.startDate} onChange={(e) => set("startDate")(e.target.value)} error={err("startDate")} />
           <Segmented
             name="termSwitch"
             legend={t("terms.duration")}
@@ -201,7 +201,7 @@ export function RequestWizard({ myEmail }: { myEmail: string }) {
             ]}
           />
           {values.term !== "open" && (
-            <TextField id={`${id}-end`} type="date" label={t("terms.end")} value={values.endDate} min={values.startDate || undefined}
+            <TextField id={`${id}-end`} type="date" max={LATEST_DATE} label={t("terms.end")} value={values.endDate} min={values.startDate || undefined}
               onChange={(e) => set("endDate")(e.target.value)} error={err("endDate")} />
           )}
           <MoneyField id={`${id}-rent`} label={t("terms.rent")} value={values.monthlyRent} currency={t("terms.currency")}

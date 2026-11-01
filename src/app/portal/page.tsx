@@ -9,13 +9,14 @@ import { isLocale } from "@/i18n/config";
 import { ADDRESS_COLUMNS, addressFromRow, streetLine } from "@/lib/address";
 import { date, money } from "@/lib/format";
 import { siteHref } from "@/lib/site-href";
+import { rootSegmentTitle } from "@/lib/metadata";
 import { createClient } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("portal");
-  return { title: t("title"), robots: { index: false } };
+  return { title: rootSegmentTitle(t("title")), robots: { index: false } };
 }
 
 export default async function PortalHome() {
