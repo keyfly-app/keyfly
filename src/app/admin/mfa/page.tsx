@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { AuthLayout } from "@/components/AuthLayout";
-import { Notice, PageTitle } from "@/components/ui/form";
+import { Icon } from "@/components/Icon";
+import { PageTitle, StepProgress } from "@/components/ui/form";
 import { signOut } from "@/features/auth/actions";
 import { TotpForm, TotpSetup } from "@/features/staff-auth/forms";
 import { safeNext } from "@/lib/safe-next";
@@ -33,8 +34,8 @@ export default async function Mfa({ searchParams }: { searchParams: Promise<{ ne
   if (verified) {
     return (
       <AuthLayout badge="ADMIN">
-        <PageTitle>{t("challenge.title")}</PageTitle>
-        <p className="text-[15px] text-muted">{t("challenge.text")}</p>
+        <StepProgress step={2} total={2} label={t("step2")} />
+        <PageTitle sub={t("challenge.text")}>{t("challenge.title")}</PageTitle>
         <TotpForm factorId={verified.id} next={next} mode="challenge" />
         <SignedInAs email={String(auth.claims.email ?? "")} />
       </AuthLayout>
@@ -46,13 +47,14 @@ export default async function Mfa({ searchParams }: { searchParams: Promise<{ ne
   if (!me || me.disabled_at) return <NoAccess />;
 
   return (
-    <AuthLayout badge="ADMIN">
-      <PageTitle eyebrow={t("setup.eyebrow")}>{t("setup.title")}</PageTitle>
-      <p className="text-[15px] text-muted">{t("setup.text")}</p>
+    <AuthLayout badge="ADMIN" wide>
+      <StepProgress step={2} total={2} label={t("step2")} />
+      <PageTitle sub={t("setup.text")}>{t("setup.title")}</PageTitle>
       <TotpSetup next={next} />
-      <Notice kind="warning" icon="phone">
+      <p className="flex items-start gap-1.5 text-[12.5px] text-muted">
+        <Icon name="phone" size={14} className="mt-0.5 flex-none" />
         {t("setup.lostPhone")}
-      </Notice>
+      </p>
       <SignedInAs email={String(auth.claims.email ?? "")} />
     </AuthLayout>
   );
@@ -63,11 +65,11 @@ async function SignedInAs({ email }: { email: string }) {
   const t = await getTranslations("adminAuth");
   const common = await getTranslations("common");
   return (
-    <div className="mt-2 flex flex-wrap items-center justify-between gap-x-4 gap-y-1 border-t border-line pt-4 text-sm text-muted">
-      <p className="min-w-0 [overflow-wrap:anywhere]">{t.rich("signedInAs", { email, b: (c) => <b className="font-semibold text-ink">{c}</b> })}</p>
+    <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1 border-t border-line pt-4 text-[12.5px] text-muted">
+      <p className="min-w-0 [overflow-wrap:anywhere]">{t.rich("signedInAs", { email, b: (c) => <b className="font-medium text-ink">{c}</b> })}</p>
       <form action={signOut}>
         <input type="hidden" name="site" value="admin" />
-        <button type="submit" className="inline-flex min-h-11 items-center font-semibold text-brand underline-offset-3 hover:underline">
+        <button type="submit" className="inline-flex min-h-11 items-center font-medium text-ink underline-offset-3 hover:underline sm:min-h-6">
           {common("signOut")}
         </button>
       </form>
@@ -80,8 +82,7 @@ async function NoAccess() {
   const common = await getTranslations("common");
   return (
     <AuthLayout badge="ADMIN">
-      <PageTitle>{t("noAccessTitle")}</PageTitle>
-      <p className="text-[15px] text-muted">{t("noAccessText")}</p>
+      <PageTitle sub={t("noAccessText")}>{t("noAccessTitle")}</PageTitle>
       <form action={signOut} className="mt-2">
         <input type="hidden" name="site" value="admin" />
         <button type="submit" className="inline-flex min-h-11 items-center text-sm font-semibold text-brand underline-offset-3 hover:underline">

@@ -27,7 +27,7 @@ export default async function VerifyEmail() {
         <Icon name="mail" size={24} />
       </span>
       <PageTitle>{t("title")}</PageTitle>
-      <p className="text-[15px] text-muted">{t.rich("sentTo", { email, b: (chunks) => <b className="font-semibold break-all text-ink">{chunks}</b> })}</p>
+      <p className="text-sm text-muted">{t.rich("sentTo", { email, b: (chunks) => <b className="font-semibold break-all text-ink">{chunks}</b> })}</p>
       <p className="text-sm text-muted">{t("validity", { hours: EMAIL_LINK_VALID_HOURS })}</p>
       <ResendConfirmationForm />
       <div className="self-center">

@@ -329,26 +329,28 @@
     "newTab": "opens in a new tab",
     "linkExpired": "This link is no longer valid: it has expired, was already used, or came from an older email. Open the latest Keyfly email or request a new one.",
     "signIn": {
-      "title": "Sign in",
+      "title": "Sign in to your account",
       "remember": "Keep me signed in",
-      "forgot": "Forgot password",
+      "forgot": "Forgot password?",
       "submit": "Sign in",
       "submitting": "Signing in…",
-      "noAccount": "No account yet? <link>Sign up</link>"
+      "noAccount": "New to Keyfly? <link>Create an account</link>",
+      "sub": "Welcome back to Keyfly."
     },
     "emailLink": {
-      "submit": "Sign in with an email link",
+      "submit": "Email me a sign-in link",
       "sending": "Sending…",
-      "sentTitle": "Your sign-in link is on its way.",
-      "sentText": "Check your inbox (and spam folder) and click the link."
+      "sentTitle": "We’ve sent your sign-in link.",
+      "sentText": "Check your inbox, including spam. The link is valid for 24 hours."
     },
     "register": {
-      "title": "Create account",
+      "title": "Create your account",
       "back": "Sign in",
       "fullName": "Full name",
-      "terms": "I accept the <terms>Terms</terms> and the <privacy>Privacy Notice</privacy>.",
+      "terms": "I have read and agree to the <terms>Terms of Service</terms> and the <privacy>Privacy Notice</privacy>.",
       "submit": "Create account",
-      "submitting": "Creating…"
+      "submitting": "Creating…",
+      "sub": "A few details and you can invite your landlord."
     },
     "rules": {
       "label": "Password requirements",
@@ -363,25 +365,25 @@
       "sentTo": "We sent a confirmation link to <b>{email}</b>",
       "validity": "The link is valid for {hours} hours.",
       "resend": "Resend email",
-      "resent": "Sent again.",
+      "resent": "We’ve sent the email again.",
       "otherEmail": "Use a different email"
     },
     "forgot": {
-      "title": "Forgot password",
-      "text": "Enter your email and we'll send you a link to set a new password.",
-      "submit": "Send link",
-      "sentTitle": "If there's an account with this email, the link is on its way.",
-      "sentText": "Check your inbox (and spam folder)."
+      "title": "Reset your password",
+      "text": "Enter the email linked to your account. We’ll send you a secure link to set a new password.",
+      "submit": "Send reset link",
+      "sentTitle": "Check your inbox",
+      "sentText": "If an account exists for this address, we’ve sent the link. It’s valid for 24 hours; check your spam folder too."
     },
     "reset": {
-      "title": "New password",
+      "title": "Set a new password",
       "password": "New password",
       "submit": "Save password",
       "submitting": "Saving…"
     },
     "welcome": {
       "title": "How will you use Keyfly?",
-      "tip": "This only sets your start screen. You can switch at any time.",
+      "tip": "This only sets your start screen. You can change it any time.",
       "tenant": {
         "title": "Tenant",
         "text": "Keyfly Guarantee instead of a deposit"
@@ -401,13 +403,13 @@
       "passwordMissing": "Enter your password.",
       "password": "The password doesn't meet the requirements.",
       "name": "Enter your full name.",
-      "terms": "To sign up, accept the Terms and the Privacy Notice.",
+      "terms": "To create an account, accept the Terms of Service and the Privacy Notice.",
       "credentials": "Incorrect email or password.",
-      "unconfirmed": "You haven't confirmed your email yet. Check your inbox.",
+      "unconfirmed": "Your email isn’t confirmed yet. Click the link in the email we sent when you signed up.",
       "noAccount": "There's no account for this email address.",
       "samePassword": "The new password must be different from the old one.",
-      "rateLimit": "Too many attempts. Wait a few minutes and try again.",
-      "generic": "Something went wrong. Please try again."
+      "rateLimit": "Too many attempts. Try again in a few minutes.",
+      "generic": "A temporary error occurred. Try again."
     }
   },
   "invite": {
@@ -477,7 +479,7 @@
     }
   },
   "leaseRequest": {
-    "homeTitle": "My home",
+    "homeTitle": "Leases",
     "homeEmpty": "Renting, but your landlord isn’t on Keyfly yet? Invite them and set up the lease together.",
     "inviteLandlord": "Invite your landlord",
     "next": "Continue",
@@ -759,20 +761,19 @@
     "title": "Home",
     "greeting": "Hi{name, select, none {} other { {name}}}!",
     "intro": {
-      "tenant": "Your quote requests and coverage certificates in one place.",
+      "tenant": "Your leases and to-dos in one place.",
       "landlord": "Soon you'll manage your properties and leases here.",
       "manager": "Soon you'll manage your portfolio and team here."
     },
     "changeView": "Change start screen",
     "applications": "My quote requests",
-    "noApplications": "No quote requests yet. Online quotes will start here soon.",
     "addressLater": "Address to follow",
     "applicationLine": "{rent} / month · deposit {deposit} · {date}",
     "policies": "My coverage certificates",
-    "noPolicies": "No active coverage yet.",
     "coverage": "Coverage: {amount}",
     "perMonth": "month",
-    "perYear": "year"
+    "perYear": "year",
+    "account": "Account"
   },
   "admin": {
     "noAccessTitle": "No access",
@@ -784,17 +785,21 @@
       "policies": "Policies",
       "claims": "Claims"
     },
-    "waitlistTitle": "Waitlist – latest 50",
+    "waitlistTitle": "Latest sign-ups",
     "columns": {
       "email": "Email",
-      "segment": "Who",
+      "segment": "Role",
       "newsletter": "Newsletter",
-      "date": "Date"
+      "date": "Signed up"
     },
-    "yes": "yes",
-    "waitlistEmpty": "Nobody has signed up yet.",
-    "recentApplications": "Recent quote requests",
-    "applicationsEmpty": "No quote requests yet."
+    "yes": "Yes",
+    "waitlistEmpty": "No sign-ups yet.",
+    "recentApplications": "Latest quote requests",
+    "applicationsEmpty": "No quote requests yet.",
+    "no": "No",
+    "navLabel": "Admin menu",
+    "todayLine": "Today: {date}",
+    "lastWeek": "+{count} in the last 7 days"
   },
   "status": {
     "draft": "Draft",
@@ -864,31 +869,34 @@
     }
   },
   "adminAuth": {
-    "title": "Keyfly admin",
-    "text": "For Keyfly staff only. After your password, we ask for the code from your authenticator app.",
+    "title": "Sign in to Keyfly Admin",
+    "text": "Staff access. Two-step verification follows your password.",
     "submit": "Continue",
     "submitting": "Signing in…",
     "setup": {
-      "eyebrow": "First sign-in",
-      "title": "Two-factor authentication",
-      "text": "Scan the QR code with an authenticator app, such as Google Authenticator or Microsoft Authenticator.",
+      "title": "Set up two-step verification",
+      "text": "A one-time setup. After this, we’ll ask for a verification code every time you sign in.",
       "qrAlt": "QR code for your authenticator app",
-      "keyLabel": "Can’t scan it? Enter this key:",
-      "copy": "Copy",
+      "keyLabel": "Can’t scan it? Enter this key manually:",
+      "copy": "Copy key",
       "copied": "Copied",
-      "code": "The 6-digit code shown in the app",
-      "submit": "Turn on",
-      "lostPhone": "If you lose your phone, a super admin resets two-factor authentication for you.",
-      "restart": "New QR code",
-      "preparing": "Preparing your QR code…"
+      "code": "Verification code",
+      "submit": "Turn on verification",
+      "lostPhone": "If you lose your phone, a super admin can reset your verification.",
+      "restart": "Request a new QR code",
+      "preparing": "Preparing your QR code…",
+      "step1": "Install an authenticator app",
+      "step1Text": "For example Google Authenticator or Microsoft Authenticator.",
+      "step2": "Scan the QR code",
+      "step3": "Enter the 6-digit code"
     },
     "challenge": {
       "title": "Two-factor authentication",
-      "text": "Enter the 6-digit code shown in your authenticator app.",
-      "code": "6-digit code",
+      "text": "Enter the 6-digit code from your authenticator app.",
+      "code": "Verification code",
       "submit": "Sign in",
-      "noPhone": "Can’t get to your phone?",
-      "noPhoneTip": "Ask a super admin: they can reset your two-factor authentication."
+      "noPhone": "Can’t access your authenticator app?",
+      "noPhoneTip": "Ask a super admin: they can reset your verification."
     },
     "checking": "Checking…",
     "invite": {
@@ -901,7 +909,7 @@
       "sentTitle": "Confirm your email",
       "sentText": "We’ve sent a confirmation link to <b>{email}</b>. It brings you back here to join.",
       "sentExisting": "If you already have an account with this address, we don’t send a new email: sign in instead.",
-      "needs2fa": "Signing in needs two-factor authentication. Have an authenticator app ready on your phone."
+      "needs2fa": "Two-step verification is required to sign in. Keep an authenticator app ready on your phone."
     },
     "errors": {
       "email": "Enter a valid email address.",
@@ -909,15 +917,20 @@
       "newPassword": "The password doesn’t meet the requirements.",
       "name": "Enter your full name.",
       "terms": "To create the account, accept the Terms and the Privacy notice.",
-      "credentials": "Wrong email or password.",
+      "credentials": "Incorrect email or password.",
       "unconfirmed": "You haven’t confirmed your email yet. Check your inbox.",
-      "code": "Wrong code. Try again.",
+      "code": "That code is incorrect or has expired. Enter the current code.",
       "codeFormat": "The code has 6 digits.",
-      "expired": "This QR code has expired. Get a new one, scan it and enter the new code.",
-      "rateLimit": "Too many attempts. Wait a few minutes and try again.",
-      "generic": "Something went wrong. Try again."
+      "expired": "This QR code has expired. Request a new one and scan it.",
+      "rateLimit": "Too many failed attempts. Try again in a few minutes.",
+      "generic": "A temporary error occurred. Try again."
     },
-    "signedInAs": "Signed in as <b>{email}</b>"
+    "signedInAs": "Signed in as <b>{email}</b>",
+    "badge": "Admin",
+    "staffOnly": "Internal system · staff only",
+    "step1": "Step 1 of 2",
+    "step2": "Step 2 of 2",
+    "audit": "Sign-ins are logged for security."
   },
   "adminStaff": {
     "nav": "Staff",
@@ -927,7 +940,8 @@
       "member": "Staff member",
       "role": "Role",
       "twoFactor": "Two-factor authentication",
-      "status": "Status"
+      "lastSignIn": "Last sign-in",
+      "actions": "Actions"
     },
     "roles": {
       "superadmin": "Super admin",
@@ -936,16 +950,14 @@
       "support": "Support",
       "finance": "Finance"
     },
-    "on": "On",
+    "on": "Active",
     "notSetUp": "Not set up yet",
-    "active": "Active",
     "disabled": "Disabled",
-    "lastSignIn": "Last sign-in: {date}",
     "never": "Never signed in",
     "you": "(you)",
     "selfNote": "Another super admin can reset your own two-factor authentication.",
     "reset": {
-      "open": "Reset",
+      "open": "Reset verification",
       "openLabel": "Reset two-factor authentication for {name}",
       "title": "Reset two-factor authentication for {name}?",
       "text": "They’ll be signed out on every device and set up an authenticator app again at their next sign-in.",
@@ -962,22 +974,23 @@
       "emailPlaceholder": "name@keyfly.app",
       "role": "Role",
       "roleHints": {
-        "admin": "Customers, accounts, leases",
-        "insurance": "Applications, policies, claims",
-        "finance": "Fees, invoices, commissions",
-        "support": "View customer data"
+        "admin": "Full access, except managing staff.",
+        "insurance": "Quotes, policies and claims.",
+        "finance": "Fees, invoices and payouts.",
+        "support": "View customers and leases."
       },
-      "twoFactor": "Two-factor authentication required",
+      "twoFactor": "Two-step verification is required to sign in.",
       "submit": "Send invitation",
       "sending": "Sending…",
-      "validity": "Valid for 48 hours.",
       "sent": "Invitation sent to {email}",
       "createdNoEmail": "The invitation for {email} was created, but we couldn’t send the email. Please try again later.",
       "errors": {
-        "email": "Only @keyfly.app addresses.",
+        "email": "Only @keyfly.app addresses are allowed.",
         "notAllowed": "Only a super admin can invite staff.",
         "generic": "We couldn’t send the invitation. Please try again."
-      }
+      },
+      "sub": "@keyfly.app addresses only. The invitation is valid for 48 hours.",
+      "cancel": "Cancel"
     }
   },
   "authEmails": {

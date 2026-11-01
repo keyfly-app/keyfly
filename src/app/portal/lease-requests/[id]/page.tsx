@@ -56,7 +56,7 @@ export default async function LeaseRequest({
   const expired = r.status === "pending_landlord" && new Date(r.invitation_expires_at) <= new Date();
   const status = expired ? "expired" : r.status;
   const landlord = r.landlord_name ?? r.landlord_email;
-  const back = { href: await siteHref("portal", "/"), label: t("homeTitle") };
+  const back = { href: await siteHref("portal", "/"), label: (await getTranslations("portal"))("title") };
   const end = (iso: string | null) => (iso ? date(iso, locale) : t("terms.openEnded"));
 
   if (r.status === "pending_tenant" && lease) {
@@ -72,8 +72,8 @@ export default async function LeaseRequest({
     return (
       <AuthLayout back={back}>
         <Notice kind="warning">{t("reconfirm.banner")}</Notice>
-        <h1 className="font-display text-[26px] leading-tight font-semibold">{t("reconfirm.title")}</h1>
-        <p className="text-[15px] text-muted">{t("reconfirm.lead", { name: landlord })}</p>
+        <h1 className="font-display text-[22px] leading-7 font-semibold">{t("reconfirm.title")}</h1>
+        <p className="text-sm text-muted">{t("reconfirm.lead", { name: landlord })}</p>
         <DetailRows rows={items} />
         {canAct && <ReconfirmActions requestId={r.id} />}
       </AuthLayout>
@@ -99,7 +99,7 @@ export default async function LeaseRequest({
   return (
     <AuthLayout back={back}>
       {(sent || reminded) && r.status === "pending_landlord" && <Notice kind="success">{t(sent ? "waiting.sent" : "waiting.reminded")}</Notice>}
-      <section className="flex flex-col gap-4 rounded-2xl border border-line bg-surface p-4.5">
+      <section className="flex flex-col gap-4 rounded-xl border border-line bg-surface p-4.5">
         <div className="flex items-start justify-between gap-3">
           <div className="flex min-w-0 flex-col gap-1">
             <p className="text-xs font-semibold tracking-[0.05em] text-muted uppercase">{t("card.label")}</p>

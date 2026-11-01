@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { getLocale, getTranslations } from "next-intl/server";
-import { Shell } from "@/components/Shell";
-import { TextLink } from "@/components/ui/form";
+import { AdminShell } from "@/components/AdminShell";
+import { AuthLayout } from "@/components/AuthLayout";
+import { PageTitle } from "@/components/ui/form";
+import { Tag } from "@/components/ui/Tag";
 import { isLocale } from "@/i18n/config";
-import { date } from "@/lib/format";
+import { date, money } from "@/lib/format";
 import { rootSegmentTitle } from "@/lib/metadata";
 import { siteHref } from "@/lib/site-href";
 import { createClient } from "@/lib/supabase/server";
@@ -16,6 +18,15 @@ export async function generateMetadata(): Promise<Metadata> {
   return { title: rootSegmentTitle(t("overview")), robots: { index: false } };
 }
 
+const WEEK_MS = 7 * 24 * 60 * 60 * 1000;
+
+/** The request time and the start of the last 7 days (this page is rendered per request). */
+function timeframe() {
+  const now = new Date();
+  return { today: now.toISOString(), weekAgo: new Date(now.getTime() - WEEK_MS).toISOString() };
+}
+
+/** Admin overview (App v2.2): four key figures, the latest waitlist sign-ups and quote requests. */
 export default async function AdminHome() {
   const supabase = await createClient();
   const { data: claims } = await supabase.auth.getClaims();
@@ -26,98 +37,104 @@ export default async function AdminHome() {
   const t = await getTranslations("admin");
   const status = await getTranslations("status");
   const segments = await getTranslations("segments");
-  const staffT = await getTranslations("adminStaff");
-  const email = claims.claims.email as string | undefined;
+  const email = String(claims.claims.email ?? "");
 
-  const { data: me } = await supabase.from("staff").select("role, disabled_at").eq("user_id", claims.claims.sub).maybeSingle();
+  const [{ data: me }, { data: profile }] = await Promise.all([
+    supabase.from("staff").select("role, disabled_at").eq("user_id", claims.claims.sub).maybeSingle(),
+    supabase.from("profiles").select("full_name").eq("id", claims.claims.sub).maybeSingle(),
+  ]);
   if (!me || me.disabled_at) {
     return (
-      <Shell site="admin" badge="ADMIN" email={email}>
-        <div className="mx-auto mt-6 max-w-md rounded-3xl bg-white p-7">
-          <h1 className="font-display text-2xl font-bold">{t("noAccessTitle")}</h1>
-          <p className="mt-2 text-muted">{t("noAccessText")}</p>
-        </div>
-      </Shell>
+      <AuthLayout badge="ADMIN">
+        <PageTitle sub={t("noAccessText")}>{t("noAccessTitle")}</PageTitle>
+      </AuthLayout>
     );
   }
 
-  const count = (table: "waitlist" | "applications" | "policies" | "claims") =>
-    supabase.from(table).select("*", { count: "exact", head: true });
-
-  const [waitlist, apps, pols, clms, { data: latest }, { data: recentApps }] = await Promise.all([
+  const { today, weekAgo } = timeframe();
+  const count = (table: "waitlist" | "applications" | "policies" | "claims", since?: string) => {
+    const q = supabase.from(table).select("*", { count: "exact", head: true });
+    return since ? q.gte("created_at", since) : q;
+  };
+  const [waitlist, waitlistWeek, apps, appsWeek, pols, clms, { data: latest }, { data: recentApps }] = await Promise.all([
     count("waitlist"),
+    count("waitlist", weekAgo),
     count("applications"),
+    count("applications", weekAgo),
     count("policies"),
     count("claims"),
-    supabase.from("waitlist").select("id, email, segment, marketing_consent, created_at").order("created_at", { ascending: false }).limit(50),
-    supabase.from("applications").select("id, status, created_at").order("created_at", { ascending: false }).limit(10),
+    supabase.from("waitlist").select("id, email, segment, marketing_consent, created_at").order("created_at", { ascending: false }).limit(10),
+    supabase.from("applications").select("id, status, monthly_rent, address_text, created_at").order("created_at", { ascending: false }).limit(6),
   ]);
 
-  const stats = [
-    { key: "waitlist", value: waitlist.count ?? 0 },
-    { key: "applications", value: apps.count ?? 0 },
+  const figures = [
+    { key: "waitlist", value: waitlist.count ?? 0, week: waitlistWeek.count ?? 0 },
+    { key: "applications", value: apps.count ?? 0, week: appsWeek.count ?? 0 },
     { key: "policies", value: pols.count ?? 0 },
     { key: "claims", value: clms.count ?? 0 },
   ] as const;
 
   return (
-    <Shell site="admin" badge={`ADMIN · ${me.role.toUpperCase()}`} email={email}>
-      <div className="flex flex-wrap items-center justify-between gap-x-6">
-        <h1 className="font-display text-3xl font-bold">{t("overview")}</h1>
-        {me.role === "superadmin" && <TextLink href={await siteHref("admin", "/staff")}>{staffT("nav")}</TextLink>}
-      </div>
-      <div className="mt-6 grid grid-cols-2 gap-4 lg:grid-cols-4">
-        {stats.map((s) => (
-          <div key={s.key} className="rounded-3xl bg-white p-5">
-            <p className="text-sm font-semibold text-muted">{t(`stats.${s.key}`)}</p>
-            <p className="font-display mt-1 text-4xl font-bold">{s.value}</p>
+    <AdminShell active="overview" title={t("overview")} user={{ name: profile?.full_name ?? "", email }} superadmin={me.role === "superadmin"}>
+      <p className="text-[12.5px] text-muted">{t("todayLine", { date: date(today, locale) })}</p>
+      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+        {figures.map((f) => (
+          <div key={f.key} className="flex flex-col gap-1 rounded-xl border border-line bg-surface px-4.5 py-4">
+            <span className="text-[12.5px] text-muted">{t(`stats.${f.key}`)}</span>
+            <span className="font-display text-[26px] leading-[30px] font-semibold tabular-nums">{f.value.toLocaleString(locale === "hu" ? "hu-HU" : "en-GB")}</span>
+            {"week" in f && <span className="text-[12.5px] text-muted">{t("lastWeek", { count: f.week })}</span>}
           </div>
         ))}
       </div>
 
-      <section className="mt-8 grid gap-6 lg:grid-cols-[1.4fr_1fr]">
-        <div className="overflow-x-auto rounded-3xl bg-white p-6">
-          <h2 className="font-display text-xl font-bold">{t("waitlistTitle")}</h2>
-          <table className="mt-4 w-full text-left text-sm">
-            <thead className="text-muted">
-              <tr>
-                <th className="py-2 font-semibold">{t("columns.email")}</th>
-                <th className="py-2 font-semibold">{t("columns.segment")}</th>
-                <th className="py-2 font-semibold">{t("columns.newsletter")}</th>
-                <th className="py-2 font-semibold">{t("columns.date")}</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-line">
-              {latest?.map((w) => (
-                <tr key={w.id}>
-                  <td className="py-2.5 font-medium">{w.email}</td>
-                  <td className="py-2.5">{segments(w.segment)}</td>
-                  <td className="py-2.5">{w.marketing_consent ? t("yes") : "–"}</td>
-                  <td className="py-2.5 text-muted">{date(w.created_at, locale)}</td>
+      <div className="grid items-start gap-3 lg:grid-cols-[1.6fr_1fr]">
+        <section aria-labelledby="latest-title" className="overflow-hidden rounded-xl border border-line bg-surface">
+          <h2 id="latest-title" className="px-4 py-3.5 text-sm font-semibold">{t("waitlistTitle")}</h2>
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[560px] border-collapse text-left">
+              <thead>
+                <tr className="border-b border-line text-xs text-muted">
+                  <th scope="col" className="h-9 px-4 font-medium">{t("columns.email")}</th>
+                  <th scope="col" className="h-9 px-4 font-medium">{t("columns.segment")}</th>
+                  <th scope="col" className="h-9 px-4 font-medium">{t("columns.newsletter")}</th>
+                  <th scope="col" className="h-9 px-4 font-medium">{t("columns.date")}</th>
                 </tr>
-              ))}
-              {!latest?.length && (
-                <tr>
-                  <td colSpan={4} className="py-6 text-center text-muted">{t("waitlistEmpty")}</td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody className="text-[13.5px]">
+                {latest?.map((w) => (
+                  <tr key={w.id} className="border-b border-paper last:border-0">
+                    <td className="h-11 px-4 font-medium">{w.email}</td>
+                    <td className="px-4"><Tag tone="neutral">{segments(w.segment)}</Tag></td>
+                    <td className="px-4 text-muted">{w.marketing_consent ? t("yes") : t("no")}</td>
+                    <td className="px-4 text-muted tabular-nums">{date(w.created_at, locale)}</td>
+                  </tr>
+                ))}
+                {!latest?.length && (
+                  <tr>
+                    <td colSpan={4} className="px-4 py-8 text-center text-muted">{t("waitlistEmpty")}</td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </section>
 
-        <div className="rounded-3xl bg-white p-6">
-          <h2 className="font-display text-xl font-bold">{t("recentApplications")}</h2>
-          <ul className="mt-4 divide-y divide-line text-sm">
+        <section aria-labelledby="quotes-title" className="overflow-hidden rounded-xl border border-line bg-surface">
+          <h2 id="quotes-title" className="px-4 py-3.5 text-sm font-semibold">{t("recentApplications")}</h2>
+          <ul>
             {recentApps?.map((a) => (
-              <li key={a.id} className="flex justify-between py-2.5">
-                <span>{date(a.created_at, locale)}</span>
-                <span className="font-semibold">{status(a.status)}</span>
+              <li key={a.id} className="flex items-center justify-between gap-3 border-t border-paper px-4 py-3">
+                <span className="flex min-w-0 flex-col leading-[18px]">
+                  <span className="truncate text-[13.5px] font-medium">{a.address_text ?? money(a.monthly_rent, locale)}</span>
+                  <span className="text-[12.5px] text-muted tabular-nums">{date(a.created_at, locale)}</span>
+                </span>
+                <Tag tone="neutral">{status(a.status)}</Tag>
               </li>
             ))}
-            {!recentApps?.length && <li className="py-6 text-center text-muted">{t("applicationsEmpty")}</li>}
+            {!recentApps?.length && <li className="border-t border-paper px-4 py-8 text-center text-sm text-muted">{t("applicationsEmpty")}</li>}
           </ul>
-        </div>
-      </section>
-    </Shell>
+        </section>
+      </div>
+    </AdminShell>
   );
 }

@@ -17,9 +17,9 @@ export function LanguageToggle({ to }: { to: Locale }) {
       <input type="hidden" name="back" value={query ? `${pathname}?${query}` : pathname} />
       <button
         type="submit"
-        className="inline-flex min-h-11 items-center gap-2 rounded-full border border-line bg-surface py-0 pr-4 pl-3.5 text-sm font-semibold whitespace-nowrap text-ink transition-colors hover:border-brand motion-reduce:transition-none"
+        className="inline-flex h-11 items-center gap-1.5 rounded-lg border border-line bg-surface px-2.5 text-[13px] font-medium whitespace-nowrap text-ink transition-colors hover:border-field motion-reduce:transition-none sm:h-8"
       >
-        <Icon name="globe" size={18} strokeWidth={1.75} className="text-brand" />
+        <Icon name="globe" size={14} strokeWidth={1.75} className="text-muted" />
         <span className="sr-only">{t("switchTo")} </span>
         <span lang={to}>{t("otherLanguage")}</span>
       </button>

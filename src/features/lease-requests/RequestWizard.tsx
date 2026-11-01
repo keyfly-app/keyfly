@@ -154,8 +154,8 @@ export function RequestWizard({ myEmail }: { myEmail: string }) {
         count={t("stepCount", { step: step + 1, total: STEPS.length })}
       />
       <div ref={top} tabIndex={-1} className="flex flex-col gap-1.5 outline-none">
-        <h1 className="font-display text-[26px] leading-tight font-semibold">{t(step === 0 ? "address.title" : step === 1 ? "terms.title" : "landlord.title")}</h1>
-        {step < 2 && <p className="text-[15px] text-muted">{t(step === 0 ? "address.lead" : "terms.lead")}</p>}
+        <h1 className="font-display text-[22px] leading-7 font-semibold">{t(step === 0 ? "address.title" : step === 1 ? "terms.title" : "landlord.title")}</h1>
+        {step < 2 && <p className="text-sm text-muted">{t(step === 0 ? "address.lead" : "terms.lead")}</p>}
       </div>
 
       {step === 0 && (
@@ -169,10 +169,10 @@ export function RequestWizard({ myEmail }: { myEmail: string }) {
             />
           )}
           {addressMode === "picked" && (
-            <div className="flex items-start justify-between gap-2.5 rounded-2xl border border-line bg-paper p-3.5">
+            <div className="flex items-start justify-between gap-2.5 rounded-xl border border-line bg-paper p-3.5">
               <div className="flex min-w-0 flex-col gap-0.5">
                 <span className="text-xs font-semibold tracking-[0.05em] text-muted uppercase">{s("chosen")}</span>
-                <span className="text-[15px] font-semibold [overflow-wrap:anywhere]">
+                <span className="text-sm font-semibold [overflow-wrap:anywhere]">
                   {`${values.streetName} ${values.streetType} ${withDot(values.houseNumber)}`.replace(/\s+/g, " ").trim()}
                 </span>
                 <span className="text-[13px] text-muted">{cityLine({ postalCode: values.postalCode, city: values.city })}</span>
@@ -278,7 +278,7 @@ export function RequestWizard({ myEmail }: { myEmail: string }) {
       {state.status === "error" && state.error && <Notice kind="error">{t(`errors.${state.error}`)}</Notice>}
       <div className="mt-auto flex flex-col gap-2.5 pt-4">
         {step < 2 ? (
-          <button type="button" onClick={next} className="inline-flex h-12 w-full items-center justify-center rounded-full bg-brand px-5.5 text-[15px] font-semibold text-white transition-colors hover:bg-brand-dark">
+          <button type="button" onClick={next} className="inline-flex h-11 w-full items-center justify-center rounded-lg bg-ink px-4 text-sm font-medium text-white shadow-[0_1px_2px_rgb(12_31_25/0.16)] transition-colors hover:bg-ink-soft sm:h-10">
             {t("next")}
           </button>
         ) : (

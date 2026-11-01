@@ -36,8 +36,7 @@ export default async function Invite({ params }: { params: Promise<{ token: stri
     ]);
     return (
       <AuthLayout>
-        <PageTitle eyebrow={t("label")}>{t("signedOut.title")}</PageTitle>
-        <p className="text-[15px] text-muted">{t("signedOut.text")}</p>
+        <PageTitle eyebrow={t("label")} sub={t("signedOut.text")}>{t("signedOut.title")}</PageTitle>
         <div className="mt-auto flex flex-col gap-2.5 pt-4">
           <ButtonLink href={loginHref}>{t("signedOut.signIn")}</ButtonLink>
           {SIGN_UP_OPEN && (
@@ -57,8 +56,7 @@ export default async function Invite({ params }: { params: Promise<{ token: stri
   if (!inv || !inv.is_open) {
     return (
       <AuthLayout>
-        <PageTitle eyebrow={t("label")}>{t("closed.title")}</PageTitle>
-        <p className="text-[15px] text-muted">{t("closed.text")}</p>
+        <PageTitle eyebrow={t("label")} sub={t("closed.text")}>{t("closed.title")}</PageTitle>
         <div className="mt-auto pt-4">
           <ButtonLink href={homeHref}>{t("declined.continue")}</ButtonLink>
         </div>
@@ -97,8 +95,7 @@ export default async function Invite({ params }: { params: Promise<{ token: stri
     if (!request) {
       return (
         <AuthLayout>
-          <PageTitle eyebrow={t("label")}>{t("closed.title")}</PageTitle>
-          <p className="text-[15px] text-muted">{t("closed.text")}</p>
+          <PageTitle eyebrow={t("label")} sub={t("closed.text")}>{t("closed.title")}</PageTitle>
           <div className="mt-auto pt-4">
             <ButtonLink href={homeHref}>{t("declined.continue")}</ButtonLink>
           </div>
@@ -162,7 +159,7 @@ export default async function Invite({ params }: { params: Promise<{ token: stri
       <PageTitle eyebrow={t("label")}>{title}</PageTitle>
       <p className="text-sm text-muted">{sentence(intro)}</p>
       {details.length > 0 && (
-        <dl className="rounded-2xl border border-line bg-surface px-4 py-1">
+        <dl className="rounded-xl border border-line bg-surface px-4 py-1">
           {details.map(([k, v], i) => (
             <div key={k} className={`flex gap-3 py-2.75 text-sm ${i ? "border-t border-line" : ""}`}>
               <dt className="w-32 flex-none text-muted">{k}</dt>

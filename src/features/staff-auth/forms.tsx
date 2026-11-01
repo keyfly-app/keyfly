@@ -36,10 +36,8 @@ export function AdminSignInForm({ next, forgotHref }: { next: string; forgotHref
         label={auth("password")}
         autoComplete="current-password"
         error={error === "password" ? t("errors.password") : undefined}
+        aside={<TextLink href={forgotHref}>{auth("signIn.forgot")}</TextLink>}
       />
-      <div className="-mt-2 flex justify-end">
-        <TextLink href={forgotHref}>{auth("signIn.forgot")}</TextLink>
-      </div>
       {error && error !== "email" && error !== "password" && <Notice kind="error">{t(`errors.${error}`)}</Notice>}
       <Button pending={pending}>{pending ? t("submitting") : t("submit")}</Button>
     </form>
@@ -146,7 +144,7 @@ export function TotpForm({ factorId, next, mode, onExpired }: { factorId: string
       {(error === "rateLimit" || error === "generic") && <Notice kind="error">{t(`errors.${error}`)}</Notice>}
       <Button pending={pending}>{pending ? t("checking") : t(mode === "setup" ? "setup.submit" : "challenge.submit")}</Button>
       {mode === "challenge" && (
-        <p className="flex items-center justify-center gap-1.5 text-sm font-semibold text-brand">
+        <p className="flex items-center justify-center gap-1.5 text-[13px] font-medium text-muted">
           {t("challenge.noPhone")}
           <InfoTip text={t("challenge.noPhoneTip")} align="end" />
         </p>
@@ -187,31 +185,47 @@ export function TotpSetup({ next }: { next: string }) {
     );
   }
 
+  const ready = setup.status === "ready";
   return (
-    <>
-      <div className="flex justify-center">
-        {setup.status === "ready" ? (
-          // eslint-disable-next-line @next/next/no-img-element -- Supabase returns the QR code as an SVG data URL
-          <img src={setup.qrCode} alt={t("setup.qrAlt")} width={184} height={184} className="size-46 rounded-2xl border border-line bg-white p-2.5" />
-        ) : (
-          <div role="status" className="flex size-46 items-center justify-center rounded-2xl border border-line bg-paper">
-            <span className="size-6 animate-spin rounded-full border-2 border-field border-t-brand motion-reduce:animate-none" aria-hidden="true" />
-            <span className="sr-only">{t("setup.preparing")}</span>
-          </div>
-        )}
-      </div>
-      {setup.status === "ready" ? (
-        <>
-          <SetupKey secret={setup.secret} />
-          <TotpForm key={setup.factorId} factorId={setup.factorId} next={next} mode="setup" onExpired={restart} />
-        </>
-      ) : (
-        <div aria-hidden="true" className="flex flex-col gap-4">
-          <div className="h-[72px] animate-pulse rounded-xl bg-paper motion-reduce:animate-none" />
-          <div className="h-14 animate-pulse rounded-xl bg-paper motion-reduce:animate-none" />
+    <ol className="flex flex-col">
+      <SetupStep number={1} title={t("setup.step1")} text={t("setup.step1Text")} />
+      <SetupStep number={2} title={t("setup.step2")}>
+        <div className="flex flex-col items-start gap-4 sm:flex-row sm:items-center">
+          {ready ? (
+            // eslint-disable-next-line @next/next/no-img-element -- Supabase returns the QR code as an SVG data URL
+            <img src={setup.qrCode} alt={t("setup.qrAlt")} width={140} height={140} className="size-35 flex-none rounded-[10px] border border-line bg-white p-1.5" />
+          ) : (
+            <div role="status" className="flex size-35 flex-none items-center justify-center rounded-[10px] border border-line bg-paper">
+              <span className="size-5 animate-spin rounded-full border-2 border-field border-t-brand motion-reduce:animate-none" aria-hidden="true" />
+              <span className="sr-only">{t("setup.preparing")}</span>
+            </div>
+          )}
+          {ready ? <SetupKey secret={setup.secret} /> : <div aria-hidden="true" className="h-20 w-full animate-pulse rounded-lg bg-paper motion-reduce:animate-none" />}
         </div>
-      )}
-    </>
+      </SetupStep>
+      <SetupStep number={3} title={t("setup.step3")} last>
+        {ready && <TotpForm key={setup.factorId} factorId={setup.factorId} next={next} mode="setup" onExpired={restart} />}
+      </SetupStep>
+    </ol>
+  );
+}
+
+/** One numbered step of the authenticator setup, joined to the next by a hairline. */
+function SetupStep({ number, title, text, last = false, children }: { number: number; title: string; text?: string; last?: boolean; children?: React.ReactNode }) {
+  return (
+    <li className={`relative flex gap-3.5 ${last ? "" : "pb-6"}`}>
+      {!last && <span aria-hidden="true" className="absolute top-7 bottom-1 left-[10.5px] w-px bg-line" />}
+      <span aria-hidden="true" className="flex size-[22px] flex-none items-center justify-center rounded-full bg-ink text-xs font-semibold text-white">
+        {number}
+      </span>
+      <div className="flex min-w-0 flex-1 flex-col gap-3">
+        <div>
+          <p className="text-sm font-semibold">{title}</p>
+          {text && <p className="mt-0.5 text-[13px] text-muted">{text}</p>}
+        </div>
+        {children}
+      </div>
+    </li>
   );
 }
 
@@ -221,30 +235,28 @@ export function SetupKey({ secret }: { secret: string }) {
   const [copied, setCopied] = useState(false);
   const groups = secret.match(/.{1,4}/g) ?? [secret];
   return (
-    <div className="flex flex-col gap-1.5">
-      <p className="text-[13px] text-muted">{t("keyLabel")}</p>
-      <div className="flex items-center gap-2.5 rounded-xl bg-paper py-1.5 pr-1.5 pl-3.5">
-        <code className="flex min-w-0 flex-1 flex-wrap gap-x-2 font-mono text-[15px] font-semibold tracking-[0.06em]">
-          {/* Groups of four never break apart, so the key reads like the design. */}
-          {groups.map((group, i) => (
-            <span key={i}>{group}</span>
-          ))}
-        </code>
-        <button
-          type="button"
-          onClick={async () => {
-            await navigator.clipboard.writeText(secret);
-            setCopied(true);
-          }}
-          className="inline-flex min-h-11 flex-none items-center gap-2 rounded-full border border-field bg-surface px-4 text-sm font-semibold hover:border-brand"
-        >
-          <Icon name={copied ? "check" : "copy"} size={16} strokeWidth={2} />
-          {copied ? t("copied") : t("copy")}
-        </button>
-        <span role="status" className="sr-only">
-          {copied ? t("copied") : ""}
-        </span>
-      </div>
+    <div className="flex min-w-0 flex-col gap-2">
+      <p className="text-[12.5px] text-muted">{t("keyLabel")}</p>
+      <code className="flex flex-wrap gap-x-2 gap-y-1 font-mono text-[13px] font-medium tracking-[0.04em]">
+        {/* Groups of four never break apart. */}
+        {groups.map((group, i) => (
+          <span key={i}>{group}</span>
+        ))}
+      </code>
+      <button
+        type="button"
+        onClick={async () => {
+          await navigator.clipboard.writeText(secret);
+          setCopied(true);
+        }}
+        className="inline-flex h-11 items-center gap-1.5 self-start rounded-lg border border-field bg-surface px-2.5 text-[13px] font-medium hover:border-ink sm:h-8"
+      >
+        <Icon name={copied ? "check" : "copy"} size={14} strokeWidth={2} />
+        {copied ? t("copied") : t("copy")}
+      </button>
+      <span role="status" className="sr-only">
+        {copied ? t("copied") : ""}
+      </span>
     </div>
   );
 }

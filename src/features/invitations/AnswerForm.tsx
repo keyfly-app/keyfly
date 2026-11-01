@@ -33,8 +33,7 @@ export function AnswerForm({
   if (state.status === "declined") {
     return (
       <>
-        <PageTitle>{t("declined.title")}</PageTitle>
-        <p className="text-[15px] text-muted">{t("declined.text")}</p>
+        <PageTitle sub={t("declined.text")}>{t("declined.title")}</PageTitle>
         <div className="mt-auto pt-4">
           <ButtonLink href={homeHref}>{t("declined.continue")}</ButtonLink>
         </div>

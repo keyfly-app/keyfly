@@ -14,8 +14,7 @@ export default async function ForgotPassword() {
   const t = await getTranslations("auth");
   return (
     <AuthLayout back={{ href: await siteHref("portal", "/login"), label: t("register.back") }}>
-      <PageTitle>{t("forgot.title")}</PageTitle>
-      <p className="text-[15px] text-muted">{t("forgot.text")}</p>
+      <PageTitle sub={t("forgot.text")}>{t("forgot.title")}</PageTitle>
       <ForgotPasswordForm />
     </AuthLayout>
   );

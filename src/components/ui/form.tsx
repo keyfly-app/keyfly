@@ -1,16 +1,24 @@
 import Link from "next/link";
 import { Icon } from "@/components/Icon";
 
-/** Shared look of text inputs in the app (48 px tall, 3:1 border, visible focus). */
+/**
+ * App v2.2 controls: 40 px on desktop, 44 px on phones (touch), 8 px corners, 3:1 field border, visible focus.
+ * Phones get 16 px text so iOS does not zoom into the field.
+ */
 export const INPUT_CLASS =
-  "h-12 w-full min-w-0 rounded-xl border border-field bg-surface px-3.5 text-[15px] font-medium text-ink tabular-nums placeholder:text-muted/70 focus:border-brand aria-invalid:border-danger-ink";
+  "h-11 w-full min-w-0 rounded-lg border border-field bg-surface px-3 text-base text-ink tabular-nums transition-[border-color,box-shadow] placeholder:text-muted/70 focus:border-brand focus:shadow-[0_0_0_3px_rgb(14_90_67/0.16)] focus-visible:outline-none aria-invalid:border-danger-ink aria-invalid:shadow-[0_0_0_3px_rgb(138_28_28/0.1)] motion-reduce:transition-none sm:h-10 sm:text-sm";
 
 const BUTTON = {
-  primary: "bg-brand text-white hover:bg-brand-dark",
-  secondary: "border border-field bg-surface text-ink hover:border-brand",
+  primary: "bg-ink text-white shadow-[0_1px_2px_rgb(12_31_25/0.16)] hover:bg-ink-soft",
+  secondary: "border border-field bg-surface text-ink hover:border-ink",
 } as const;
 const BUTTON_BASE =
-  "inline-flex h-12 w-full items-center justify-center gap-2 rounded-full px-5.5 text-[15px] font-semibold transition-colors aria-disabled:opacity-70";
+  "inline-flex h-11 w-full items-center justify-center gap-2 rounded-lg px-4 text-sm font-medium whitespace-nowrap transition-colors aria-disabled:cursor-progress aria-disabled:opacity-80 motion-reduce:transition-none sm:h-10";
+
+/** The small spinner shown in a button while its action runs. */
+function Spinner() {
+  return <span aria-hidden="true" className="size-3.5 animate-spin rounded-full border-2 border-current border-t-transparent opacity-80 motion-reduce:animate-none" />;
+}
 
 export function Button({
   children,
@@ -37,14 +45,15 @@ export function Button({
       onClick={pending ? (e) => e.preventDefault() : undefined}
       className={`${BUTTON_BASE} ${BUTTON[variant]}`}
     >
+      {pending && <Spinner />}
       {children}
     </button>
   );
 }
 
-export function ButtonLink({ href, children, variant = "primary" }: { href: string; children: React.ReactNode; variant?: keyof typeof BUTTON }) {
+export function ButtonLink({ href, children, variant = "primary", fit = false }: { href: string; children: React.ReactNode; variant?: keyof typeof BUTTON; fit?: boolean }) {
   return (
-    <Link href={href} className={`${BUTTON_BASE} ${BUTTON[variant]}`}>
+    <Link href={href} className={`${BUTTON_BASE} ${BUTTON[variant]} ${fit ? "sm:w-auto" : ""}`}>
       {children}
     </Link>
   );
@@ -52,7 +61,7 @@ export function ButtonLink({ href, children, variant = "primary" }: { href: stri
 
 export function TextLink({ href, children }: { href: string; children: React.ReactNode }) {
   return (
-    <Link href={href} className="inline-flex min-h-11 items-center text-sm font-semibold text-brand underline-offset-3 hover:underline">
+    <Link href={href} className="inline-flex min-h-11 items-center text-[13px] font-medium text-brand underline-offset-3 hover:underline sm:min-h-6">
       {children}
     </Link>
   );
@@ -60,7 +69,7 @@ export function TextLink({ href, children }: { href: string; children: React.Rea
 
 export function Label({ htmlFor, children }: { htmlFor: string; children: React.ReactNode }) {
   return (
-    <label htmlFor={htmlFor} className="flex items-center gap-1.5 text-[13px] font-semibold">
+    <label htmlFor={htmlFor} className="flex items-center gap-1.5 text-[13px] font-medium">
       {children}
     </label>
   );
@@ -102,26 +111,26 @@ export function Checkbox({
 }) {
   return (
     <div className="flex flex-col gap-1.5">
-      <label className="flex cursor-pointer items-start gap-2.5 text-sm leading-normal">
+      <label className="flex min-h-6 cursor-pointer items-start gap-2.5 text-[13px] leading-[18px]">
         <input
           type="checkbox"
           name={name}
           defaultChecked={defaultChecked}
           aria-invalid={error ? true : undefined}
           aria-describedby={error ? `${id}-error` : undefined}
-          className="mt-px size-5 flex-none accent-brand"
+          className="mt-px size-4 flex-none accent-ink"
         />
         <span>{children}</span>
       </label>
-      {error && <FieldError id={`${id}-error`} message={error} className="pl-7.5" />}
+      {error && <FieldError id={`${id}-error`} message={error} className="pl-6.5" />}
     </div>
   );
 }
 
 export function FieldError({ id, message, className = "" }: { id: string; message: string; className?: string }) {
   return (
-    <p id={id} className={`flex items-start gap-1.5 text-[13px] font-semibold text-danger-ink ${className}`}>
-      <Icon name="alert" size={16} strokeWidth={2.2} className="mt-px flex-none" />
+    <p id={id} className={`flex items-start gap-1.5 text-[12.5px] leading-[18px] font-medium text-danger-ink ${className}`}>
+      <Icon name="alert" size={14} strokeWidth={2.2} className="mt-0.5 flex-none" />
       <span>{message}</span>
     </p>
   );
@@ -130,14 +139,15 @@ export function FieldError({ id, message, className = "" }: { id: string; messag
 const NOTICE = {
   error: "bg-danger-soft text-danger-ink",
   warning: "bg-warning-soft text-warning-ink",
-  success: "bg-mist text-brand",
+  success: "bg-ok-soft text-ok-ink",
+  info: "bg-info-soft text-info-ink",
 } as const;
 
 /** Banner above or inside a form. Errors are announced to screen readers. */
 export function Notice({ kind, children, icon = kind === "success" ? "check" : "alert" }: { kind: keyof typeof NOTICE; children: React.ReactNode; icon?: "check" | "alert" | "mail" | "phone" }) {
   return (
-    <div role={kind === "error" ? "alert" : "status"} className={`flex items-start gap-2.5 rounded-xl px-3 py-2.5 text-sm font-semibold ${NOTICE[kind]}`}>
-      <Icon name={icon} size={18} strokeWidth={2} className="mt-px flex-none" />
+    <div role={kind === "error" ? "alert" : "status"} className={`flex items-start gap-2 rounded-lg px-3 py-2.5 text-[13px] leading-[18px] font-medium ${NOTICE[kind]}`}>
+      <Icon name={icon} size={16} strokeWidth={2} className="mt-px flex-none" />
       <div className="flex-1">{children}</div>
     </div>
   );
@@ -145,7 +155,7 @@ export function Notice({ kind, children, icon = kind === "success" ? "check" : "
 
 export function Divider({ children }: { children: React.ReactNode }) {
   return (
-    <div aria-hidden="true" className="flex items-center gap-3 text-[13px] text-muted">
+    <div aria-hidden="true" className="flex items-center gap-3 text-[12.5px] text-muted">
       <span className="h-px flex-1 bg-line" />
       {children}
       <span className="h-px flex-1 bg-line" />
@@ -153,11 +163,31 @@ export function Divider({ children }: { children: React.ReactNode }) {
   );
 }
 
-export function PageTitle({ children, eyebrow }: { children: React.ReactNode; eyebrow?: string }) {
+/** Screen title (Sora 22) with an optional line under it. `eyebrow`: a small step or context label above. */
+export function PageTitle({ children, eyebrow, sub }: { children: React.ReactNode; eyebrow?: string; sub?: React.ReactNode }) {
   return (
     <div className="flex flex-col gap-1.5">
-      {eyebrow && <p className="text-xs font-semibold tracking-[0.05em] text-muted uppercase">{eyebrow}</p>}
-      <h1 className="font-display text-[26px] leading-tight font-semibold">{children}</h1>
+      {eyebrow && <p className="text-xs font-medium text-muted">{eyebrow}</p>}
+      <h1 className="font-display text-[22px] leading-7 font-semibold">{children}</h1>
+      {sub && <p className="text-sm text-muted">{sub}</p>}
     </div>
   );
 }
+
+/** Two-step progress (admin sign-in): "Step 1 of 2" and two bars. */
+export function StepProgress({ step, total, label }: { step: number; total: number; label: string }) {
+  return (
+    <div className="flex flex-col gap-2">
+      <span className="text-xs font-medium text-muted">{label}</span>
+      <div aria-hidden="true" className="flex gap-1">
+        {Array.from({ length: total }, (_, i) => (
+          <span key={i} className={`h-[3px] flex-1 rounded-sm ${i < step ? "bg-ink" : "bg-line"}`} />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/** The App v2.2 card on the paper ground (sign-in, dialogs, panels). */
+export const CARD_CLASS =
+  "rounded-xl border border-line bg-surface shadow-[0_1px_2px_rgb(12_31_25/0.04),0_16px_40px_-24px_rgb(12_31_25/0.22)]";

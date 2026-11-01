@@ -28,7 +28,7 @@ export default async function Register({ searchParams }: { searchParams: Promise
 
   return (
     <AuthLayout back={{ href: loginHref, label: t("register.back") }}>
-      <PageTitle>{t("register.title")}</PageTitle>
+      <PageTitle sub={t("register.sub")}>{t("register.title")}</PageTitle>
       <SignUpForm next={next} privacyHref={privacyHref} />
     </AuthLayout>
   );

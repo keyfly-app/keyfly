@@ -14,11 +14,10 @@ export async function generateMetadata(): Promise<Metadata> {
 
 /** Steps 1–3: the tenant invites the landlord. */
 export default async function NewLeaseRequest() {
-  const t = await getTranslations("leaseRequest");
   const supabase = await createClient();
   const { data: auth } = await supabase.auth.getClaims();
   return (
-    <AuthLayout back={{ href: await siteHref("portal", "/"), label: t("homeTitle") }}>
+    <AuthLayout back={{ href: await siteHref("portal", "/"), label: (await getTranslations("portal"))("title") }}>
       <RequestWizard myEmail={String(auth?.claims.email ?? "")} />
     </AuthLayout>
   );

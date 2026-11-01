@@ -130,6 +130,35 @@ const PATHS = {
       <circle cx="12" cy="9.5" r="2.5" />
     </>
   ),
+  lock: (
+    <>
+      <rect x="4.5" y="10.5" width="15" height="10" rx="2" />
+      <path d="M8 10.5V7.5a4 4 0 0 1 8 0v3" />
+    </>
+  ),
+  logout: (
+    <>
+      <path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3" />
+      <path d="M10 16l-4-4 4-4M6 12h10" />
+    </>
+  ),
+  users: (
+    <>
+      <circle cx="9" cy="8" r="3.5" />
+      <path d="M2.5 20a6.5 6.5 0 0 1 13 0" />
+      <path d="M16 4.5a3.5 3.5 0 0 1 0 7M18 14.5a6.5 6.5 0 0 1 3.5 5.5" />
+    </>
+  ),
+  list: (
+    <>
+      <path d="M8 6h13M8 12h13M8 18h13" />
+      <circle cx="3.5" cy="6" r="1" />
+      <circle cx="3.5" cy="12" r="1" />
+      <circle cx="3.5" cy="18" r="1" />
+    </>
+  ),
+  chevronDown: <path d="m7 10 5 5 5-5" />,
+  chevronRight: <path d="m9 6 6 6-6 6" />,
   globe: (
     <>
       <circle cx="12" cy="12" r="9" />

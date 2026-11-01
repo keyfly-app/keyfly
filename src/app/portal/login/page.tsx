@@ -22,14 +22,14 @@ export default async function Login({ searchParams }: { searchParams: Promise<{ 
 
   return (
     <AuthLayout>
-      <PageTitle>{t("signIn.title")}</PageTitle>
+      <PageTitle sub={t("signIn.sub")}>{t("signIn.title")}</PageTitle>
       {error === "link" && <Notice kind="warning">{t("linkExpired")}</Notice>}
       <SignInForm next={next} forgotHref={forgotHref} />
       {SIGN_UP_OPEN && (
-        <p className="mt-auto pt-4 text-center text-sm text-muted">
+        <p className="border-t border-line pt-5 text-center text-[13px] text-muted">
         {t.rich("signIn.noAccount", {
           link: (chunks) => (
-            <Link href={registerHref} className="font-semibold text-brand underline-offset-3 hover:underline">
+            <Link href={registerHref} className="font-medium text-brand underline-offset-3 hover:underline">
               {chunks}
             </Link>
           ),

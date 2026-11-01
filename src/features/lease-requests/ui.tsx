@@ -1,4 +1,5 @@
 import { FieldError, INPUT_CLASS, Label } from "@/components/ui/form";
+import { Tag, type TagTone } from "@/components/ui/Tag";
 import type { Enums } from "@/lib/supabase/database.types";
 
 /** Small building blocks of the lease request screens (approved design: canvas "A bérlő hívja meg a bérbeadót"). */
@@ -16,7 +17,7 @@ export function StepBar({ step, total, name, label, count }: { step: number; tot
       </div>
       <div role="progressbar" aria-label={label} aria-valuemin={1} aria-valuemax={total} aria-valuenow={step} aria-valuetext={count} className="flex gap-1">
         {Array.from({ length: total }, (_, i) => (
-          <span key={i} className={`h-1 flex-1 rounded-full ${i < step ? "bg-brand" : "bg-line"}`} />
+          <span key={i} className={`h-[3px] flex-1 rounded-sm ${i < step ? "bg-ink" : "bg-line"}`} />
         ))}
       </div>
     </div>
@@ -40,11 +41,11 @@ export function Segmented<T extends string>({
   return (
     <fieldset>
       <legend className="sr-only">{legend}</legend>
-      <div className="flex rounded-xl bg-mist p-0.75">
+      <div className="flex rounded-lg bg-paper p-0.5">
         {options.map((o) => (
           <label
             key={o.value}
-            className="flex min-h-11 flex-1 cursor-pointer items-center justify-center rounded-[9px] text-sm font-semibold text-muted has-checked:bg-surface has-checked:text-ink has-checked:shadow-[0_1px_2px_rgba(12,31,25,.12)] has-focus-visible:outline-3 has-focus-visible:outline-brand"
+            className="flex min-h-11 flex-1 cursor-pointer items-center justify-center rounded-md text-[13px] font-medium text-muted has-checked:bg-surface has-checked:text-ink has-checked:shadow-[0_1px_2px_rgb(12_31_25/0.12)] has-focus-visible:outline-3 has-focus-visible:outline-brand sm:min-h-9"
           >
             <input type="radio" name={name} value={o.value} checked={value === o.value} onChange={() => onChange(o.value)} className="sr-only" />
             {o.label}
@@ -96,7 +97,7 @@ export function MoneyField({
           aria-describedby={described}
           className={`${INPUT_CLASS} pr-14`}
         />
-        <span aria-hidden="true" className="pointer-events-none absolute top-0 right-3.5 flex h-12 items-center text-[15px] font-medium text-muted">
+        <span aria-hidden="true" className="pointer-events-none absolute top-0 right-3 flex h-11 items-center text-base text-muted sm:h-10 sm:text-sm">
           {currency}
         </span>
       </div>
@@ -116,31 +117,24 @@ export function ChangeNote({ id, children }: { id: string; children: React.React
   );
 }
 
-const CHIP = {
-  waiting: "bg-lime-soft text-ink",
-  attention: "bg-warning-soft text-warning-ink",
-  done: "bg-mist text-brand",
-  off: "bg-danger-soft text-danger-ink",
-  closed: "bg-paper text-muted",
-} as const;
-
-export const STATUS_TONE: Record<Enums<"lease_request_status"> | "expired", keyof typeof CHIP> = {
-  pending_landlord: "waiting",
-  expired: "attention",
-  pending_tenant: "attention",
-  confirmed: "done",
-  declined: "off",
-  cancelled: "closed",
+export const STATUS_TONE: Record<Enums<"lease_request_status"> | "expired", TagTone> = {
+  pending_landlord: "warning",
+  expired: "danger",
+  pending_tenant: "info",
+  confirmed: "ok",
+  declined: "danger",
+  cancelled: "neutral",
 };
 
-export function Chip({ tone, children }: { tone: keyof typeof CHIP; children: React.ReactNode }) {
-  return <span className={`inline-flex flex-none items-center self-start rounded-md px-2 py-0.75 text-xs leading-snug font-semibold whitespace-nowrap ${CHIP[tone]}`}>{children}</span>;
+/** Lease request status tag. */
+export function Chip({ tone, children }: { tone: TagTone; children: React.ReactNode }) {
+  return <Tag tone={tone}>{children}</Tag>;
 }
 
 /** Label / value list in a bordered card. */
 export function DetailRows({ rows }: { rows: [string, React.ReactNode][] }) {
   return (
-    <dl className="rounded-2xl border border-line bg-surface px-4 py-1">
+    <dl className="rounded-xl border border-line bg-surface px-4 py-1">
       {rows.map(([k, v], i) => (
         <div key={k} className={`flex gap-3 py-2.75 text-sm ${i ? "border-t border-line" : ""}`}>
           <dt className="w-32 flex-none text-muted">{k}</dt>
@@ -157,7 +151,7 @@ export function Changed({ before, after, label }: { before?: string; after: stri
     <span className="inline-flex flex-wrap items-baseline gap-x-2 gap-y-1">
       {before && <del className="font-normal text-muted">{before}</del>}
       <ins className="font-semibold no-underline">{after}</ins>
-      <Chip tone="attention">{label}</Chip>
+      <Chip tone="info">{label}</Chip>
     </span>
   );
 }

@@ -16,6 +16,12 @@ https://claude.ai/artifact/AttVCwnk4JJP3kqG7mV1Ns
 - **Enterprise fintech UI/UX**: every screen must look and behave like a top-tier fintech product (precise
   spacing, real loading/empty/error states, no raw browser defaults). Every task list ends with a UI/UX check
   of the screens touched, on desktop and on a phone, before the owner sees them.
+- **Back office = "App v2.2"** (canvas page "App v2.2 – végleges javaslat"; app. and admin., not the public site):
+  compact controls (40 px desktop, 44 px phone), 8 px corners, 14 px body, near-black green (`ink`) primary
+  button, white cards with a hairline border on the `paper` ground, Sora only for titles, brand green for links
+  and focus, lime only as an accent (Admin badge). Copy: modern corporate fintech in "te" form – say the action,
+  never repeat the title on the button, errors tell what to do next, "kétlépcsős azonosítás" (never "2FA").
+  Ease of use comes first.
 - **Mobile first, WCAG 2.2 AA**: no horizontal scroll 320–1440 px, 44×44 px touch targets, labelled fields,
   visible focus, 4.5:1 text contrast, keyboard and screen-reader friendly.
 - **Voice**: informal "te" (tegezés) everywhere, for tenants and companies alike. Formats: `1 050 000 Ft`

@@ -329,32 +329,34 @@
     "newTab": "új lapon nyílik meg",
     "linkExpired": "Ez a link már nem érvényes: lejárt, már felhasználtad, vagy egy korábbi levélből nyitottad meg. Nyisd meg a legfrissebb Keyfly-levelet, vagy kérj újat.",
     "signIn": {
-      "title": "Belépés",
-      "remember": "Bejelentkezve maradok",
-      "forgot": "Elfelejtett jelszó",
+      "title": "Belépés a fiókodba",
+      "remember": "Maradjak bejelentkezve",
+      "forgot": "Elfelejtetted a jelszavad?",
       "submit": "Belépés",
       "submitting": "Belépés…",
-      "noAccount": "Nincs még fiókod? <link>Regisztráció</link>"
+      "noAccount": "Még nincs fiókod? <link>Fiók létrehozása</link>",
+      "sub": "Üdv újra a Keyflyon."
     },
     "emailLink": {
-      "submit": "Belépés e-mailes linkkel",
+      "submit": "Belépési link kérése e-mailben",
       "sending": "Küldés…",
       "sentTitle": "Elküldtük a belépési linket.",
-      "sentText": "Nézd meg a postafiókod (a spam mappát is), és kattints a linkre."
+      "sentText": "Ellenőrizd a postafiókod, a Spam mappát is. A link 24 óráig érvényes."
     },
     "register": {
-      "title": "Fiók létrehozása",
+      "title": "Hozd létre a fiókod",
       "back": "Belépés",
       "fullName": "Teljes név",
-      "terms": "Elfogadom az <terms>ÁSZF</terms>-et és az <privacy>Adatkezelési tájékoztatót</privacy>.",
+      "terms": "Elolvastam és elfogadom az <terms>ÁSZF</terms>-et és az <privacy>Adatkezelési tájékoztatót</privacy>.",
       "submit": "Fiók létrehozása",
-      "submitting": "Létrehozás…"
+      "submitting": "Létrehozás…",
+      "sub": "Néhány adat, és már meghívhatod a bérbeadód."
     },
     "rules": {
       "label": "Jelszókövetelmények",
       "length": "Legalább 8 karakter",
       "cases": "Kis- és nagybetű",
-      "digit": "Legalább egy szám",
+      "digit": "Legalább egy számjegy",
       "met": "teljesül",
       "unmet": "még nem teljesül"
     },
@@ -363,25 +365,25 @@
       "sentTo": "Megerősítő linket küldtünk ide: <b>{email}</b>",
       "validity": "A link {hours} óráig érvényes.",
       "resend": "Levél újraküldése",
-      "resent": "Újra elküldtük.",
+      "resent": "Újra elküldtük a levelet.",
       "otherEmail": "Másik e-mail-cím megadása"
     },
     "forgot": {
-      "title": "Elfelejtett jelszó",
-      "text": "Add meg az e-mail-címed, és küldünk egy linket az új jelszóhoz.",
-      "submit": "Link küldése",
-      "sentTitle": "Ha van fiók ezzel a címmel, elküldtük a linket.",
-      "sentText": "Nézd meg a postafiókod (a spam mappát is)."
+      "title": "Jelszó visszaállítása",
+      "text": "Add meg a fiókodhoz tartozó e-mail-címet. Küldünk egy biztonságos linket az új jelszó beállításához.",
+      "submit": "Visszaállító link küldése",
+      "sentTitle": "Ellenőrizd a postafiókod",
+      "sentText": "Ha ehhez a címhez tartozik fiók, elküldtük rá a linket. A link 24 óráig érvényes; nézd meg a Spam mappát is."
     },
     "reset": {
-      "title": "Új jelszó",
+      "title": "Új jelszó beállítása",
       "password": "Új jelszó",
       "submit": "Jelszó mentése",
       "submitting": "Mentés…"
     },
     "welcome": {
       "title": "Hogyan használod a Keyflyt?",
-      "tip": "Ez csak a kezdőképernyőt állítja be. Később bármikor válthatsz.",
+      "tip": "Ez csak a kezdőképernyőt állítja be, később bármikor módosíthatod.",
       "tenant": {
         "title": "Bérlő",
         "text": "Keyfly-garancia kaució helyett"
@@ -401,13 +403,13 @@
       "passwordMissing": "Add meg a jelszavad.",
       "password": "A jelszó nem felel meg a követelményeknek.",
       "name": "Add meg a teljes neved.",
-      "terms": "A regisztrációhoz fogadd el az ÁSZF-et és az Adatkezelési tájékoztatót.",
-      "credentials": "Hibás e-mail-cím vagy jelszó.",
-      "unconfirmed": "Még nem erősítetted meg az e-mail-címed. Nézd meg a postafiókod.",
+      "terms": "A fiók létrehozásához fogadd el az ÁSZF-et és az Adatkezelési tájékoztatót.",
+      "credentials": "Az e-mail-cím vagy a jelszó nem megfelelő.",
+      "unconfirmed": "Az e-mail-címed még nincs megerősítve. Kattints a regisztrációkor kapott levélben lévő linkre.",
       "noAccount": "Ehhez az e-mail-címhez nem tartozik fiók.",
       "samePassword": "Az új jelszó nem lehet ugyanaz, mint a régi.",
-      "rateLimit": "Túl sok próbálkozás. Várj pár percet, és próbáld újra.",
-      "generic": "Valami nem sikerült. Próbáld újra."
+      "rateLimit": "Túl sok próbálkozás. Próbáld újra néhány perc múlva.",
+      "generic": "Átmeneti hiba történt. Próbáld újra."
     }
   },
   "invite": {
@@ -477,7 +479,7 @@
     }
   },
   "leaseRequest": {
-    "homeTitle": "Otthonom",
+    "homeTitle": "Bérletek",
     "homeEmpty": "Bérelsz, de a bérbeadód még nincs a Keyflyon? Hívd meg, és rögzítsétek együtt a bérletet.",
     "inviteLandlord": "Bérbeadó meghívása",
     "next": "Tovább",
@@ -759,20 +761,19 @@
     "title": "Kezdőlap",
     "greeting": "Szia{name, select, none {} other {, {name}}}!",
     "intro": {
-      "tenant": "Itt látod az ajánlatkéréseidet és a fedezeti igazolásaidat.",
+      "tenant": "Bérleteid és teendőid egy helyen.",
       "landlord": "Hamarosan itt kezelheted az ingatlanjaidat és a bérleteidet.",
       "manager": "Hamarosan itt kezelheted a portfóliót és a csapatot."
     },
     "changeView": "Kezdőképernyő módosítása",
     "applications": "Ajánlatkéréseim",
-    "noApplications": "Még nincs ajánlatkérésed. Az online ajánlatkérés hamarosan itt indul.",
     "addressLater": "Cím később",
     "applicationLine": "{rent} / hó · kaució {deposit} · {date}",
     "policies": "Fedezeti igazolásaim",
-    "noPolicies": "Még nincs aktív fedezeted.",
     "coverage": "Fedezet: {amount}",
     "perMonth": "hó",
-    "perYear": "év"
+    "perYear": "év",
+    "account": "Fiók"
   },
   "admin": {
     "noAccessTitle": "Nincs hozzáférésed",
@@ -780,21 +781,25 @@
     "overview": "Áttekintés",
     "stats": {
       "waitlist": "Várólista",
-      "applications": "Ajánlatkérés",
-      "policies": "Kötvény",
-      "claims": "Kárigény"
+      "applications": "Ajánlatkérések",
+      "policies": "Kötvények",
+      "claims": "Kárigények"
     },
-    "waitlistTitle": "Várólista – legutóbbi 50",
+    "waitlistTitle": "Legutóbbi feliratkozók",
     "columns": {
-      "email": "E-mail",
-      "segment": "Ki",
+      "email": "E-mail-cím",
+      "segment": "Szerep",
       "newsletter": "Hírlevél",
-      "date": "Dátum"
+      "date": "Feliratkozás"
     },
-    "yes": "igen",
-    "waitlistEmpty": "Még senki nem iratkozott fel.",
-    "recentApplications": "Friss ajánlatkérések",
-    "applicationsEmpty": "Még nincs ajánlatkérés."
+    "yes": "Igen",
+    "waitlistEmpty": "Még nincs feliratkozó.",
+    "recentApplications": "Legutóbbi ajánlatkérések",
+    "applicationsEmpty": "Még nincs ajánlatkérés.",
+    "no": "Nem",
+    "navLabel": "Admin menü",
+    "todayLine": "Ma: {date}",
+    "lastWeek": "+{count} az elmúlt 7 napban"
   },
   "status": {
     "draft": "Piszkozat",
@@ -864,36 +869,39 @@
     }
   },
   "adminAuth": {
-    "title": "Keyfly admin",
-    "text": "Csak Keyfly-munkatársaknak. A jelszó után a hitelesítő alkalmazás kódját kérjük.",
+    "title": "Belépés az adminba",
+    "text": "Munkatársi hozzáférés. A jelszó után kétlépcsős azonosítás következik.",
     "submit": "Tovább",
     "submitting": "Belépés…",
     "setup": {
-      "eyebrow": "Első belépés",
-      "title": "Kétlépcsős azonosítás",
-      "text": "Olvasd be a QR-kódot egy hitelesítő alkalmazással, például a Google Authenticatorral vagy a Microsoft Authenticatorral.",
+      "title": "Kétlépcsős azonosítás beállítása",
+      "text": "Egyszeri beállítás. Ezután minden belépéskor egy hitelesítő kódot kérünk.",
       "qrAlt": "QR-kód a hitelesítő alkalmazáshoz",
-      "keyLabel": "Nem tudod beolvasni? Add meg ezt a kulcsot:",
-      "copy": "Másolás",
+      "keyLabel": "Nem tudod beolvasni? Add meg ezt a kulcsot kézzel:",
+      "copy": "Kulcs másolása",
       "copied": "Kimásolva",
-      "code": "Az alkalmazásban látható 6 jegyű kód",
-      "submit": "Bekapcsolás",
-      "lostPhone": "Ha elveszíted a telefonod, egy szuperadmin visszaállítja a kétlépcsős azonosítást.",
-      "restart": "Új QR-kód",
-      "preparing": "QR-kód készítése…"
+      "code": "Hitelesítő kód",
+      "submit": "Azonosítás bekapcsolása",
+      "lostPhone": "Ha elveszíted a telefonod, egy szuperadmin visszaállítja az azonosítást.",
+      "restart": "Új QR-kód kérése",
+      "preparing": "QR-kód készítése…",
+      "step1": "Telepíts hitelesítő alkalmazást",
+      "step1Text": "Például Google Authenticator vagy Microsoft Authenticator.",
+      "step2": "Olvasd be a QR-kódot",
+      "step3": "Add meg a 6 jegyű kódot"
     },
     "challenge": {
       "title": "Kétlépcsős azonosítás",
-      "text": "Írd be a hitelesítő alkalmazásban látható 6 jegyű kódot.",
-      "code": "6 jegyű kód",
+      "text": "Add meg a hitelesítő alkalmazásban látható 6 jegyű kódot.",
+      "code": "Hitelesítő kód",
       "submit": "Belépés",
-      "noPhone": "Nem férsz hozzá a telefonodhoz?",
-      "noPhoneTip": "Szólj egy szuperadminnak: ő visszaállítja a kétlépcsős azonosítást."
+      "noPhone": "Nem férsz hozzá a hitelesítő alkalmazáshoz?",
+      "noPhoneTip": "Kérd egy szuperadmin segítségét: ő visszaállítja az azonosítást."
     },
     "checking": "Ellenőrzés…",
     "invite": {
       "label": "Meghívó",
-      "title": "Csatlakozás a Keyfly csapatához",
+      "title": "Csatlakozz a Keyfly csapatához",
       "intro": "{name} meghívott {role, select, superadmin {szuperadminként} admin {adminként} insurance {biztosítási munkatársként} support {ügyfélszolgálati munkatársként} finance {pénzügyi munkatársként} other {munkatársként}}.",
       "emailHelp": "A meghívó erre a címre szól.",
       "after": "Ezután megerősítő linket küldünk erre a címre.",
@@ -901,7 +909,7 @@
       "sentTitle": "Erősítsd meg az e-mail-címed",
       "sentText": "Megerősítő linket küldtünk ide: <b>{email}</b>. A linkre kattintva visszajutsz ide, és csatlakozhatsz.",
       "sentExisting": "Ha ezzel a címmel már van fiókod, nem küldünk új levelet: lépj be inkább.",
-      "needs2fa": "A belépéshez kétlépcsős azonosítás kell. Készíts elő egy hitelesítő alkalmazást a telefonodon."
+      "needs2fa": "A belépéshez kétlépcsős azonosítás szükséges. Tarts kéznél egy hitelesítő alkalmazást a telefonodon."
     },
     "errors": {
       "email": "Adj meg egy érvényes e-mail-címet.",
@@ -909,15 +917,20 @@
       "newPassword": "A jelszó nem felel meg a követelményeknek.",
       "name": "Add meg a teljes neved.",
       "terms": "A fiók létrehozásához fogadd el az ÁSZF-et és az Adatkezelési tájékoztatót.",
-      "credentials": "Hibás e-mail-cím vagy jelszó.",
+      "credentials": "Az e-mail-cím vagy a jelszó nem megfelelő.",
       "unconfirmed": "Még nem erősítetted meg az e-mail-címed. Nézd meg a postafiókod.",
-      "code": "Hibás kód. Próbáld újra.",
+      "code": "A kód nem megfelelő vagy lejárt. Írd be az aktuális kódot.",
       "codeFormat": "A kód 6 számjegyből áll.",
-      "expired": "Ez a QR-kód lejárt. Kérj újat, olvasd be, és írd be az új kódot.",
-      "rateLimit": "Túl sok próbálkozás. Várj pár percet, és próbáld újra.",
-      "generic": "Valami nem sikerült. Próbáld újra."
+      "expired": "A QR-kód érvényessége lejárt. Kérj újat, és olvasd be azt.",
+      "rateLimit": "Túl sok sikertelen próbálkozás. Próbáld újra néhány perc múlva.",
+      "generic": "Átmeneti hiba történt. Próbáld újra."
     },
-    "signedInAs": "Belépve: <b>{email}</b>"
+    "signedInAs": "Belépve: <b>{email}</b>",
+    "badge": "Admin",
+    "staffOnly": "Belső rendszer · csak munkatársaknak",
+    "step1": "1. lépés / 2",
+    "step2": "2. lépés / 2",
+    "audit": "A belépéseket biztonsági okból naplózzuk."
   },
   "adminStaff": {
     "nav": "Munkatársak",
@@ -927,7 +940,8 @@
       "member": "Munkatárs",
       "role": "Szerepkör",
       "twoFactor": "Kétlépcsős azonosítás",
-      "status": "Állapot"
+      "lastSignIn": "Utolsó belépés",
+      "actions": "Műveletek"
     },
     "roles": {
       "superadmin": "Szuperadmin",
@@ -936,16 +950,14 @@
       "support": "Ügyfélszolgálat",
       "finance": "Pénzügy"
     },
-    "on": "Bekapcsolva",
+    "on": "Aktív",
     "notSetUp": "Beállításra vár",
-    "active": "Aktív",
     "disabled": "Letiltva",
-    "lastSignIn": "Utolsó belépés: {date}",
     "never": "Még nem lépett be",
     "you": "(te)",
     "selfNote": "A saját kétlépcsős azonosításodat egy másik szuperadmin állíthatja vissza.",
     "reset": {
-      "open": "Visszaállítás",
+      "open": "Azonosítás visszaállítása",
       "openLabel": "{name} kétlépcsős azonosításának visszaállítása",
       "title": "Visszaállítod {name} kétlépcsős azonosítását?",
       "text": "Minden eszközéről kijelentkeztetjük. A következő belépéskor új hitelesítő alkalmazást kell beállítania.",
@@ -962,22 +974,23 @@
       "emailPlaceholder": "nev@keyfly.app",
       "role": "Szerepkör",
       "roleHints": {
-        "admin": "Ügyfelek, fiókok, bérletek",
-        "insurance": "Kérelmek, kötvények, kárügyek",
-        "finance": "Díjak, számlák, jutalékok",
-        "support": "Ügyféladatok megtekintése"
+        "admin": "Teljes hozzáférés, a munkatársak kezelése nélkül.",
+        "insurance": "Ajánlatok, kötvények és kárigények kezelése.",
+        "finance": "Díjak, számlák és kifizetések.",
+        "support": "Ügyfelek és bérletek megtekintése."
       },
-      "twoFactor": "Kétlépcsős azonosítás kötelező",
+      "twoFactor": "A belépéshez kétlépcsős azonosítás szükséges.",
       "submit": "Meghívó küldése",
       "sending": "Küldés…",
-      "validity": "Érvényes 48 óráig.",
       "sent": "Meghívó elküldve: {email}",
       "createdNoEmail": "A meghívó elkészült ({email}), de az e-mailt nem tudtuk elküldeni. Próbáld újra később.",
       "errors": {
-        "email": "Csak @keyfly.app cím adható meg.",
+        "email": "Csak @keyfly.app végű cím adható meg.",
         "notAllowed": "Munkatársat csak szuperadmin hívhat meg.",
         "generic": "Nem sikerült elküldeni a meghívót. Próbáld újra."
-      }
+      },
+      "sub": "Csak @keyfly.app címre küldhető. A meghívó 48 óráig érvényes.",
+      "cancel": "Mégse"
     }
   },
   "authEmails": {

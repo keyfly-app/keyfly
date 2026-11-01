@@ -24,7 +24,7 @@ export function WaitingActions({ requestId, canRemind }: { requestId: string; ca
               type="submit"
               aria-disabled={reminding || undefined}
               onClick={reminding ? (e) => e.preventDefault() : undefined}
-              className="inline-flex h-11 items-center rounded-full border border-field bg-surface px-4.5 text-sm font-semibold hover:border-brand aria-disabled:opacity-70"
+              className="inline-flex h-11 items-center rounded-lg border border-field bg-surface px-4 text-sm font-medium hover:border-ink aria-disabled:opacity-70"
             >
               {t("waiting.remind")}
             </button>

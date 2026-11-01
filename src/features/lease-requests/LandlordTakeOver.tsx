@@ -88,8 +88,7 @@ export function LandlordTakeOver({
   if (declined.status === "declined") {
     return (
       <>
-        <PageTitle>{invite("declined.title")}</PageTitle>
-        <p className="text-[15px] text-muted">{invite("declined.text")}</p>
+        <PageTitle sub={invite("declined.text")}>{invite("declined.title")}</PageTitle>
         <div className="mt-auto pt-4">
           <ButtonLink href={homeHref}>{invite("declined.continue")}</ButtonLink>
         </div>
@@ -100,11 +99,11 @@ export function LandlordTakeOver({
     const key = state.needsTenantApproval ? "sent" : "done";
     return (
       <>
-        <span aria-hidden="true" className="inline-flex size-12 items-center justify-center rounded-2xl bg-mist text-brand">
+        <span aria-hidden="true" className="inline-flex size-12 items-center justify-center rounded-xl bg-mist text-brand">
           <Icon name={state.needsTenantApproval ? "mail" : "check"} size={24} />
         </span>
         <PageTitle>{t(`landlordSide.${key}Title`)}</PageTitle>
-        <p className="text-[15px] text-muted">{t(`landlordSide.${key}Text`, { name: tenantName })}</p>
+        <p className="text-sm text-muted">{t(`landlordSide.${key}Text`, { name: tenantName })}</p>
         <div className="mt-auto pt-4">
           <ButtonLink href={homeHref}>{t("landlordSide.continue")}</ButtonLink>
         </div>
@@ -147,7 +146,7 @@ export function LandlordTakeOver({
     return (
       <>
         <PageTitle eyebrow={invite("label")}>{t("landlordSide.title")}</PageTitle>
-        <p className="text-[15px] text-muted">{t("landlordSide.intro", { name: tenantName })}</p>
+        <p className="text-sm text-muted">{t("landlordSide.intro", { name: tenantName })}</p>
         <DetailRows
           rows={[
             [t("rows.property"), address],
@@ -247,7 +246,7 @@ export function LandlordTakeOver({
           <button
             type="button"
             onClick={toReview}
-            className="inline-flex h-12 w-full items-center justify-center rounded-full bg-brand px-5.5 text-[15px] font-semibold text-white transition-colors hover:bg-brand-dark"
+            className="inline-flex h-11 w-full items-center justify-center rounded-lg bg-ink px-4 text-sm font-medium text-white shadow-[0_1px_2px_rgb(12_31_25/0.16)] transition-colors hover:bg-ink-soft sm:h-10"
           >
             {t("landlordSide.toReview")}
           </button>
@@ -270,10 +269,10 @@ export function LandlordTakeOver({
         {t("back")}
       </button>
       <div className="flex flex-col gap-1.5">
-        <h1 ref={top} tabIndex={-1} className="font-display text-[26px] leading-tight font-semibold outline-none">
+        <h1 ref={top} tabIndex={-1} className="font-display text-[22px] leading-7 font-semibold outline-none">
           {t("landlordSide.reviewTitle")}
         </h1>
-        <p className="text-[15px] text-muted">{t("landlordSide.reviewLead")}</p>
+        <p className="text-sm text-muted">{t("landlordSide.reviewLead")}</p>
       </div>
       <Segmented
         name="termSwitch"

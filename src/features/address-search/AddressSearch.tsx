@@ -146,7 +146,7 @@ export function AddressSearch({
                   type="button"
                   onMouseDown={(e) => e.preventDefault()}
                   onClick={onManual}
-                  className="mt-2 inline-flex h-11 items-center self-start rounded-full border border-field px-4 text-sm font-semibold hover:border-brand"
+                  className="mt-2 inline-flex h-11 items-center self-start rounded-lg border border-field bg-surface px-4 text-sm font-medium hover:border-ink"
                 >
                   {t("manualButton")}
                 </button>
@@ -157,7 +157,7 @@ export function AddressSearch({
                 type="button"
                 onMouseDown={(e) => e.preventDefault()}
                 onClick={onManual}
-                className="flex min-h-12 w-full items-center border-b border-line pr-3.5 pl-10.5 text-left text-sm font-semibold text-brand"
+                className="flex min-h-11 w-full items-center border-b border-line pr-3.5 pl-10.5 text-left text-[13px] font-medium text-brand"
               >
                 {t("manual")}
               </button>

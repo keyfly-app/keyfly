@@ -25,6 +25,11 @@
   --color-danger-soft: #fde2e1;
   --color-danger-ink: #8a1c1c;
   --color-danger-light: #f2a3a0;
+  /* Status tags in the app and admin (App v2.2): always text + colour, never colour alone. */
+  --color-ok-soft: #e7f3ea;
+  --color-ok-ink: #1b5e3b;
+  --color-info-soft: #e6ecfb;
+  --color-info-ink: #23408e;
 
   /* On dark surfaces (ink, brand-deep) */
   --color-fog: #c7d3cc;

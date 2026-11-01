@@ -2,6 +2,7 @@
 
 import { useActionState, useId } from "react";
 import { useTranslations } from "next-intl";
+import { Icon } from "@/components/Icon";
 import { Button, Checkbox, Divider, Notice, TextField, TextLink } from "@/components/ui/form";
 import { AUTH_METHODS } from "@/config/auth";
 import { sendEmailLink, signIn, type FormState } from "./actions";
@@ -21,7 +22,7 @@ export function SignInForm({ next, forgotHref }: { next: string; forgotHref: str
     return (
       <Notice kind="success" icon="mail">
         <p>{t("emailLink.sentTitle")}</p>
-        <p className="mt-0.5 font-normal text-ink-soft">{t("emailLink.sentText")}</p>
+        <p className="mt-0.5 font-normal">{t("emailLink.sentText")}</p>
       </Notice>
     );
   }
@@ -47,18 +48,17 @@ export function SignInForm({ next, forgotHref }: { next: string; forgotHref: str
         label={t("password")}
         autoComplete="current-password"
         error={error === "password" ? t("errors.passwordMissing") : undefined}
+        aside={<TextLink href={forgotHref}>{t("signIn.forgot")}</TextLink>}
       />
-      <div className="flex flex-wrap items-center justify-between gap-x-4">
-        <Checkbox id={`${id}-remember`} name="remember">
-          {t("signIn.remember")}
-        </Checkbox>
-        <TextLink href={forgotHref}>{t("signIn.forgot")}</TextLink>
-      </div>
+      <Checkbox id={`${id}-remember`} name="remember">
+        {t("signIn.remember")}
+      </Checkbox>
       {error && error !== "email" && error !== "password" && <Notice kind="error">{t(`errors.${error}`)}</Notice>}
       <Button pending={signingIn}>{signingIn ? t("signIn.submitting") : t("signIn.submit")}</Button>
       {(AUTH_METHODS.emailLink || AUTH_METHODS.google) && <Divider>{t("or")}</Divider>}
       {AUTH_METHODS.emailLink && (
         <Button variant="secondary" formAction={linkAction} pending={sending}>
+          {!sending && <Icon name="mail" size={16} />}
           {sending ? t("emailLink.sending") : t("emailLink.submit")}
         </Button>
       )}

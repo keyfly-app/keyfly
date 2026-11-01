@@ -37,13 +37,12 @@ export default async function StaffInvite({ params }: { params: Promise<{ token:
   if (!inv?.is_open) {
     return (
       <AuthLayout badge="ADMIN">
-        <PageTitle eyebrow={t("label")}>{invite("closed.title")}</PageTitle>
-        <p className="text-[15px] text-muted">{invite("closed.text")}</p>
+        <PageTitle eyebrow={t("label")} sub={invite("closed.text")}>{invite("closed.title")}</PageTitle>
       </AuthLayout>
     );
   }
 
-  const intro = <p className="text-[15px] text-muted">{t("intro", { name: inv.inviter_name, role: inv.role })}</p>;
+  const intro = <p className="text-sm text-muted">{t("intro", { name: inv.inviter_name, role: inv.role })}</p>;
   const email = typeof auth?.claims?.email === "string" ? auth.claims.email.toLowerCase() : null;
 
   if (!email) {
