@@ -8,7 +8,7 @@ import { siteHref } from "@/lib/site-href";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("adminAuth");
-  return { title: t("title"), robots: { index: false } };
+  return { title: { absolute: t("title") }, robots: { index: false } }; // already "Keyfly admin": no brand suffix
 }
 
 /** Staff sign-in: email + password, then the authenticator code (/mfa). Staff accounts come from invitations only. */
