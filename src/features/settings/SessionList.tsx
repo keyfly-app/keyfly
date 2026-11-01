@@ -36,7 +36,9 @@ export function SessionList({ sessions }: { sessions: SessionRow[] }) {
       <ul>
         {sessions.map((s) => (
           <li key={s.id} className="flex items-center gap-3 border-t border-line px-5 py-3.5 sm:px-6">
-            <Icon name={s.mobile ? "phone" : "laptop"} size={18} className="flex-none text-muted" />
+            <span aria-hidden="true" className="flex size-9 flex-none items-center justify-center rounded-[10px] bg-mist text-brand">
+              <Icon name={s.mobile ? "phone" : "laptop"} size={18} />
+            </span>
             <div className="flex min-w-0 flex-1 flex-col">
               <span className="flex flex-wrap items-center gap-2 text-sm font-medium">
                 {s.device}

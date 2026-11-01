@@ -62,7 +62,9 @@ export function ProfileDetails({
       <ul>
         {rows.map((row) => (
           <li key={row.key} className="flex items-center gap-3 border-t border-line px-5 py-3.5 sm:px-6">
-            <Icon name={row.icon} size={18} className="flex-none text-muted" />
+            <span aria-hidden="true" className="flex size-9 flex-none items-center justify-center rounded-[10px] bg-mist text-brand">
+              <Icon name={row.icon} size={18} />
+            </span>
             <div className="flex min-w-0 flex-1 flex-col">
               <span className="text-[12.5px] text-muted">{row.label}</span>
               <span className={`text-sm font-medium [overflow-wrap:anywhere] ${row.empty ? "text-muted" : ""}`}>{row.value}</span>
