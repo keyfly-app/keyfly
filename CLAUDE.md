@@ -24,6 +24,12 @@ https://claude.ai/artifact/AttVCwnk4JJP3kqG7mV1Ns
   Ease of use comes first.
 - **Mobile first, WCAG 2.2 AA**: no horizontal scroll 320–1440 px, 44×44 px touch targets, labelled fields,
   visible focus, 4.5:1 text contrast, keyboard and screen-reader friendly.
+- **Terminology**: the lease is "bérleti szerződés" in Hungarian ("szerződés" when the context is clear) – never
+  "bérlet" alone (it also means a travel pass). "bérleti díj", "bérlő", "bérbeadó" stay. Keyfly records a lease
+  ("rögzítjük", "bekerült a Keyflyba"); it does not create the contract.
+- **Emails** (all except the newsletter) use `src/lib/email-layout.ts`: compact v2.2, light only, company facts from
+  `company.ts`. After changing auth email copy or company data run `npm run email:auth` and paste the templates into
+  Supabase (staging and production).
 - **Voice**: informal "te" (tegezés) everywhere, for tenants and companies alike. Formats: `1 050 000 Ft`
   (non-breaking spaces), `2026. 12. 01.`; English `HUF 1,050,000`, `1 Dec 2026`.
 - **Build as a licensed insurance intermediary** would; insurer name, pricing and terms are configuration.

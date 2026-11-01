@@ -390,7 +390,7 @@
       },
       "landlord": {
         "title": "Bérbeadó",
-        "text": "Ingatlanok és bérletek kezelése"
+        "text": "Ingatlanok és bérleti szerződések kezelése"
       },
       "manager": {
         "title": "Ingatlankezelő cég",
@@ -427,11 +427,11 @@
       "viewer": "Megtekintő"
     },
     "tenant": {
-      "title": "Bérlet jóváhagyása",
+      "title": "Bérleti szerződés jóváhagyása",
       "intro": "{name} meghívott bérlőként."
     },
     "occupant": {
-      "title": "Csatlakozás a bérlethez",
+      "title": "Csatlakozás a bérleti szerződéshez",
       "intro": "{name} meghívott {role, select, co_tenant {bérlőtársként} other {lakóként}}."
     },
     "member": {
@@ -479,8 +479,8 @@
     }
   },
   "leaseRequest": {
-    "homeTitle": "Bérletek",
-    "homeEmpty": "Bérelsz, de a bérbeadód még nincs a Keyflyon? Hívd meg, és rögzítsétek együtt a bérletet.",
+    "homeTitle": "Bérleti szerződések",
+    "homeEmpty": "Bérelsz, de a bérbeadód még nincs a Keyflyon? Hívd meg, és rögzítsétek együtt a bérleti szerződést.",
     "inviteLandlord": "Bérbeadó meghívása",
     "next": "Tovább",
     "back": "Vissza",
@@ -488,7 +488,7 @@
     "stepCount": "{step} / {total}",
     "steps": {
       "home": "Lakás",
-      "lease": "Bérlet",
+      "lease": "Szerződés",
       "landlord": "Bérbeadó"
     },
     "address": {
@@ -514,7 +514,7 @@
       }
     },
     "terms": {
-      "title": "A bérlet adatai",
+      "title": "A szerződés adatai",
       "lead": "Add meg, amit tudsz. A bérbeadó ellenőrzi.",
       "start": "Kezdés",
       "duration": "Időtartam",
@@ -534,7 +534,7 @@
       "submit": "Meghívó küldése",
       "submitting": "Küldés…",
       "free": "A bérbeadónak díjmentes",
-      "freeTip": "A bérlet a bérbeadó jóváhagyásával jön létre."
+      "freeTip": "A szerződés a bérbeadó jóváhagyásával kerül be a Keyflyba."
     },
     "rows": {
       "property": "Ingatlan",
@@ -557,7 +557,7 @@
       "expired": "Lejárt meghívó"
     },
     "card": {
-      "label": "Bérlet",
+      "label": "Bérleti szerződés",
       "open": "Részletek"
     },
     "waiting": {
@@ -569,25 +569,25 @@
       "sent": "Elküldtük a meghívót a bérbeadónak."
     },
     "outcome": {
-      "confirmed": "A bérbeadó jóváhagyta, a bérlet létrejött.",
+      "confirmed": "A bérbeadó jóváhagyta, a szerződés bekerült a Keyflyba.",
       "declined": "A bérbeadó elutasította a meghívót.",
-      "cancelled": "A meghívót visszavontad, a bérlet nem jött létre."
+      "cancelled": "A meghívót visszavontad, ezért a szerződést nem rögzítettük."
     },
     "reconfirm": {
       "banner": "A bérbeadó módosította a feltételeket.",
       "title": "Módosított feltételek",
-      "lead": "{name} ezekkel a feltételekkel hagyta jóvá a bérletet:",
+      "lead": "{name} ezekkel a feltételekkel hagyta jóvá a szerződést:",
       "changed": "Módosult",
       "added": "Új",
       "accept": "Elfogadás",
       "decline": "Elutasítás",
-      "declineNote": "Ha elutasítod, a bérlet nem jön létre."
+      "declineNote": "Ha elutasítod, a szerződést nem rögzítjük."
     },
     "landlordSide": {
-      "title": "Bérlet átvétele",
+      "title": "Bérleti szerződés jóváhagyása",
       "intro": "{name} meghívott bérbeadóként.",
       "account": "Fiók",
-      "accountTip": "Ez a fiók kezeli a bérletet. Olyan fiókot választhatsz, amelyben tulajdonos, admin vagy kezelő vagy.",
+      "accountTip": "Ez a fiók kezeli a szerződést. Olyan fiókot választhatsz, amelyben tulajdonos, admin vagy kezelő vagy.",
       "accountHint": "{plan} · {count} ingatlan",
       "plans": {
         "basic": "Alap",
@@ -612,10 +612,10 @@
       "paymentDayNone": "Nincs megadva",
       "submit": "Jóváhagyás és küldés",
       "submitting": "Küldés…",
-      "doneTitle": "Létrejött a bérlet",
-      "doneText": "{name} bérlőként szerepel a bérletben.",
+      "doneTitle": "Rögzítettük a szerződést",
+      "doneText": "{name} bérlőként szerepel a szerződésben.",
       "sentTitle": "Elküldtük a bérlőnek",
-      "sentText": "A bérlet {name} jóváhagyásával jön létre.",
+      "sentText": "A szerződést {name} jóváhagyása után rögzítjük.",
       "continue": "Tovább a Keyflyba"
     },
     "errors": {
@@ -624,16 +624,16 @@
       "amount": "Adj meg egy összeget forintban.",
       "date": "Adj meg egy dátumot.",
       "endBeforeStart": "A lejárat nem lehet a kezdés előtt.",
-      "ended": "Lejárt bérletet nem rögzíthetsz.",
+      "ended": "Lejárt szerződést nem rögzíthetsz.",
       "email": "Adj meg egy érvényes e-mail-címet.",
       "self": "A bérbeadó e-mail-címe nem lehet a tiéd.",
       "tooMany": "Egyszerre legfeljebb 5 meghívód lehet folyamatban.",
       "reminderTooSoon": "Emlékeztetőt naponta egyszer küldhetsz.",
       "reminderLimit": "Már 3 emlékeztetőt küldtél. Ha kell, vond vissza a meghívót, és küldj újat.",
       "closed": "Ez a kérés már lezárult.",
-      "overlaps": "Erre az ingatlanra ebben az időszakban már van bérlet.",
+      "overlaps": "Erre az ingatlanra ebben az időszakban már van rögzített szerződés.",
       "property": "Ez az ingatlan nem ehhez a fiókhoz tartozik.",
-      "account": "Ezzel a fiókkal nem veheted át a bérletet. Olyat válassz, amelyben tulajdonos, admin vagy kezelő vagy.",
+      "account": "Ezzel a fiókkal nem hagyhatod jóvá a szerződést. Olyat válassz, amelyben tulajdonos, admin vagy kezelő vagy.",
       "ownAccount": "A bérlő fiókjával nem lehetsz bérbeadó.",
       "generic": "Valami nem sikerült. Próbáld újra."
     },
@@ -654,9 +654,6 @@
   },
   "invitationEmails": {
     "common": {
-      "fallback": "Ha a gomb nem működik, másold be ezt a linket a böngésződbe:",
-      "privacy": "Adatkezelési tájékoztató",
-      "taxNumber": "Adószám",
       "validUntil": "A meghívó {date}-ig érvényes.",
       "validHours": "A meghívó {hours} óráig érvényes.",
       "openEnded": "Határozatlan",
@@ -679,90 +676,100 @@
       "title": "Csatlakozz a csapathoz",
       "lead": "{name} meghívott ebbe a Keyfly-fiókba: {account}.",
       "cta": "Meghívó megnyitása",
-      "why": "Azért kapod ezt a levelet, mert {name} meghívott a Keyflyra. Ha nem ismered, hagyd figyelmen kívül: a meghívó magától lejár."
+      "why": "{name} hívott meg a Keyflyra. Nem ismered? Hagyd figyelmen kívül: a meghívó magától lejár.",
+      "tag": "Meghívó"
     },
     "tenant": {
-      "subject": "Hagyd jóvá a bérletedet: {address}",
-      "preheader": "{name} rögzítette a bérletet.",
-      "title": "Hagyd jóvá a bérletedet",
-      "lead": "{name} rögzítette a bérletedet a Keyflyon. Nézd át az adatokat, és hagyd jóvá.",
-      "cta": "Bérlet megnyitása",
-      "why": "Azért kapod ezt a levelet, mert {name} bérlőként megadta az e-mail-címedet. Ha nem rólad van szó, hagyd figyelmen kívül: a meghívó magától lejár."
+      "subject": "Hagyd jóvá a bérleti szerződésed: {address}",
+      "preheader": "{name} rögzítette a szerződést.",
+      "title": "Hagyd jóvá a bérleti szerződésed",
+      "lead": "{name} rögzítette a bérleti szerződésedet a Keyflyon. Nézd át az adatokat, és hagyd jóvá.",
+      "cta": "Szerződés áttekintése",
+      "why": "{name} bérlőként adta meg az e-mail-címedet. Nem rólad van szó? Hagyd figyelmen kívül: a meghívó magától lejár.",
+      "tag": "Meghívó"
     },
     "landlord": {
       "subject": "{name} meghívott bérbeadóként",
       "reminderSubject": "Emlékeztető: {name} meghívott bérbeadóként",
-      "preheader": "Ellenőrizd és hagyd jóvá a bérletet.",
-      "title": "Vedd át a bérletet",
-      "lead": "{name}, a bérlőd, rögzítette a bérletet a Keyflyon. Ellenőrizd az adatokat, és hagyd jóvá.",
+      "preheader": "Nézd át és hagyd jóvá a szerződést.",
+      "title": "Hagyd jóvá a bérleti szerződést",
+      "lead": "{name}, a bérlőd, rögzítette a bérleti szerződést a Keyflyon. Nézd át az adatokat, és hagyd jóvá.",
       "note": "A Keyfly a bérbeadóknak díjmentes.",
-      "cta": "Meghívó megnyitása",
-      "why": "Azért kapod ezt a levelet, mert {name} bérbeadóként megadta az e-mail-címedet. Ha nem rólad van szó, hagyd figyelmen kívül: a meghívó magától lejár."
+      "cta": "Szerződés áttekintése",
+      "why": "{name} bérbeadóként adta meg az e-mail-címedet. Nem rólad van szó? Hagyd figyelmen kívül: a meghívó magától lejár.",
+      "tag": "Meghívó",
+      "reminderTag": "Emlékeztető"
     },
     "occupant": {
-      "subject": "{name} meghívott a bérletébe",
+      "subject": "{name} meghívott a bérleti szerződéséhez",
       "preheader": "Csatlakozz {role, select, co_tenant {bérlőtársként} other {lakóként}}.",
-      "title": "Csatlakozz a bérlethez",
-      "lead": "{name} meghívott {role, select, co_tenant {bérlőtársként} other {lakóként}} ebbe a bérletbe: {address}.",
+      "title": "Csatlakozz a bérleti szerződéshez",
+      "lead": "{name} meghívott {role, select, co_tenant {bérlőtársként} other {lakóként}} ehhez a bérleti szerződéshez: {address}.",
       "cta": "Meghívó megnyitása",
-      "why": "Azért kapod ezt a levelet, mert {name} meghívott a Keyflyra. Ha nem ismered, hagyd figyelmen kívül: a meghívó magától lejár."
+      "why": "{name} hívott meg a Keyflyra. Nem ismered? Hagyd figyelmen kívül: a meghívó magától lejár.",
+      "tag": "Meghívó"
     },
     "staff": {
       "subject": "Meghívó a Keyfly csapatába",
       "preheader": "{name} meghívott az adminba.",
       "title": "Csatlakozz a Keyfly csapatához",
       "lead": "{name} meghívott a Keyfly adminba.",
-      "note": "A belépéshez kétlépcsős azonosítás kell. Készíts elő egy hitelesítő alkalmazást a telefonodon.",
+      "note": "A belépéshez kétlépcsős azonosítás kell: készíts elő egy hitelesítő alkalmazást a telefonodon.",
       "cta": "Meghívó megnyitása",
-      "why": "Azért kapod ezt a levelet, mert a Keyfly egyik szuperadminja meghívott erre a @keyfly.app címre. Ha tévedésnek gondolod, szólj neki.",
+      "why": "Egy Keyfly-szuperadmin hívta meg ezt a @keyfly.app címet. Tévedésnek gondolod? Jelezd neki.",
       "roles": {
         "superadmin": "Szuperadmin",
         "admin": "Admin",
         "insurance": "Biztosítás",
         "support": "Ügyfélszolgálat",
         "finance": "Pénzügy"
-      }
+      },
+      "tag": "Munkatársi meghívó"
     },
     "leaseApproved": {
-      "subject": "Létrejött a bérleted: {address}",
-      "preheader": "{name} jóváhagyta a bérletet.",
-      "title": "Létrejött a bérleted",
-      "lead": "{name} jóváhagyta a bérletet a Keyflyon. Az adatait bármikor megnézheted a fiókodban.",
-      "cta": "Bérlet megnyitása",
-      "why": "Azért kapod ezt a levelet, mert meghívtad a bérbeadódat a Keyflyra."
+      "subject": "Jóváhagyták a bérleti szerződésed: {address}",
+      "preheader": "{name} jóváhagyta a szerződést.",
+      "title": "Jóváhagyták a bérleti szerződésed",
+      "lead": "{name} jóváhagyta a szerződést, és bekerült a Keyflyba. Az adatait bármikor megnézheted a fiókodban.",
+      "cta": "Szerződés megnyitása",
+      "why": "Ezt a levelet azért kapod, mert meghívtad a bérbeadódat a Keyflyra.",
+      "tag": "Jóváhagyva"
     },
     "termsChanged": {
       "subject": "Módosított feltételek: {address}",
       "preheader": "Nézd át, és döntsd el, elfogadod-e.",
-      "title": "A bérbeadód módosította a feltételeket",
-      "lead": "{name} módosított feltételekkel hagyta jóvá a bérletet. Nézd át őket: a bérlet a te jóváhagyásoddal jön létre.",
-      "cta": "Feltételek megnyitása",
-      "why": "Azért kapod ezt a levelet, mert meghívtad a bérbeadódat a Keyflyra."
+      "title": "Módosultak a szerződés feltételei",
+      "lead": "{name} módosított feltételekkel hagyta jóvá a szerződést. Csak a te jóváhagyásod után rögzítjük.",
+      "cta": "Feltételek áttekintése",
+      "why": "Ezt a levelet azért kapod, mert meghívtad a bérbeadódat a Keyflyra.",
+      "tag": "Döntésed szükséges"
     },
     "termsAccepted": {
       "subject": "{name} elfogadta a feltételeket: {address}",
-      "preheader": "A bérlet létrejött.",
-      "title": "Létrejött a bérlet",
-      "lead": "{name} elfogadta a módosított feltételeket, a bérlet létrejött a Keyflyon.",
-      "cta": "Tovább a Keyflyba",
-      "why": "Azért kapod ezt a levelet, mert jóváhagytad ezt a bérletet a Keyflyon."
+      "preheader": "A szerződés bekerült a Keyflyba.",
+      "title": "Elfogadták a feltételeket",
+      "lead": "{name} elfogadta a módosított feltételeket, a szerződés bekerült a Keyflyba.",
+      "cta": "Szerződés megnyitása",
+      "why": "Ezt a levelet azért kapod, mert jóváhagytad ezt a szerződést a Keyflyon.",
+      "tag": "Jóváhagyva"
     },
     "requestCancelled": {
       "subjectWithdrawn": "{name} visszavonta a meghívót",
       "subjectDeclined": "{name} nem fogadta el a feltételeket: {address}",
-      "preheader": "A bérlet nem jön létre.",
-      "title": "A bérlet nem jön létre",
+      "preheader": "A szerződést nem rögzítjük.",
+      "title": "A szerződést nem rögzítjük",
       "leadWithdrawn": "{name} visszavonta a meghívót, a link már nem működik. Nincs további teendőd.",
-      "leadDeclined": "{name} nem fogadta el a módosított feltételeket, ezért a bérlet nem jön létre.",
-      "why": "Azért kapod ezt a levelet, mert {name} meghívott bérbeadóként a Keyflyra."
+      "leadDeclined": "{name} nem fogadta el a módosított feltételeket, ezért a szerződést nem rögzítjük.",
+      "why": "Ezt a levelet azért kapod, mert {name} bérbeadóként meghívott a Keyflyra.",
+      "tag": "Lezárva"
     }
   },
   "portal": {
     "title": "Kezdőlap",
     "greeting": "Szia{name, select, none {} other {, {name}}}!",
     "intro": {
-      "tenant": "Bérleteid és teendőid egy helyen.",
-      "landlord": "Hamarosan itt kezelheted az ingatlanjaidat és a bérleteidet.",
+      "tenant": "Szerződéseid és teendőid egy helyen.",
+      "landlord": "Hamarosan itt kezelheted az ingatlanjaidat és a bérleti szerződéseidet.",
       "manager": "Hamarosan itt kezelheted a portfóliót és a csapatot."
     },
     "changeView": "Kezdőképernyő módosítása",
@@ -830,13 +837,9 @@
     "waitlistConfirmation": {
       "subject": "Fent vagy a Keyfly várólistáján",
       "preheader": "Elsőként szólunk, amikor indulunk.",
-      "label": "VISSZAIGAZOLÁS",
-      "titleStart": "Fent vagy",
-      "titleHighlight": "a listán.",
+      "tag": "Feliratkozva",
+      "title": "Fent vagy a várólistán",
       "lead": "Köszönjük, hogy feliratkoztál! Amint elindul a Keyfly, elsőként neked szólunk ezen az e-mail-címen.",
-      "photoAlt": "Fiatal pár nevetve mutatja fel új albérletük kulcsát.",
-      "photoCaption": "Illusztráció · AI-generált kép",
-      "summaryTitle": "A feliratkozásod",
       "rows": {
         "email": "E-mail-cím",
         "segment": "Kiként érdekel",
@@ -845,27 +848,9 @@
       },
       "newsletterYes": "Kérted",
       "newsletterNo": "Nem kérted",
-      "nextTitle": "Mi jön most?",
-      "steps": {
-        "notify": {
-          "title": "Értesítünk",
-          "text": "Indulás előtt e-mailt küldünk a pontos részletekkel."
-        },
-        "offer": {
-          "title": "Ajánlatot kérsz",
-          "text": "Lakbér, kaució, jövedelemigazolás: kb. 3 perc."
-        },
-        "move": {
-          "title": "Beköltözöl",
-          "text": "Kaució helyett kis havi díj, a pénzed nálad marad."
-        }
-      },
-      "cta": "Nézd meg, hogyan működik",
-      "note": "Kérdésed van? Válaszolj erre a levélre, személyesen olvassuk.",
-      "signName": "Tibor",
-      "signRole": "a Keyfly alapítója",
-      "why": "Azért kapod ezt a levelet, mert feliratkoztál a Keyfly várólistájára a keyfly.app oldalon. Ha nem te voltál, írj nekünk, és töröljük az adataidat.",
-      "privacy": "Adatkezelési tájékoztató"
+      "note": "Kérdésed van? Válaszolj erre a levélre, személyesen olvassuk. – Tibor, a Keyfly alapítója",
+      "cta": "Így működik a Keyfly",
+      "why": "Azért kapod ezt a levelet, mert feliratkoztál a Keyfly várólistájára a keyfly.app oldalon. Ha nem te voltál, írj nekünk, és töröljük az adataidat."
     }
   },
   "adminAuth": {
@@ -977,7 +962,7 @@
         "admin": "Teljes hozzáférés, a munkatársak kezelése nélkül.",
         "insurance": "Ajánlatok, kötvények és kárigények kezelése.",
         "finance": "Díjak, számlák és kifizetések.",
-        "support": "Ügyfelek és bérletek megtekintése."
+        "support": "Ügyfelek és szerződések megtekintése."
       },
       "twoFactor": "A belépéshez kétlépcsős azonosítás szükséges.",
       "submit": "Meghívó küldése",
@@ -994,38 +979,46 @@
     }
   },
   "authEmails": {
-    "fallback": "Ha a gomb nem működik, másold be ezt a linket a böngésződbe:",
-    "privacy": "Adatkezelési tájékoztató",
-    "taxNumber": "Adószám",
     "validity": "A link 24 óráig érvényes, és egyszer használható.",
+    "security": "A Keyfly soha nem kéri el e-mailben a jelszavad vagy a kódjaidat.",
     "confirmation": {
+      "tag": "Regisztráció",
       "subject": "Erősítsd meg az e-mail-címed",
-      "preheader": "Egy kattintás, és kész a Keyfly-fiókod.",
+      "preheader": "Egy lépés, és használhatod a Keyfly-fiókod.",
       "title": "Erősítsd meg az e-mail-címed",
-      "lead": "Köszönjük, hogy regisztráltál a Keyflyn. A fiókod használatához erősítsd meg az e-mail-címed.",
-      "cta": "E-mail-cím megerősítése",
-      "why": "Azért kapod ezt a levelet, mert ezzel az e-mail-címmel regisztráltak a Keyflyn. Ha nem te voltál, hagyd figyelmen kívül: megerősítés nélkül a fiók nem használható."
+      "lead": "Köszönjük, hogy regisztráltál. A fiókod a megerősítés után használható.",
+      "cta": "Megerősítés",
+      "why": "Nem te regisztráltál? Hagyd figyelmen kívül ezt a levelet: megerősítés nélkül a fiók nem használható."
     },
     "magicLink": {
+      "tag": "Belépés",
       "subject": "Belépési linked a Keyflyhoz",
       "preheader": "Jelszó nélkül, egy kattintással.",
-      "title": "Belépés a Keyflyba",
-      "lead": "Kattints a gombra, és már bent is vagy. Jelszó nem kell.",
-      "cta": "Belépés",
-      "why": "Azért kapod ezt a levelet, mert belépési linket kértek ehhez az e-mail-címhez. Ha nem te voltál, hagyd figyelmen kívül: a link nélkül senki nem fér hozzá a fiókodhoz."
+      "title": "Belépési link",
+      "lead": "Ezzel a linkkel jelszó nélkül léphetsz be a fiókodba.",
+      "cta": "Belépés a Keyflyba",
+      "why": "Nem te kérted? Hagyd figyelmen kívül: a link nélkül senki nem lép be a fiókodba."
     },
     "recovery": {
-      "subject": "Új jelszó beállítása",
+      "tag": "Biztonság",
+      "subject": "Jelszó visszaállítása",
       "preheader": "A link 24 óráig érvényes.",
-      "title": "Új jelszó beállítása",
-      "lead": "Új jelszót kértél a Keyfly-fiókodhoz. A gombra kattintva megadhatod.",
-      "cta": "Új jelszó megadása",
-      "why": "Azért kapod ezt a levelet, mert új jelszót kértek ehhez az e-mail-címhez. Ha nem te voltál, hagyd figyelmen kívül: a jelszavad nem változik."
+      "title": "Jelszó visszaállítása",
+      "lead": "Új jelszót kértél a Keyfly-fiókodhoz. Az alábbi linken beállíthatod.",
+      "cta": "Új jelszó beállítása",
+      "why": "Nem te kérted? Hagyd figyelmen kívül: a jelszavad nem változik."
     }
   },
   "appFooter": {
     "navLabel": "Jogi információk és nyelv",
     "switchTo": "Nyelv váltása:",
     "otherLanguage": "English"
+  },
+  "emailLayout": {
+    "fallback": "Nem működik a gomb? Másold be ezt a linket a böngésződbe:",
+    "privacy": "Adatkezelési tájékoztató",
+    "support": "Ügyfélszolgálat",
+    "registration": "Cg.",
+    "taxNumber": "Adószám"
   }
 }

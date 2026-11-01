@@ -1,5 +1,5 @@
 {
-  "confirmation": "{{ if eq .Data.locale \"en\" }}Confirm your email{{ else }}Erősítsd meg az e-mail-címed{{ end }}",
+  "confirmation": "{{ if eq .Data.locale \"en\" }}Confirm your email address{{ else }}Erősítsd meg az e-mail-címed{{ end }}",
   "magic_link": "{{ if eq .Data.locale \"en\" }}Your Keyfly sign-in link{{ else }}Belépési linked a Keyflyhoz{{ end }}",
-  "recovery": "{{ if eq .Data.locale \"en\" }}Set a new password{{ else }}Új jelszó beállítása{{ end }}"
+  "recovery": "{{ if eq .Data.locale \"en\" }}Reset your password{{ else }}Jelszó visszaállítása{{ end }}"
 }

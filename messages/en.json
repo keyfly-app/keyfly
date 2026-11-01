@@ -654,9 +654,6 @@
   },
   "invitationEmails": {
     "common": {
-      "fallback": "If the button doesn’t work, copy this link into your browser:",
-      "privacy": "Privacy notice",
-      "taxNumber": "Tax no.",
       "validUntil": "The invitation is valid until {date}.",
       "validHours": "The invitation is valid for {hours} hours.",
       "openEnded": "Open-ended",
@@ -679,25 +676,29 @@
       "title": "Join the team",
       "lead": "{name} invited you to the {account} account on Keyfly.",
       "cta": "Open invitation",
-      "why": "You’re receiving this because {name} invited you to Keyfly. If you don’t know them, ignore it: the invitation expires on its own."
+      "why": "{name} invited you to Keyfly. Don’t know them? Ignore this email: the invitation expires on its own.",
+      "tag": "Invitation"
     },
     "tenant": {
       "subject": "Approve your lease: {address}",
       "preheader": "{name} has set up your lease.",
       "title": "Approve your lease",
       "lead": "{name} has set up your lease on Keyfly. Check the details and approve it.",
-      "cta": "Open lease",
-      "why": "You’re receiving this because {name} entered your email address as the tenant. If this isn’t about you, ignore it: the invitation expires on its own."
+      "cta": "Review lease",
+      "why": "{name} entered your email address as the tenant. Not about you? Ignore this email: the invitation expires on its own.",
+      "tag": "Invitation"
     },
     "landlord": {
       "subject": "{name} invited you as landlord",
       "reminderSubject": "Reminder: {name} invited you as landlord",
-      "preheader": "Check and approve the lease.",
-      "title": "Take over the lease",
-      "lead": "Your tenant, {name}, has added the lease on Keyfly. Check the details and approve it.",
+      "preheader": "Review and approve the lease.",
+      "title": "Approve the lease",
+      "lead": "Your tenant, {name}, has added the lease on Keyfly. Review the details and approve it.",
       "note": "Keyfly is free for landlords.",
-      "cta": "Open invitation",
-      "why": "You’re receiving this because {name} entered your email address as the landlord. If this isn’t about you, ignore it: the invitation expires on its own."
+      "cta": "Review lease",
+      "why": "{name} entered your email address as the landlord. Not about you? Ignore this email: the invitation expires on its own.",
+      "tag": "Invitation",
+      "reminderTag": "Reminder"
     },
     "occupant": {
       "subject": "{name} invited you to join a lease",
@@ -705,56 +706,62 @@
       "title": "Join the lease",
       "lead": "{name} invited you as {role, select, co_tenant {co-tenant} other {occupant}} on the lease at {address}.",
       "cta": "Open invitation",
-      "why": "You’re receiving this because {name} invited you to Keyfly. If you don’t know them, ignore it: the invitation expires on its own."
+      "why": "{name} invited you to Keyfly. Don’t know them? Ignore this email: the invitation expires on its own.",
+      "tag": "Invitation"
     },
     "staff": {
       "subject": "Invitation to join the Keyfly team",
       "preheader": "{name} invited you to Keyfly admin.",
       "title": "Join the Keyfly team",
       "lead": "{name} invited you to Keyfly admin.",
-      "note": "Two-factor authentication is required to sign in. Have an authenticator app ready on your phone.",
+      "note": "Two-step verification is required to sign in: have an authenticator app ready on your phone.",
       "cta": "Open invitation",
-      "why": "You’re receiving this because a Keyfly super admin invited this @keyfly.app address. If you think it’s a mistake, let them know.",
+      "why": "A Keyfly super admin invited this @keyfly.app address. Think it’s a mistake? Let them know.",
       "roles": {
         "superadmin": "Super admin",
         "admin": "Admin",
         "insurance": "Insurance",
         "support": "Support",
         "finance": "Finance"
-      }
+      },
+      "tag": "Staff invitation"
     },
     "leaseApproved": {
-      "subject": "Your lease is set up: {address}",
+      "subject": "Your lease was approved: {address}",
       "preheader": "{name} approved the lease.",
-      "title": "Your lease is set up",
-      "lead": "{name} approved the lease on Keyfly. You can see its details in your account at any time.",
+      "title": "Your lease was approved",
+      "lead": "{name} approved the lease and it’s now on Keyfly. You can see its details in your account at any time.",
       "cta": "Open lease",
-      "why": "You’re receiving this because you invited your landlord to Keyfly."
+      "why": "You’re receiving this because you invited your landlord to Keyfly.",
+      "tag": "Approved"
     },
     "termsChanged": {
       "subject": "Updated terms: {address}",
-      "preheader": "Check them and decide whether you accept.",
-      "title": "Your landlord changed the terms",
-      "lead": "{name} approved the lease with updated terms. Check them: the lease is created once you approve.",
-      "cta": "Open terms",
-      "why": "You’re receiving this because you invited your landlord to Keyfly."
+      "preheader": "Review them and decide whether you accept.",
+      "title": "Your landlord updated the terms",
+      "lead": "{name} approved the lease with updated terms. We only record it once you approve.",
+      "cta": "Review terms",
+      "why": "You’re receiving this because you invited your landlord to Keyfly.",
+      "tag": "Action needed"
     },
     "termsAccepted": {
       "subject": "{name} accepted the terms: {address}",
-      "preheader": "The lease is set up.",
-      "title": "The lease is set up",
-      "lead": "{name} accepted the updated terms and the lease is now set up on Keyfly.",
-      "cta": "Go to Keyfly",
-      "why": "You’re receiving this because you approved this lease on Keyfly."
+      "preheader": "The lease is now on Keyfly.",
+      "title": "Terms accepted",
+      "lead": "{name} accepted the updated terms, and the lease is now on Keyfly.",
+      "cta": "Open lease",
+      "why": "You’re receiving this because you approved this lease on Keyfly.",
+      "tag": "Approved"
     },
     "requestCancelled": {
       "subjectWithdrawn": "{name} withdrew the invitation",
       "subjectDeclined": "{name} didn’t accept the terms: {address}",
-      "preheader": "The lease won’t be set up.",
-      "title": "The lease won’t be set up",
+      "preheader": "The lease won’t be recorded.",
+      "title": "The lease won’t be recorded",
       "leadWithdrawn": "{name} withdrew the invitation, so the link no longer works. There’s nothing more you need to do.",
-      "leadDeclined": "{name} didn’t accept the updated terms, so the lease won’t be set up.",
-      "why": "You’re receiving this because {name} invited you to Keyfly as landlord."
+      "leadDeclined": "{name} didn’t accept the updated terms, so the lease won’t be recorded.",
+      "why": "You’re receiving this because {name} invited you to Keyfly as landlord.",
+      "tag": "Closed"
     }
   },
   "portal": {
@@ -828,44 +835,22 @@
   },
   "emails": {
     "waitlistConfirmation": {
-      "subject": "You're on the Keyfly waitlist",
-      "preheader": "We'll let you know first when we launch.",
-      "label": "CONFIRMATION",
-      "titleStart": "You're on",
-      "titleHighlight": "the list.",
-      "lead": "Thanks for signing up! As soon as Keyfly launches, you'll be the first to hear, at this email address.",
-      "photoAlt": "A young couple laughing and holding up the key to their new rental.",
-      "photoCaption": "Illustration · AI-generated image",
-      "summaryTitle": "Your sign-up",
+      "subject": "You’re on the Keyfly waitlist",
+      "preheader": "We’ll tell you first when we launch.",
+      "tag": "Subscribed",
+      "title": "You’re on the waitlist",
+      "lead": "Thanks for signing up! As soon as Keyfly launches, you’ll be the first to hear, at this email address.",
       "rows": {
         "email": "Email",
         "segment": "Interested as",
         "newsletter": "Newsletter",
         "date": "Date"
       },
-      "newsletterYes": "Yes, please",
+      "newsletterYes": "Yes",
       "newsletterNo": "No",
-      "nextTitle": "What's next?",
-      "steps": {
-        "notify": {
-          "title": "We'll notify you",
-          "text": "Before launch we email you with all the details."
-        },
-        "offer": {
-          "title": "You request an offer",
-          "text": "Rent, deposit, income check: about 3 minutes."
-        },
-        "move": {
-          "title": "You move in",
-          "text": "A small monthly fee instead of a deposit; your money stays with you."
-        }
-      },
-      "cta": "See how it works",
-      "note": "Questions? Just reply to this email; a real person reads it.",
-      "signName": "Tibor",
-      "signRole": "founder of Keyfly",
-      "why": "You are receiving this email because you joined the Keyfly waitlist on keyfly.app. If this was not you, write to us and we will delete your data.",
-      "privacy": "Privacy notice"
+      "note": "Questions? Reply to this email – we read every message personally. – Tibor, founder of Keyfly",
+      "cta": "See how Keyfly works",
+      "why": "You’re receiving this because you joined the Keyfly waitlist on keyfly.app. If it wasn’t you, write to us and we’ll delete your details."
     }
   },
   "adminAuth": {
@@ -994,38 +979,46 @@
     }
   },
   "authEmails": {
-    "fallback": "If the button doesn’t work, copy this link into your browser:",
-    "privacy": "Privacy notice",
-    "taxNumber": "Tax no.",
     "validity": "The link is valid for 24 hours and works once.",
+    "security": "Keyfly will never ask for your password or codes by email.",
     "confirmation": {
-      "subject": "Confirm your email",
-      "preheader": "One click and your Keyfly account is ready.",
-      "title": "Confirm your email",
-      "lead": "Thanks for signing up for Keyfly. Confirm your email to start using your account.",
-      "cta": "Confirm email",
-      "why": "You’re receiving this because someone signed up for Keyfly with this address. If it wasn’t you, ignore it: the account can’t be used without confirmation."
+      "tag": "Sign-up",
+      "subject": "Confirm your email address",
+      "preheader": "One step and your Keyfly account is ready.",
+      "title": "Confirm your email address",
+      "lead": "Thanks for signing up. You can use your account once you confirm.",
+      "cta": "Confirm",
+      "why": "Didn’t sign up? Ignore this email: the account can’t be used without confirmation."
     },
     "magicLink": {
+      "tag": "Sign-in",
       "subject": "Your Keyfly sign-in link",
       "preheader": "One click, no password.",
-      "title": "Sign in to Keyfly",
-      "lead": "Click the button and you’re in. No password needed.",
-      "cta": "Sign in",
-      "why": "You’re receiving this because a sign-in link was requested for this address. If it wasn’t you, ignore it: no one can get into your account without the link."
+      "title": "Your sign-in link",
+      "lead": "Use this link to sign in to your account without a password.",
+      "cta": "Sign in to Keyfly",
+      "why": "Didn’t request it? Ignore this email: no one can sign in without the link."
     },
     "recovery": {
-      "subject": "Set a new password",
+      "tag": "Security",
+      "subject": "Reset your password",
       "preheader": "The link is valid for 24 hours.",
-      "title": "Set a new password",
-      "lead": "You asked for a new password for your Keyfly account. Click the button to set it.",
-      "cta": "Set new password",
-      "why": "You’re receiving this because a new password was requested for this address. If it wasn’t you, ignore it: your password stays the same."
+      "title": "Reset your password",
+      "lead": "You asked to reset the password for your Keyfly account. Set a new one with the link below.",
+      "cta": "Set a new password",
+      "why": "Didn’t request it? Ignore this email: your password stays the same."
     }
   },
   "appFooter": {
     "navLabel": "Legal information and language",
     "switchTo": "Switch language:",
     "otherLanguage": "Magyar"
+  },
+  "emailLayout": {
+    "fallback": "Button not working? Paste this link into your browser:",
+    "privacy": "Privacy notice",
+    "support": "Support",
+    "registration": "Reg. no.",
+    "taxNumber": "Tax number"
   }
 }
