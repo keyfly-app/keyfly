@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint . && node scripts/check-messages.mjs",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "next typegen && tsc --noEmit",
     "db:test": "scripts/test-db.sh",
     "db:types": "supabase gen types typescript --linked --schema public > src/lib/supabase/database.types.ts",
     "i18n:check": "node scripts/check-messages.mjs",
