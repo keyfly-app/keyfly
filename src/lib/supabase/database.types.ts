@@ -903,34 +903,40 @@ export type Database = {
       }
       profiles: {
         Row: {
+          avatar_path: string | null
           birth_date: string | null
           created_at: string
           email: string | null
           full_name: string | null
           id: string
           locale: Database["public"]["Enums"]["locale"]
+          password_changed_at: string | null
           phone: string | null
           start_view: Database["public"]["Enums"]["start_view"] | null
           updated_at: string
         }
         Insert: {
+          avatar_path?: string | null
           birth_date?: string | null
           created_at?: string
           email?: string | null
           full_name?: string | null
           id: string
           locale?: Database["public"]["Enums"]["locale"]
+          password_changed_at?: string | null
           phone?: string | null
           start_view?: Database["public"]["Enums"]["start_view"] | null
           updated_at?: string
         }
         Update: {
+          avatar_path?: string | null
           birth_date?: string | null
           created_at?: string
           email?: string | null
           full_name?: string | null
           id?: string
           locale?: Database["public"]["Enums"]["locale"]
+          password_changed_at?: string | null
           phone?: string | null
           start_view?: Database["public"]["Enums"]["start_view"] | null
           updated_at?: string
@@ -1334,6 +1340,7 @@ export type Database = {
         Returns: string
       }
       decline_invitation: { Args: { p_token: string }; Returns: undefined }
+      end_my_session: { Args: { p_session_id: string }; Returns: boolean }
       invitation_preview: {
         Args: { p_token: string }
         Returns: {
@@ -1376,6 +1383,17 @@ export type Database = {
           street_name: string
           street_type: string
           tenant_name: string
+        }[]
+      }
+      my_sessions: {
+        Args: never
+        Returns: {
+          created_at: string
+          id: string
+          ip: string
+          is_current: boolean
+          last_active_at: string
+          user_agent: string
         }[]
       }
       referral_status: {

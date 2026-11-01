@@ -12,7 +12,7 @@ import { publicHref } from "../src/i18n/config.ts";
 import { renderEmailHtml, type EmailContent } from "../src/lib/email-layout.ts";
 
 type Locale = "hu" | "en";
-type Kind = "confirmation" | "magicLink" | "recovery";
+type Kind = "confirmation" | "magicLink" | "recovery" | "emailChange";
 type Messages = {
   emailLayout: EmailContent["labels"];
   authEmails: Record<"validity" | "security", string> & Record<Kind, Record<"tag" | "subject" | "preheader" | "title" | "lead" | "cta" | "why", string>>;
@@ -26,6 +26,7 @@ const TYPES: Record<Kind, { file: string; otpType: string }> = {
   confirmation: { file: "confirmation", otpType: "signup" },
   magicLink: { file: "magic_link", otpType: "magiclink" },
   recovery: { file: "recovery", otpType: "recovery" },
+  emailChange: { file: "email_change", otpType: "email_change" },
 };
 
 const byLocale = (hu: string, en: string) => `{{ if eq .Data.locale "en" }}${en}{{ else }}${hu}{{ end }}`;

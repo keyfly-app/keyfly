@@ -1,59 +1,67 @@
 import { Suspense } from "react";
+import Link from "next/link";
 import { getLocale, getTranslations } from "next-intl/server";
 import { AppFooter } from "@/components/AppFooter";
-import { Icon } from "@/components/Icon";
 import { LogoFull } from "@/components/Logo";
-import { signOut } from "@/features/auth/actions";
+import { UserMenu } from "@/components/UserMenu";
+import { Avatar } from "@/components/ui/Avatar";
+import { CONTACT } from "@/config/company";
 import { LanguageToggle } from "@/features/language/LanguageToggle";
+import { currentUser } from "@/features/settings/current-user";
 import { isLocale } from "@/i18n/config";
+import { siteHref } from "@/lib/site-href";
 import type { AppSite } from "@/lib/sites";
 
 /**
- * Signed-in frame of the app (App v2.2): white top bar with the logo, language and the account menu;
- * content on the paper ground in a 1120 px column; quiet footer. The account menu works without JavaScript.
+ * Signed-in frame of the app (canvas "App v2.3", Menütérkép): logo, the account you are working in,
+ * language and the user menu on a white top bar; content on the paper ground in a 1120 px column.
+ * The account is the personal one until company accounts arrive; then this label becomes the switcher.
  */
-export async function Shell({ site, email, name, children }: { site: AppSite; email?: string | null; name?: string | null; children: React.ReactNode }) {
-  const t = await getTranslations("common");
-  const portal = await getTranslations("portal");
-  const raw = await getLocale();
+export async function Shell({ site, children }: { site: AppSite; children: React.ReactNode }) {
+  const [t, user, raw] = await Promise.all([getTranslations("settings"), currentUser(), getLocale()]);
+  const common = await getTranslations("common");
   const locale = isLocale(raw) ? raw : "hu";
-  const label = name || email || "";
-  const initials = label
-    .split(/[\s@.]+/)
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((p) => p[0]?.toUpperCase())
-    .join("");
+  const [home, profile, devices] = await Promise.all([siteHref(site, "/"), siteHref(site, "/settings/profile"), siteHref(site, "/settings/devices")]);
   return (
     <div className="flex min-h-dvh flex-col bg-paper">
       <header className="border-b border-line bg-surface">
-        <div className="mx-auto flex h-14 max-w-[1120px] items-center justify-between gap-4 px-4 sm:px-8">
-          <LogoFull height={20} />
-          <div className="flex items-center gap-2.5">
+        <div className="mx-auto flex h-14 max-w-[1120px] items-center justify-between gap-3 px-4 sm:px-8">
+          <div className="flex min-w-0 items-center gap-4">
+            <Link href={home} className="flex-none rounded-md" aria-label={common("brand")}>
+              <LogoFull height={20} />
+            </Link>
+            {user && (
+              <>
+                <span aria-hidden="true" className="hidden h-6 w-px bg-line sm:block" />
+                <span className="hidden min-w-0 items-center gap-2 sm:flex">
+                  <Avatar src={user.avatarUrl} initials={user.initials} size={26} />
+                  <span className="flex min-w-0 flex-col leading-[15px]">
+                    <span className="truncate text-[13px] font-semibold">{user.fullName ?? user.email}</span>
+                    <span className="text-[11.5px] text-muted">{t("personalAccount")}</span>
+                  </span>
+                </span>
+              </>
+            )}
+          </div>
+          <div className="flex items-center gap-2">
             <Suspense>
               <LanguageToggle to={locale === "hu" ? "en" : "hu"} />
             </Suspense>
-            {email && (
-              <details className="group relative">
-                <summary className="flex h-11 cursor-pointer list-none items-center gap-2 rounded-full border border-line bg-surface py-1 pr-2 pl-1 text-[13px] font-medium hover:border-field sm:h-8 [&::-webkit-details-marker]:hidden">
-                  <span aria-hidden="true" className="flex size-6 items-center justify-center rounded-full bg-mist text-[10.5px] font-semibold text-brand">
-                    {initials}
-                  </span>
-                  <span className="hidden max-w-40 truncate sm:inline">{label}</span>
-                  <span className="sr-only sm:hidden">{portal("account")}</span>
-                  <Icon name="chevronDown" size={14} className="text-muted transition-transform group-open:rotate-180 motion-reduce:transition-none" />
-                </summary>
-                <div className="absolute right-0 z-30 mt-2 w-64 rounded-xl border border-line bg-surface p-1.5 shadow-[0_16px_40px_-16px_rgb(12_31_25/0.3)]">
-                  <p className="truncate px-2.5 pt-1.5 pb-2 text-[12.5px] text-muted">{email}</p>
-                  <form action={signOut}>
-                    <input type="hidden" name="site" value={site} />
-                    <button type="submit" className="flex h-11 w-full items-center gap-2 rounded-lg px-2.5 text-left text-[13.5px] font-medium hover:bg-paper sm:h-9">
-                      <Icon name="logout" size={16} className="text-muted" />
-                      {t("signOut")}
-                    </button>
-                  </form>
-                </div>
-              </details>
+            {user && (
+              <UserMenu
+                site={site}
+                name={user.fullName}
+                email={user.email}
+                initials={user.initials}
+                avatarUrl={user.avatarUrl}
+                openLabel={t("userMenu.open")}
+                signOutLabel={common("signOut")}
+                items={[
+                  { href: profile, label: t("nav.profile"), icon: "user" },
+                  { href: devices, label: t("nav.devices"), icon: "laptop" },
+                  { href: `mailto:${CONTACT.support}`, label: t("userMenu.help"), icon: "help", external: true },
+                ]}
+              />
             )}
           </div>
         </div>

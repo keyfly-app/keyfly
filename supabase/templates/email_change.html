@@ -1,0 +1,113 @@
+{{ if eq .Data.locale "en" }}<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light only">
+<meta name="supported-color-schemes" content="light">
+<title>Confirm your new email address</title>
+<style>
+  :root { color-scheme: light only; supported-color-schemes: light; }
+  @media (max-width: 600px) {
+    .kf-pad { padding: 24px 20px !important; }
+    .kf-cell { display: block !important; width: auto !important; text-align: left !important; white-space: normal !important; }
+    .kf-label { padding-bottom: 2px !important; }
+    .kf-value { border-top: 0 !important; padding-top: 0 !important; }
+  }
+</style>
+</head>
+<body style="margin:0;padding:0;background:#F5F7F2;">
+<div style="display:none;max-height:0;overflow:hidden;opacity:0;">One click and you sign in with this address.</div>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#F5F7F2;">
+<tr><td align="center" style="padding:24px 12px 32px;">
+<table role="presentation" width="560" cellpadding="0" cellspacing="0" style="width:100%;max-width:560px;">
+  <tr><td style="padding:0 0 16px 2px;"><a href="https://keyfly.app"><img src="https://keyfly.app/email/logo-pill.png" width="76" height="28" alt="Keyfly" style="display:block;border:0;"></a></td></tr>
+  <tr><td>
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#FFFFFF;border:1px solid #DCE3DD;border-radius:12px;border-collapse:separate;">
+    <tr><td class="kf-pad" style="padding:32px;">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+        <tr><td style="padding:0 0 12px;"><span style="display:inline-block;padding:3px 8px;border-radius:6px;background:#EEF1ED;color:#3F4B45;font:600 12px/16px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">Security</span></td></tr>
+        <tr><td><h1 style="margin:0;font:600 22px/28px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;letter-spacing:-0.3px;color:#0C1F19;">Confirm your new email address</h1></td></tr>
+        <tr><td style="padding:10px 0 0;font:15px/24px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;color:#2E3D37;">You asked to use this address for your Keyfly account from now on: {{ .NewEmail }}. After confirming, you sign in with it.</td></tr>
+        <tr><td style="padding:24px 0 0;">
+      <table role="presentation" cellpadding="0" cellspacing="0"><tr><td bgcolor="#0C1F19" style="border-radius:8px;">
+        <a href="{{ .RedirectTo }}&amp;type=email_change&amp;token_hash={{ .TokenHash }}" style="display:inline-block;padding:12px 20px;border-radius:8px;background:#0C1F19;color:#FFFFFF;text-decoration:none;font:600 14px/20px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">Confirm new address</a>
+      </td></tr></table>
+    </td></tr>
+    <tr><td style="padding:12px 0 0;font:13px/20px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;color:#4D5B55;">The link is valid for 24 hours and works once.</td></tr>
+    <tr><td style="padding:24px 0 0;">
+      <div style="border-top:1px solid #DCE3DD;padding-top:16px;font:12px/18px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;color:#4D5B55;">
+        Button not working? Paste this link into your browser:<br>
+        <a href="{{ .RedirectTo }}&amp;type=email_change&amp;token_hash={{ .TokenHash }}" style="color:#0E5A43;word-break:break-all;">{{ .RedirectTo }}&amp;type=email_change&amp;token_hash={{ .TokenHash }}</a><br><br>Keyfly will never ask for your password or codes by email.
+      </div>
+    </td></tr>
+      </table>
+    </td></tr>
+    </table>
+  </td></tr>
+  <tr><td style="padding:20px 4px 0;font:12px/18px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;color:#4D5B55;">
+    Didn’t request it? Ignore this email: your current address stays active. If it looks suspicious, change your password.<br><br>
+    <a href="https://keyfly.app/en/privacy" style="color:#4D5B55;">Privacy notice</a> · Support: <a href="mailto:support@keyfly.app" style="color:#4D5B55;">support@keyfly.app</a><br>
+    <span style="white-space:nowrap;">Plattio Magyarország Kft.</span> · <span style="white-space:nowrap;">1061 Budapest, Andrássy út 5. 3. em. 8.</span> · <span style="white-space:nowrap;">Reg. no. 01-09-351494</span> · <span style="white-space:nowrap;">Tax number: 27275421-2-42</span>
+  </td></tr>
+</table>
+</td></tr>
+</table>
+</body>
+</html>{{ else }}<!doctype html>
+<html lang="hu">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light only">
+<meta name="supported-color-schemes" content="light">
+<title>Erősítsd meg az új e-mail-címed</title>
+<style>
+  :root { color-scheme: light only; supported-color-schemes: light; }
+  @media (max-width: 600px) {
+    .kf-pad { padding: 24px 20px !important; }
+    .kf-cell { display: block !important; width: auto !important; text-align: left !important; white-space: normal !important; }
+    .kf-label { padding-bottom: 2px !important; }
+    .kf-value { border-top: 0 !important; padding-top: 0 !important; }
+  }
+</style>
+</head>
+<body style="margin:0;padding:0;background:#F5F7F2;">
+<div style="display:none;max-height:0;overflow:hidden;opacity:0;">Egy kattintás, és ezzel a címmel lépsz be.</div>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#F5F7F2;">
+<tr><td align="center" style="padding:24px 12px 32px;">
+<table role="presentation" width="560" cellpadding="0" cellspacing="0" style="width:100%;max-width:560px;">
+  <tr><td style="padding:0 0 16px 2px;"><a href="https://keyfly.app"><img src="https://keyfly.app/email/logo-pill.png" width="76" height="28" alt="Keyfly" style="display:block;border:0;"></a></td></tr>
+  <tr><td>
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#FFFFFF;border:1px solid #DCE3DD;border-radius:12px;border-collapse:separate;">
+    <tr><td class="kf-pad" style="padding:32px;">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+        <tr><td style="padding:0 0 12px;"><span style="display:inline-block;padding:3px 8px;border-radius:6px;background:#EEF1ED;color:#3F4B45;font:600 12px/16px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">Biztonság</span></td></tr>
+        <tr><td><h1 style="margin:0;font:600 22px/28px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;letter-spacing:-0.3px;color:#0C1F19;">Erősítsd meg az új e-mail-címed</h1></td></tr>
+        <tr><td style="padding:10px 0 0;font:15px/24px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;color:#2E3D37;">Kérted, hogy a Keyfly-fiókod ezentúl ezt a címet használja: {{ .NewEmail }}. A megerősítés után ezzel lépsz be.</td></tr>
+        <tr><td style="padding:24px 0 0;">
+      <table role="presentation" cellpadding="0" cellspacing="0"><tr><td bgcolor="#0C1F19" style="border-radius:8px;">
+        <a href="{{ .RedirectTo }}&amp;type=email_change&amp;token_hash={{ .TokenHash }}" style="display:inline-block;padding:12px 20px;border-radius:8px;background:#0C1F19;color:#FFFFFF;text-decoration:none;font:600 14px/20px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">Új cím megerősítése</a>
+      </td></tr></table>
+    </td></tr>
+    <tr><td style="padding:12px 0 0;font:13px/20px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;color:#4D5B55;">A link 24 óráig érvényes, és egyszer használható.</td></tr>
+    <tr><td style="padding:24px 0 0;">
+      <div style="border-top:1px solid #DCE3DD;padding-top:16px;font:12px/18px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;color:#4D5B55;">
+        Nem működik a gomb? Másold be ezt a linket a böngésződbe:<br>
+        <a href="{{ .RedirectTo }}&amp;type=email_change&amp;token_hash={{ .TokenHash }}" style="color:#0E5A43;word-break:break-all;">{{ .RedirectTo }}&amp;type=email_change&amp;token_hash={{ .TokenHash }}</a><br><br>A Keyfly soha nem kéri el e-mailben a jelszavad vagy a kódjaidat.
+      </div>
+    </td></tr>
+      </table>
+    </td></tr>
+    </table>
+  </td></tr>
+  <tr><td style="padding:20px 4px 0;font:12px/18px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;color:#4D5B55;">
+    Nem te kérted? Hagyd figyelmen kívül: a mostani címed marad érvényben. Ha gyanús, változtass jelszót.<br><br>
+    <a href="https://keyfly.app/adatvedelem" style="color:#4D5B55;">Adatkezelési tájékoztató</a> · Ügyfélszolgálat: <a href="mailto:support@keyfly.app" style="color:#4D5B55;">support@keyfly.app</a><br>
+    <span style="white-space:nowrap;">Plattio Magyarország Kft.</span> · <span style="white-space:nowrap;">1061 Budapest, Andrássy út 5. 3. em. 8.</span> · <span style="white-space:nowrap;">Cg. 01-09-351494</span> · <span style="white-space:nowrap;">Adószám: 27275421-2-42</span>
+  </td></tr>
+</table>
+</td></tr>
+</table>
+</body>
+</html>{{ end }}

@@ -11,7 +11,8 @@ create table auth.users (
   email text,
   email_confirmed_at timestamptz default now(),
   raw_user_meta_data jsonb default '{}'::jsonb,
-  last_sign_in_at timestamptz
+  last_sign_in_at timestamptz,
+  encrypted_password text
 );
 create table auth.mfa_factors (
   id uuid primary key default gen_random_uuid(),
@@ -21,7 +22,12 @@ create table auth.mfa_factors (
 );
 create table auth.sessions (
   id uuid primary key default gen_random_uuid(),
-  user_id uuid not null references auth.users (id) on delete cascade
+  user_id uuid not null references auth.users (id) on delete cascade,
+  created_at timestamptz default now(),
+  updated_at timestamptz default now(),
+  refreshed_at timestamp,
+  user_agent text,
+  ip inet
 );
 create function auth.uid() returns uuid language sql stable as $$
   select nullif(current_setting('request.jwt.claim.sub', true), '')::uuid

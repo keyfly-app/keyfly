@@ -67,7 +67,7 @@ export default async function PortalHome() {
   const name = (locale === "hu" ? parts.at(-1) : parts[0]) ?? "none";
 
   return (
-    <Shell site="portal" email={profile.email} name={profile.full_name}>
+    <Shell site="portal">
       <div className="flex flex-col gap-6">
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div className="flex flex-col gap-1">

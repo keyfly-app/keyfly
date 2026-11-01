@@ -1007,6 +1007,15 @@
       "lead": "Új jelszót kértél a Keyfly-fiókodhoz. Az alábbi linken beállíthatod.",
       "cta": "Új jelszó beállítása",
       "why": "Nem te kérted? Hagyd figyelmen kívül: a jelszavad nem változik."
+    },
+    "emailChange": {
+      "tag": "Biztonság",
+      "subject": "Erősítsd meg az új e-mail-címed",
+      "preheader": "Egy kattintás, és ezzel a címmel lépsz be.",
+      "title": "Erősítsd meg az új e-mail-címed",
+      "lead": "Kérted, hogy a Keyfly-fiókod ezentúl ezt a címet használja: {{ .NewEmail }}. A megerősítés után ezzel lépsz be.",
+      "cta": "Új cím megerősítése",
+      "why": "Nem te kérted? Hagyd figyelmen kívül: a mostani címed marad érvényben. Ha gyanús, változtass jelszót."
     }
   },
   "appFooter": {
@@ -1020,5 +1029,108 @@
     "support": "Ügyfélszolgálat",
     "registration": "Cg.",
     "taxNumber": "Adószám"
+  },
+  "settings": {
+    "title": "Beállítások",
+    "personalAccount": "Magánfiók",
+    "nav": {
+      "label": "Beállítások menü",
+      "personal": "Személyes",
+      "profile": "Profil és belépés",
+      "devices": "Eszközök"
+    },
+    "back": "Beállítások",
+    "index": {
+      "lead": "A profilod és a belépésed minden fiókodban ugyanaz.",
+      "profileText": "Név, e-mail-cím, jelszó, telefonszám, profilkép.",
+      "devicesText": "Ahol be vagy jelentkezve."
+    },
+    "userMenu": {
+      "open": "Fiókmenü megnyitása",
+      "help": "Súgó és kapcsolat"
+    },
+    "profile": {
+      "title": "Profil és belépés",
+      "lead": "Így látnak a csapattársaid és a szerződő feleid. Az e-mail-címeddel és a jelszavaddal lépsz be.",
+      "photo": "Profilkép",
+      "photoHint": "JPG, PNG vagy HEIC, legfeljebb 10 MB. Feltöltés után kivághatod.",
+      "upload": "Kép feltöltése",
+      "replace": "Csere",
+      "remove": "Eltávolítás",
+      "personal": "Személyes adatok",
+      "name": "Név",
+      "email": "E-mail-cím",
+      "password": "Jelszó",
+      "phone": "Telefonszám",
+      "phoneEmpty": "Nincs megadva",
+      "edit": "Módosítás",
+      "add": "Megadás",
+      "passwordChanged": "Utoljára módosítva: {date}",
+      "passwordNever": "Beállítva",
+      "pending": "Megerősítésre vár: {email}. A linket elküldtük erre a címre."
+    },
+    "dialogs": {
+      "cancel": "Mégse",
+      "save": "Mentés",
+      "close": "Bezárás",
+      "nameTitle": "Név módosítása",
+      "nameLabel": "Teljes név",
+      "nameHint": "Ahogy a szerződésekben szerepel.",
+      "phoneTitle": "Telefonszám",
+      "phoneLabel": "Telefonszám",
+      "phoneHint": "Csak sürgős ügyben hívunk. Nem adjuk tovább.",
+      "phoneRemove": "Telefonszám törlése",
+      "emailTitle": "E-mail-cím módosítása",
+      "emailLead": "Megerősítő linket küldünk az új címre. Amíg nem erősíted meg, a mostani címeddel lépsz be.",
+      "emailNew": "Új e-mail-cím",
+      "currentPassword": "Jelenlegi jelszó",
+      "emailSend": "Megerősítő link küldése",
+      "passwordTitle": "Jelszó módosítása",
+      "passwordLead": "A módosítás után a többi eszközödön kijelentkeztetünk.",
+      "passwordNew": "Új jelszó",
+      "passwordSave": "Jelszó módosítása",
+      "cropTitle": "Profilkép kivágása",
+      "cropLead": "Húzd a képet a helyére, és állítsd be a méretét.",
+      "zoom": "Nagyítás",
+      "cropSave": "Kép mentése",
+      "cropAlt": "A feltöltött kép előnézete"
+    },
+    "saved": {
+      "name": "Elmentettük a neved.",
+      "phone": "Elmentettük a telefonszámod.",
+      "phoneRemoved": "Töröltük a telefonszámod.",
+      "email": "Elküldtük a megerősítő linket ide: {email}.",
+      "password": "Megváltoztattuk a jelszavad. A többi eszközödön kijelentkeztettünk.",
+      "photo": "Elmentettük a profilképed.",
+      "photoRemoved": "Eltávolítottuk a profilképed.",
+      "session": "Kijelentkeztettük az eszközt.",
+      "sessions": "Minden más eszközön kijelentkeztettünk."
+    },
+    "errors": {
+      "name": "Adj meg egy 2–200 karakteres nevet.",
+      "phone": "Adj meg egy telefonszámot, pl. +36 30 123 4567.",
+      "email": "Adj meg egy érvényes e-mail-címet.",
+      "sameEmail": "Ez a mostani e-mail-címed.",
+      "emailTaken": "Ezzel az e-mail-címmel már van fiók.",
+      "wrongPassword": "A jelszó nem megfelelő.",
+      "weakPassword": "Az új jelszó nem felel meg a feltételeknek.",
+      "samePassword": "Az új jelszó nem lehet ugyanaz, mint a régi.",
+      "rate": "Túl sok próbálkozás. Próbáld újra néhány perc múlva.",
+      "photoType": "Ezt a képet nem tudjuk megnyitni. Próbálj JPG-t vagy PNG-t.",
+      "photoSize": "A kép legfeljebb 10 MB lehet.",
+      "generic": "Nem sikerült menteni. Próbáld újra."
+    },
+    "devices": {
+      "title": "Eszközök",
+      "lead": "Ahol most be vagy jelentkezve. Ha valamelyiket nem ismered, jelentkeztesd ki, és változtass jelszót.",
+      "current": "Ez az eszköz",
+      "lastActive": "Utoljára aktív: {date}",
+      "signedIn": "Belépés: {date}",
+      "signOut": "Kijelentkeztetés",
+      "signOutOthers": "Kijelentkezés minden más eszközről",
+      "only": "Csak ezen az eszközön vagy bejelentkezve.",
+      "unknown": "Ismeretlen eszköz",
+      "on": "{browser} · {os}"
+    }
   }
 }

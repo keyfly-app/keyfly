@@ -26,6 +26,13 @@ export function date(iso: string | null | undefined, locale: Locale): string {
   return new Intl.DateTimeFormat("hu-HU", { year: "numeric", month: "2-digit", day: "2-digit", timeZone: "Europe/Budapest" }).format(d);
 }
 
+/** Date and time. hu: "2026. 12. 01. 21:30", en: "1 Dec 2026, 21:30". Budapest time. */
+export function dateTime(iso: string | null | undefined, locale: Locale): string {
+  if (!iso) return "–";
+  const time = new Intl.DateTimeFormat(locale === "en" ? "en-GB" : "hu-HU", { hour: "2-digit", minute: "2-digit", timeZone: "Europe/Budapest" }).format(new Date(iso));
+  return locale === "en" ? `${date(iso, locale)}, ${time}` : `${date(iso, locale)} ${time}`;
+}
+
 /** A sentence that ends in a name or address already ending in a dot ("… Kft.", "… 3. em. 8.") keeps one dot. */
 export function sentence(text: string): string {
   return text.replace(/\.\.$/, ".");

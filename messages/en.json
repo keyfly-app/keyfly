@@ -1007,6 +1007,15 @@
       "lead": "You asked to reset the password for your Keyfly account. Set a new one with the link below.",
       "cta": "Set a new password",
       "why": "Didn’t request it? Ignore this email: your password stays the same."
+    },
+    "emailChange": {
+      "tag": "Security",
+      "subject": "Confirm your new email address",
+      "preheader": "One click and you sign in with this address.",
+      "title": "Confirm your new email address",
+      "lead": "You asked to use this address for your Keyfly account from now on: {{ .NewEmail }}. After confirming, you sign in with it.",
+      "cta": "Confirm new address",
+      "why": "Didn’t request it? Ignore this email: your current address stays active. If it looks suspicious, change your password."
     }
   },
   "appFooter": {
@@ -1020,5 +1029,108 @@
     "support": "Support",
     "registration": "Reg. no.",
     "taxNumber": "Tax number"
+  },
+  "settings": {
+    "title": "Settings",
+    "personalAccount": "Personal account",
+    "nav": {
+      "label": "Settings menu",
+      "personal": "Personal",
+      "profile": "Profile and sign-in",
+      "devices": "Devices"
+    },
+    "back": "Settings",
+    "index": {
+      "lead": "Your profile and sign-in are the same in every account.",
+      "profileText": "Name, email, password, phone, profile photo.",
+      "devicesText": "Where you’re signed in."
+    },
+    "userMenu": {
+      "open": "Open account menu",
+      "help": "Help and contact"
+    },
+    "profile": {
+      "title": "Profile and sign-in",
+      "lead": "How your teammates and the other parties see you. You sign in with your email and password.",
+      "photo": "Profile photo",
+      "photoHint": "JPG, PNG or HEIC, up to 10 MB. You can crop it after uploading.",
+      "upload": "Upload photo",
+      "replace": "Replace",
+      "remove": "Remove",
+      "personal": "Personal details",
+      "name": "Name",
+      "email": "Email",
+      "password": "Password",
+      "phone": "Phone",
+      "phoneEmpty": "Not added",
+      "edit": "Edit",
+      "add": "Add",
+      "passwordChanged": "Last changed: {date}",
+      "passwordNever": "Set",
+      "pending": "Waiting for confirmation: {email}. We sent the link to that address."
+    },
+    "dialogs": {
+      "cancel": "Cancel",
+      "save": "Save",
+      "close": "Close",
+      "nameTitle": "Change your name",
+      "nameLabel": "Full name",
+      "nameHint": "As it appears on your leases.",
+      "phoneTitle": "Phone",
+      "phoneLabel": "Phone",
+      "phoneHint": "We only call about urgent matters and never share it.",
+      "phoneRemove": "Remove phone",
+      "emailTitle": "Change your email",
+      "emailLead": "We send a confirmation link to the new address. Until you confirm, you sign in with your current one.",
+      "emailNew": "New email",
+      "currentPassword": "Current password",
+      "emailSend": "Send confirmation link",
+      "passwordTitle": "Change your password",
+      "passwordLead": "After the change we sign you out on your other devices.",
+      "passwordNew": "New password",
+      "passwordSave": "Change password",
+      "cropTitle": "Crop your photo",
+      "cropLead": "Drag the photo into place and set its size.",
+      "zoom": "Zoom",
+      "cropSave": "Save photo",
+      "cropAlt": "Preview of the uploaded photo"
+    },
+    "saved": {
+      "name": "Your name is saved.",
+      "phone": "Your phone number is saved.",
+      "phoneRemoved": "Your phone number is removed.",
+      "email": "We sent the confirmation link to {email}.",
+      "password": "Your password is changed. We signed you out on your other devices.",
+      "photo": "Your profile photo is saved.",
+      "photoRemoved": "Your profile photo is removed.",
+      "session": "That device is signed out.",
+      "sessions": "You’re signed out on all other devices."
+    },
+    "errors": {
+      "name": "Enter a name of 2–200 characters.",
+      "phone": "Enter a phone number, e.g. +36 30 123 4567.",
+      "email": "Enter a valid email address.",
+      "sameEmail": "That’s your current email.",
+      "emailTaken": "An account with this email already exists.",
+      "wrongPassword": "Incorrect password.",
+      "weakPassword": "The new password doesn’t meet the requirements.",
+      "samePassword": "The new password must differ from the old one.",
+      "rate": "Too many attempts. Try again in a few minutes.",
+      "photoType": "We can’t open this image. Try a JPG or PNG.",
+      "photoSize": "The image can be up to 10 MB.",
+      "generic": "Couldn’t save. Please try again."
+    },
+    "devices": {
+      "title": "Devices",
+      "lead": "Where you’re signed in right now. If you don’t recognise one, sign it out and change your password.",
+      "current": "This device",
+      "lastActive": "Last active: {date}",
+      "signedIn": "Signed in: {date}",
+      "signOut": "Sign out",
+      "signOutOthers": "Sign out of all other devices",
+      "only": "You’re only signed in on this device.",
+      "unknown": "Unknown device",
+      "on": "{browser} · {os}"
+    }
   }
 }

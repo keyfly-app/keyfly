@@ -14,9 +14,12 @@ export function PasswordField({
   rules = false,
   error,
   aside,
+  name = "password",
 }: {
   id: string;
   label: string;
+  /** Form field name; "password" unless a form has two password fields. */
+  name?: string;
   autoComplete: "current-password" | "new-password";
   rules?: boolean;
   error?: string;
@@ -42,7 +45,7 @@ export function PasswordField({
       <div className="relative">
         <input
           id={id}
-          name="password"
+          name={name}
           type={visible ? "text" : "password"}
           autoComplete={autoComplete}
           value={value}

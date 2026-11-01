@@ -22,6 +22,14 @@ https://claude.ai/artifact/AttVCwnk4JJP3kqG7mV1Ns
   and focus, lime only as an accent (Admin badge). Copy: modern corporate fintech in "te" form – say the action,
   never repeat the title on the button, errors tell what to do next, "kétlépcsős azonosítás" (never "2FA").
   Ease of use comes first.
+- **Screens and flows = "App v2.3"** (canvas page "App v2.3 – feladatképernyők"), on top of v2.2: app shell on every
+  signed-in screen; multi-step tasks in a focused flow (header with named steps and Cancel, live summary rail on desktop,
+  review step before sending, sticky bottom action bar on phones); status pages with a timeline, what happens next and
+  validity; destructive actions behind a confirm dialog, never next to the primary button.
+- **Navigation map** (canvas board "Menütérkép"): personal things (profile, sign-in, notifications) live in the
+  top-right user menu and are the same in every account; account things (details, team, plan, invoices, referral)
+  hang off the top-left account switcher and are per account. Company accounts carry their slug in the URL
+  (`/c/<slug>/…`). Insurance, policies and claims are free on every plan and never locked.
 - **Mobile first, WCAG 2.2 AA**: no horizontal scroll 320–1440 px, 44×44 px touch targets, labelled fields,
   visible focus, 4.5:1 text contrast, keyboard and screen-reader friendly.
 - **Terminology**: the lease is "bérleti szerződés" in Hungarian ("szerződés" when the context is clear) – never

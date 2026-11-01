@@ -1,5 +1,24 @@
 /** Stroke icons used across Keyfly surfaces (24×24 grid, decorative by default). */
 const PATHS = {
+  camera: (
+    <>
+      <path d="M4 8h3l2-2.5h6L17 8h3v11H4z" />
+      <circle cx="12" cy="13" r="3.5" />
+    </>
+  ),
+  laptop: (
+    <>
+      <rect x="4.5" y="5" width="15" height="10.5" rx="1.5" />
+      <path d="M2.5 19h19" />
+    </>
+  ),
+  help: (
+    <>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M9.5 9.5a2.5 2.5 0 0 1 4.8 1c0 1.7-2.3 2-2.3 3.5M12 17v.5" />
+    </>
+  ),
+  x: <path d="M6 6l12 12M18 6 6 18" />,
   wallet: (
     <>
       <path d="M3 7.5h15a3 3 0 0 1 3 3V18a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
