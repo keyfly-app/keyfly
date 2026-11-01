@@ -10,7 +10,8 @@
     "languageNav": "Nyelv / Language",
     "aiImage": "AI-generated image",
     "proLabel": "PRO",
-    "moreInfo": "More information"
+    "moreInfo": "More information",
+    "privacyShort": "Privacy"
   },
   "meta": {
     "title": "Rent without a deposit in Hungary – Keyfly",
@@ -326,7 +327,7 @@
     "showPassword": "Show password",
     "or": "or",
     "newTab": "opens in a new tab",
-    "linkExpired": "That link has expired or was already used. Request a new one.",
+    "linkExpired": "This link is no longer valid: it has expired, was already used, or came from an older email. Open the latest Keyfly email or request a new one.",
     "signIn": {
       "title": "Sign in",
       "remember": "Keep me signed in",
@@ -994,5 +995,10 @@
       "cta": "Set new password",
       "why": "You’re receiving this because a new password was requested for this address. If it wasn’t you, ignore it: your password stays the same."
     }
+  },
+  "appFooter": {
+    "navLabel": "Legal information and language",
+    "switchTo": "Switch language:",
+    "otherLanguage": "Magyar"
   }
 }

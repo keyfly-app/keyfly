@@ -1,4 +1,5 @@
 import { getTranslations } from "next-intl/server";
+import { AppFooter } from "@/components/AppFooter";
 import { LogoFull } from "@/components/Logo";
 import { signOut } from "@/features/auth/actions";
 import type { AppSite } from "@/lib/sites";
@@ -6,7 +7,7 @@ import type { AppSite } from "@/lib/sites";
 export async function Shell({ site, badge, email, children }: { site: AppSite; badge?: string; email?: string | null; children: React.ReactNode }) {
   const t = await getTranslations("common");
   return (
-    <div className="min-h-dvh">
+    <div className="flex min-h-dvh flex-col">
       <header className="border-b border-line bg-white">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-4 sm:px-8">
           <div className="flex items-center gap-3">
@@ -22,7 +23,8 @@ export async function Shell({ site, badge, email, children }: { site: AppSite; b
           )}
         </div>
       </header>
-      <main className="mx-auto max-w-6xl px-4 py-8 sm:px-8 sm:py-10">{children}</main>
+      <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-8 sm:px-8 sm:py-10">{children}</main>
+      <AppFooter />
     </div>
   );
 }

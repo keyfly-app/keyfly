@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
+import { AppFooter } from "@/components/AppFooter";
 import { Icon } from "@/components/Icon";
 import { LogoFull } from "@/components/Logo";
 
@@ -28,6 +29,7 @@ export async function AuthLayout({ back, badge, children }: { back?: { href: str
       <main className="flex flex-1 justify-center px-5 py-6 sm:items-start sm:py-14">
         <div className="flex w-full max-w-[440px] flex-col gap-4 sm:rounded-2xl sm:border sm:border-line sm:bg-surface sm:p-8">{children}</div>
       </main>
+      <AppFooter />
     </div>
   );
 }

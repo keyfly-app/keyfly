@@ -10,7 +10,8 @@
     "languageNav": "Nyelv / Language",
     "aiImage": "AI-generált kép",
     "proLabel": "PRO",
-    "moreInfo": "További információ"
+    "moreInfo": "További információ",
+    "privacyShort": "Adatkezelés"
   },
   "meta": {
     "title": "Albérlet kaució nélkül – Keyfly",
@@ -326,7 +327,7 @@
     "showPassword": "Jelszó megjelenítése",
     "or": "vagy",
     "newTab": "új lapon nyílik meg",
-    "linkExpired": "A link lejárt vagy már felhasználtad. Kérj újat.",
+    "linkExpired": "Ez a link már nem érvényes: lejárt, már felhasználtad, vagy egy korábbi levélből nyitottad meg. Nyisd meg a legfrissebb Keyfly-levelet, vagy kérj újat.",
     "signIn": {
       "title": "Belépés",
       "remember": "Bejelentkezve maradok",
@@ -994,5 +995,10 @@
       "cta": "Új jelszó megadása",
       "why": "Azért kapod ezt a levelet, mert új jelszót kértek ehhez az e-mail-címhez. Ha nem te voltál, hagyd figyelmen kívül: a jelszavad nem változik."
     }
+  },
+  "appFooter": {
+    "navLabel": "Jogi információk és nyelv",
+    "switchTo": "Nyelv váltása:",
+    "otherLanguage": "English"
   }
 }

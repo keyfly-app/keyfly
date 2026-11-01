@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 import { DEFAULT_LOCALE, isLocale, LOCALE_COOKIE, resolvePublicPath, type Locale } from "@/i18n/config";
+import { localeCookie } from "@/lib/locale-cookie";
 import { safeNext } from "@/lib/safe-next";
 import { hrefFor, isPreviewHost, PRODUCTION_HOSTS, resolveSite, SITE_PATH_PREFIX, type AppSite } from "@/lib/sites";
 import { authCookieOptions, REMEMBER_COOKIE, wantsRemember } from "@/lib/supabase/session-cookies";
@@ -136,15 +137,7 @@ function routePublic(request: NextRequest) {
 
 /** Remembers the language for a year, shared with app. and admin. on keyfly.app hosts. */
 function setLocaleCookie(response: NextResponse, locale: Locale, host: string | null) {
-  const hostname = (host ?? "").toLowerCase().split(":")[0];
-  response.cookies.set(LOCALE_COOKIE, locale, {
-    path: "/",
-    maxAge: 60 * 60 * 24 * 365,
-    sameSite: "lax",
-    httpOnly: true,
-    secure: hostname !== "localhost" && hostname !== "127.0.0.1",
-    domain: hostname.endsWith("keyfly.app") ? ".keyfly.app" : undefined,
-  });
+  response.cookies.set(localeCookie(locale, host));
 }
 
 async function refreshSession(request: NextRequest, response: NextResponse): Promise<Session> {
