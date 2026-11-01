@@ -886,7 +886,6 @@
       "sentTitle": "Erősítsd meg az e-mail-címed",
       "sentText": "Megerősítő linket küldtünk ide: <b>{email}</b>. A linkre kattintva visszajutsz ide, és csatlakozhatsz.",
       "sentExisting": "Ha ezzel a címmel már van fiókod, nem küldünk új levelet: lépj be inkább.",
-      "signedInAs": "Belépve: <b>{email}</b>",
       "needs2fa": "A belépéshez kétlépcsős azonosítás kell. Készíts elő egy hitelesítő alkalmazást a telefonodon."
     },
     "errors": {
@@ -902,7 +901,8 @@
       "expired": "Ez a QR-kód lejárt. Kérj újat, olvasd be, és írd be az új kódot.",
       "rateLimit": "Túl sok próbálkozás. Várj pár percet, és próbáld újra.",
       "generic": "Valami nem sikerült. Próbáld újra."
-    }
+    },
+    "signedInAs": "Belépve: <b>{email}</b>"
   },
   "adminStaff": {
     "nav": "Munkatársak",

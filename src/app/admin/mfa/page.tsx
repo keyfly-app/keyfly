@@ -36,6 +36,7 @@ export default async function Mfa({ searchParams }: { searchParams: Promise<{ ne
         <PageTitle>{t("challenge.title")}</PageTitle>
         <p className="text-[15px] text-muted">{t("challenge.text")}</p>
         <TotpForm factorId={verified.id} next={next} mode="challenge" />
+        <SignedInAs email={String(auth.claims.email ?? "")} />
       </AuthLayout>
     );
   }
@@ -52,7 +53,25 @@ export default async function Mfa({ searchParams }: { searchParams: Promise<{ ne
       <Notice kind="warning" icon="phone">
         {t("setup.lostPhone")}
       </Notice>
+      <SignedInAs email={String(auth.claims.email ?? "")} />
     </AuthLayout>
+  );
+}
+
+/** Step 2 belongs to the account from step 1: say which one, and offer a way back to the sign-in screen. */
+async function SignedInAs({ email }: { email: string }) {
+  const t = await getTranslations("adminAuth");
+  const common = await getTranslations("common");
+  return (
+    <div className="mt-2 flex flex-wrap items-center justify-between gap-x-4 gap-y-1 border-t border-line pt-4 text-sm text-muted">
+      <p className="min-w-0 [overflow-wrap:anywhere]">{t.rich("signedInAs", { email, b: (c) => <b className="font-semibold text-ink">{c}</b> })}</p>
+      <form action={signOut}>
+        <input type="hidden" name="site" value="admin" />
+        <button type="submit" className="inline-flex min-h-11 items-center font-semibold text-brand underline-offset-3 hover:underline">
+          {common("signOut")}
+        </button>
+      </form>
+    </div>
   );
 }
 

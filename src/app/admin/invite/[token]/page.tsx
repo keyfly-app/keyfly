@@ -85,7 +85,7 @@ export default async function StaffInvite({ params }: { params: Promise<{ token:
     <AuthLayout badge="ADMIN">
       <PageTitle eyebrow={t("label")}>{t("title")}</PageTitle>
       {intro}
-      <p className="text-sm text-muted">{t.rich("signedInAs", { email, b: (c) => <b className="font-semibold text-ink">{c}</b> })}</p>
+      <p className="text-sm text-muted">{(await getTranslations("adminAuth")).rich("signedInAs", { email, b: (c) => <b className="font-semibold text-ink">{c}</b> })}</p>
       <Notice kind="warning">{t("needs2fa")}</Notice>
       <StaffAnswerForm token={token} />
     </AuthLayout>

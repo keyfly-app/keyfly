@@ -886,7 +886,6 @@
       "sentTitle": "Confirm your email",
       "sentText": "We’ve sent a confirmation link to <b>{email}</b>. It brings you back here to join.",
       "sentExisting": "If you already have an account with this address, we don’t send a new email: sign in instead.",
-      "signedInAs": "Signed in as <b>{email}</b>",
       "needs2fa": "Signing in needs two-factor authentication. Have an authenticator app ready on your phone."
     },
     "errors": {
@@ -902,7 +901,8 @@
       "expired": "This QR code has expired. Get a new one, scan it and enter the new code.",
       "rateLimit": "Too many attempts. Wait a few minutes and try again.",
       "generic": "Something went wrong. Try again."
-    }
+    },
+    "signedInAs": "Signed in as <b>{email}</b>"
   },
   "adminStaff": {
     "nav": "Staff",
