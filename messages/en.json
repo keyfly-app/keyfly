@@ -741,6 +741,7 @@
     }
   },
   "portal": {
+    "title": "Home",
     "greeting": "Hi{name, select, none {} other { {name}}}!",
     "intro": {
       "tenant": "Your quote requests and coverage certificates in one place.",

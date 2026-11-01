@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { getLocale, getTranslations } from "next-intl/server";
 import { Shell } from "@/components/Shell";
@@ -8,6 +9,11 @@ import { siteHref } from "@/lib/site-href";
 import { createClient } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("admin");
+  return { title: t("overview"), robots: { index: false } };
+}
 
 export default async function AdminHome() {
   const supabase = await createClient();

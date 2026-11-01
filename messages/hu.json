@@ -741,6 +741,7 @@
     }
   },
   "portal": {
+    "title": "Kezdőlap",
     "greeting": "Szia{name, select, none {} other {, {name}}}!",
     "intro": {
       "tenant": "Itt látod az ajánlatkéréseidet és a fedezeti igazolásaidat.",

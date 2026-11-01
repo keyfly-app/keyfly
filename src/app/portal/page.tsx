@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getLocale, getTranslations } from "next-intl/server";
@@ -11,6 +12,11 @@ import { siteHref } from "@/lib/site-href";
 import { createClient } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("portal");
+  return { title: t("title"), robots: { index: false } };
+}
 
 export default async function PortalHome() {
   const supabase = await createClient();
