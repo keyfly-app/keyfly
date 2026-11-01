@@ -12,6 +12,7 @@ import { hrefFor, type AppSite } from "@/lib/sites";
 import type { Enums } from "@/lib/supabase/database.types";
 import { createClient } from "@/lib/supabase/server";
 import { REMEMBER_COOKIE } from "@/lib/supabase/session-cookies";
+import { syncEmailLocale } from "./locale-sync";
 import { isValidPassword } from "./password";
 import { PENDING_EMAIL_COOKIE, pendingEmail } from "./pending-email";
 
@@ -56,13 +57,14 @@ export async function signIn(_prev: FormState, form: FormData): Promise<FormStat
     ...(remember ? { maxAge: 60 * 60 * 24 * 400 } : {}),
   });
   const supabase = await createClient({ remember });
-  const { error } = await supabase.auth.signInWithPassword({ email, password });
+  const { data, error } = await supabase.auth.signInWithPassword({ email, password });
   if (error) {
     if (error.code === "invalid_credentials") return { status: "error", error: "credentials", email };
     if (error.code === "email_not_confirmed") return { status: "error", error: "unconfirmed", email };
     console.error("sign-in failed", error.code);
     return { status: "error", error: authError(error.code), email };
   }
+  await syncEmailLocale(supabase, data.user.user_metadata);
   return goTo("portal", safeNext(form.get("next")));
 }
 
@@ -149,7 +151,7 @@ export async function requestPasswordReset(_prev: FormState, form: FormData): Pr
   const email = emailOf(form);
   if (!EMAIL_RE.test(email)) return { status: "error", error: "email", email };
   const supabase = await createClient();
-  const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo: await emailLinkTarget("portal", "/reset-password") });
+  const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo: await emailLinkTarget(site(form), "/reset-password") });
   if (error && authError(error.code) === "rateLimit") return { status: "error", error: "rateLimit", email };
   if (error) console.error("password reset failed", error.code);
   return { status: "sent" };
@@ -167,7 +169,7 @@ export async function updatePassword(_prev: FormState, form: FormData): Promise<
     console.error("password update failed", error.code);
     return { status: "error", error: "generic" };
   }
-  return goTo("portal", "/");
+  return goTo(site(form), "/");
 }
 
 export async function signOut(form: FormData) {

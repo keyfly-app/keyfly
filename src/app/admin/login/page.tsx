@@ -2,24 +2,26 @@ import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { AuthLayout } from "@/components/AuthLayout";
 import { Notice, PageTitle } from "@/components/ui/form";
-import { EmailLinkForm } from "@/features/auth/SimpleForms";
+import { AdminSignInForm } from "@/features/staff-auth/forms";
 import { safeNext } from "@/lib/safe-next";
+import { siteHref } from "@/lib/site-href";
 
 export async function generateMetadata(): Promise<Metadata> {
-  const t = await getTranslations("auth");
-  return { title: t("adminTitle") };
+  const t = await getTranslations("adminAuth");
+  return { title: t("title"), robots: { index: false } };
 }
 
-/** Staff sign in with a one-time email link; staff accounts are created by invitation only. */
+/** Staff sign-in: email + password, then the authenticator code (/mfa). Staff accounts come from invitations only. */
 export default async function Login({ searchParams }: { searchParams: Promise<{ error?: string; next?: string }> }) {
   const { error, next } = await searchParams;
-  const t = await getTranslations("auth");
+  const t = await getTranslations("adminAuth");
+  const auth = await getTranslations("auth");
   return (
     <AuthLayout badge="ADMIN">
-      <PageTitle>{t("adminTitle")}</PageTitle>
-      <p className="text-[15px] text-muted">{t("adminText")}</p>
-      {error === "link" && <Notice kind="warning">{t("linkExpired")}</Notice>}
-      <EmailLinkForm site="admin" next={safeNext(next)} />
+      <PageTitle>{t("title")}</PageTitle>
+      <p className="text-[15px] text-muted">{t("text")}</p>
+      {error === "link" && <Notice kind="warning">{auth("linkExpired")}</Notice>}
+      <AdminSignInForm next={safeNext(next)} forgotHref={await siteHref("admin", "/forgot-password")} />
     </AuthLayout>
   );
 }

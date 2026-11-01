@@ -12,6 +12,7 @@ import { authCookieOptions, REMEMBER_COOKIE, wantsRemember } from "@/lib/supabas
  *     and remembers the visitor's language choice (?lang= from the switch → cookie)
  *  3. refreshes the Supabase session on surfaces that need sign-in, and sends signed-out
  *     visitors to the sign-in page (signed-in visitors skip the sign-in and sign-up pages)
+ *  4. admin: every page needs the second factor (aal2); until then staff are sent to /mfa
  */
 export async function proxy(request: NextRequest) {
   const host = request.headers.get("host");
@@ -44,10 +45,10 @@ export async function proxy(request: NextRequest) {
 
   if (site === "marketing" && !isAppPath) return response;
 
-  const signedIn = await refreshSession(request, response);
+  const session = await refreshSession(request, response);
   const app = appLocation(site, pathname);
   if (!app) return response;
-  const redirectTo = authRedirect(app.site, app.path, signedIn, request.nextUrl.searchParams.get("next"));
+  const redirectTo = authRedirect(app.site, app.path, session, request.nextUrl.searchParams.get("next"));
   if (!redirectTo) return response;
 
   const target = NextResponse.redirect(new URL(hrefFor(app.site, redirectTo, host), request.url), 307);
@@ -58,10 +59,12 @@ export async function proxy(request: NextRequest) {
 /** Pages a signed-out visitor may open, per surface (paths as the visitor sees them on the app host). */
 const PUBLIC_APP_PATHS: Record<AppSite, string[]> = {
   portal: ["/login", "/register", "/verify-email", "/forgot-password", "/auth/", "/invite/"],
-  admin: ["/login", "/auth/", "/invite/"],
+  admin: ["/login", "/forgot-password", "/auth/", "/invite/"],
 };
 /** Pages that make no sense once signed in. */
 const SIGNED_OUT_ONLY = ["/login", "/register", "/verify-email", "/forgot-password"];
+/** Admin pages a signed-in user may open before the second factor: the code itself, email links, the staff invitation. */
+const BEFORE_SECOND_FACTOR = ["/mfa", "/auth/", "/invite/"];
 
 function matches(path: string, list: string[]) {
   return list.some((p) => (p.endsWith("/") ? path.startsWith(p) : path === p));
@@ -77,11 +80,16 @@ function appLocation(site: ReturnType<typeof resolveSite>, pathname: string): { 
   return null;
 }
 
-function authRedirect(site: AppSite, path: string, signedIn: boolean, next: string | null): string | null {
-  if (!signedIn && !matches(path, PUBLIC_APP_PATHS[site])) {
+type Session = { signedIn: boolean; aal: string | null };
+
+function authRedirect(site: AppSite, path: string, session: Session, next: string | null): string | null {
+  if (!session.signedIn && !matches(path, PUBLIC_APP_PATHS[site])) {
     return path === "/" ? "/login" : `/login?next=${encodeURIComponent(path)}`;
   }
-  if (signedIn && matches(path, SIGNED_OUT_ONLY)) return safeNext(next);
+  if (session.signedIn && matches(path, SIGNED_OUT_ONLY)) return safeNext(next);
+  if (site === "admin" && session.signedIn && session.aal !== "aal2" && !matches(path, BEFORE_SECOND_FACTOR)) {
+    return path === "/" ? "/mfa" : `/mfa?next=${encodeURIComponent(path)}`;
+  }
   return null;
 }
 
@@ -139,10 +147,10 @@ function setLocaleCookie(response: NextResponse, locale: Locale, host: string | 
   });
 }
 
-async function refreshSession(request: NextRequest, response: NextResponse): Promise<boolean> {
+async function refreshSession(request: NextRequest, response: NextResponse): Promise<Session> {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const key = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
-  if (!url || !key) return false;
+  if (!url || !key) return { signedIn: false, aal: null };
   const remember = wantsRemember(request.cookies.get(REMEMBER_COOKIE)?.value);
 
   const supabase = createServerClient(url, key, {
@@ -158,7 +166,7 @@ async function refreshSession(request: NextRequest, response: NextResponse): Pro
   });
   // Refreshes an expired token; pages and RLS do the actual authorization.
   const { data } = await supabase.auth.getClaims();
-  return Boolean(data?.claims);
+  return { signedIn: Boolean(data?.claims), aal: typeof data?.claims.aal === "string" ? data.claims.aal : null };
 }
 
 export const config = {

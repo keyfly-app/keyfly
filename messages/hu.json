@@ -319,8 +319,6 @@
     }
   },
   "auth": {
-    "adminTitle": "Keyfly admin",
-    "adminText": "Csak Keyfly-munkatársaknak. Belépési linket küldünk e-mailben.",
     "email": "E-mail-cím",
     "password": "Jelszó",
     "show": "Mutat",
@@ -468,9 +466,6 @@
       "continue": "Tovább a Keyflyba"
     },
     "staff": {
-      "label": "Meghívó",
-      "title": "Csatlakozás a Keyfly csapatához",
-      "text": "Lépj be azzal a @keyfly.app címmel, amelyre a meghívó érkezett. Ha még nincs fiókod, előbb hozd létre a Keyfly appban.",
       "accept": "Csatlakozás"
     },
     "errors": {
@@ -850,6 +845,127 @@
       "signRole": "a Keyfly alapítója",
       "why": "Azért kapod ezt a levelet, mert feliratkoztál a Keyfly várólistájára a keyfly.app oldalon. Ha nem te voltál, írj nekünk, és töröljük az adataidat.",
       "privacy": "Adatkezelési tájékoztató"
+    }
+  },
+  "adminAuth": {
+    "title": "Keyfly admin",
+    "text": "Csak Keyfly-munkatársaknak. A jelszó után a hitelesítő alkalmazás kódját kérjük.",
+    "submit": "Tovább",
+    "submitting": "Belépés…",
+    "setup": {
+      "eyebrow": "Első belépés",
+      "title": "Kétlépcsős azonosítás",
+      "text": "Olvasd be a QR-kódot egy hitelesítő alkalmazással, például a Google Authenticatorral vagy a Microsoft Authenticatorral.",
+      "qrAlt": "QR-kód a hitelesítő alkalmazáshoz",
+      "keyLabel": "Nem tudod beolvasni? Add meg ezt a kulcsot:",
+      "copy": "Másolás",
+      "copied": "Kimásolva",
+      "code": "Az alkalmazásban látható 6 jegyű kód",
+      "submit": "Bekapcsolás",
+      "lostPhone": "Ha elveszíted a telefonod, egy szuperadmin visszaállítja a kétlépcsős azonosítást."
+    },
+    "challenge": {
+      "title": "Kétlépcsős azonosítás",
+      "text": "Írd be a hitelesítő alkalmazásban látható 6 jegyű kódot.",
+      "code": "6 jegyű kód",
+      "submit": "Belépés",
+      "noPhone": "Nem férsz hozzá a telefonodhoz?",
+      "noPhoneTip": "Szólj egy szuperadminnak: ő visszaállítja a kétlépcsős azonosítást."
+    },
+    "checking": "Ellenőrzés…",
+    "invite": {
+      "label": "Meghívó",
+      "title": "Csatlakozás a Keyfly csapatához",
+      "intro": "{name} meghívott {role, select, superadmin {szuperadminként} admin {adminként} insurance {biztosítási munkatársként} support {ügyfélszolgálati munkatársként} finance {pénzügyi munkatársként} other {munkatársként}}.",
+      "emailHelp": "A meghívó erre a címre szól.",
+      "after": "Ezután megerősítő linket küldünk erre a címre.",
+      "haveAccount": "Már van fiókod? <link>Belépés</link>",
+      "sentTitle": "Erősítsd meg az e-mail-címed",
+      "sentText": "Megerősítő linket küldtünk ide: <b>{email}</b>. A linkre kattintva visszajutsz ide, és csatlakozhatsz.",
+      "sentExisting": "Ha ezzel a címmel már van fiókod, nem küldünk új levelet: lépj be inkább.",
+      "signedInAs": "Belépve: <b>{email}</b>",
+      "needs2fa": "A belépéshez kétlépcsős azonosítás kell. Készíts elő egy hitelesítő alkalmazást a telefonodon."
+    },
+    "errors": {
+      "email": "Adj meg egy érvényes e-mail-címet.",
+      "password": "Add meg a jelszavad.",
+      "newPassword": "A jelszó nem felel meg a követelményeknek.",
+      "name": "Add meg a teljes neved.",
+      "terms": "A fiók létrehozásához fogadd el az ÁSZF-et és az Adatkezelési tájékoztatót.",
+      "credentials": "Hibás e-mail-cím vagy jelszó.",
+      "unconfirmed": "Még nem erősítetted meg az e-mail-címed. Nézd meg a postafiókod.",
+      "code": "Hibás kód. Próbáld újra.",
+      "codeFormat": "A kód 6 számjegyből áll.",
+      "rateLimit": "Túl sok próbálkozás. Várj pár percet, és próbáld újra.",
+      "generic": "Valami nem sikerült. Próbáld újra."
+    }
+  },
+  "adminStaff": {
+    "nav": "Munkatársak",
+    "title": "Munkatársak",
+    "count": "{count} munkatárs",
+    "columns": {
+      "member": "Munkatárs",
+      "role": "Szerepkör",
+      "twoFactor": "Kétlépcsős azonosítás",
+      "status": "Állapot"
+    },
+    "roles": {
+      "superadmin": "Szuperadmin",
+      "admin": "Admin",
+      "insurance": "Biztosítás",
+      "support": "Ügyfélszolgálat",
+      "finance": "Pénzügy"
+    },
+    "on": "Bekapcsolva",
+    "notSetUp": "Beállításra vár",
+    "active": "Aktív",
+    "disabled": "Letiltva",
+    "lastSignIn": "Utolsó belépés: {date}",
+    "never": "Még nem lépett be",
+    "you": "(te)",
+    "selfNote": "A saját kétlépcsős azonosításodat egy másik szuperadmin állíthatja vissza.",
+    "reset": {
+      "open": "Visszaállítás",
+      "openLabel": "{name} kétlépcsős azonosításának visszaállítása",
+      "title": "Visszaállítod {name} kétlépcsős azonosítását?",
+      "text": "Minden eszközéről kijelentkeztetjük. A következő belépéskor új hitelesítő alkalmazást kell beállítania.",
+      "warning": "Csak akkor állítsd vissza, ha személyesen vagy telefonon meggyőződtél róla, hogy tényleg ő kéri.",
+      "cancel": "Mégse",
+      "confirm": "Visszaállítás",
+      "resetting": "Visszaállítás…",
+      "done": "Visszaállítva. A következő belépéskor újra beállítja.",
+      "error": "Nem sikerült visszaállítani. Próbáld újra."
+    }
+  },
+  "authEmails": {
+    "fallback": "Ha a gomb nem működik, másold be ezt a linket a böngésződbe:",
+    "privacy": "Adatkezelési tájékoztató",
+    "taxNumber": "Adószám",
+    "validity": "A link 24 óráig érvényes, és egyszer használható.",
+    "confirmation": {
+      "subject": "Erősítsd meg az e-mail-címed",
+      "preheader": "Egy kattintás, és kész a Keyfly-fiókod.",
+      "title": "Erősítsd meg az e-mail-címed",
+      "lead": "Köszönjük, hogy regisztráltál a Keyflyn. A fiókod használatához erősítsd meg az e-mail-címed.",
+      "cta": "E-mail-cím megerősítése",
+      "why": "Azért kapod ezt a levelet, mert ezzel az e-mail-címmel regisztráltak a Keyflyn. Ha nem te voltál, hagyd figyelmen kívül: megerősítés nélkül a fiók nem használható."
+    },
+    "magicLink": {
+      "subject": "Belépési linked a Keyflyhoz",
+      "preheader": "Jelszó nélkül, egy kattintással.",
+      "title": "Belépés a Keyflyba",
+      "lead": "Kattints a gombra, és már bent is vagy. Jelszó nem kell.",
+      "cta": "Belépés",
+      "why": "Azért kapod ezt a levelet, mert belépési linket kértek ehhez az e-mail-címhez. Ha nem te voltál, hagyd figyelmen kívül: a link nélkül senki nem fér hozzá a fiókodhoz."
+    },
+    "recovery": {
+      "subject": "Új jelszó beállítása",
+      "preheader": "A link 24 óráig érvényes.",
+      "title": "Új jelszó beállítása",
+      "lead": "Új jelszót kértél a Keyfly-fiókodhoz. A gombra kattintva megadhatod.",
+      "cta": "Új jelszó megadása",
+      "why": "Azért kapod ezt a levelet, mert új jelszót kértek ehhez az e-mail-címhez. Ha nem te voltál, hagyd figyelmen kívül: a jelszavad nem változik."
     }
   }
 }

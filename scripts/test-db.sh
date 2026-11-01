@@ -14,4 +14,7 @@ for f in supabase/migrations/*.sql; do
   echo "→ $f"
   psql "$TEST_URL" -q -v ON_ERROR_STOP=1 --single-transaction -f "$f"
 done
-psql "$TEST_URL" -q -o /dev/null -v ON_ERROR_STOP=1 -f supabase/tests/rls.test.sql
+# rls.test.sql runs first: it defines the tests.* helpers the other files use.
+for f in supabase/tests/rls.test.sql $(ls supabase/tests/*.test.sql | grep -v '/rls.test.sql$'); do
+  psql "$TEST_URL" -q -o /dev/null -v ON_ERROR_STOP=1 -f "$f"
+done

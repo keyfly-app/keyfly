@@ -1,0 +1,97 @@
+{{ if eq .Data.locale "en" }}<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<meta name="supported-color-schemes" content="light dark">
+<title>Confirm your email</title>
+<style>
+  @media (prefers-color-scheme: dark) {
+    .kf-bg { background: #081510 !important; }
+    .kf-card { background: #0F2219 !important; border-color: #24392F !important; }
+    .kf-text { color: #EEF3EF !important; }
+    .kf-muted { color: #A9B8B0 !important; }
+    .kf-line { border-color: #24392F !important; }
+  }
+  @media (max-width: 620px) { .kf-pad { padding-left: 22px !important; padding-right: 22px !important; } }
+</style>
+</head>
+<body style="margin:0;padding:0;background:#F5F7F2;" class="kf-bg">
+<div style="display:none;max-height:0;overflow:hidden;opacity:0;">One click and your Keyfly account is ready.</div>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#F5F7F2;" class="kf-bg">
+<tr><td align="center" style="padding:24px 8px 32px;">
+<table role="presentation" width="600" cellpadding="0" cellspacing="0" class="kf-card" style="width:100%;max-width:600px;background:#FFFFFF;border:1px solid #DCE3DD;border-radius:20px;">
+  <tr><td class="kf-pad" style="padding:36px 40px 0;">
+    <img src="https://keyfly.app/email/logo-pill.png" width="104" height="38" alt="Keyfly" style="display:block;border:0;">
+    <h1 class="kf-text" style="margin:24px 0 0;font:bold 26px/1.2 Sora, Arial, Helvetica, sans-serif;letter-spacing:-0.4px;color:#0C1F19;">Confirm your email</h1>
+    <p class="kf-text" style="margin:16px 0 0;font:16px/1.6 Arial, Helvetica, sans-serif;color:#2E3D37;">Thanks for signing up for Keyfly. Confirm your email to start using your account.</p>
+  </td></tr>
+  <tr><td class="kf-pad" style="padding:24px 40px 0;">
+    <a href="{{ .RedirectTo }}&amp;type=signup&amp;token_hash={{ .TokenHash }}" style="display:inline-block;background:#0E5A43;color:#FFFFFF;text-decoration:none;font:bold 16px Arial, Helvetica, sans-serif;padding:15px 26px;border-radius:999px;">Confirm email</a>
+    <p class="kf-muted" style="margin:16px 0 0;font:14px/1.5 Arial, Helvetica, sans-serif;color:#4D5B55;">The link is valid for 24 hours and works once.</p>
+    <p class="kf-muted" style="margin:16px 0 0;font:13px/1.55 Arial, Helvetica, sans-serif;color:#4D5B55;">If the button doesn’t work, copy this link into your browser:<br>
+      <a href="{{ .RedirectTo }}&amp;type=signup&amp;token_hash={{ .TokenHash }}" style="color:#0E5A43;word-break:break-all;">{{ .RedirectTo }}&amp;type=signup&amp;token_hash={{ .TokenHash }}</a></p>
+  </td></tr>
+  <tr><td class="kf-pad" style="padding:28px 40px 32px;">
+    <div class="kf-muted kf-line" style="border-top:1px solid #DCE3DD;padding-top:18px;font:12px/1.6 Arial, Helvetica, sans-serif;color:#4D5B55;">
+      You’re receiving this because someone signed up for Keyfly with this address. If it wasn’t you, ignore it: the account can’t be used without confirmation.<br><br>
+      <a href="https://keyfly.app/en/privacy" style="color:#4D5B55;">Privacy notice</a> ·
+      <a href="https://keyfly.app/en" style="color:#4D5B55;">keyfly.app</a> ·
+      <a href="mailto:support@keyfly.app" style="color:#4D5B55;">support@keyfly.app</a><br>
+      Plattio Magyarország Kft. · 1061 Budapest, Andrássy út 5. 3. em. 8. · Cg. 01-09-351494 · Tax no. 27275421-2-42
+    </div>
+  </td></tr>
+</table>
+</td></tr>
+</table>
+</body>
+</html>{{ else }}<!doctype html>
+<html lang="hu">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<meta name="supported-color-schemes" content="light dark">
+<title>Erősítsd meg az e-mail-címed</title>
+<style>
+  @media (prefers-color-scheme: dark) {
+    .kf-bg { background: #081510 !important; }
+    .kf-card { background: #0F2219 !important; border-color: #24392F !important; }
+    .kf-text { color: #EEF3EF !important; }
+    .kf-muted { color: #A9B8B0 !important; }
+    .kf-line { border-color: #24392F !important; }
+  }
+  @media (max-width: 620px) { .kf-pad { padding-left: 22px !important; padding-right: 22px !important; } }
+</style>
+</head>
+<body style="margin:0;padding:0;background:#F5F7F2;" class="kf-bg">
+<div style="display:none;max-height:0;overflow:hidden;opacity:0;">Egy kattintás, és kész a Keyfly-fiókod.</div>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#F5F7F2;" class="kf-bg">
+<tr><td align="center" style="padding:24px 8px 32px;">
+<table role="presentation" width="600" cellpadding="0" cellspacing="0" class="kf-card" style="width:100%;max-width:600px;background:#FFFFFF;border:1px solid #DCE3DD;border-radius:20px;">
+  <tr><td class="kf-pad" style="padding:36px 40px 0;">
+    <img src="https://keyfly.app/email/logo-pill.png" width="104" height="38" alt="Keyfly" style="display:block;border:0;">
+    <h1 class="kf-text" style="margin:24px 0 0;font:bold 26px/1.2 Sora, Arial, Helvetica, sans-serif;letter-spacing:-0.4px;color:#0C1F19;">Erősítsd meg az e-mail-címed</h1>
+    <p class="kf-text" style="margin:16px 0 0;font:16px/1.6 Arial, Helvetica, sans-serif;color:#2E3D37;">Köszönjük, hogy regisztráltál a Keyflyn. A fiókod használatához erősítsd meg az e-mail-címed.</p>
+  </td></tr>
+  <tr><td class="kf-pad" style="padding:24px 40px 0;">
+    <a href="{{ .RedirectTo }}&amp;type=signup&amp;token_hash={{ .TokenHash }}" style="display:inline-block;background:#0E5A43;color:#FFFFFF;text-decoration:none;font:bold 16px Arial, Helvetica, sans-serif;padding:15px 26px;border-radius:999px;">E-mail-cím megerősítése</a>
+    <p class="kf-muted" style="margin:16px 0 0;font:14px/1.5 Arial, Helvetica, sans-serif;color:#4D5B55;">A link 24 óráig érvényes, és egyszer használható.</p>
+    <p class="kf-muted" style="margin:16px 0 0;font:13px/1.55 Arial, Helvetica, sans-serif;color:#4D5B55;">Ha a gomb nem működik, másold be ezt a linket a böngésződbe:<br>
+      <a href="{{ .RedirectTo }}&amp;type=signup&amp;token_hash={{ .TokenHash }}" style="color:#0E5A43;word-break:break-all;">{{ .RedirectTo }}&amp;type=signup&amp;token_hash={{ .TokenHash }}</a></p>
+  </td></tr>
+  <tr><td class="kf-pad" style="padding:28px 40px 32px;">
+    <div class="kf-muted kf-line" style="border-top:1px solid #DCE3DD;padding-top:18px;font:12px/1.6 Arial, Helvetica, sans-serif;color:#4D5B55;">
+      Azért kapod ezt a levelet, mert ezzel az e-mail-címmel regisztráltak a Keyflyn. Ha nem te voltál, hagyd figyelmen kívül: megerősítés nélkül a fiók nem használható.<br><br>
+      <a href="https://keyfly.app/adatvedelem" style="color:#4D5B55;">Adatkezelési tájékoztató</a> ·
+      <a href="https://keyfly.app/" style="color:#4D5B55;">keyfly.app</a> ·
+      <a href="mailto:support@keyfly.app" style="color:#4D5B55;">support@keyfly.app</a><br>
+      Plattio Magyarország Kft. · 1061 Budapest, Andrássy út 5. 3. em. 8. · Cg. 01-09-351494 · Adószám 27275421-2-42
+    </div>
+  </td></tr>
+</table>
+</td></tr>
+</table>
+</body>
+</html>{{ end }}
