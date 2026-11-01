@@ -23,9 +23,12 @@ begin
   raise exception 'FAIL: % – did not raise', label;
 end $$;
 
-create or replace function tests.act_as(uid uuid) returns void language plpgsql as $$
+-- mfa = true signs in with a second factor (aal2), which staff rights require.
+create or replace function tests.act_as(uid uuid, mfa boolean default false) returns void language plpgsql as $$
 begin
   perform set_config('request.jwt.claim.sub', coalesce(uid::text, ''), true);
+  perform set_config('request.jwt.claims',
+    case when uid is null then '' else json_build_object('sub', uid, 'aal', case when mfa then 'aal2' else 'aal1' end)::text end, true);
   perform set_config('role', case when uid is null then 'anon' else 'authenticated' end, true);
 end $$;
 
@@ -33,43 +36,106 @@ grant usage on schema tests to anon, authenticated;
 grant execute on all functions in schema tests to anon, authenticated;
 
 -- ---------- Fixtures (as postgres, RLS bypassed) ----------------------------
+-- Users: a1 Anna (tenant), a2 Béla (Anna's co-tenant), b1 Péter (private landlord),
+-- c1 Duna owner (company, referral partner), e1 Duna admin, e2 Duna manager (one property),
+-- e3 Duna viewer, f1 Olga (occupant), f2 Nándor (past tenant), g1 Gábor (no relation),
+-- d1 superadmin, d2 support, h1 future staff member.
 
 insert into auth.users (id, email, raw_user_meta_data) values
-  ('00000000-0000-0000-0000-0000000000a1', 'anna@example.com',  '{"full_name":"Anna Kovács"}'),
-  ('00000000-0000-0000-0000-0000000000a2', 'bela@example.com',  '{"full_name":"Béla Nagy","locale":"en"}'),
-  ('00000000-0000-0000-0000-0000000000b1', 'peter@example.com', '{"full_name":"Péter Szabó"}'),
-  ('00000000-0000-0000-0000-0000000000c1', 'agent@example.com', '{"full_name":"Agency Agent"}'),
-  ('00000000-0000-0000-0000-0000000000d1', 'admin@example.com', '{"full_name":"Superadmin"}'),
-  ('00000000-0000-0000-0000-0000000000d2', 'help@example.com',  '{"full_name":"Support"}');
+  ('00000000-0000-0000-0000-0000000000a1', 'anna@example.com',    '{"full_name":"Anna Kovács"}'),
+  ('00000000-0000-0000-0000-0000000000a2', 'bela@example.com',    '{"full_name":"Béla Nagy","locale":"en"}'),
+  ('00000000-0000-0000-0000-0000000000b1', 'peter@example.com',   '{"full_name":"Péter Szabó"}'),
+  ('00000000-0000-0000-0000-0000000000c1', 'duna@example.com',    '{"full_name":"Duna Owner"}'),
+  ('00000000-0000-0000-0000-0000000000e1', 'eszter@example.com',  '{"full_name":"Eszter Admin"}'),
+  ('00000000-0000-0000-0000-0000000000e2', 'kristof@example.com', '{"full_name":"Kristóf Manager"}'),
+  ('00000000-0000-0000-0000-0000000000e3', 'lili@example.com',    '{"full_name":"Lili Viewer"}'),
+  ('00000000-0000-0000-0000-0000000000f1', 'olga@example.com',    '{"full_name":"Olga Occupant"}'),
+  ('00000000-0000-0000-0000-0000000000f2', 'nandor@example.com',  '{"full_name":"Nándor Past"}'),
+  ('00000000-0000-0000-0000-0000000000f3', 'gabor@example.com',   '{}'),
+  ('00000000-0000-0000-0000-0000000000d1', 'admin@keyfly.app',    '{"full_name":"Superadmin"}'),
+  ('00000000-0000-0000-0000-0000000000d2', 'help@keyfly.app',     '{"full_name":"Support"}'),
+  ('00000000-0000-0000-0000-0000000000d3', 'new@keyfly.app',      '{"full_name":"New Staff"}');
 
 insert into public.staff (user_id, role) values
   ('00000000-0000-0000-0000-0000000000d1', 'superadmin'),
   ('00000000-0000-0000-0000-0000000000d2', 'support');
 
-insert into public.organizations (id, name, type) values
-  ('00000000-0000-0000-0000-00000000f001', 'Example Agency', 'agency');
-insert into public.organization_members (org_id, user_id, role) values
-  ('00000000-0000-0000-0000-00000000f001', '00000000-0000-0000-0000-0000000000c1', 'agent');
+create temp table fx (name text primary key, id uuid);
+grant select on fx to anon, authenticated;
+insert into fx select 'acc_' || split_part(p.email, '@', 1), a.id
+from public.accounts a join public.profiles p on p.id = a.personal_user_id;
 
-insert into public.properties (id, owner_user_id, address_line) values
-  ('00000000-0000-0000-0000-00000000e001', '00000000-0000-0000-0000-0000000000b1', 'Example street 12. 3/2');
+insert into public.accounts (id, kind, name, legal_name, tax_number, plan, is_referral_partner) values
+  ('00000000-0000-0000-0000-00000000c0c0', 'company', 'Duna Ingatlankezelő', 'Duna Ingatlankezelő Kft.', '12345678-2-42', 'business', true);
+insert into public.account_members (account_id, user_id, role, property_scope) values
+  ('00000000-0000-0000-0000-00000000c0c0', '00000000-0000-0000-0000-0000000000c1', 'owner', 'all'),
+  ('00000000-0000-0000-0000-00000000c0c0', '00000000-0000-0000-0000-0000000000e1', 'admin', 'all'),
+  ('00000000-0000-0000-0000-00000000c0c0', '00000000-0000-0000-0000-0000000000e2', 'manager', 'selected'),
+  ('00000000-0000-0000-0000-00000000c0c0', '00000000-0000-0000-0000-0000000000e3', 'viewer', 'all');
 
-insert into public.applications (id, tenant_id, property_id, referred_by_org_id, status, monthly_rent, deposit_months) values
-  ('00000000-0000-0000-0000-00000000a001', '00000000-0000-0000-0000-0000000000a1', '00000000-0000-0000-0000-00000000e001', '00000000-0000-0000-0000-00000000f001', 'submitted', 350000, 3),
+insert into public.properties (id, account_id, postal_code, city, street_name, street_type, house_number, floor_type, floor_number, door, parcel_number) values
+  ('00000000-0000-0000-0000-00000000e001', (select id from fx where name = 'acc_peter'), '1061', 'Budapest', 'Király', 'utca', '12.', 'numbered', 3, '8.', '29431/0/A/3'),
+  ('00000000-0000-0000-0000-00000000e002', '00000000-0000-0000-0000-00000000c0c0', '1061', 'Budapest', 'Andrássy', 'út', '5.', 'numbered', 2, '4.', null),
+  ('00000000-0000-0000-0000-00000000e003', '00000000-0000-0000-0000-00000000c0c0', '1133', 'Budapest', 'Váci', 'út', '18.', 'ground', null, '1.', null);
+insert into public.account_member_properties (account_id, user_id, property_id) values
+  ('00000000-0000-0000-0000-00000000c0c0', '00000000-0000-0000-0000-0000000000e2', '00000000-0000-0000-0000-00000000e002');
+
+-- L0 closed (Nándor, past), L1 active (Anna + co-tenant Béla + occupant Olga), L2 closing (Anna at Duna), L3 draft (Duna).
+insert into public.leases (id, property_id, account_id, tenant_account_id, status, start_date, end_date, monthly_rent,
+                           landlord_confirmed_at, tenant_confirmed_at, closed_at) values
+  ('00000000-0000-0000-0000-0000000001a0', '00000000-0000-0000-0000-00000000e001', (select id from fx where name = 'acc_peter'),
+   (select id from fx where name = 'acc_nandor'), 'closed', current_date - 800, current_date - 31, 250000, now(), now(), now()),
+  ('00000000-0000-0000-0000-0000000001a1', '00000000-0000-0000-0000-00000000e001', (select id from fx where name = 'acc_peter'),
+   (select id from fx where name = 'acc_anna'), 'confirmed', current_date - 30, current_date + 300, 280000, now(), now(), null),
+  ('00000000-0000-0000-0000-0000000001a2', '00000000-0000-0000-0000-00000000e002', '00000000-0000-0000-0000-00000000c0c0',
+   (select id from fx where name = 'acc_anna'), 'confirmed', current_date - 400, current_date - 10, 320000, now(), now(), null),
+  ('00000000-0000-0000-0000-0000000001a3', '00000000-0000-0000-0000-00000000e003', '00000000-0000-0000-0000-00000000c0c0',
+   null, 'draft', current_date + 30, null, 300000, null, null, null);
+select private.snapshot_lease_parties('00000000-0000-0000-0000-0000000001a1');
+select private.snapshot_lease_parties('00000000-0000-0000-0000-0000000001a0');
+insert into public.lease_occupants (lease_id, user_id, role) values
+  ('00000000-0000-0000-0000-0000000001a1', '00000000-0000-0000-0000-0000000000a2', 'co_tenant'),
+  ('00000000-0000-0000-0000-0000000001a1', '00000000-0000-0000-0000-0000000000f1', 'occupant');
+
+insert into public.applications (id, tenant_id, property_id, referred_by_account_id, status, monthly_rent, deposit_months) values
+  ('00000000-0000-0000-0000-00000000a001', '00000000-0000-0000-0000-0000000000a1', '00000000-0000-0000-0000-00000000e001', '00000000-0000-0000-0000-00000000c0c0', 'submitted', 350000, 3),
   ('00000000-0000-0000-0000-00000000a002', '00000000-0000-0000-0000-0000000000a2', null, null, 'submitted', 280000, 2),
   ('00000000-0000-0000-0000-00000000a003', '00000000-0000-0000-0000-0000000000a1', '00000000-0000-0000-0000-00000000e001', null, 'accepted', 350000, 3);
 
-insert into public.policies (id, application_id, tenant_id, property_id, status, coverage_amount, premium_amount) values
-  ('00000000-0000-0000-0000-00000000b001', '00000000-0000-0000-0000-00000000a003', '00000000-0000-0000-0000-0000000000a1', '00000000-0000-0000-0000-00000000e001', 'active', 1050000, 5250);
+insert into public.policies (id, application_id, tenant_id, property_id, lease_id, status, coverage_amount, premium_amount) values
+  ('00000000-0000-0000-0000-00000000b001', '00000000-0000-0000-0000-00000000a003', '00000000-0000-0000-0000-0000000000a1',
+   '00000000-0000-0000-0000-00000000e001', '00000000-0000-0000-0000-0000000001a1', 'active', 1050000, 5250);
 
 -- ---------- Basics ------------------------------------------------------------
 
-select tests.ok((select count(*) from public.profiles) = 6, 'sign-up creates a profile');
+select tests.ok((select count(*) from public.profiles) = 13, 'sign-up creates a profile');
+select tests.ok((select count(*) from public.accounts where kind = 'person') = 13, 'sign-up creates a personal account');
+select tests.ok((select count(*) from public.account_members m join public.accounts a on a.id = m.account_id
+                 where a.kind = 'person' and m.role = 'owner' and m.user_id = a.personal_user_id) = 13, 'the person owns their personal account');
+select tests.ok((select name from public.accounts where id = (select id from fx where name = 'acc_gabor')) = 'gabor', 'nameless sign-up: account named after the email');
 select tests.ok((select full_name from public.profiles where email = 'anna@example.com') = 'Anna Kovács', 'name is copied from sign-up metadata');
 select tests.ok((select locale from public.profiles where email = 'bela@example.com') = 'en', 'locale is copied from sign-up metadata');
 select tests.ok((select deposit_amount from public.applications where id = '00000000-0000-0000-0000-00000000a001') = 1050000, 'deposit = rent × months');
 select tests.ok((select policy_number from public.policies limit 1) ~ '^KF-\d{4}-\d{6}$', 'policy number format KF-YYYY-000000');
-select tests.ok((select count(*) from public.audit_log where entity = 'applications') >= 3, 'quote requests are audited');
+select tests.ok((select district from public.properties where id = '00000000-0000-0000-0000-00000000e001') = 6, 'Budapest district comes from the postcode');
+select tests.ok((select public.lease_phase(l) from public.leases l where id = '00000000-0000-0000-0000-0000000001a1') = 'active', 'phase: active');
+select tests.ok((select public.lease_phase(l) from public.leases l where id = '00000000-0000-0000-0000-0000000001a2') = 'closing', 'phase: closing after the end date');
+select tests.ok((select public.lease_phase(l) from public.leases l where id = '00000000-0000-0000-0000-0000000001a0') = 'closed', 'phase: closed');
+select tests.ok((select count(*) from public.lease_parties where lease_id = '00000000-0000-0000-0000-0000000001a1') = 2, 'both parties are recorded on confirmation');
+select tests.ok((select count(*) from audit.events where table_name = 'applications') >= 3, 'quote requests are audited');
+
+select tests.throws($$insert into public.properties (account_id, postal_code, city, street_name, street_type, house_number) values ((select id from fx where name = 'acc_peter'), '106', 'Budapest', 'X', 'utca', '1.')$$, 'Hungarian postcode has 4 digits');
+select tests.throws($$insert into public.properties (account_id, postal_code, city, street_name, street_type, house_number, floor_type) values ((select id from fx where name = 'acc_peter'), '1061', 'Budapest', 'X', 'utca', '1.', 'numbered')$$, 'a numbered floor needs its number');
+select tests.throws($$insert into public.properties (account_id, postal_code, city, street_name, street_type, house_number, parcel_number) values ((select id from fx where name = 'acc_peter'), '1061', 'Budapest', 'X', 'utca', '1.', 'hrsz 12')$$, 'land registry number format');
+select tests.throws($$insert into public.leases (property_id, account_id, tenant_account_id, status, start_date, end_date, monthly_rent, landlord_confirmed_at, tenant_confirmed_at) values ('00000000-0000-0000-0000-00000000e001', (select id from fx where name = 'acc_peter'), (select id from fx where name = 'acc_bela'), 'confirmed', current_date, current_date + 10, 1, now(), now())$$, 'no two leases on one property at the same time');
+select tests.throws($$insert into public.leases (property_id, account_id, start_date, monthly_rent) values ('00000000-0000-0000-0000-00000000e001', '00000000-0000-0000-0000-00000000c0c0', current_date, 1)$$, 'a lease belongs to the property''s account');
+select tests.throws($$insert into public.account_members (account_id, user_id, role) values ((select id from fx where name = 'acc_peter'), '00000000-0000-0000-0000-0000000000a1', 'viewer')$$, 'a personal account has a single member');
+select tests.throws($$delete from audit.events$$, 'the audit log is append-only');
+
+begin;
+set constraints all immediate;
+select tests.throws($$delete from public.account_members where account_id = '00000000-0000-0000-0000-00000000c0c0' and role = 'owner'$$, 'the last owner cannot leave');
+rollback;
 
 -- ---------- Visitor (anon) ----------------------------------------------------
 
@@ -77,6 +143,9 @@ begin;
 select tests.act_as(null);
 select tests.throws('select * from public.applications', 'anon cannot read quote requests');
 select tests.throws('select * from public.profiles', 'anon cannot read profiles');
+select tests.throws('select * from public.accounts', 'anon cannot read accounts');
+select tests.throws('select * from public.leases', 'anon cannot read leases');
+select tests.throws($$select public.create_company_account('X Kft.', '12345678-1-41')$$, 'anon cannot create accounts');
 insert into public.waitlist (email, segment, locale, privacy_notice_version, source) values ('new@example.com', 'tenant', 'hu', '2026-10-31', 'coming-soon');
 select tests.ok(true, 'anon can join the waitlist');
 insert into public.waitlist (email, segment, locale, privacy_notice_version, marketing_consent, marketing_consent_version) values ('news@example.com', 'landlord', 'en', '2026-10-31', true, 'newsletter-2026-10-31');
@@ -92,16 +161,33 @@ select tests.throws($$insert into public.waitlist (email, privacy_notice_version
 select tests.throws($$insert into public.waitlist (email, segment, privacy_notice_version, created_at) values ('y@example.com', 'tenant', 'v1', now() - interval '1 year')$$, 'anon cannot set server-only columns');
 rollback;
 
--- ---------- Tenant (Anna) -----------------------------------------------------
+-- ---------- Tenant (Anna): current lease at Péter, closing lease at Duna ------------
 
 begin;
 select tests.act_as('00000000-0000-0000-0000-0000000000a1');
 select tests.ok((select count(*) from public.applications) = 2, 'tenant sees only her 2 requests');
 select tests.ok((select count(*) from public.profiles) = 1, 'tenant sees only her profile');
 select tests.ok((select count(*) from public.policies) = 1, 'tenant sees her policy');
-select tests.ok((select count(*) from public.properties) = 0, 'tenant cannot see the landlord property table');
+select tests.ok((select count(*) from public.accounts) = 1, 'tenant sees only her own account');
+select tests.ok((select count(*) from public.leases) = 2, 'tenant sees her active and her closing lease');
+select tests.ok((select count(*) from public.leases where id = '00000000-0000-0000-0000-0000000001a0') = 0, 'tenant cannot see the previous tenant''s lease');
+select tests.ok((select count(*) from public.properties) = 2, 'tenant sees the address of the homes she rents');
+select tests.ok((select count(*) from public.properties where id = '00000000-0000-0000-0000-00000000e003') = 0, 'tenant cannot see the landlord''s other property');
+select tests.ok((select count(*) from public.lease_parties where lease_id = '00000000-0000-0000-0000-0000000001a1') = 2, 'tenant sees the contract parties');
+select tests.ok((select count(*) from public.lease_occupants) = 2, 'tenant sees who lives with her');
 select tests.ok((select count(*) from public.staff) = 0, 'tenant cannot see staff');
-select tests.ok((select count(*) from public.audit_log) = 0, 'tenant cannot see the audit log');
+update public.leases set monthly_rent = 1 where id = '00000000-0000-0000-0000-0000000001a1';
+select tests.ok((select monthly_rent from public.leases where id = '00000000-0000-0000-0000-0000000001a1') = 280000, 'tenant cannot change the lease');
+select tests.throws($$insert into public.properties (account_id, postal_code, city, street_name, street_type, house_number, created_by) values ((select id from fx where name = 'acc_peter'), '1061', 'Budapest', 'X', 'utca', '1.', '00000000-0000-0000-0000-0000000000a1')$$, 'tenant cannot add a property to the landlord''s account');
+select tests.throws($$select public.activity_log()$$, 'tenant cannot read the audit log');
+select tests.throws('select * from audit.events', 'tenant has no access to the audit schema');
+select tests.throws($$select public.create_staff_invitation('x@keyfly.app', 'admin')$$, 'tenant cannot invite staff');
+select tests.throws($$select public.close_lease('00000000-0000-0000-0000-0000000001a2')$$, 'tenant cannot close a lease');
+select tests.ok(length(public.create_lease_invitation('00000000-0000-0000-0000-0000000001a1', 'gabor@example.com', 'lease_occupant', 'occupant')) = 64,
+  'tenant can invite an occupant to her home');
+select tests.ok(public.create_company_account('Anna Lakásai Kft.', '23456789-2-41') is not null, 'anyone can create a company account');
+select tests.ok((select count(*) from public.accounts) = 2, 'the creator sees the new company account');
+select tests.throws($$select public.create_account_invitation((select id from public.accounts where kind = 'company'), 'x@example.com', 'manager')$$, 'a Basic company cannot add members');
 update public.applications set monthly_rent = 360000 where id = '00000000-0000-0000-0000-00000000a001';
 select tests.ok((select monthly_rent from public.applications where id = '00000000-0000-0000-0000-00000000a001') = 360000, 'tenant can edit a submitted request');
 select tests.throws($$update public.applications set quoted_premium_monthly = 1 where id = '00000000-0000-0000-0000-00000000a001'$$, 'tenant cannot change the premium');
@@ -111,8 +197,8 @@ select tests.throws($$insert into public.applications (tenant_id, monthly_rent, 
 insert into public.applications (tenant_id, monthly_rent) values ('00000000-0000-0000-0000-0000000000a1', 300000);
 select tests.ok(true, 'tenant can create her own request');
 select tests.throws($$update public.profiles set email = 'x@y.hu' where id = '00000000-0000-0000-0000-0000000000a1'$$, 'tenant cannot change her login email');
-update public.profiles set phone = '+36301234567', locale = 'en' where id = '00000000-0000-0000-0000-0000000000a1';
-select tests.ok(true, 'tenant can change phone and language');
+update public.profiles set phone = '+36301234567', locale = 'en', start_view = 'tenant' where id = '00000000-0000-0000-0000-0000000000a1';
+select tests.ok(true, 'tenant can change phone, language and start view');
 select tests.throws($$insert into public.claims (policy_id, submitted_by, reason, amount_claimed) values ('00000000-0000-0000-0000-00000000b001', '00000000-0000-0000-0000-0000000000a1', 'x', 1000)$$, 'tenant cannot file a claim');
 select tests.throws($$insert into public.verifications (application_id, method, status) values ('00000000-0000-0000-0000-00000000a001', 'manual', 'passed')$$, 'tenant cannot verify herself');
 select tests.throws($$insert into public.staff (user_id, role) values ('00000000-0000-0000-0000-0000000000a1', 'superadmin')$$, 'tenant cannot make herself admin');
@@ -121,65 +207,200 @@ select tests.ok(true, 'tenant can upload to her own folder');
 select tests.throws($$insert into storage.objects (bucket_id, name) values ('documents', '00000000-0000-0000-0000-0000000000a2/x.pdf')$$, 'tenant cannot upload to another folder');
 rollback;
 
--- ---------- Another tenant (Béla) -----------------------------------------------
+-- ---------- Co-tenant, occupant, past tenant, stranger ------------------------------
 
 begin;
 select tests.act_as('00000000-0000-0000-0000-0000000000a2');
-select tests.ok((select count(*) from public.applications) = 1, 'Béla sees only his request');
-select tests.ok((select count(*) from public.policies) = 0, 'Béla cannot see Anna''s policy');
-select tests.ok((select count(*) from public.claims) = 0, 'Béla sees no claims');
+select tests.ok((select count(*) from public.leases) = 1, 'co-tenant sees the shared lease only');
+select tests.ok((select count(*) from public.lease_parties) = 2, 'co-tenant sees the contract parties');
+select tests.ok((select count(*) from public.policies) = 1, 'co-tenant sees the guarantee on the lease');
+select tests.ok((select count(*) from public.applications) = 1, 'co-tenant sees only his own request');
 rollback;
 
--- ---------- Landlord (Péter) -----------------------------------------------------
+begin;
+select tests.act_as('00000000-0000-0000-0000-0000000000f1');
+select tests.ok((select count(*) from public.leases) = 1, 'occupant sees the home''s lease');
+select tests.ok((select count(*) from public.lease_parties) = 0, 'occupant cannot see the contract parties');
+select tests.ok((select count(*) from public.policies) = 0, 'occupant cannot see the guarantee');
+select tests.ok((select count(*) from public.properties) = 1, 'occupant sees the address');
+rollback;
+
+begin;
+select tests.act_as('00000000-0000-0000-0000-0000000000f2');
+select tests.ok((select count(*) from public.leases) = 1, 'past tenant keeps his closed lease');
+select tests.ok((select count(*) from public.lease_parties) = 2, 'past tenant keeps the contract record');
+select tests.ok((select count(*) from public.lease_occupants) = 0, 'past tenant cannot see the new household');
+rollback;
+
+begin;
+select tests.act_as('00000000-0000-0000-0000-0000000000f3');
+select tests.ok((select count(*) from public.leases) + (select count(*) from public.properties) + (select count(*) from public.policies) = 0, 'a stranger sees nothing');
+rollback;
+
+-- ---------- Private landlord (Péter) ------------------------------------------------------
 
 begin;
 select tests.act_as('00000000-0000-0000-0000-0000000000b1');
 select tests.ok((select count(*) from public.applications) = 0, 'landlord cannot see tenant income data');
 select tests.ok((select count(*) from public.properties) = 1, 'landlord sees his property');
-select tests.ok((select count(*) from public.policies) = 1, 'landlord sees the policy on his property');
-select tests.throws($$insert into public.claims (policy_id, submitted_by, reason, amount_claimed, amount_paid) values ('00000000-0000-0000-0000-00000000b001', '00000000-0000-0000-0000-0000000000b1', 'x', 1000, 1000)$$, 'landlord cannot set the paid amount');
+select tests.ok((select count(*) from public.leases) = 2, 'landlord sees all leases of his property');
+select tests.ok((select count(*) from public.leases where id = '00000000-0000-0000-0000-0000000001a2') = 0, 'landlord cannot see the tenant''s other lease');
+select tests.ok((select count(*) from public.policies) = 1, 'landlord sees the guarantee on his lease');
+select tests.throws($$update public.leases set monthly_rent = 300000 where id = '00000000-0000-0000-0000-0000000001a1'$$, 'confirmed terms change only by amendment');
+select tests.throws($$update public.leases set status = 'closed' where id = '00000000-0000-0000-0000-0000000001a1'$$, 'status changes only through functions');
+update public.leases set termination_date = current_date + 60 where id = '00000000-0000-0000-0000-0000000001a1';
+select tests.ok((select termination_date from public.leases where id = '00000000-0000-0000-0000-0000000001a1') = current_date + 60, 'landlord can record a notice');
+select tests.throws($$select public.close_lease('00000000-0000-0000-0000-0000000001a1')$$, 'an active lease cannot be closed');
+select tests.throws($$select public.create_account_invitation((select id from fx where name = 'acc_peter'), 'x@example.com', 'manager')$$, 'nobody joins a personal account');
 insert into public.claims (policy_id, submitted_by, reason, amount_claimed) values ('00000000-0000-0000-0000-00000000b001', '00000000-0000-0000-0000-0000000000b1', 'Unpaid rent', 350000);
 select tests.ok((select count(*) from public.claims) = 1, 'landlord can file and see a claim');
+select tests.throws($$insert into public.claims (policy_id, submitted_by, reason, amount_claimed, amount_paid) values ('00000000-0000-0000-0000-00000000b001', '00000000-0000-0000-0000-0000000000b1', 'x', 1000, 1000)$$, 'landlord cannot set the paid amount');
 update public.claims set status = 'paid';
 select tests.ok((select status from public.claims limit 1) = 'submitted', 'landlord cannot mark a claim as paid');
 select tests.act_as('00000000-0000-0000-0000-0000000000a1');
 select tests.ok((select count(*) from public.claims) = 1, 'tenant sees the claim against her');
 rollback;
 
--- ---------- Agency agent -----------------------------------------------------------
+-- ---------- Business team (Duna) ------------------------------------------------------------
 
 begin;
-select tests.act_as('00000000-0000-0000-0000-0000000000c1');
-select tests.ok((select count(*) from public.applications) = 1, 'agency sees only the request it referred');
-select tests.ok((select count(*) from public.organizations) = 1, 'agency sees its own organisation');
-select tests.throws($$insert into public.organization_members (org_id, user_id, role) values ('00000000-0000-0000-0000-00000000f001', '00000000-0000-0000-0000-0000000000a2', 'admin')$$, 'plain agent cannot add members');
+select tests.act_as('00000000-0000-0000-0000-0000000000e1');
+select tests.ok((select count(*) from public.properties) = 2, 'admin sees all company properties');
+select tests.ok((select count(*) from public.leases) = 2, 'admin sees the company''s leases');
+select tests.ok((select count(*) from public.applications) = 1, 'referral partner sees the request it referred');
+select tests.ok((select count(*) from public.activity_log('00000000-0000-0000-0000-00000000c0c0')) > 0, 'Business admin reads the account''s activity log');
+select tests.ok(length(public.create_account_invitation('00000000-0000-0000-0000-00000000c0c0', 'New.Manager@Example.com', 'manager', 'selected',
+  array['00000000-0000-0000-0000-00000000e003']::uuid[])) = 64, 'admin invites a manager for one property');
+select tests.ok((select email from public.invitations where kind = 'account_member') = 'new.manager@example.com', 'invitation email is stored in lower case');
+select tests.throws($$select public.create_account_invitation('00000000-0000-0000-0000-00000000c0c0', 'x@example.com', 'owner')$$, 'nobody is invited as owner');
+select tests.ok(length(public.create_lease_invitation('00000000-0000-0000-0000-0000000001a3', 'nandor@example.com', 'lease_tenant')) = 64, 'admin invites a tenant to a draft lease');
+select tests.ok((select status from public.leases where id = '00000000-0000-0000-0000-0000000001a3') = 'pending', 'inviting the tenant confirms the landlord side');
+rollback;
+
+begin;
+select tests.act_as('00000000-0000-0000-0000-0000000000e2');
+select tests.ok((select count(*) from public.properties) = 1, 'scoped manager sees only his property');
+select tests.ok((select count(*) from public.leases) = 1, 'scoped manager sees only that property''s lease');
+select tests.throws($$select public.activity_log('00000000-0000-0000-0000-00000000c0c0')$$, 'a manager cannot read the activity log');
+select tests.throws($$select public.create_account_invitation('00000000-0000-0000-0000-00000000c0c0', 'x@example.com', 'viewer')$$, 'a manager cannot invite members');
+select public.close_lease('00000000-0000-0000-0000-0000000001a2');
+select tests.ok((select status from public.leases where id = '00000000-0000-0000-0000-0000000001a2') = 'closed', 'manager closes a lease after move-out');
+select tests.act_as('00000000-0000-0000-0000-0000000000a1');
+select tests.ok((select count(*) from public.leases where id = '00000000-0000-0000-0000-0000000001a2') = 1, 'the tenant keeps reading her closed lease');
+select tests.ok((select private.lease_access('00000000-0000-0000-0000-0000000001a2')) = 'tenant_archive', '… as an archive');
+rollback;
+
+begin;
+select tests.act_as('00000000-0000-0000-0000-0000000000e3');
+select tests.ok((select count(*) from public.leases) = 2, 'viewer sees the company''s leases');
+update public.leases set termination_date = current_date where id = '00000000-0000-0000-0000-0000000001a2';
+select tests.ok((select termination_date from public.leases where id = '00000000-0000-0000-0000-0000000001a2') is null, 'viewer cannot change a lease');
+rollback;
+
+-- ---------- Plans: Pro allows 3 users, no admin ----------------------------------------------
+
+begin;
+insert into public.accounts (id, kind, name, legal_name, tax_number, plan) values
+  ('00000000-0000-0000-0000-00000000c1c1', 'company', 'Pro Kft.', 'Pro Kft.', '11111111-2-42', 'pro');
+insert into public.account_members (account_id, user_id, role) values ('00000000-0000-0000-0000-00000000c1c1', '00000000-0000-0000-0000-0000000000b1', 'owner');
+select tests.act_as('00000000-0000-0000-0000-0000000000b1');
+select tests.throws($$select public.create_account_invitation('00000000-0000-0000-0000-00000000c1c1', 'x@example.com', 'admin')$$, 'Pro has no admin role');
+select public.create_account_invitation('00000000-0000-0000-0000-00000000c1c1', 'one@example.com', 'manager');
+select public.create_account_invitation('00000000-0000-0000-0000-00000000c1c1', 'two@example.com', 'viewer');
+select tests.throws($$select public.create_account_invitation('00000000-0000-0000-0000-00000000c1c1', 'three@example.com', 'viewer')$$, 'Pro allows at most 3 users');
+select public.create_account_invitation('00000000-0000-0000-0000-00000000c1c1', 'two@example.com', 'manager');
+select tests.ok((select count(*) from public.invitations where account_id = '00000000-0000-0000-0000-00000000c1c1' and revoked_at is null) = 2, 're-sending replaces the open invitation');
+rollback;
+
+-- ---------- Accepting invitations -----------------------------------------------------------
+
+begin;
+select tests.act_as('00000000-0000-0000-0000-0000000000e1');
+create temp table tok as select public.create_lease_invitation('00000000-0000-0000-0000-0000000001a3', 'nandor@example.com', 'lease_tenant') as t;
+grant select on tok to authenticated;
+select tests.act_as('00000000-0000-0000-0000-0000000000a1');
+select tests.ok((select is_for_me from public.invitation_preview((select t from tok))) = false, 'preview tells Anna the invitation is not hers');
+select tests.ok((select masked_email from public.invitation_preview((select t from tok))) = 'n•••@example.com', 'preview masks the address');
+select tests.throws($$select public.accept_invitation((select t from tok))$$, 'an invitation is accepted only with its own email');
+select tests.act_as('00000000-0000-0000-0000-0000000000f2');
+select tests.ok((select is_open and is_for_me from public.invitation_preview((select t from tok))), 'preview for the invitee');
+select public.accept_invitation((select t from tok));
+select tests.ok((select status from public.leases where id = '00000000-0000-0000-0000-0000000001a3') = 'confirmed', 'accepting confirms the lease');
+select tests.ok((select count(*) from public.lease_parties where lease_id = '00000000-0000-0000-0000-0000000001a3') = 2, 'accepting records both parties');
+select tests.ok((select public.lease_phase(l) from public.leases l where id = '00000000-0000-0000-0000-0000000001a3') = 'upcoming', 'phase: upcoming before the start date');
+select tests.ok((select count(*) from public.leases) = 2, 'the new tenant sees his new lease next to the old one');
+select tests.throws($$select public.accept_invitation((select t from tok))$$, 'a link works once');
+rollback;
+
+begin;
+select tests.act_as('00000000-0000-0000-0000-0000000000a1');
+create temp table tok as select public.create_lease_invitation('00000000-0000-0000-0000-0000000001a1', 'gabor@example.com', 'lease_occupant', 'occupant') as t;
+grant select on tok to authenticated;
+select tests.act_as('00000000-0000-0000-0000-0000000000f3');
+select public.accept_invitation((select t from tok));
+select tests.ok((select count(*) from public.leases) = 1, 'an accepted occupant sees the home''s lease');
+rollback;
+
+begin;
+select tests.act_as('00000000-0000-0000-0000-0000000000e1');
+create temp table tok as select public.create_account_invitation('00000000-0000-0000-0000-00000000c0c0', 'gabor@example.com', 'viewer', 'selected',
+  array['00000000-0000-0000-0000-00000000e003']::uuid[]) as t;
+grant select on tok to authenticated;
+select tests.act_as('00000000-0000-0000-0000-0000000000f3');
+select public.accept_invitation((select t from tok));
+select tests.ok((select count(*) from public.properties) = 1, 'a new member sees only the properties chosen in the invitation');
 rollback;
 
 -- ---------- Staff ------------------------------------------------------------------
 
 begin;
 select tests.act_as('00000000-0000-0000-0000-0000000000d2');
-select tests.ok((select count(*) from public.applications) = 3, 'support staff sees everything');
+select tests.ok((select count(*) from public.applications) = 0, 'staff without a second factor sees nothing');
+select tests.act_as('00000000-0000-0000-0000-0000000000d2', true);
+select tests.ok((select count(*) from public.applications) = 3, 'support with 2FA sees quote requests');
+select tests.ok((select count(*) from public.leases) = 4, 'support with 2FA sees all leases');
 select tests.ok((select count(*) from public.waitlist) >= 0, 'staff can read the waitlist');
 select tests.throws($$insert into public.staff (user_id, role) values ('00000000-0000-0000-0000-0000000000a2', 'admin')$$, 'support cannot add staff');
+select tests.throws($$select public.create_staff_invitation('x@keyfly.app', 'admin')$$, 'support cannot invite staff');
+select tests.throws($$select public.activity_log()$$, 'support cannot read the full audit log');
 rollback;
 
 begin;
-select tests.act_as('00000000-0000-0000-0000-0000000000d1');
+select tests.act_as('00000000-0000-0000-0000-0000000000d1', true);
 update public.applications
   set status = 'approved', quoted_rate_pct = 6, quoted_premium_monthly = 5250, quoted_premium_yearly = 63000,
       max_coverage = 1200000, offer_expires_at = now() + interval '7 days', decided_at = now()
   where id = '00000000-0000-0000-0000-00000000a001';
 select tests.ok((select status from public.applications where id = '00000000-0000-0000-0000-00000000a001') = 'approved', 'superadmin can issue an offer');
-insert into public.staff (user_id, role) values ('00000000-0000-0000-0000-0000000000c1', 'ops');
-select tests.ok(true, 'superadmin can add staff');
-select tests.ok((select count(*) from public.audit_log where entity = 'applications') >= 4, 'status changes are audited');
+select tests.throws($$select public.create_staff_invitation('someone@gmail.com', 'support')$$, 'staff need a @keyfly.app address');
+create temp table tok as select public.create_staff_invitation('new@keyfly.app', 'insurance') as t;
+grant select on tok to authenticated;
+select tests.ok((select count(*) from public.activity_log()) > 0, 'superadmin reads the full audit log');
+select tests.act_as('00000000-0000-0000-0000-0000000000d3');
+select public.accept_staff_invitation((select t from tok));
+select tests.ok((select role from public.staff where user_id = '00000000-0000-0000-0000-0000000000d3') = 'insurance', 'an invited staff member joins with the given role');
+select tests.ok((select count(*) from public.applications) = 0, '… but sees nothing until 2FA is on');
 rollback;
+
+begin;
+update public.staff set disabled_at = now() where user_id = '00000000-0000-0000-0000-0000000000d2';
+select tests.act_as('00000000-0000-0000-0000-0000000000d2', true);
+select tests.ok((select count(*) from public.applications) = 0, 'a disabled staff member sees nothing');
+rollback;
+
+select tests.ok((select count(*) from audit.events where table_name = 'leases') >= 4, 'lease changes are audited');
+select tests.ok((select count(*) from audit.events where changes ? 'token_hash') = 0, 'tokens never reach the audit log');
 
 -- ---------- Default privileges revoked -------------------------------------------
 
 select tests.ok(not has_table_privilege('anon', 'public.applications', 'select'), 'anon has no select on applications');
-select tests.ok(not has_table_privilege('anon', 'public.audit_log', 'insert'), 'anon cannot write the audit log');
+select tests.ok(not has_table_privilege('anon', 'public.accounts', 'select'), 'anon has no select on accounts');
+select tests.ok(not has_table_privilege('anon', 'public.leases', 'select'), 'anon has no select on leases');
+select tests.ok(not has_table_privilege('authenticated', 'public.account_members', 'insert'), 'members join only through invitations');
+select tests.ok(not has_table_privilege('authenticated', 'public.invitations', 'insert'), 'invitations are created only through functions');
+select tests.ok(not has_column_privilege('authenticated', 'public.invitations', 'token_hash', 'select'), 'token hashes are not readable');
+select tests.ok(not has_column_privilege('authenticated', 'public.accounts', 'plan', 'update'), 'the plan is not editable by customers');
 select tests.ok(not has_column_privilege('authenticated', 'public.profiles', 'email', 'update'), 'login email is not updatable via the API');
+select tests.ok(not has_function_privilege('anon', 'public.accept_invitation(text, uuid)', 'execute'), 'anon cannot call invitation functions');
 
 \echo '=== ALL ACCESS-CONTROL TESTS PASSED ==='
