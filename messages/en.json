@@ -863,7 +863,9 @@
       "copied": "Copied",
       "code": "The 6-digit code shown in the app",
       "submit": "Turn on",
-      "lostPhone": "If you lose your phone, a super admin resets two-factor authentication for you."
+      "lostPhone": "If you lose your phone, a super admin resets two-factor authentication for you.",
+      "restart": "New QR code",
+      "preparing": "Preparing your QR code…"
     },
     "challenge": {
       "title": "Two-factor authentication",
@@ -897,6 +899,7 @@
       "unconfirmed": "You haven’t confirmed your email yet. Check your inbox.",
       "code": "Wrong code. Try again.",
       "codeFormat": "The code has 6 digits.",
+      "expired": "This QR code is no longer valid because a newer one was created. Get a new QR code and scan that one.",
       "rateLimit": "Too many attempts. Wait a few minutes and try again.",
       "generic": "Something went wrong. Try again."
     }

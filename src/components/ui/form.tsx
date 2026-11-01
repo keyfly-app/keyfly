@@ -134,7 +134,7 @@ const NOTICE = {
 } as const;
 
 /** Banner above or inside a form. Errors are announced to screen readers. */
-export function Notice({ kind, children, icon = kind === "success" ? "check" : "alert" }: { kind: keyof typeof NOTICE; children: React.ReactNode; icon?: "check" | "alert" | "mail" }) {
+export function Notice({ kind, children, icon = kind === "success" ? "check" : "alert" }: { kind: keyof typeof NOTICE; children: React.ReactNode; icon?: "check" | "alert" | "mail" | "phone" }) {
   return (
     <div role={kind === "error" ? "alert" : "status"} className={`flex items-start gap-2.5 rounded-xl px-3 py-2.5 text-sm font-semibold ${NOTICE[kind]}`}>
       <Icon name={icon} size={18} strokeWidth={2} className="mt-px flex-none" />

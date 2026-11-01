@@ -1,12 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { useActionState, useId, useState } from "react";
+import { useActionState, useEffect, useId, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
+import { Icon } from "@/components/Icon";
+import { CodeInput } from "@/components/ui/CodeInput";
 import { Button, Checkbox, INPUT_CLASS, Label, Notice, TextField, TextLink } from "@/components/ui/form";
 import { InfoTip } from "@/components/ui/InfoTip";
 import { PasswordField } from "@/features/auth/PasswordField";
-import { adminSignIn, staffSignUp, verifyTotp, type StaffFormState } from "./actions";
+import { adminSignIn, startTotpSetup, staffSignUp, verifyTotp, type StaffFormState, type TotpSetupState } from "./actions";
 
 const idle: StaffFormState = { status: "idle" };
 
@@ -101,29 +103,46 @@ export function StaffSignUpForm({ token, email, privacyHref, signInHref }: { tok
   );
 }
 
-/** The 6-digit authenticator code: one field (paste and autofill work), digits spaced out like the design's boxes. */
-export function TotpForm({ factorId, next, mode }: { factorId: string; next: string; mode: "setup" | "challenge" }) {
+type TotpFormState = StaffFormState & { attempt?: number };
+
+/** The 6-digit authenticator code in six boxes; it is checked as soon as the sixth digit arrives. */
+export function TotpForm({ factorId, next, mode, onExpired }: { factorId: string; next: string; mode: "setup" | "challenge"; onExpired?: () => void }) {
   const t = useTranslations("adminAuth");
   const id = useId();
-  const [state, action, pending] = useActionState(verifyTotp, idle);
+  const form = useRef<HTMLFormElement>(null);
+  // Each answer gets a new attempt number, which empties the boxes after a wrong code.
+  const [state, action, pending] = useActionState<TotpFormState, FormData>(
+    async (prev, data) => ({ ...(await verifyTotp(prev, data)), attempt: (prev.attempt ?? 0) + 1 }),
+    idle,
+  );
   const error = state.status === "error" ? state.error : undefined;
   const fieldError = error === "code" || error === "codeFormat" ? t(`errors.${error}`) : undefined;
   return (
-    <form action={action} noValidate className="flex flex-col gap-4">
+    <form ref={form} action={action} noValidate className="flex flex-col gap-4">
       <input type="hidden" name="factorId" value={factorId} />
       <input type="hidden" name="next" value={next} />
-      <TextField
+      <CodeInput
+        key={state.attempt ?? 0}
         id={`${id}-code`}
         name="code"
         label={t(mode === "setup" ? "setup.code" : "challenge.code")}
-        inputMode="numeric"
-        autoComplete="one-time-code"
-        pattern="[0-9]*"
-        maxLength={6}
-        autoFocus={mode === "challenge"}
+        autoFocus={mode === "challenge" || Boolean(state.attempt)}
         error={fieldError}
-        className={`${INPUT_CLASS} text-center font-display text-2xl tracking-[0.5em]`}
+        onComplete={() => {
+          if (!pending) form.current?.requestSubmit();
+        }}
       />
+      {error === "expired" && (
+        <Notice kind="error">
+          <p>{t("errors.expired")}</p>
+          {onExpired && (
+            <button type="button" onClick={onExpired} className="mt-1 inline-flex min-h-11 items-center gap-1.5 font-semibold underline underline-offset-3">
+              <Icon name="refresh" size={16} strokeWidth={2.2} />
+              {t("setup.restart")}
+            </button>
+          )}
+        </Notice>
+      )}
       {(error === "rateLimit" || error === "generic") && <Notice kind="error">{t(`errors.${error}`)}</Notice>}
       <Button pending={pending}>{pending ? t("checking") : t(mode === "setup" ? "setup.submit" : "challenge.submit")}</Button>
       {mode === "challenge" && (
@@ -133,6 +152,66 @@ export function TotpForm({ factorId, next, mode }: { factorId: string; next: str
         </p>
       )}
     </form>
+  );
+}
+
+/**
+ * First sign-in: QR code, manual key and the first code. The authenticator is created once, when this
+ * component mounts – not while the page renders – so the QR code on screen stays valid until it is used.
+ */
+export function TotpSetup({ next }: { next: string }) {
+  const t = useTranslations("adminAuth");
+  const [setup, setSetup] = useState<TotpSetupState | { status: "loading" }>({ status: "loading" });
+  const started = useRef(false);
+
+  useEffect(() => {
+    if (started.current) return;
+    started.current = true;
+    startTotpSetup().then(setSetup, () => setSetup({ status: "error" }));
+  }, []);
+
+  const restart = () => {
+    setSetup({ status: "loading" });
+    startTotpSetup().then(setSetup, () => setSetup({ status: "error" }));
+  };
+
+  if (setup.status === "error") {
+    return (
+      <Notice kind="error">
+        <p>{t("errors.generic")}</p>
+        <button type="button" onClick={restart} className="mt-1 inline-flex min-h-11 items-center gap-1.5 font-semibold underline underline-offset-3">
+          <Icon name="refresh" size={16} strokeWidth={2.2} />
+          {t("setup.restart")}
+        </button>
+      </Notice>
+    );
+  }
+
+  return (
+    <>
+      <div className="flex justify-center">
+        {setup.status === "ready" ? (
+          // eslint-disable-next-line @next/next/no-img-element -- Supabase returns the QR code as an SVG data URL
+          <img src={setup.qrCode} alt={t("setup.qrAlt")} width={184} height={184} className="size-46 rounded-2xl border border-line bg-white p-2.5" />
+        ) : (
+          <div role="status" className="flex size-46 items-center justify-center rounded-2xl border border-line bg-paper">
+            <span className="size-6 animate-spin rounded-full border-2 border-field border-t-brand motion-reduce:animate-none" aria-hidden="true" />
+            <span className="sr-only">{t("setup.preparing")}</span>
+          </div>
+        )}
+      </div>
+      {setup.status === "ready" ? (
+        <>
+          <SetupKey secret={setup.secret} />
+          <TotpForm key={setup.factorId} factorId={setup.factorId} next={next} mode="setup" onExpired={restart} />
+        </>
+      ) : (
+        <div aria-hidden="true" className="flex flex-col gap-4">
+          <div className="h-[72px] animate-pulse rounded-xl bg-paper motion-reduce:animate-none" />
+          <div className="h-14 animate-pulse rounded-xl bg-paper motion-reduce:animate-none" />
+        </div>
+      )}
+    </>
   );
 }
 
@@ -152,8 +231,9 @@ export function SetupKey({ secret }: { secret: string }) {
             await navigator.clipboard.writeText(secret);
             setCopied(true);
           }}
-          className="inline-flex min-h-11 items-center rounded-full border border-field bg-surface px-4 text-sm font-semibold hover:border-brand"
+          className="inline-flex min-h-11 flex-none items-center gap-2 rounded-full border border-field bg-surface px-4 text-sm font-semibold hover:border-brand"
         >
+          <Icon name={copied ? "check" : "copy"} size={16} strokeWidth={2} />
           {copied ? t("copied") : t("copy")}
         </button>
         <span role="status" className="sr-only">

@@ -4,7 +4,7 @@ import { getTranslations } from "next-intl/server";
 import { AuthLayout } from "@/components/AuthLayout";
 import { Notice, PageTitle } from "@/components/ui/form";
 import { signOut } from "@/features/auth/actions";
-import { SetupKey, TotpForm } from "@/features/staff-auth/forms";
+import { TotpForm, TotpSetup } from "@/features/staff-auth/forms";
 import { safeNext } from "@/lib/safe-next";
 import { siteHref } from "@/lib/site-href";
 import { createClient } from "@/lib/supabase/server";
@@ -44,30 +44,14 @@ export default async function Mfa({ searchParams }: { searchParams: Promise<{ ne
   const { data: me } = await supabase.from("staff").select("disabled_at").eq("user_id", auth.claims.sub).maybeSingle();
   if (!me || me.disabled_at) return <NoAccess />;
 
-  // A setup that was started but never confirmed is replaced, so a reload always shows a working QR code.
-  for (const factor of factors?.all ?? []) {
-    if (factor.factor_type === "totp" && factor.status === "unverified") await supabase.auth.mfa.unenroll({ factorId: factor.id });
-  }
-  const { data: enrolled, error } = await supabase.auth.mfa.enroll({ factorType: "totp", friendlyName: "Keyfly admin", issuer: "Keyfly" });
-  if (error || !enrolled) {
-    console.error("mfa enroll failed", error?.code);
-    return (
-      <AuthLayout badge="ADMIN">
-        <PageTitle>{t("setup.title")}</PageTitle>
-        <Notice kind="error">{t("errors.generic")}</Notice>
-      </AuthLayout>
-    );
-  }
-
   return (
     <AuthLayout badge="ADMIN">
       <PageTitle eyebrow={t("setup.eyebrow")}>{t("setup.title")}</PageTitle>
       <p className="text-[15px] text-muted">{t("setup.text")}</p>
-      {/* eslint-disable-next-line @next/next/no-img-element -- Supabase returns the QR code as an SVG data URL */}
-      <img src={enrolled.totp.qr_code} alt={t("setup.qrAlt")} width={184} height={184} className="self-center rounded-xl border border-line bg-white p-2" />
-      <SetupKey secret={enrolled.totp.secret} />
-      <TotpForm factorId={enrolled.id} next={next} mode="setup" />
-      <Notice kind="warning">{t("setup.lostPhone")}</Notice>
+      <TotpSetup next={next} />
+      <Notice kind="warning" icon="phone">
+        {t("setup.lostPhone")}
+      </Notice>
     </AuthLayout>
   );
 }

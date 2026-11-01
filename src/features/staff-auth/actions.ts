@@ -17,8 +17,10 @@ import { REMEMBER_COOKIE } from "@/lib/supabase/session-cookies";
 const EMAIL_RE = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
 const CODE_RE = /^\d{6}$/;
 
-export type StaffFormError = "email" | "password" | "name" | "terms" | "credentials" | "unconfirmed" | "code" | "codeFormat" | "rateLimit" | "generic";
+export type StaffFormError = "email" | "password" | "name" | "terms" | "credentials" | "unconfirmed" | "code" | "codeFormat" | "expired" | "rateLimit" | "generic";
 export type StaffFormState = { status: "idle" } | { status: "sent"; email: string } | { status: "error"; error: StaffFormError; email?: string };
+/** A freshly created authenticator (QR code and manual key) waiting for its first code. */
+export type TotpSetupState = { status: "ready"; factorId: string; qrCode: string; secret: string } | { status: "error" };
 export type ResetState = { status: "idle" } | { status: "done" } | { status: "error" };
 export type StaffInviteError = "email" | "notAllowed" | "generic";
 export type StaffInviteState =
@@ -118,6 +120,8 @@ export async function verifyTotp(_prev: StaffFormState, form: FormData): Promise
   const { error } = await supabase.auth.mfa.challengeAndVerify({ factorId, code });
   if (error) {
     if (error.code === "mfa_verification_failed" || error.code === "mfa_challenge_expired") return { status: "error", error: "code" };
+    // The setup was replaced (another tab, or a newer QR code): the scanned key no longer exists.
+    if (error.code === "mfa_factor_not_found") return { status: "error", error: "expired" };
     if (rateLimited(error.code) || error.code === "mfa_verification_rejected") return { status: "error", error: "rateLimit" };
     console.error("mfa verify failed", error.code);
     return { status: "error", error: "generic" };
@@ -125,6 +129,31 @@ export async function verifyTotp(_prev: StaffFormState, form: FormData): Promise
   const { data } = await supabase.auth.getUser();
   await syncEmailLocale(supabase, data.user?.user_metadata);
   return goToAdmin(safeNext(form.get("next")));
+}
+
+/**
+ * First admin sign-in: creates the authenticator the user scans. Runs as an explicit action, never while a page
+ * renders, so a reload or background refresh cannot silently replace a QR code that is already on screen.
+ */
+export async function startTotpSetup(): Promise<TotpSetupState> {
+  const supabase = await createClient({ remember: false });
+  const { data: auth } = await supabase.auth.getClaims();
+  if (!auth?.claims) return { status: "error" };
+  const { data: me } = await supabase.from("staff").select("disabled_at").eq("user_id", auth.claims.sub).maybeSingle();
+  if (!me || me.disabled_at) return { status: "error" };
+
+  const { data: factors } = await supabase.auth.mfa.listFactors();
+  if (factors?.totp.length) return { status: "error" }; // already set up: the page asks for the code instead
+  // Earlier setups that were never confirmed are removed, so only the newest QR code works.
+  for (const factor of factors?.all ?? []) {
+    if (factor.factor_type === "totp" && factor.status === "unverified") await supabase.auth.mfa.unenroll({ factorId: factor.id });
+  }
+  const { data, error } = await supabase.auth.mfa.enroll({ factorType: "totp", friendlyName: "Keyfly admin", issuer: "Keyfly" });
+  if (error || !data) {
+    console.error("mfa enroll failed", error?.code);
+    return { status: "error" };
+  }
+  return { status: "ready", factorId: data.id, qrCode: data.totp.qr_code, secret: data.totp.secret };
 }
 
 /** Super admin: removes a colleague's authenticator (lost phone) and signs them out everywhere. */

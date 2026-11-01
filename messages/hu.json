@@ -863,7 +863,9 @@
       "copied": "Kimásolva",
       "code": "Az alkalmazásban látható 6 jegyű kód",
       "submit": "Bekapcsolás",
-      "lostPhone": "Ha elveszíted a telefonod, egy szuperadmin visszaállítja a kétlépcsős azonosítást."
+      "lostPhone": "Ha elveszíted a telefonod, egy szuperadmin visszaállítja a kétlépcsős azonosítást.",
+      "restart": "Új QR-kód",
+      "preparing": "QR-kód készítése…"
     },
     "challenge": {
       "title": "Kétlépcsős azonosítás",
@@ -897,6 +899,7 @@
       "unconfirmed": "Még nem erősítetted meg az e-mail-címed. Nézd meg a postafiókod.",
       "code": "Hibás kód. Próbáld újra.",
       "codeFormat": "A kód 6 számjegyből áll.",
+      "expired": "Ez a QR-kód már nem érvényes, mert közben újat készítettünk. Kérj új QR-kódot, és olvasd be azt.",
       "rateLimit": "Túl sok próbálkozás. Várj pár percet, és próbáld újra.",
       "generic": "Valami nem sikerült. Próbáld újra."
     }
