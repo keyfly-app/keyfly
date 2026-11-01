@@ -4,6 +4,16 @@
 -- Staff: new roles, disabling, invitations; staff rights require 2FA (aal2).
 -- =====================================================================
 
+-- This restructuring assumes the tables it reshapes are still empty (true on 2026-11-01 for
+-- staging and production). Stop instead of silently dropping data.
+do $$
+begin
+  if exists (select 1 from public.organizations) or exists (select 1 from public.properties)
+     or exists (select 1 from public.applications where referred_by_org_id is not null) then
+    raise exception 'accounts migration expects no organizations or properties yet – migrate the data first';
+  end if;
+end $$;
+
 -- ---------- Staff ----------------------------------------------------------
 
 alter type public.staff_role rename value 'ops' to 'insurance';
@@ -62,7 +72,7 @@ create table public.accounts (
   kind                public.account_kind not null,
   personal_user_id    uuid unique references public.profiles (id) on delete cascade,
   name                text not null check (length(btrim(name)) between 1 and 200),
-  legal_name          text check (length(legal_name) <= 300),
+  legal_name          text check (length(btrim(legal_name)) between 1 and 300),
   tax_number          text check (tax_number ~ '^\d{8}-\d-\d{2}$'),
   company_reg_number  text check (company_reg_number ~ '^\d{2}-\d{2}-\d{6}$'),
   registered_address  text check (length(registered_address) <= 300),
@@ -105,7 +115,8 @@ declare
   acc public.accounts;
   members int;
 begin
-  select * into acc from public.accounts where id = new.account_id;
+  -- Lock the account so concurrent joins cannot exceed the plan limit.
+  select * into acc from public.accounts where id = new.account_id for update;
   if acc.kind = 'person' and new.user_id is distinct from acc.personal_user_id then
     raise exception 'personal_account_single_member' using errcode = '23514';
   end if;
@@ -155,13 +166,13 @@ set search_path = ''
 as $$
 declare
   acc uuid;
-  display text := coalesce(nullif(btrim(new.raw_user_meta_data ->> 'full_name'), ''), split_part(new.email, '@', 1));
+  display text := left(coalesce(nullif(btrim(new.raw_user_meta_data ->> 'full_name'), ''), nullif(split_part(new.email, '@', 1), ''), 'Keyfly'), 200);
 begin
   insert into public.profiles (id, email, full_name, phone, locale)
   values (
     new.id,
     new.email,
-    nullif(new.raw_user_meta_data ->> 'full_name', ''),
+    left(nullif(btrim(new.raw_user_meta_data ->> 'full_name'), ''), 200),
     nullif(new.raw_user_meta_data ->> 'phone', ''),
     case when new.raw_user_meta_data ->> 'locale' = 'en' then 'en'::public.locale else 'hu'::public.locale end
   )
@@ -275,12 +286,27 @@ begin
 end;
 $$;
 
-create policy "applications_select_tenant_referrer_staff" on public.applications for select to authenticated
-  using (
-    tenant_id = (select auth.uid())
-    or (referred_by_account_id is not null and private.is_account_member(referred_by_account_id))
-    or private.is_staff()
-  );
+-- Referral partners never read application rows (they hold income data); they get
+-- referral_status() below, which returns no income or personal fields.
+create policy "applications_select_tenant_staff" on public.applications for select to authenticated
+  using (tenant_id = (select auth.uid()) or private.is_staff());
+
+create or replace function public.referral_status(p_account_id uuid)
+returns table (application_id uuid, status public.application_status, monthly_rent integer, created_at timestamptz)
+language plpgsql stable security definer set search_path = '' as $$
+#variable_conflict use_column
+begin
+  if not (private.has_account_role(p_account_id, array['owner', 'admin']::public.account_role[])
+          and (select a.is_referral_partner from public.accounts a where a.id = p_account_id)) then
+    raise exception 'not_allowed' using errcode = '42501';
+  end if;
+  return query
+    select ap.id, ap.status, ap.monthly_rent, ap.created_at from public.applications ap
+    where ap.referred_by_account_id = p_account_id order by ap.created_at desc;
+end;
+$$;
+revoke execute on function public.referral_status(uuid) from public, anon;
+grant execute on function public.referral_status(uuid) to authenticated;
 
 -- ---------- Access: accounts, members, staff invitations -----------------------
 
@@ -341,3 +367,27 @@ $$;
 
 revoke execute on function public.create_company_account(text, text, text, text, text) from public, anon;
 grant execute on function public.create_company_account(text, text, text, text, text) to authenticated;
+
+-- Ownership moves to an existing member; the previous owner stays as admin (Business) or manager.
+create or replace function public.transfer_account_ownership(p_account_id uuid, p_new_owner uuid)
+returns void language plpgsql security definer set search_path = '' as $$
+declare
+  me uuid := auth.uid();
+  acc public.accounts;
+begin
+  select * into acc from public.accounts where id = p_account_id for update;
+  if not private.has_account_role(p_account_id, array['owner']::public.account_role[]) or acc.kind = 'person' then
+    raise exception 'not_allowed' using errcode = '42501';
+  end if;
+  if p_new_owner = me or not exists (select 1 from public.account_members where account_id = p_account_id and user_id = p_new_owner) then
+    raise exception 'new_owner_must_be_a_member' using errcode = '22023';
+  end if;
+  update public.account_members set role = case when acc.plan = 'business' then 'admin' else 'manager' end::public.account_role, property_scope = 'all'
+    where account_id = p_account_id and user_id = me;
+  update public.account_members set role = 'owner', property_scope = 'all'
+    where account_id = p_account_id and user_id = p_new_owner;
+  delete from public.account_member_properties where account_id = p_account_id and user_id = p_new_owner;
+end;
+$$;
+revoke execute on function public.transfer_account_ownership(uuid, uuid) from public, anon;
+grant execute on function public.transfer_account_ownership(uuid, uuid) to authenticated;

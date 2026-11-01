@@ -175,6 +175,10 @@ select tests.ok((select count(*) from public.properties) = 2, 'tenant sees the a
 select tests.ok((select count(*) from public.properties where id = '00000000-0000-0000-0000-00000000e003') = 0, 'tenant cannot see the landlord''s other property');
 select tests.ok((select count(*) from public.lease_parties where lease_id = '00000000-0000-0000-0000-0000000001a1') = 2, 'tenant sees the contract parties');
 select tests.ok((select count(*) from public.lease_occupants) = 2, 'tenant sees who lives with her');
+update public.lease_occupants set removed_at = now() where user_id = '00000000-0000-0000-0000-0000000000f1';
+select tests.ok((select removed_at is not null from public.lease_occupants where user_id = '00000000-0000-0000-0000-0000000000f1'), 'the tenant can remove an occupant');
+update public.lease_occupants set removed_at = null where user_id = '00000000-0000-0000-0000-0000000000f1';
+select tests.ok((select removed_at is not null from public.lease_occupants where user_id = '00000000-0000-0000-0000-0000000000f1'), '… but cannot bring anyone back without an invitation');
 select tests.ok((select count(*) from public.staff) = 0, 'tenant cannot see staff');
 update public.leases set monthly_rent = 1 where id = '00000000-0000-0000-0000-0000000001a1';
 select tests.ok((select monthly_rent from public.leases where id = '00000000-0000-0000-0000-0000000001a1') = 280000, 'tenant cannot change the lease');
@@ -215,6 +219,8 @@ select tests.ok((select count(*) from public.leases) = 1, 'co-tenant sees the sh
 select tests.ok((select count(*) from public.lease_parties) = 2, 'co-tenant sees the contract parties');
 select tests.ok((select count(*) from public.policies) = 1, 'co-tenant sees the guarantee on the lease');
 select tests.ok((select count(*) from public.applications) = 1, 'co-tenant sees only his own request');
+update public.lease_occupants set removed_at = now() where user_id = '00000000-0000-0000-0000-0000000000f1';
+select tests.ok((select count(*) from public.lease_occupants where removed_at is not null) = 0, 'a co-tenant cannot remove household members');
 rollback;
 
 begin;
@@ -248,6 +254,8 @@ select tests.ok((select count(*) from public.leases where id = '00000000-0000-00
 select tests.ok((select count(*) from public.policies) = 1, 'landlord sees the guarantee on his lease');
 select tests.throws($$update public.leases set monthly_rent = 300000 where id = '00000000-0000-0000-0000-0000000001a1'$$, 'confirmed terms change only by amendment');
 select tests.throws($$update public.leases set status = 'closed' where id = '00000000-0000-0000-0000-0000000001a1'$$, 'status changes only through functions');
+select tests.throws($$update public.leases set end_date = current_date where id = '00000000-0000-0000-0000-0000000001a1'$$, 'the landlord cannot shorten a confirmed lease');
+select tests.throws($$update public.leases set termination_date = current_date - 1 where id = '00000000-0000-0000-0000-0000000001a1'$$, 'a notice cannot be backdated');
 update public.leases set termination_date = current_date + 60 where id = '00000000-0000-0000-0000-0000000001a1';
 select tests.ok((select termination_date from public.leases where id = '00000000-0000-0000-0000-0000000001a1') = current_date + 60, 'landlord can record a notice');
 select tests.throws($$select public.close_lease('00000000-0000-0000-0000-0000000001a1')$$, 'an active lease cannot be closed');
@@ -267,7 +275,8 @@ begin;
 select tests.act_as('00000000-0000-0000-0000-0000000000e1');
 select tests.ok((select count(*) from public.properties) = 2, 'admin sees all company properties');
 select tests.ok((select count(*) from public.leases) = 2, 'admin sees the company''s leases');
-select tests.ok((select count(*) from public.applications) = 1, 'referral partner sees the request it referred');
+select tests.ok((select count(*) from public.applications) = 0, 'a referral partner never reads application rows (income data)');
+select tests.ok((select count(*) from public.referral_status('00000000-0000-0000-0000-00000000c0c0')) = 1, 'a referral partner sees the status of its referrals');
 select tests.ok((select count(*) from public.activity_log('00000000-0000-0000-0000-00000000c0c0')) > 0, 'Business admin reads the account''s activity log');
 select tests.ok(length(public.create_account_invitation('00000000-0000-0000-0000-00000000c0c0', 'New.Manager@Example.com', 'manager', 'selected',
   array['00000000-0000-0000-0000-00000000e003']::uuid[])) = 64, 'admin invites a manager for one property');
@@ -275,6 +284,7 @@ select tests.ok((select email from public.invitations where kind = 'account_memb
 select tests.throws($$select public.create_account_invitation('00000000-0000-0000-0000-00000000c0c0', 'x@example.com', 'owner')$$, 'nobody is invited as owner');
 select tests.ok(length(public.create_lease_invitation('00000000-0000-0000-0000-0000000001a3', 'nandor@example.com', 'lease_tenant')) = 64, 'admin invites a tenant to a draft lease');
 select tests.ok((select status from public.leases where id = '00000000-0000-0000-0000-0000000001a3') = 'pending', 'inviting the tenant confirms the landlord side');
+select tests.throws($$update public.leases set monthly_rent = 900000 where id = '00000000-0000-0000-0000-0000000001a3'$$, 'terms are fixed once the tenant is invited');
 rollback;
 
 begin;
@@ -321,6 +331,7 @@ grant select on tok to authenticated;
 select tests.act_as('00000000-0000-0000-0000-0000000000a1');
 select tests.ok((select is_for_me from public.invitation_preview((select t from tok))) = false, 'preview tells Anna the invitation is not hers');
 select tests.ok((select masked_email from public.invitation_preview((select t from tok))) = 'n•••@example.com', 'preview masks the address');
+select tests.ok((select property_address is null and monthly_rent is null from public.invitation_preview((select t from tok))), 'preview shows no details to others');
 select tests.throws($$select public.accept_invitation((select t from tok))$$, 'an invitation is accepted only with its own email');
 select tests.act_as('00000000-0000-0000-0000-0000000000f2');
 select tests.ok((select is_open and is_for_me from public.invitation_preview((select t from tok))), 'preview for the invitee');
@@ -363,6 +374,7 @@ select tests.ok((select count(*) from public.waitlist) >= 0, 'staff can read the
 select tests.throws($$insert into public.staff (user_id, role) values ('00000000-0000-0000-0000-0000000000a2', 'admin')$$, 'support cannot add staff');
 select tests.throws($$select public.create_staff_invitation('x@keyfly.app', 'admin')$$, 'support cannot invite staff');
 select tests.throws($$select public.activity_log()$$, 'support cannot read the full audit log');
+select tests.throws($$select public.close_lease('00000000-0000-0000-0000-0000000001a2')$$, 'support cannot close a lease');
 rollback;
 
 begin;
@@ -390,6 +402,45 @@ rollback;
 
 select tests.ok((select count(*) from audit.events where table_name = 'leases') >= 4, 'lease changes are audited');
 select tests.ok((select count(*) from audit.events where changes ? 'token_hash') = 0, 'tokens never reach the audit log');
+
+-- ---------- Edge cases found in review ----------------------------------------------------
+
+insert into auth.users (id, email, raw_user_meta_data) values ('00000000-0000-0000-0000-0000000000f9', null, '{}');
+select tests.ok((select name from public.accounts where personal_user_id = '00000000-0000-0000-0000-0000000000f9') = 'Keyfly', 'sign-up without email still works');
+insert into auth.users (id, email, raw_user_meta_data) values ('00000000-0000-0000-0000-0000000000f8', 'long@example.com', json_build_object('full_name', repeat('x', 300))::jsonb);
+select tests.ok((select length(name) from public.accounts where personal_user_id = '00000000-0000-0000-0000-0000000000f8') = 200, 'a very long name does not break sign-up');
+
+begin;
+select tests.act_as('00000000-0000-0000-0000-0000000000a1');
+create temp table tok as select public.create_lease_invitation('00000000-0000-0000-0000-0000000001a1', 'long@example.com', 'lease_occupant', 'occupant') as t;
+grant select on tok to authenticated;
+reset role;
+update auth.users set email_confirmed_at = null where id = '00000000-0000-0000-0000-0000000000f8';
+select tests.act_as('00000000-0000-0000-0000-0000000000f8');
+select tests.throws($$select public.accept_invitation((select t from tok))$$, 'an unconfirmed email cannot accept an invitation');
+reset role;
+update auth.users set email_confirmed_at = now() where id = '00000000-0000-0000-0000-0000000000f8';
+update public.leases set termination_date = current_date - 1 where id = '00000000-0000-0000-0000-0000000001a1';
+select tests.act_as('00000000-0000-0000-0000-0000000000f8');
+select tests.throws($$select public.accept_invitation((select t from tok))$$, 'an occupant invitation expires with the lease');
+rollback;
+
+begin;
+select tests.act_as('00000000-0000-0000-0000-0000000000c1');
+select public.transfer_account_ownership('00000000-0000-0000-0000-00000000c0c0', '00000000-0000-0000-0000-0000000000e2');
+select tests.ok((select role from public.account_members where account_id = '00000000-0000-0000-0000-00000000c0c0' and user_id = '00000000-0000-0000-0000-0000000000e2') = 'owner', 'ownership can be transferred to a member');
+select tests.ok((select role from public.account_members where account_id = '00000000-0000-0000-0000-00000000c0c0' and user_id = '00000000-0000-0000-0000-0000000000c1') = 'admin', 'the previous owner stays as admin');
+select tests.ok((select property_scope from public.account_members where account_id = '00000000-0000-0000-0000-00000000c0c0' and user_id = '00000000-0000-0000-0000-0000000000e2') = 'all', 'the new owner sees every property');
+rollback;
+
+begin;
+select tests.act_as('00000000-0000-0000-0000-0000000000e3');
+select tests.throws($$select public.referral_status('00000000-0000-0000-0000-00000000c0c0')$$, 'a viewer cannot read referral status');
+select tests.throws($$select private.snapshot_lease_parties('00000000-0000-0000-0000-0000000001a1')$$, 'internal functions are not callable');
+rollback;
+
+select tests.throws($$truncate audit.events$$, 'the audit log cannot be truncated');
+select tests.ok((select count(*) from audit.events where changes ? 'declared_net_income') = 0, 'income data never reaches the audit log');
 
 -- ---------- Default privileges revoked -------------------------------------------
 

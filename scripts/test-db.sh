@@ -12,6 +12,6 @@ TEST_URL="${DATABASE_URL%/*}/$DB_NAME"
 psql "$TEST_URL" -q -v ON_ERROR_STOP=0 -f supabase/tests/supabase_stub.sql 2>&1 | grep -v 'already exists' || true
 for f in supabase/migrations/*.sql; do
   echo "→ $f"
-  psql "$TEST_URL" -q -v ON_ERROR_STOP=1 -f "$f"
+  psql "$TEST_URL" -q -v ON_ERROR_STOP=1 --single-transaction -f "$f"
 done
 psql "$TEST_URL" -q -o /dev/null -v ON_ERROR_STOP=1 -f supabase/tests/rls.test.sql

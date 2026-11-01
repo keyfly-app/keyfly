@@ -205,6 +205,7 @@ declare
   me uuid := auth.uid();
   ph public.lease_phase;
   occ public.occupant_role;
+  mem record;
 begin
   if me is null then
     return null;
@@ -214,13 +215,12 @@ begin
     return null;
   end if;
 
-  -- Landlord side: the managing account, within the member's property scope.
-  if l.account_id = any (select account_id from public.account_members where user_id = me) then
-    if private.can_manage_property(l.property_id) and private.is_account_member(l.account_id) then
-      return 'landlord_manage';
-    elsif private.can_see_property(l.property_id) then
-      return 'landlord_view';
-    end if;
+  -- Landlord side: members of the managing account (l.account_id), within their property scope.
+  select m.role, m.property_scope into mem from public.account_members m where m.account_id = l.account_id and m.user_id = me;
+  if found and (mem.property_scope = 'all' or exists (
+        select 1 from public.account_member_properties s
+        where s.account_id = l.account_id and s.user_id = me and s.property_id = l.property_id)) then
+    return case when mem.role in ('owner', 'admin', 'manager') then 'landlord_manage' else 'landlord_view' end::private.lease_access_level;
   end if;
 
   ph := public.lease_phase(l);
@@ -253,6 +253,17 @@ returns boolean language sql stable security definer set search_path = '' as $$
   );
 $$;
 
+-- Owner or admin of the tenant account: may invite or remove household members.
+create or replace function private.is_tenant_admin(lid uuid)
+returns boolean language sql stable security definer set search_path = '' as $$
+  select exists (
+    select 1 from public.leases l
+    where l.id = lid and l.tenant_account_id is not null
+      and private.has_account_role(l.tenant_account_id, array['owner', 'admin']::public.account_role[])
+      and private.lease_access(l.id) = 'tenant'
+  );
+$$;
+
 -- A lease is created by its landlord side; status changes go through functions.
 create or replace function private.guard_lease()
 returns trigger language plpgsql set search_path = '' as $$
@@ -278,13 +289,19 @@ begin
      or new.tenant_confirmed_at is distinct from old.tenant_confirmed_at or new.closed_at is distinct from old.closed_at then
     raise exception 'lease_status_changes_via_functions' using errcode = '42501';
   end if;
-  if old.status not in ('draft', 'pending')
-     and (new.start_date is distinct from old.start_date or new.monthly_rent is distinct from old.monthly_rent
-          or new.deposit_amount is distinct from old.deposit_amount) then
-    raise exception 'confirmed_terms_need_an_amendment' using errcode = '42501';
-  end if;
   if old.status in ('closed', 'cancelled') then
     raise exception 'lease_is_final' using errcode = '42501';
+  end if;
+  -- Once the tenant has been invited, the terms are fixed: what the tenant accepts is what was sent.
+  -- Changing them means cancelling and inviting again (pending) or an amendment (confirmed).
+  if old.status <> 'draft'
+     and (new.start_date, new.end_date, new.monthly_rent, new.deposit_amount, new.service_charge, new.payment_day)
+         is distinct from (old.start_date, old.end_date, old.monthly_rent, old.deposit_amount, old.service_charge, old.payment_day) then
+    raise exception 'terms_fixed_after_invitation' using errcode = '42501';
+  end if;
+  -- A notice cannot be backdated.
+  if new.termination_date is distinct from old.termination_date and new.termination_date < private.today() then
+    raise exception 'notice_cannot_be_backdated' using errcode = '42501';
   end if;
   return new;
 end;
@@ -339,7 +356,8 @@ declare
   l public.leases;
 begin
   select * into l from public.leases where id = p_lease_id for update;
-  if not found or (private.lease_access(p_lease_id) is distinct from 'landlord_manage' and not private.is_staff()) then
+  if not found or (private.lease_access(p_lease_id) is distinct from 'landlord_manage'
+                   and not private.has_staff_role(array['superadmin', 'admin']::public.staff_role[])) then
     raise exception 'not_allowed' using errcode = '42501';
   end if;
   if public.lease_phase(l) <> 'closing' then
@@ -461,11 +479,21 @@ grant select on public.lease_occupants to authenticated;
 grant update (removed_at) on public.lease_occupants to authenticated;
 create policy "lease_occupants_select_parties_staff" on public.lease_occupants for select to authenticated
   using (private.lease_access(lease_id) is not null or private.is_staff());
-create policy "lease_occupants_remove_by_landlord_or_tenant" on public.lease_occupants for update to authenticated
-  using (private.lease_access(lease_id) in ('landlord_manage', 'tenant'))
-  with check (private.lease_access(lease_id) in ('landlord_manage', 'tenant'));
+create policy "lease_occupants_remove_by_landlord_or_tenant_admin" on public.lease_occupants for update to authenticated
+  using (removed_at is null and (private.lease_access(lease_id) = 'landlord_manage' or private.is_tenant_admin(lease_id)))
+  with check (removed_at is not null);
 
 revoke execute on function public.lease_phase(public.leases) from public, anon;
 grant execute on function public.lease_phase(public.leases) to authenticated;
 revoke execute on function public.cancel_lease(uuid), public.close_lease(uuid) from public, anon;
 grant execute on function public.cancel_lease(uuid), public.close_lease(uuid) to authenticated;
+
+-- Helpers in the private schema: only what access rules need is executable by signed-in users.
+revoke execute on all functions in schema private from public, anon, authenticated;
+grant execute on function
+  private.is_staff(), private.has_staff_role(public.staff_role[]), private.is_api_user(),
+  private.is_account_member(uuid), private.has_account_role(uuid, public.account_role[]),
+  private.can_see_property(uuid), private.can_manage_property(uuid), private.has_tenant_view_of_property(uuid),
+  private.lease_access(uuid), private.is_tenant_admin(uuid), private.today(),
+  private.can_view_policy(uuid), private.can_claim_policy(uuid)
+  to authenticated;

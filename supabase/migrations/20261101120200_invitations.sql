@@ -57,7 +57,8 @@ grant select (id, kind, email, account_id, account_role, property_scope, lease_i
 create policy "invitations_select_inviting_side" on public.invitations for select to authenticated
   using (
     (account_id is not null and private.has_account_role(account_id, array['owner', 'admin']::public.account_role[]))
-    or (lease_id is not null and private.lease_access(lease_id) in ('landlord_manage', 'tenant'))
+    or (kind = 'lease_tenant' and private.lease_access(lease_id) = 'landlord_manage')
+    or (kind = 'lease_occupant' and private.is_tenant_admin(lease_id))
     or private.is_staff()
   );
 grant select on public.invitation_properties to authenticated;
@@ -78,7 +79,7 @@ $$;
 
 create or replace function private.my_email()
 returns text language sql stable security definer set search_path = '' as $$
-  select lower(email) from auth.users where id = (select auth.uid());
+  select lower(email) from auth.users where id = (select auth.uid()) and email_confirmed_at is not null;
 $$;
 
 -- ---------- Create -------------------------------------------------------------------
@@ -98,7 +99,7 @@ begin
   if not private.has_account_role(p_account_id, array['owner', 'admin']::public.account_role[]) then
     raise exception 'not_allowed' using errcode = '42501';
   end if;
-  select * into acc from public.accounts where id = p_account_id;
+  select * into acc from public.accounts where id = p_account_id for update;
   if acc.kind = 'person' then
     raise exception 'personal_account_single_member' using errcode = '23514';
   end if;
@@ -151,8 +152,7 @@ begin
     -- Sending the invitation is the landlord's confirmation of the terms.
     update public.leases set status = 'pending', landlord_confirmed_at = now() where id = p_lease_id;
   elsif p_kind = 'lease_occupant' then
-    if access is distinct from 'tenant'
-       or not private.has_account_role(l.tenant_account_id, array['owner', 'admin']::public.account_role[]) then
+    if not private.is_tenant_admin(p_lease_id) then
       raise exception 'not_allowed' using errcode = '42501';
     end if;
     if public.lease_phase(l) not in ('upcoming', 'active') then
@@ -197,22 +197,32 @@ returns table (
   property_address text, monthly_rent integer, start_date date, end_date date, occupant_role public.occupant_role,
   expires_at timestamptz, is_open boolean, is_for_me boolean, masked_email text
 ) language sql stable security definer set search_path = '' as $$
+  -- Details only for the invitee while the invitation is open; otherwise just enough to explain why not.
+  with inv as (
+    select i.*,
+           i.accepted_at is null and i.declined_at is null and i.revoked_at is null and i.expires_at > now() as open_,
+           i.email = private.my_email() as mine
+    from public.invitations i
+    where i.token_hash = private.token_hash(p_token) and (select auth.uid()) is not null
+  )
   select i.kind,
-         coalesce(inviter.full_name, inviter.email),
-         coalesce(acc.name, lacc.name),
-         i.account_role,
-         case when p.id is not null then concat_ws(' ', p.street_name, p.street_type, p.house_number) || ', ' || p.postal_code || ' ' || p.city end,
-         l.monthly_rent, l.start_date, l.end_date, i.occupant_role, i.expires_at,
-         i.accepted_at is null and i.declined_at is null and i.revoked_at is null and i.expires_at > now(),
-         i.email = private.my_email(),
+         case when i.open_ and i.mine then coalesce(inviter.full_name, inviter.email) end,
+         case when i.open_ and i.mine then coalesce(acc.name, lacc.name) end,
+         case when i.open_ and i.mine then i.account_role end,
+         case when i.open_ and i.mine and p.id is not null
+              then concat_ws(' ', p.street_name, p.street_type, p.house_number) || ', ' || p.postal_code || ' ' || p.city end,
+         case when i.open_ and i.mine then l.monthly_rent end,
+         case when i.open_ and i.mine then l.start_date end,
+         case when i.open_ and i.mine then l.end_date end,
+         case when i.open_ and i.mine then i.occupant_role end,
+         i.expires_at, i.open_, i.mine,
          left(i.email, 1) || '•••@' || split_part(i.email, '@', 2)
-  from public.invitations i
+  from inv i
   left join public.profiles inviter on inviter.id = i.invited_by
   left join public.accounts acc on acc.id = i.account_id
   left join public.leases l on l.id = i.lease_id
   left join public.accounts lacc on lacc.id = l.account_id
-  left join public.properties p on p.id = l.property_id
-  where i.token_hash = private.token_hash(p_token) and (select auth.uid()) is not null;
+  left join public.properties p on p.id = l.property_id;
 $$;
 
 -- ---------- Accept, decline, revoke ---------------------------------------------------
@@ -237,6 +247,11 @@ begin
   end if;
 
   if i.kind = 'account_member' then
+    -- The inviter must still be allowed to invite.
+    if not exists (select 1 from public.account_members where account_id = i.account_id and user_id = i.invited_by
+                   and role in ('owner', 'admin')) then
+      raise exception 'invitation_closed' using errcode = '22023';
+    end if;
     insert into public.account_members (account_id, user_id, role, property_scope, invited_by)
     values (i.account_id, me, i.account_role, i.property_scope, i.invited_by);
     insert into public.account_member_properties (account_id, user_id, property_id)
@@ -256,6 +271,9 @@ begin
     perform private.snapshot_lease_parties(i.lease_id);
 
   elsif i.kind = 'lease_occupant' then
+    if (select public.lease_phase(l) from public.leases l where l.id = i.lease_id) not in ('upcoming', 'active') then
+      raise exception 'invitation_closed' using errcode = '22023';
+    end if;
     insert into public.lease_occupants (lease_id, user_id, role, added_by)
     values (i.lease_id, me, i.occupant_role, i.invited_by)
     on conflict (lease_id, user_id) do update set role = excluded.role, removed_at = null;
@@ -287,7 +305,7 @@ begin
   if not found
      or not ((i.account_id is not null and private.has_account_role(i.account_id, array['owner', 'admin']::public.account_role[]))
              or (i.kind = 'lease_tenant' and private.lease_access(i.lease_id) = 'landlord_manage')
-             or (i.kind = 'lease_occupant' and private.lease_access(i.lease_id) = 'tenant')
+             or (i.kind = 'lease_occupant' and private.is_tenant_admin(i.lease_id))
              or private.is_staff()) then
     raise exception 'not_allowed' using errcode = '42501';
   end if;
@@ -315,6 +333,8 @@ begin
   update public.staff_invitations set accepted_at = now() where id = i.id;
 end;
 $$;
+
+revoke execute on function private.new_token(), private.token_hash(text), private.my_email() from public, anon, authenticated;
 
 do $$
 declare

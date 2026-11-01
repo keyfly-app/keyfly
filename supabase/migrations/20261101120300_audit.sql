@@ -31,6 +31,8 @@ end;
 $$;
 create trigger events_append_only before update or delete on audit.events
   for each row execute function audit.forbid_change();
+create trigger events_no_truncate before truncate on audit.events
+  for each statement execute function audit.forbid_change();
 
 -- TG_ARGV: the primary-key columns of the audited table.
 create or replace function audit.record()
@@ -42,7 +44,8 @@ declare
   key text := '';
   col text;
   diff jsonb;
-  hidden text[] := array['token_hash', 'updated_at'];
+  -- Secrets and income data are never copied into the append-only log (it cannot be erased).
+  hidden text[] := array['token_hash', 'updated_at', 'declared_net_income', 'verified_income', 'summary', 'birth_date', 'provider_ref'];
 begin
   foreach col in array tg_argv loop
     key := key || case when key = '' then '' else '/' end || coalesce(r ->> col, '');
