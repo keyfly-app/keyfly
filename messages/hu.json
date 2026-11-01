@@ -726,6 +726,23 @@
       "lead": "{name} módosított feltételekkel hagyta jóvá a bérletet. Nézd át őket: a bérlet a te jóváhagyásoddal jön létre.",
       "cta": "Feltételek megnyitása",
       "why": "Azért kapod ezt a levelet, mert meghívtad a bérbeadódat a Keyflyra."
+    },
+    "termsAccepted": {
+      "subject": "{name} elfogadta a feltételeket: {address}",
+      "preheader": "A bérlet létrejött.",
+      "title": "Létrejött a bérlet",
+      "lead": "{name} elfogadta a módosított feltételeket, a bérlet létrejött a Keyflyon.",
+      "cta": "Tovább a Keyflyba",
+      "why": "Azért kapod ezt a levelet, mert jóváhagytad ezt a bérletet a Keyflyon."
+    },
+    "requestCancelled": {
+      "subjectWithdrawn": "{name} visszavonta a meghívót",
+      "subjectDeclined": "{name} nem fogadta el a feltételeket: {address}",
+      "preheader": "A bérlet nem jön létre.",
+      "title": "A bérlet nem jön létre",
+      "leadWithdrawn": "{name} visszavonta a meghívót, a link már nem működik. Nincs további teendőd.",
+      "leadDeclined": "{name} nem fogadta el a módosított feltételeket, ezért a bérlet nem jön létre.",
+      "why": "Azért kapod ezt a levelet, mert {name} meghívott bérbeadóként a Keyflyra."
     }
   },
   "portal": {

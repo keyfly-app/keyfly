@@ -2,7 +2,7 @@ import "server-only";
 import { createTranslator } from "next-intl";
 import { BRAND, COMPANY, CONTACT, formatCompanyAddress } from "@/config/company";
 import { publicHref, type Locale } from "@/i18n/config";
-import { dateBeforeSuffix, date, money } from "@/lib/format";
+import { dateBeforeSuffix, date, money, sentence } from "@/lib/format";
 import type { Enums } from "@/lib/supabase/database.types";
 import hu from "../../../messages/hu.json";
 import en from "../../../messages/en.json";
@@ -30,8 +30,8 @@ type Content = {
   lead: string;
   rows?: [string, string][];
   note?: string;
-  cta: string;
-  url: string;
+  /** The button; a notice that needs no action has none. */
+  action?: { cta: string; url: string };
   /** "The invitation is valid until …" – notifications have none. */
   validity?: string;
   why: string;
@@ -46,7 +46,7 @@ const translator = (locale: Locale) => createTranslator({ locale, messages: loca
  */
 function render(content: Content): Email {
   // A sentence that ends in a name or address that already ends in a dot ("Kft.", "3. em. 8.") gets no second dot.
-  const c = { ...content, lead: tidy(content.lead), preheader: tidy(content.preheader), note: content.note && tidy(content.note) };
+  const c = { ...content, lead: sentence(content.lead), preheader: sentence(content.preheader), note: content.note && sentence(content.note) };
   const t = translator(c.locale);
   const privacy = `${BRAND.url}${publicHref("privacy", c.locale)}`;
   const legal = `${COMPANY.shortName} · ${formatCompanyAddress()} · Cg. ${COMPANY.registrationNumber} · ${t("common.taxNumber")}: ${COMPANY.taxNumber}`;
@@ -70,6 +70,17 @@ function render(content: Content): Email {
       </td></tr>`
     : "";
   const note = c.note ? `<tr><td class="kf-soft" style="padding:20px 0 0;font:15px/1.6 ${SANS};color:${C.inkSoft};">${esc(c.note)}</td></tr>` : "";
+  const button = c.action
+    ? `<tr><td style="padding:24px 0 0;">
+      <a href="${esc(c.action.url)}" style="display:inline-block;background:${C.brand};color:#FFFFFF;text-decoration:none;font:bold 16px ${SANS};padding:15px 26px;border-radius:999px;">${esc(c.action.cta)}</a>
+    </td></tr>`
+    : "";
+  const fallback = c.action
+    ? `<tr><td class="kf-muted" style="padding:14px 0 0;font:13px/1.55 ${SANS};color:${C.muted};">
+      ${esc(t("common.fallback"))}<br>
+      <a href="${esc(c.action.url)}" class="kf-link" style="color:${C.brand};word-break:break-all;">${esc(c.action.url)}</a>
+    </td></tr>`
+    : "";
   const validity = c.validity ? `<tr><td class="kf-muted" style="padding:14px 0 0;font:14px/1.5 ${SANS};color:${C.muted};">${esc(c.validity)}</td></tr>` : "";
 
   const html = `<!doctype html>
@@ -107,15 +118,8 @@ function render(content: Content): Email {
     <tr><td><img src="${BRAND.url}/email/logo-pill.png" width="104" height="38" alt="${BRAND.name}" style="display:block;border:0;"></td></tr>
     <tr><td style="padding:24px 0 0;"><h1 class="kf-text" style="margin:0;font:bold 26px/1.2 ${DISPLAY};letter-spacing:-0.4px;color:${C.ink};">${esc(c.title)}</h1></td></tr>
     <tr><td class="kf-soft" style="padding:14px 0 0;font:16px/1.6 ${SANS};color:${C.inkSoft};">${esc(c.lead)}</td></tr>
-    ${rows}${note}
-    <tr><td style="padding:24px 0 0;">
-      <a href="${esc(c.url)}" style="display:inline-block;background:${C.brand};color:#FFFFFF;text-decoration:none;font:bold 16px ${SANS};padding:15px 26px;border-radius:999px;">${esc(c.cta)}</a>
-    </td></tr>
-    ${validity}
-    <tr><td class="kf-muted" style="padding:14px 0 0;font:13px/1.55 ${SANS};color:${C.muted};">
-      ${esc(t("common.fallback"))}<br>
-      <a href="${esc(c.url)}" class="kf-link" style="color:${C.brand};word-break:break-all;">${esc(c.url)}</a>
-    </td></tr>
+    ${rows}${note}${button}
+    ${validity}${fallback}
     <tr><td style="padding:24px 0 0;">
       <div class="kf-muted kf-line" style="border-top:1px solid ${C.line};padding-top:18px;font:12px/1.6 ${SANS};color:${C.muted};">
         ${esc(c.why)}<br>
@@ -137,8 +141,7 @@ function render(content: Content): Email {
     c.lead,
     ...(c.rows?.length ? ["", ...c.rows.map(([label, value]) => `${label}: ${value}`)] : []),
     ...(c.note ? ["", c.note] : []),
-    "",
-    `${c.cta}: ${c.url}`,
+    ...(c.action ? ["", `${c.action.cta}: ${c.action.url}`] : []),
     ...(c.validity ? [c.validity] : []),
     "",
     "--",
@@ -149,8 +152,6 @@ function render(content: Content): Email {
 
   return { subject: c.subject, html, text };
 }
-
-const tidy = (value: string) => value.replace(/\.\.$/, ".");
 
 function esc(value: string): string {
   return value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
@@ -197,8 +198,7 @@ export function teamMemberEmail(i: {
       [t("common.rows.access"), i.propertyCount == null ? t("common.accessAll") : t("common.accessSelected", { count: i.propertyCount })],
     ],
     note: t("common.signInNote", { email: i.email }),
-    cta: t("member.cta"),
-    url: i.url,
+    action: { cta: t("member.cta"), url: i.url },
     validity: validUntil(i.locale, i.expiresAt),
     why: t("member.why", { name: i.inviter }),
   });
@@ -214,8 +214,7 @@ export function leaseTenantEmail(i: { locale: Locale; url: string; expiresAt: st
     title: t("tenant.title"),
     lead: t("tenant.lead", { name: i.landlord }),
     rows: termRows(i.locale, i.lease, true),
-    cta: t("tenant.cta"),
-    url: i.url,
+    action: { cta: t("tenant.cta"), url: i.url },
     validity: validUntil(i.locale, i.expiresAt),
     why: t("tenant.why", { name: i.landlord }),
   });
@@ -232,8 +231,7 @@ export function landlordEmail(i: { locale: Locale; url: string; expiresAt: strin
     lead: t("landlord.lead", { name: i.tenant }),
     rows: termRows(i.locale, i.lease, false),
     note: t("landlord.note"),
-    cta: t("landlord.cta"),
-    url: i.url,
+    action: { cta: t("landlord.cta"), url: i.url },
     validity: validUntil(i.locale, i.expiresAt),
     why: t("landlord.why", { name: i.tenant }),
   });
@@ -247,8 +245,7 @@ export function occupantEmail(i: { locale: Locale; url: string; expiresAt: strin
     preheader: t("occupant.preheader", { role: i.role }),
     title: t("occupant.title"),
     lead: t("occupant.lead", { name: i.inviter, role: i.role, address: i.address }),
-    cta: t("occupant.cta"),
-    url: i.url,
+    action: { cta: t("occupant.cta"), url: i.url },
     validity: validUntil(i.locale, i.expiresAt),
     why: t("occupant.why", { name: i.inviter }),
   });
@@ -264,8 +261,7 @@ export function staffEmail(i: { locale: Locale; url: string; validHours: number;
     lead: t("staff.lead", { name: i.inviter }),
     rows: [[t("common.rows.role"), t(`staff.roles.${i.role}`)]],
     note: t("staff.note"),
-    cta: t("staff.cta"),
-    url: i.url,
+    action: { cta: t("staff.cta"), url: i.url },
     validity: t("common.validHours", { hours: i.validHours }),
     why: t("staff.why"),
   });
@@ -282,8 +278,7 @@ export function leaseApprovedEmail(i: { locale: Locale; url: string; landlord: s
     title: t("leaseApproved.title"),
     lead: t("leaseApproved.lead", { name: i.landlord }),
     rows: termRows(i.locale, i.lease, true),
-    cta: t("leaseApproved.cta"),
-    url: i.url,
+    action: { cta: t("leaseApproved.cta"), url: i.url },
     why: t("leaseApproved.why"),
   });
 }
@@ -296,8 +291,41 @@ export function termsChangedEmail(i: { locale: Locale; url: string; landlord: st
     preheader: t("termsChanged.preheader"),
     title: t("termsChanged.title"),
     lead: t("termsChanged.lead", { name: i.landlord }),
-    cta: t("termsChanged.cta"),
-    url: i.url,
+    action: { cta: t("termsChanged.cta"), url: i.url },
     why: t("termsChanged.why"),
+  });
+}
+
+// ---------- Notifications to the landlord about the tenant's decision ------------------------
+
+/** The tenant accepted the terms the landlord changed: the lease is set up. */
+export function termsAcceptedEmail(i: { locale: Locale; url: string; tenant: string; lease: LeaseTerms; streetAddress: string }): Email {
+  const t = translator(i.locale);
+  return render({
+    locale: i.locale,
+    subject: t("termsAccepted.subject", { name: i.tenant, address: i.streetAddress }),
+    preheader: t("termsAccepted.preheader"),
+    title: t("termsAccepted.title"),
+    lead: t("termsAccepted.lead", { name: i.tenant }),
+    rows: termRows(i.locale, i.lease, true),
+    action: { cta: t("termsAccepted.cta"), url: i.url },
+    why: t("termsAccepted.why"),
+  });
+}
+
+/**
+ * The tenant withdrew the invitation (before the landlord took over) or turned down the changed terms.
+ * Nothing left to do, so no button.
+ */
+export function requestCancelledEmail(i: { locale: Locale; tenant: string; streetAddress: string; takenOver: boolean }): Email {
+  const t = translator(i.locale);
+  return render({
+    locale: i.locale,
+    subject: t(i.takenOver ? "requestCancelled.subjectDeclined" : "requestCancelled.subjectWithdrawn", { name: i.tenant, address: i.streetAddress }),
+    preheader: t("requestCancelled.preheader"),
+    title: t("requestCancelled.title"),
+    lead: t(i.takenOver ? "requestCancelled.leadDeclined" : "requestCancelled.leadWithdrawn", { name: i.tenant }),
+    rows: [[t("common.rows.property"), i.streetAddress]],
+    why: t("requestCancelled.why", { name: i.tenant }),
   });
 }

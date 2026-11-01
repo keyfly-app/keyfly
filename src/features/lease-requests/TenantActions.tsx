@@ -15,7 +15,6 @@ export function WaitingActions({ requestId, canRemind }: { requestId: string; ca
   const result = reminded.status !== "idle" ? reminded : cancelled;
   return (
     <div className="flex flex-col gap-3">
-      {result.status === "reminded" && <Notice kind="success">{t("waiting.reminded")}</Notice>}
       {result.status === "error" && <Notice kind="error">{t(`errors.${result.error ?? "generic"}`)}</Notice>}
       <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
         {canRemind && (

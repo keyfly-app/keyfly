@@ -30,7 +30,7 @@ export default async function PortalHome() {
     supabase.from("applications").select("id, status, monthly_rent, deposit_amount, address_text, created_at").order("created_at", { ascending: false }),
     supabase.from("policies").select("id, policy_number, status, coverage_amount, premium_amount, billing_period"),
     view === "tenant"
-      ? supabase.from("lease_requests").select(`id, status, invitations(expires_at, revoked_at), ${ADDRESS_COLUMNS}`).neq("status", "cancelled")
+      ? supabase.from("lease_requests").select(`id, status, invitation_expires_at, ${ADDRESS_COLUMNS}`).neq("status", "cancelled")
           .order("created_at", { ascending: false }).limit(5)
       : Promise.resolve({ data: null }),
   ]);
@@ -38,7 +38,8 @@ export default async function PortalHome() {
   const newRequestHref = await siteHref("portal", "/lease-requests/new");
   const requestCards = await Promise.all(
     (requests ?? []).map(async (r) => {
-      const expired = r.status === "pending_landlord" && !r.invitations.some((i) => !i.revoked_at && new Date(i.expires_at) > new Date());
+      // The row carries the latest link's expiry (a reminder replaces the link), readable by every member of the account.
+      const expired = r.status === "pending_landlord" && new Date(r.invitation_expires_at) <= new Date();
       return { id: r.id, status: expired ? ("expired" as const) : r.status, address: streetLine(addressFromRow(r)), href: await siteHref("portal", `/lease-requests/${r.id}`) };
     }),
   );

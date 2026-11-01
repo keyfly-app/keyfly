@@ -604,6 +604,7 @@ export type Database = {
           floor_type: Database["public"]["Enums"]["floor_type"] | null
           house_number: string
           id: string
+          invitation_expires_at: string
           landlord_account_id: string | null
           landlord_email: string
           landlord_name: string | null
@@ -634,6 +635,7 @@ export type Database = {
           floor_type?: Database["public"]["Enums"]["floor_type"] | null
           house_number: string
           id?: string
+          invitation_expires_at: string
           landlord_account_id?: string | null
           landlord_email: string
           landlord_name?: string | null
@@ -664,6 +666,7 @@ export type Database = {
           floor_type?: Database["public"]["Enums"]["floor_type"] | null
           house_number?: string
           id?: string
+          invitation_expires_at?: string
           landlord_account_id?: string | null
           landlord_email?: string
           landlord_name?: string | null
@@ -1253,10 +1256,21 @@ export type Database = {
       cancel_lease: { Args: { p_lease_id: string }; Returns: undefined }
       cancel_lease_request: {
         Args: { p_request_id: string }
-        Returns: undefined
+        Returns: {
+          landlord_email: string
+          landlord_locale: Database["public"]["Enums"]["locale"]
+          taken_over: boolean
+        }[]
       }
       close_lease: { Args: { p_lease_id: string }; Returns: undefined }
-      confirm_lease_request: { Args: { p_request_id: string }; Returns: string }
+      confirm_lease_request: {
+        Args: { p_request_id: string }
+        Returns: {
+          landlord_email: string
+          landlord_locale: Database["public"]["Enums"]["locale"]
+          lease_id: string
+        }[]
+      }
       create_account_invitation: {
         Args: {
           p_account_id: string

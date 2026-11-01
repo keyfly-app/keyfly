@@ -95,7 +95,7 @@ On Vercel preview URLs (`*.vercel.app`) the app surfaces live under `/portal` an
 | `NEXT_PUBLIC_SUPABASE_URL` | prod URL | staging URL |
 | `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | prod publishable key | staging publishable key |
 | `NEXT_PUBLIC_APP_ENV` | `production` | `staging` |
-| `RESEND_API_KEY` | Resend key (newsletter sync, invitation and lease emails), sensitive | – (no newsletter sync and no invitation emails) |
+| `RESEND_API_KEY` | Resend key (newsletter sync, invitation and lease emails), sensitive | optional: staging key for invitation and lease emails (the newsletter sync runs only when `NEXT_PUBLIC_APP_ENV` is `production`) |
 
 The publishable key is public; RLS is what protects data. **Service-role keys never go into the repo or the browser.**
 

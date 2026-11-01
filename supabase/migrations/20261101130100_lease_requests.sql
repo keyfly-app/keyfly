@@ -38,6 +38,7 @@ create table public.lease_requests (
   lease_id           uuid unique references public.leases (id) on delete restrict,
   reminder_count     smallint not null default 0 check (reminder_count between 0 and 3),
   last_sent_at       timestamptz not null default now(),
+  invitation_expires_at timestamptz not null,
   decided_at         timestamptz,
   created_by         uuid references public.profiles (id) on delete set null,
   created_at         timestamptz not null default now(),
@@ -53,6 +54,7 @@ create table public.lease_requests (
 );
 comment on table public.lease_requests is 'A lease started by the tenant: what the tenant entered, waiting for the landlord (and, if the landlord changed the terms, for the tenant again).';
 comment on column public.lease_requests.reminder_count is 'Reminders sent to the landlord (at most 3, one per 24 hours).';
+comment on column public.lease_requests.invitation_expires_at is 'Expiry of the latest link sent to the landlord, readable by every member of the tenant account (the invitation rows are for owners and admins).';
 create index lease_requests_tenant_account_idx on public.lease_requests (tenant_account_id);
 create index lease_requests_landlord_account_idx on public.lease_requests (landlord_account_id);
 create index lease_requests_created_by_idx on public.lease_requests (created_by);
@@ -144,10 +146,12 @@ begin
 
   insert into public.lease_requests (tenant_account_id, postal_code, city, street_name, street_type, house_number,
                                      building, staircase, floor_type, floor_number, door,
-                                     start_date, end_date, monthly_rent, deposit_amount, landlord_email, landlord_name, created_by)
+                                     start_date, end_date, monthly_rent, deposit_amount, landlord_email, landlord_name,
+                                     invitation_expires_at, created_by)
   values (tenant_acc, btrim(p_postal_code), btrim(p_city), btrim(p_street_name), btrim(p_street_type), btrim(p_house_number),
           nullif(btrim(p_building), ''), nullif(btrim(p_staircase), ''), p_floor_type, p_floor_number, nullif(btrim(p_door), ''),
-          p_start_date, p_end_date, p_monthly_rent, p_deposit_amount, v_email, nullif(btrim(p_landlord_name), ''), me)
+          p_start_date, p_end_date, p_monthly_rent, p_deposit_amount, v_email, nullif(btrim(p_landlord_name), ''),
+          v_expires, me)
   returning id into rid;
 
   insert into public.invitations (kind, email, lease_request_id, token_hash, invited_by, expires_at)
@@ -183,14 +187,27 @@ begin
   where i.lease_request_id = p_request_id and i.accepted_at is null and i.declined_at is null and i.revoked_at is null;
   insert into public.invitations (kind, email, lease_request_id, token_hash, invited_by, expires_at)
   values ('lease_landlord', r.landlord_email, p_request_id, private.token_hash(v_token), auth.uid(), v_expires);
-  update public.lease_requests set reminder_count = reminder_count + 1, last_sent_at = now() where id = p_request_id;
+  update public.lease_requests set reminder_count = reminder_count + 1, last_sent_at = now(), invitation_expires_at = v_expires
+  where id = p_request_id;
   return query select v_token, v_expires;
 end;
 $$;
 
+-- Where to tell the landlord about the tenant's decision: the address the tenant entered, and the language of the
+-- landlord's account once they have taken over (before that, the app writes in the invitation's language).
+create or replace function private.lease_request_landlord_locale(rid uuid)
+returns public.locale language sql stable security definer set search_path = '' as $$
+  select p.locale from public.invitations i join public.profiles p on p.id = i.accepted_by
+  where i.lease_request_id = rid and i.accepted_at is not null
+  limit 1;
+$$;
+
 -- Withdraw while waiting for the landlord, or turn down the landlord's changed terms.
+-- Returns whether the landlord had taken over, and how to notify them.
 create or replace function public.cancel_lease_request(p_request_id uuid)
-returns void language plpgsql security definer set search_path = '' as $$
+returns table (taken_over boolean, landlord_email text, landlord_locale public.locale)
+language plpgsql security definer set search_path = '' as $$
+#variable_conflict use_variable
 declare
   r public.lease_requests;
 begin
@@ -207,12 +224,15 @@ begin
     update public.leases set status = 'cancelled' where id = r.lease_id and status = 'pending';
   end if;
   update public.lease_requests set status = 'cancelled', decided_at = now() where id = p_request_id;
+  return query select r.lease_id is not null, r.landlord_email, private.lease_request_landlord_locale(p_request_id);
 end;
 $$;
 
 -- The tenant accepts the terms as the landlord approved them: the lease is confirmed.
 create or replace function public.confirm_lease_request(p_request_id uuid)
-returns uuid language plpgsql security definer set search_path = '' as $$
+returns table (lease_id uuid, landlord_email text, landlord_locale public.locale)
+language plpgsql security definer set search_path = '' as $$
+#variable_conflict use_variable
 declare
   r public.lease_requests;
 begin
@@ -233,7 +253,7 @@ begin
   end if;
   perform private.snapshot_lease_parties(r.lease_id);
   update public.lease_requests set status = 'confirmed', decided_at = now() where id = p_request_id;
-  return r.lease_id;
+  return query select r.lease_id, r.landlord_email, private.lease_request_landlord_locale(p_request_id);
 end;
 $$;
 
@@ -482,6 +502,7 @@ grant select on public.lease_requests to authenticated;
 create policy "lease_requests_select_tenant_side_or_staff" on public.lease_requests for select to authenticated
   using (private.is_account_member(tenant_account_id) or private.is_staff());
 
+revoke execute on function private.lease_request_landlord_locale(uuid) from public, anon, authenticated;
 revoke execute on function private.is_lease_request_admin(uuid) from public, anon, authenticated;
 grant execute on function private.is_lease_request_admin(uuid) to authenticated;
 

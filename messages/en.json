@@ -726,6 +726,23 @@
       "lead": "{name} approved the lease with updated terms. Check them: the lease is created once you approve.",
       "cta": "Open terms",
       "why": "You’re receiving this because you invited your landlord to Keyfly."
+    },
+    "termsAccepted": {
+      "subject": "{name} accepted the terms: {address}",
+      "preheader": "The lease is set up.",
+      "title": "The lease is set up",
+      "lead": "{name} accepted the updated terms and the lease is now set up on Keyfly.",
+      "cta": "Go to Keyfly",
+      "why": "You’re receiving this because you approved this lease on Keyfly."
+    },
+    "requestCancelled": {
+      "subjectWithdrawn": "{name} withdrew the invitation",
+      "subjectDeclined": "{name} didn’t accept the terms: {address}",
+      "preheader": "The lease won’t be set up.",
+      "title": "The lease won’t be set up",
+      "leadWithdrawn": "{name} withdrew the invitation, so the link no longer works. There’s nothing more you need to do.",
+      "leadDeclined": "{name} didn’t accept the updated terms, so the lease won’t be set up.",
+      "why": "You’re receiving this because {name} invited you to Keyfly as landlord."
     }
   },
   "portal": {

@@ -8,8 +8,11 @@ import { resendFetch } from "@/lib/resend";
  * Called only after the visitor ticked the newsletter box (explicit consent).
  * A repeated opt-in re-subscribes an existing contact and adds it to the list.
  * Never throws: a failed sync is logged and must not break the sign-up.
+ * Production only: the segments are production lists, so staging and previews never write to them,
+ * even when a Resend key is configured there for transactional email.
  */
 export async function subscribeToNewsletter(email: string, locale: Locale): Promise<void> {
+  if (process.env.NEXT_PUBLIC_APP_ENV !== "production") return;
   const segment = NEWSLETTER_SEGMENTS[locale];
   try {
     const created = await resendFetch("/contacts", {

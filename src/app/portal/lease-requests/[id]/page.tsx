@@ -19,8 +19,14 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 /** Tenant side of one lease request: waiting for the landlord (step 4), approving changed terms (step 7), or the outcome. */
-export default async function LeaseRequest({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ sent?: string }> }) {
-  const [{ id }, { sent }] = await Promise.all([params, searchParams]);
+export default async function LeaseRequest({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ id: string }>;
+  searchParams: Promise<{ sent?: string; reminded?: string }>;
+}) {
+  const [{ id }, { sent, reminded }] = await Promise.all([params, searchParams]);
   if (!/^[0-9a-f-]{36}$/i.test(id)) notFound();
   const t = await getTranslations("leaseRequest");
   const raw = await getLocale();
@@ -29,17 +35,25 @@ export default async function LeaseRequest({ params, searchParams }: { params: P
 
   const { data: r } = await supabase.from("lease_requests").select(`*`).eq("id", id).maybeSingle();
   if (!r) notFound();
-  const [{ data: invitation }, { data: lease }] = await Promise.all([
-    supabase.from("invitations").select("expires_at").eq("lease_request_id", id).is("revoked_at", null)
-      .order("created_at", { ascending: false }).limit(1).maybeSingle(),
+  const [{ data: lease }, { data: claims }] = await Promise.all([
     r.lease_id
       ? supabase.from("leases").select(`start_date, end_date, monthly_rent, deposit_amount, payment_day, properties(${ADDRESS_COLUMNS})`).eq("id", r.lease_id).maybeSingle()
       : Promise.resolve({ data: null }),
+    supabase.auth.getClaims(),
   ]);
+  // Only owners and admins of the renting account remind, cancel or approve; other members just see the state.
+  const { data: membership } = await supabase
+    .from("account_members")
+    .select("role")
+    .eq("account_id", r.tenant_account_id)
+    .eq("user_id", String(claims?.claims.sub ?? ""))
+    .maybeSingle();
+  const canAct = membership?.role === "owner" || membership?.role === "admin";
 
   const requested = addressFromRow(r);
   const place = lease?.properties ? addressFromRow(lease.properties) : requested;
-  const expired = r.status === "pending_landlord" && (!invitation || new Date(invitation.expires_at) <= new Date());
+  // The row carries the latest link's expiry: after a reminder the old link is replaced, not expired.
+  const expired = r.status === "pending_landlord" && new Date(r.invitation_expires_at) <= new Date();
   const status = expired ? "expired" : r.status;
   const landlord = r.landlord_name ?? r.landlord_email;
   const back = { href: await siteHref("portal", "/"), label: t("homeTitle") };
@@ -61,7 +75,7 @@ export default async function LeaseRequest({ params, searchParams }: { params: P
         <h1 className="font-display text-[26px] leading-tight font-semibold">{t("reconfirm.title")}</h1>
         <p className="text-[15px] text-muted">{t("reconfirm.lead", { name: landlord })}</p>
         <DetailRows rows={items} />
-        <ReconfirmActions requestId={r.id} />
+        {canAct && <ReconfirmActions requestId={r.id} />}
       </AuthLayout>
     );
   }
@@ -77,14 +91,14 @@ export default async function LeaseRequest({ params, searchParams }: { params: P
       : [
           [t("rows.landlord"), r.landlord_email],
           [t("rows.sent"), date(r.last_sent_at, locale)],
-          ...(r.status === "pending_landlord" && invitation ? [[t("rows.expires"), date(invitation.expires_at, locale)] as [string, string]] : []),
+          ...(r.status === "pending_landlord" ? [[t("rows.expires"), date(r.invitation_expires_at, locale)] as [string, string]] : []),
         ];
   const text =
     r.status === "pending_landlord" ? t(expired ? "waiting.expiredText" : "waiting.text") : t(`outcome.${r.status as "confirmed" | "declined" | "cancelled"}`);
 
   return (
     <AuthLayout back={back}>
-      {sent && r.status === "pending_landlord" && <Notice kind="success">{t("waiting.sent")}</Notice>}
+      {(sent || reminded) && r.status === "pending_landlord" && <Notice kind="success">{t(sent ? "waiting.sent" : "waiting.reminded")}</Notice>}
       <section className="flex flex-col gap-4 rounded-2xl border border-line bg-surface p-4.5">
         <div className="flex items-start justify-between gap-3">
           <div className="flex min-w-0 flex-col gap-1">
@@ -96,7 +110,7 @@ export default async function LeaseRequest({ params, searchParams }: { params: P
         </div>
         <DetailRows rows={rows} />
         <p className="text-sm text-muted">{text}</p>
-        {r.status === "pending_landlord" && <WaitingActions requestId={r.id} canRemind={r.reminder_count < 3} />}
+        {r.status === "pending_landlord" && canAct && <WaitingActions requestId={r.id} canRemind={r.reminder_count < 3} />}
       </section>
     </AuthLayout>
   );

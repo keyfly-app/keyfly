@@ -7,7 +7,7 @@ import { AnswerForm, type CompanyAccount } from "@/features/invitations/AnswerFo
 import { LandlordTakeOver, type LandlordAccount, type LandlordProperty } from "@/features/lease-requests/LandlordTakeOver";
 import { isLocale } from "@/i18n/config";
 import { ADDRESS_COLUMNS, addressFromRow, streetLine } from "@/lib/address";
-import { date, dateBeforeSuffix, money } from "@/lib/format";
+import { date, dateBeforeSuffix, money, sentence } from "@/lib/format";
 import { siteHref } from "@/lib/site-href";
 import { createClient } from "@/lib/supabase/server";
 
@@ -157,7 +157,7 @@ export default async function Invite({ params }: { params: Promise<{ token: stri
   return (
     <AuthLayout>
       <PageTitle eyebrow={t("label")}>{title}</PageTitle>
-      <p className="text-sm text-muted">{intro}</p>
+      <p className="text-sm text-muted">{sentence(intro)}</p>
       {details.length > 0 && (
         <dl className="rounded-2xl border border-line bg-surface px-4 py-1">
           {details.map(([k, v], i) => (

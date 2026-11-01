@@ -1,13 +1,13 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { isLocale } from "@/i18n/config";
+import { isLocale, type Locale } from "@/i18n/config";
 import { ADDRESS_COLUMNS, addressFromRow, streetLine, withDot } from "@/lib/address";
 import { requestOrigin } from "@/lib/request-origin";
 import { hrefFor } from "@/lib/sites";
 import type { Enums } from "@/lib/supabase/database.types";
 import { createClient } from "@/lib/supabase/server";
-import { landlordEmail, leaseApprovedEmail, termsChangedEmail } from "@/features/invitations/emails";
+import { landlordEmail, leaseApprovedEmail, requestCancelledEmail, termsAcceptedEmail, termsChangedEmail } from "@/features/invitations/emails";
 import { appUrl, myDisplayName, sendEmail, senderLocale } from "@/features/invitations/send";
 import { hasErrors, parseAmount, parseFloor, validateAddress, validateLandlord, validateTerms, type Errors, type Values } from "./validate";
 
@@ -21,10 +21,7 @@ export type GeneralError =
   | "account"
   | "ownAccount"
   | "generic";
-export type RequestState =
-  | { status: "idle" }
-  | { status: "reminded" }
-  | { status: "error"; fields?: Errors; error?: GeneralError };
+export type RequestState = { status: "idle" } | { status: "error"; fields?: Errors; error?: GeneralError };
 export type TakeOverState =
   | { status: "idle" }
   | { status: "done"; needsTenantApproval: boolean }
@@ -133,24 +130,63 @@ export async function remindLeaseRequest(_prev: RequestState, form: FormData): P
   const sent = data?.[0];
   if (error || !sent) return { status: "error", ...dbError(error?.message) };
   await emailLandlord(requestId, sent.token, sent.expires_at, true);
-  return { status: "reminded" };
+  // Reload the card: it shows the new link's expiry.
+  return goTo(`/lease-requests/${requestId}?reminded=1`);
 }
 
-/** Withdraw the invitation, or turn down the landlord's changed terms. */
+/** The landlord hears about the tenant's decision in their account's language (before the take-over: the invitation's). */
+async function landlordLocale(fromDb: string | null): Promise<Locale> {
+  return isLocale(fromDb) ? fromDb : senderLocale();
+}
+
+/** Withdraw the invitation, or turn down the landlord's changed terms. The landlord is told either way. */
 export async function cancelLeaseRequest(_prev: RequestState, form: FormData): Promise<RequestState> {
   const requestId = String(form.get("requestId") ?? "");
   const supabase = await createClient();
-  const { error } = await supabase.rpc("cancel_lease_request", { p_request_id: requestId });
-  if (error) return { status: "error", ...dbError(error.message) };
+  const { data, error } = await supabase.rpc("cancel_lease_request", { p_request_id: requestId });
+  const result = data?.[0];
+  if (error || !result) return { status: "error", ...dbError(error?.message) };
+
+  const { data: r } = await supabase.from("lease_requests").select(ADDRESS_COLUMNS).eq("id", requestId).single();
+  if (r) {
+    const [tenant, locale] = await Promise.all([myDisplayName(), landlordLocale(result.landlord_locale)]);
+    await sendEmail(
+      result.landlord_email,
+      requestCancelledEmail({ locale, tenant, streetAddress: streetLine(addressFromRow(r)), takenOver: result.taken_over }),
+      result.taken_over ? "lease_terms_declined" : "invitation_landlord_withdrawn",
+    );
+  }
   return goTo(`/lease-requests/${requestId}`);
 }
 
-/** Accept the landlord's terms: the lease is confirmed. */
+/** Accept the landlord's terms: the lease is confirmed and the landlord is told. */
 export async function confirmLeaseRequest(_prev: RequestState, form: FormData): Promise<RequestState> {
   const requestId = String(form.get("requestId") ?? "");
   const supabase = await createClient();
-  const { error } = await supabase.rpc("confirm_lease_request", { p_request_id: requestId });
-  if (error) return { status: "error", ...dbError(error.message) };
+  const { data, error } = await supabase.rpc("confirm_lease_request", { p_request_id: requestId });
+  const result = data?.[0];
+  if (error || !result) return { status: "error", ...dbError(error?.message) };
+
+  const { data: lease } = await supabase
+    .from("leases")
+    .select(`monthly_rent, start_date, end_date, properties(${ADDRESS_COLUMNS})`)
+    .eq("id", result.lease_id)
+    .single();
+  if (lease?.properties) {
+    const [tenant, locale] = await Promise.all([myDisplayName(), landlordLocale(result.landlord_locale)]);
+    const street = streetLine(addressFromRow(lease.properties));
+    await sendEmail(
+      result.landlord_email,
+      termsAcceptedEmail({
+        locale,
+        url: await appUrl("portal", "/"),
+        tenant,
+        streetAddress: street,
+        lease: { address: street, monthlyRent: lease.monthly_rent, startDate: lease.start_date, endDate: lease.end_date },
+      }),
+      "lease_terms_accepted",
+    );
+  }
   return goTo(`/lease-requests/${requestId}`);
 }
 

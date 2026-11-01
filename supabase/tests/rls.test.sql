@@ -434,7 +434,8 @@ select tests.ok((select monthly_rent from public.lease_requests) = 280000, '… 
 select tests.act_as('00000000-0000-0000-0000-0000000000a1');
 select tests.throws($$select public.confirm_lease_request((select request_id from req))$$, 'only the tenant side approves the changes');
 select tests.act_as('00000000-0000-0000-0000-0000000000f3');
-select public.confirm_lease_request((select request_id from req));
+create temp table conf as select * from public.confirm_lease_request((select request_id from req));
+select tests.ok((select landlord_email = 'peter@example.com' and landlord_locale = 'hu' from conf), 'the tenant''s side learns where to notify the landlord');
 select tests.ok((select status from public.leases where id = (select lease_id from took)) = 'confirmed', 'the tenant''s approval confirms the lease');
 select tests.ok((select count(*) from public.lease_parties where lease_id = (select lease_id from took)) = 2, '… and records both parties');
 select tests.ok((select status from public.lease_requests) = 'confirmed', 'the request is closed as confirmed');
@@ -447,7 +448,7 @@ create temp table req as select * from public.create_lease_request('1068', 'Buda
 select tests.act_as('00000000-0000-0000-0000-0000000000b1');
 create temp table took as select * from public.accept_landlord_invitation((select token from req), (select id from fx where name = 'acc_peter'), current_date + 30, 300000);
 select tests.act_as('00000000-0000-0000-0000-0000000000f3');
-select public.cancel_lease_request((select request_id from req));
+select tests.ok((select taken_over and landlord_email = 'peter@example.com' from public.cancel_lease_request((select request_id from req))), 'turning down the changes tells who to notify');
 select tests.ok((select status from public.lease_requests) = 'cancelled', 'the tenant can turn down the changed terms');
 select tests.act_as('00000000-0000-0000-0000-0000000000b1');
 select tests.ok((select status from public.leases where id = (select lease_id from took)) = 'cancelled', '… which cancels the pending lease');
@@ -477,9 +478,24 @@ select tests.throws($$select public.accept_landlord_invitation((select token fro
 select tests.act_as('00000000-0000-0000-0000-0000000000f3');
 create temp table rem as select * from public.remind_lease_request((select request_id from req));
 select tests.ok(length((select token from rem)) = 64 and (select reminder_count from public.lease_requests) = 1, 'a reminder sends a new link');
+select tests.ok((select invitation_expires_at = (select expires_at from rem) from public.lease_requests), 'the request shows the new link''s expiry');
 select tests.act_as('00000000-0000-0000-0000-0000000000b1');
 select tests.ok((select count(*) from public.lease_request_preview((select token from req))) = 0, 'the old link stops working');
 select tests.ok((select count(*) from public.lease_request_preview((select token from rem))) = 1, 'the new link works');
+select tests.act_as('00000000-0000-0000-0000-0000000000f3');
+select tests.ok((select not taken_over and landlord_locale is null from public.cancel_lease_request((select request_id from req))), 'withdrawing before the take-over: no landlord account language yet');
+rollback;
+
+-- A company rents: every member sees the request and its link's expiry; only owners and admins act on it.
+begin;
+select tests.act_as('00000000-0000-0000-0000-0000000000e1');
+create temp table req as select * from public.create_lease_request('1068', 'Budapest', 'Dózsa György', 'út', '30.', current_date + 30, 280000,
+  'peter@example.com', p_tenant_account_id => '00000000-0000-0000-0000-00000000c0c0');
+select tests.act_as('00000000-0000-0000-0000-0000000000e3');
+select tests.ok((select count(*) = 1 and bool_and(invitation_expires_at > now()) from public.lease_requests), 'a viewer of the renting company sees the request and when its link expires');
+select tests.ok((select count(*) from public.invitations where kind = 'lease_landlord') = 0, '… but not the invitation itself');
+select tests.throws($$select public.remind_lease_request((select request_id from req))$$, 'a viewer cannot send a reminder');
+select tests.throws($$select public.cancel_lease_request((select request_id from req))$$, 'a viewer cannot cancel');
 rollback;
 
 -- A landlord without rights in the company; the limit on open requests.
