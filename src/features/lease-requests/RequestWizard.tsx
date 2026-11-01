@@ -1,12 +1,14 @@
 "use client";
 
-import { useActionState, useId, useRef, useState } from "react";
+import { useActionState, useCallback, useId, useRef, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { Icon } from "@/components/Icon";
 import { Button, INPUT_CLASS, Label, Notice, TextField } from "@/components/ui/form";
 import { InfoTip } from "@/components/ui/InfoTip";
 import { isLocale } from "@/i18n/config";
-import { FLOOR_NUMBERS, STREET_TYPES, fullAddress } from "@/lib/address";
+import { AddressSearch } from "@/features/address-search/AddressSearch";
+import type { FoundAddress } from "@/features/address-search/places";
+import { FLOOR_NUMBERS, STREET_TYPES, cityLine, fullAddress, withDot } from "@/lib/address";
 import { date, money, number } from "@/lib/format";
 import type { Enums } from "@/lib/supabase/database.types";
 import { createLeaseRequest, type RequestState } from "./actions";
@@ -69,11 +71,15 @@ export function RequestWizard({ myEmail }: { myEmail: string }) {
   const [step, setStep] = useState(0);
   const [values, setValues] = useState<Values>(EMPTY);
   const [errors, setErrors] = useState<Errors>({});
+  const s = useTranslations("leaseRequest.addressSearch");
+  // Search first; manual entry when the person asks for it or the search is unavailable.
+  const [addressMode, setAddressMode] = useState<"search" | "picked" | "manual">("search");
   const [state, action, pending] = useActionState<RequestState, FormData>(async (prev, form) => {
     const next = await createLeaseRequest(prev, form);
     if (next.status === "error" && next.fields && hasErrors(next.fields)) {
       setErrors(next.fields);
       setStep(stepOf(next.fields));
+      if (stepOf(next.fields) === 0) setAddressMode("manual"); // show the fields the server objected to
     }
     return next;
   }, { status: "idle" });
@@ -81,6 +87,14 @@ export function RequestWizard({ myEmail }: { myEmail: string }) {
   const set = (key: string) => (value: string) => {
     setValues((v) => ({ ...v, [key]: value }));
     if (errors[key]) setErrors((e) => clearError(e, key));
+  };
+  const useManual = useCallback(() => setAddressMode("manual"), []);
+  const pickFound = (found: FoundAddress) => {
+    const picked = { postalCode: found.postalCode, city: found.city, streetName: found.streetName, streetType: found.streetType, houseNumber: found.houseNumber };
+    setValues((v) => ({ ...v, ...picked }));
+    setErrors((e) => Object.keys(picked).reduce(clearError, e));
+    // Anything Google left out (e.g. a street without a house number) is completed by hand.
+    setAddressMode(hasErrors(validateAddress({ ...values, ...picked })) ? "manual" : "picked");
   };
   const err = (key: string) => (errors[key] ? t(`errors.${errors[key]}`) : undefined);
   const formatAmount = (key: string) => () => {
@@ -94,6 +108,7 @@ export function RequestWizard({ myEmail }: { myEmail: string }) {
   const next = () => {
     const found = step === 0 ? validateAddress(values) : validateTerms(values);
     setErrors(found);
+    if (step === 0 && addressMode === "picked" && hasErrors(found)) setAddressMode("manual");
     if (!hasErrors(found)) go(step + 1);
   };
   const submitCheck = (e: React.FormEvent) => {
@@ -145,25 +160,55 @@ export function RequestWizard({ myEmail }: { myEmail: string }) {
 
       {step === 0 && (
         <>
-          <div className="grid grid-cols-[7rem_1fr] gap-2.5">
-            <TextField id={`${id}-pc`} label={t("address.postalCode")} value={values.postalCode} onChange={(e) => set("postalCode")(e.target.value)}
-              inputMode="numeric" autoComplete="postal-code" maxLength={4} error={err("postalCode")} />
-            <TextField id={`${id}-city`} label={t("address.city")} value={values.city} onChange={(e) => set("city")(e.target.value)}
-              autoComplete="address-level2" maxLength={100} error={err("city")} />
-          </div>
-          <TextField id={`${id}-street`} label={t("address.streetName")} value={values.streetName} onChange={(e) => set("streetName")(e.target.value)}
-            maxLength={100} error={err("streetName")} />
-          <div className="grid grid-cols-2 gap-2.5">
-            <TextField id={`${id}-type`} label={t("address.streetType")} value={values.streetType} onChange={(e) => set("streetType")(e.target.value)}
-              list={`${id}-types`} maxLength={30} error={err("streetType")} />
-            <TextField id={`${id}-no`} label={t("address.houseNumber")} value={values.houseNumber} onChange={(e) => set("houseNumber")(e.target.value)}
-              maxLength={20} error={err("houseNumber")} />
-          </div>
-          <datalist id={`${id}-types`}>
-            {STREET_TYPES.map((s) => (
-              <option key={s} value={s} />
-            ))}
-          </datalist>
+          {addressMode === "search" && (
+            <AddressSearch
+              onPick={pickFound}
+              onManual={() => setAddressMode("manual")}
+              onUnavailable={useManual}
+              error={hasErrors(validateAddress(values)) && Object.keys(errors).some((k) => (ADDRESS_FIELDS as readonly string[]).includes(k)) ? s("pickRequired") : undefined}
+            />
+          )}
+          {addressMode === "picked" && (
+            <div className="flex items-start justify-between gap-2.5 rounded-2xl border border-line bg-paper p-3.5">
+              <div className="flex min-w-0 flex-col gap-0.5">
+                <span className="text-xs font-semibold tracking-[0.05em] text-muted uppercase">{s("chosen")}</span>
+                <span className="text-[15px] font-semibold [overflow-wrap:anywhere]">
+                  {`${values.streetName} ${values.streetType} ${withDot(values.houseNumber)}`.replace(/\s+/g, " ").trim()}
+                </span>
+                <span className="text-[13px] text-muted">{cityLine({ postalCode: values.postalCode, city: values.city })}</span>
+              </div>
+              <button type="button" onClick={() => setAddressMode("search")} className="inline-flex min-h-11 flex-none items-center text-sm font-semibold text-brand">
+                {s("change")}
+              </button>
+            </div>
+          )}
+          {addressMode === "manual" && (
+            <>
+              <button type="button" onClick={() => setAddressMode("search")} className="-my-1.5 inline-flex min-h-11 items-center gap-1.5 self-start text-sm font-semibold text-brand">
+                <Icon name="search" size={16} strokeWidth={2} />
+                {s("backToSearch")}
+              </button>
+            <div className="grid grid-cols-[7rem_1fr] gap-2.5">
+              <TextField id={`${id}-pc`} label={t("address.postalCode")} value={values.postalCode} onChange={(e) => set("postalCode")(e.target.value)}
+                inputMode="numeric" autoComplete="postal-code" maxLength={4} error={err("postalCode")} />
+              <TextField id={`${id}-city`} label={t("address.city")} value={values.city} onChange={(e) => set("city")(e.target.value)}
+                autoComplete="address-level2" maxLength={100} error={err("city")} />
+            </div>
+            <TextField id={`${id}-street`} label={t("address.streetName")} value={values.streetName} onChange={(e) => set("streetName")(e.target.value)}
+              maxLength={100} error={err("streetName")} />
+            <div className="grid grid-cols-2 gap-2.5">
+              <TextField id={`${id}-type`} label={t("address.streetType")} value={values.streetType} onChange={(e) => set("streetType")(e.target.value)}
+                list={`${id}-types`} maxLength={30} error={err("streetType")} />
+              <TextField id={`${id}-no`} label={t("address.houseNumber")} value={values.houseNumber} onChange={(e) => set("houseNumber")(e.target.value)}
+                maxLength={20} error={err("houseNumber")} />
+            </div>
+            <datalist id={`${id}-types`}>
+              {STREET_TYPES.map((s) => (
+                <option key={s} value={s} />
+              ))}
+            </datalist>
+            </>
+          )}
           <div className="grid grid-cols-2 gap-2.5">
             <TextField id={`${id}-bld`} label={t("address.building")} value={values.building} onChange={(e) => set("building")(e.target.value)} maxLength={20} />
             <TextField id={`${id}-stair`} label={t("address.staircase")} value={values.staircase} onChange={(e) => set("staircase")(e.target.value)} maxLength={20} />

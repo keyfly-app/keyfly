@@ -634,6 +634,20 @@
       "account": "You can’t take over the lease with this account. Choose one where you’re an owner, admin or manager.",
       "ownAccount": "You can’t be the landlord with the tenant’s account.",
       "generic": "Something went wrong. Please try again."
+    },
+    "addressSearch": {
+      "label": "Search address",
+      "placeholder": "Street, number, city",
+      "suggestions": "Address suggestions",
+      "count": "{count, plural, one {# result} other {# results}}",
+      "none": "No match for:",
+      "noneHint": "Check the spelling, or enter the address by hand.",
+      "manual": "Can’t find it? Enter it by hand",
+      "manualButton": "Enter address by hand",
+      "chosen": "Selected address",
+      "change": "Change",
+      "backToSearch": "Back to address search",
+      "pickRequired": "Pick an address from the list, or enter it by hand."
     }
   },
   "invitationEmails": {

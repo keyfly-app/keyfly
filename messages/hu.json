@@ -634,6 +634,20 @@
       "account": "Ezzel a fiókkal nem veheted át a bérletet. Olyat válassz, amelyben tulajdonos, admin vagy kezelő vagy.",
       "ownAccount": "A bérlő fiókjával nem lehetsz bérbeadó.",
       "generic": "Valami nem sikerült. Próbáld újra."
+    },
+    "addressSearch": {
+      "label": "Cím keresése",
+      "placeholder": "Utca, házszám, település",
+      "suggestions": "Címjavaslatok",
+      "count": "{count, plural, one {# találat} other {# találat}}",
+      "none": "Nincs találat erre:",
+      "noneHint": "Ellenőrizd az írást, vagy add meg a címet kézzel.",
+      "manual": "Nem találod? Add meg kézzel",
+      "manualButton": "Cím megadása kézzel",
+      "chosen": "Kiválasztott cím",
+      "change": "Módosítás",
+      "backToSearch": "Vissza a címkereséshez",
+      "pickRequired": "Válassz egy címet a listából, vagy add meg kézzel."
     }
   },
   "invitationEmails": {
