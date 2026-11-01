@@ -936,6 +936,29 @@
       "resetting": "Resetting…",
       "done": "Reset. They set it up again at their next sign-in.",
       "error": "The reset didn’t work. Try again."
+    },
+    "invite": {
+      "title": "Invite staff member",
+      "email": "Email",
+      "emailPlaceholder": "name@keyfly.app",
+      "role": "Role",
+      "roleHints": {
+        "admin": "Customers, accounts, leases",
+        "insurance": "Applications, policies, claims",
+        "finance": "Fees, invoices, commissions",
+        "support": "View customer data"
+      },
+      "twoFactor": "Two-factor authentication required",
+      "submit": "Send invitation",
+      "sending": "Sending…",
+      "validity": "Valid for 48 hours.",
+      "sent": "Invitation sent to {email}",
+      "createdNoEmail": "The invitation for {email} was created, but we couldn’t send the email. Please try again later.",
+      "errors": {
+        "email": "Only @keyfly.app addresses.",
+        "notAllowed": "Only a super admin can invite staff.",
+        "generic": "We couldn’t send the invitation. Please try again."
+      }
     }
   },
   "authEmails": {

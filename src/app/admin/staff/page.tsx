@@ -5,6 +5,7 @@ import { Icon } from "@/components/Icon";
 import { Shell } from "@/components/Shell";
 import { TextLink } from "@/components/ui/form";
 import { ResetMfaButton } from "@/features/staff-auth/ResetMfaButton";
+import { StaffInviteForm } from "@/features/staff-auth/StaffInviteForm";
 import { isLocale } from "@/i18n/config";
 import { date } from "@/lib/format";
 import { siteHref } from "@/lib/site-href";
@@ -17,7 +18,7 @@ export async function generateMetadata(): Promise<Metadata> {
   return { title: t("title"), robots: { index: false } };
 }
 
-/** Super admin: the staff list with two-factor status; resetting a colleague's authenticator. */
+/** Super admin: the staff list with two-factor status, inviting colleagues, resetting a colleague's authenticator. */
 export default async function Staff() {
   const supabase = await createClient();
   const { data: auth } = await supabase.auth.getClaims();
@@ -36,51 +37,58 @@ export default async function Staff() {
       <h1 className="font-display text-3xl font-bold">{t("title")}</h1>
       <p className="mt-1 text-muted">{t("count", { count: staff.length })}</p>
 
-      <div className="mt-6 overflow-x-auto rounded-3xl bg-white p-6">
-        <table className="w-full min-w-[640px] text-left text-sm">
-          <thead className="text-muted">
-            <tr>
-              <th className="py-2 font-semibold">{t("columns.member")}</th>
-              <th className="py-2 font-semibold">{t("columns.role")}</th>
-              <th className="py-2 font-semibold">{t("columns.twoFactor")}</th>
-              <th className="py-2 font-semibold">{t("columns.status")}</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-line">
-            {staff.map((s) => {
-              const name = s.full_name || s.email;
-              return (
-                <tr key={s.user_id} className="align-top">
-                  <td className="py-3 pr-4">
-                    <span className="block font-semibold">
-                      {name} {s.user_id === me && <span className="font-normal text-muted">{t("you")}</span>}
-                    </span>
-                    <span className="block text-[13px] text-muted">{s.email}</span>
-                  </td>
-                  <td className="py-3 pr-4">{t(`roles.${s.role}`)}</td>
-                  <td className="py-3 pr-4">
-                    {s.has_2fa ? (
-                      <span className="inline-flex items-center gap-1.5 font-medium text-brand">
-                        <Icon name="check" size={15} strokeWidth={2.4} />
-                        {t("on")}
+      <div className="mt-6 flex flex-col items-start gap-5 lg:flex-row">
+        <div className="w-full min-w-0 flex-1 overflow-x-auto rounded-3xl bg-white p-6">
+          <table className="w-full min-w-[640px] text-left text-sm">
+            <thead className="text-muted">
+              <tr>
+                <th className="py-2 font-semibold">{t("columns.member")}</th>
+                <th className="py-2 font-semibold">{t("columns.role")}</th>
+                <th className="py-2 font-semibold">{t("columns.twoFactor")}</th>
+                <th className="py-2 font-semibold">{t("columns.status")}</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-line">
+              {staff.map((s) => {
+                const name = s.full_name || s.email;
+                return (
+                  <tr key={s.user_id} className="align-top">
+                    <td className="py-3 pr-4">
+                      <span className="block font-semibold">
+                        {name} {s.user_id === me && <span className="font-normal text-muted">{t("you")}</span>}
                       </span>
-                    ) : (
-                      <span className="text-muted">{t("notSetUp")}</span>
-                    )}
-                    {s.has_2fa && s.user_id !== me && !s.disabled_at && <ResetMfaButton userId={s.user_id} name={name} />}
-                  </td>
-                  <td className="py-3">
-                    <span className="block font-medium">{s.disabled_at ? t("disabled") : t("active")}</span>
-                    <span className="block text-[13px] text-muted">
-                      {s.last_sign_in_at ? t("lastSignIn", { date: date(s.last_sign_in_at, locale) }) : t("never")}
-                    </span>
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-        <p className="mt-4 text-[13px] text-muted">{t("selfNote")}</p>
+                      <span className="block text-[13px] text-muted">{s.email}</span>
+                    </td>
+                    <td className="py-3 pr-4">{t(`roles.${s.role}`)}</td>
+                    <td className="py-3 pr-4">
+                      {s.has_2fa ? (
+                        <span className="inline-flex items-center gap-1.5 font-medium text-brand">
+                          <Icon name="check" size={15} strokeWidth={2.4} />
+                          {t("on")}
+                        </span>
+                      ) : (
+                        <span className="text-muted">{t("notSetUp")}</span>
+                      )}
+                      {s.has_2fa && s.user_id !== me && !s.disabled_at && <ResetMfaButton userId={s.user_id} name={name} />}
+                    </td>
+                    <td className="py-3">
+                      <span className="block font-medium">{s.disabled_at ? t("disabled") : t("active")}</span>
+                      <span className="block text-[13px] text-muted">
+                        {s.last_sign_in_at
+                          ? t("lastSignIn", {
+                              date: date(s.last_sign_in_at, locale),
+                            })
+                          : t("never")}
+                      </span>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+          <p className="mt-4 text-[13px] text-muted">{t("selfNote")}</p>
+        </div>
+        <StaffInviteForm />
       </div>
     </Shell>
   );

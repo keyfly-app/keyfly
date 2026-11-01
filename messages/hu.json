@@ -936,6 +936,29 @@
       "resetting": "Visszaállítás…",
       "done": "Visszaállítva. A következő belépéskor újra beállítja.",
       "error": "Nem sikerült visszaállítani. Próbáld újra."
+    },
+    "invite": {
+      "title": "Munkatárs meghívása",
+      "email": "E-mail-cím",
+      "emailPlaceholder": "nev@keyfly.app",
+      "role": "Szerepkör",
+      "roleHints": {
+        "admin": "Ügyfelek, fiókok, bérletek",
+        "insurance": "Kérelmek, kötvények, kárügyek",
+        "finance": "Díjak, számlák, jutalékok",
+        "support": "Ügyféladatok megtekintése"
+      },
+      "twoFactor": "Kétlépcsős azonosítás kötelező",
+      "submit": "Meghívó küldése",
+      "sending": "Küldés…",
+      "validity": "Érvényes 48 óráig.",
+      "sent": "Meghívó elküldve: {email}",
+      "createdNoEmail": "A meghívó elkészült ({email}), de az e-mailt nem tudtuk elküldeni. Próbáld újra később.",
+      "errors": {
+        "email": "Csak @keyfly.app cím adható meg.",
+        "notAllowed": "Munkatársat csak szuperadmin hívhat meg.",
+        "generic": "Nem sikerült elküldeni a meghívót. Próbáld újra."
+      }
     }
   },
   "authEmails": {

@@ -6,6 +6,7 @@ import { getLocale } from "next-intl/server";
 import { CONSENT_VERSIONS } from "@/config/consent";
 import { syncEmailLocale } from "@/features/auth/locale-sync";
 import { isValidPassword } from "@/features/auth/password";
+import { inviteStaff } from "@/features/invitations/send";
 import { isLocale } from "@/i18n/config";
 import { requestOrigin } from "@/lib/request-origin";
 import { safeNext } from "@/lib/safe-next";
@@ -19,6 +20,14 @@ const CODE_RE = /^\d{6}$/;
 export type StaffFormError = "email" | "password" | "name" | "terms" | "credentials" | "unconfirmed" | "code" | "codeFormat" | "rateLimit" | "generic";
 export type StaffFormState = { status: "idle" } | { status: "sent"; email: string } | { status: "error"; error: StaffFormError; email?: string };
 export type ResetState = { status: "idle" } | { status: "done" } | { status: "error" };
+export type StaffInviteError = "email" | "notAllowed" | "generic";
+export type StaffInviteState =
+  | { status: "idle" }
+  | { status: "sent"; email: string; emailSent: boolean }
+  | { status: "error"; error: StaffInviteError; email: string };
+
+const STAFF_EMAIL_RE = /^[^@\s]+@keyfly\.app$/;
+const STAFF_ROLES = ["admin", "insurance", "finance", "support"] as const;
 
 async function goToAdmin(path: string): Promise<never> {
   const { host } = await requestOrigin();
@@ -127,4 +136,15 @@ export async function resetStaffMfa(_prev: ResetState, form: FormData): Promise<
     return { status: "error" };
   }
   return { status: "done" };
+}
+
+/** Super admin: invite a colleague. The database checks the role (super admin with 2FA) and the @keyfly.app address again. */
+export async function inviteStaffMember(_prev: StaffInviteState, form: FormData): Promise<StaffInviteState> {
+  const email = String(form.get("email") ?? "").trim().toLowerCase();
+  const role = STAFF_ROLES.find((r) => r === form.get("role"));
+  if (!STAFF_EMAIL_RE.test(email)) return { status: "error", error: "email", email };
+  if (!role) return { status: "error", error: "generic", email };
+  const result = await inviteStaff({ email, role });
+  if (!result.ok) return { status: "error", error: result.error === "not_allowed" ? "notAllowed" : "generic", email };
+  return { status: "sent", email, emailSent: result.emailSent };
 }
