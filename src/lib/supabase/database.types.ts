@@ -408,6 +408,7 @@ export type Database = {
           invited_by: string | null
           kind: Database["public"]["Enums"]["invitation_kind"]
           lease_id: string | null
+          lease_request_id: string | null
           occupant_role: Database["public"]["Enums"]["occupant_role"] | null
           property_scope: Database["public"]["Enums"]["property_scope"] | null
           revoked_at: string | null
@@ -426,6 +427,7 @@ export type Database = {
           invited_by?: string | null
           kind: Database["public"]["Enums"]["invitation_kind"]
           lease_id?: string | null
+          lease_request_id?: string | null
           occupant_role?: Database["public"]["Enums"]["occupant_role"] | null
           property_scope?: Database["public"]["Enums"]["property_scope"] | null
           revoked_at?: string | null
@@ -444,6 +446,7 @@ export type Database = {
           invited_by?: string | null
           kind?: Database["public"]["Enums"]["invitation_kind"]
           lease_id?: string | null
+          lease_request_id?: string | null
           occupant_role?: Database["public"]["Enums"]["occupant_role"] | null
           property_scope?: Database["public"]["Enums"]["property_scope"] | null
           revoked_at?: string | null
@@ -476,6 +479,13 @@ export type Database = {
             columns: ["lease_id"]
             isOneToOne: false
             referencedRelation: "leases"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "invitations_lease_request_id_fkey"
+            columns: ["lease_request_id"]
+            isOneToOne: false
+            referencedRelation: "lease_requests"
             referencedColumns: ["id"]
           },
         ]
@@ -575,6 +585,128 @@ export type Database = {
             columns: ["lease_id"]
             isOneToOne: false
             referencedRelation: "leases"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      lease_requests: {
+        Row: {
+          building: string | null
+          city: string
+          country_code: string
+          created_at: string
+          created_by: string | null
+          decided_at: string | null
+          deposit_amount: number | null
+          door: string | null
+          end_date: string | null
+          floor_number: number | null
+          floor_type: Database["public"]["Enums"]["floor_type"] | null
+          house_number: string
+          id: string
+          landlord_account_id: string | null
+          landlord_email: string
+          landlord_name: string | null
+          last_sent_at: string
+          lease_id: string | null
+          monthly_rent: number
+          postal_code: string
+          reminder_count: number
+          staircase: string | null
+          start_date: string
+          status: Database["public"]["Enums"]["lease_request_status"]
+          street_name: string
+          street_type: string
+          tenant_account_id: string
+          updated_at: string
+        }
+        Insert: {
+          building?: string | null
+          city: string
+          country_code?: string
+          created_at?: string
+          created_by?: string | null
+          decided_at?: string | null
+          deposit_amount?: number | null
+          door?: string | null
+          end_date?: string | null
+          floor_number?: number | null
+          floor_type?: Database["public"]["Enums"]["floor_type"] | null
+          house_number: string
+          id?: string
+          landlord_account_id?: string | null
+          landlord_email: string
+          landlord_name?: string | null
+          last_sent_at?: string
+          lease_id?: string | null
+          monthly_rent: number
+          postal_code: string
+          reminder_count?: number
+          staircase?: string | null
+          start_date: string
+          status?: Database["public"]["Enums"]["lease_request_status"]
+          street_name: string
+          street_type: string
+          tenant_account_id: string
+          updated_at?: string
+        }
+        Update: {
+          building?: string | null
+          city?: string
+          country_code?: string
+          created_at?: string
+          created_by?: string | null
+          decided_at?: string | null
+          deposit_amount?: number | null
+          door?: string | null
+          end_date?: string | null
+          floor_number?: number | null
+          floor_type?: Database["public"]["Enums"]["floor_type"] | null
+          house_number?: string
+          id?: string
+          landlord_account_id?: string | null
+          landlord_email?: string
+          landlord_name?: string | null
+          last_sent_at?: string
+          lease_id?: string | null
+          monthly_rent?: number
+          postal_code?: string
+          reminder_count?: number
+          staircase?: string | null
+          start_date?: string
+          status?: Database["public"]["Enums"]["lease_request_status"]
+          street_name?: string
+          street_type?: string
+          tenant_account_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lease_requests_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lease_requests_landlord_account_id_fkey"
+            columns: ["landlord_account_id"]
+            isOneToOne: false
+            referencedRelation: "accounts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lease_requests_lease_id_fkey"
+            columns: ["lease_id"]
+            isOneToOne: true
+            referencedRelation: "leases"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lease_requests_tenant_account_id_fkey"
+            columns: ["tenant_account_id"]
+            isOneToOne: false
+            referencedRelation: "accounts"
             referencedColumns: ["id"]
           },
         ]
@@ -1085,6 +1217,24 @@ export type Database = {
         Args: { p_tenant_account_id?: string; p_token: string }
         Returns: string
       }
+      accept_landlord_invitation: {
+        Args: {
+          p_account_id: string
+          p_deposit_amount?: number
+          p_end_date?: string
+          p_monthly_rent: number
+          p_payment_day?: number
+          p_property_id?: string
+          p_start_date: string
+          p_token: string
+        }
+        Returns: {
+          lease_id: string
+          needs_tenant_approval: boolean
+          tenant_email: string
+          tenant_locale: Database["public"]["Enums"]["locale"]
+        }[]
+      }
       accept_staff_invitation: { Args: { p_token: string }; Returns: undefined }
       activity_log: {
         Args: { p_account_id?: string; p_limit?: number }
@@ -1101,7 +1251,12 @@ export type Database = {
         }[]
       }
       cancel_lease: { Args: { p_lease_id: string }; Returns: undefined }
+      cancel_lease_request: {
+        Args: { p_request_id: string }
+        Returns: undefined
+      }
       close_lease: { Args: { p_lease_id: string }; Returns: undefined }
+      confirm_lease_request: { Args: { p_request_id: string }; Returns: string }
       create_account_invitation: {
         Args: {
           p_account_id: string
@@ -1130,6 +1285,32 @@ export type Database = {
           p_occupant_role?: Database["public"]["Enums"]["occupant_role"]
         }
         Returns: string
+      }
+      create_lease_request: {
+        Args: {
+          p_building?: string
+          p_city: string
+          p_deposit_amount?: number
+          p_door?: string
+          p_end_date?: string
+          p_floor_number?: number
+          p_floor_type?: Database["public"]["Enums"]["floor_type"]
+          p_house_number: string
+          p_landlord_email: string
+          p_landlord_name?: string
+          p_monthly_rent: number
+          p_postal_code: string
+          p_staircase?: string
+          p_start_date: string
+          p_street_name: string
+          p_street_type: string
+          p_tenant_account_id?: string
+        }
+        Returns: {
+          expires_at: string
+          request_id: string
+          token: string
+        }[]
       }
       create_staff_invitation: {
         Args: {
@@ -1161,6 +1342,28 @@ export type Database = {
         Args: { l: Database["public"]["Tables"]["leases"]["Row"] }
         Returns: Database["public"]["Enums"]["lease_phase"]
       }
+      lease_request_preview: {
+        Args: { p_token: string }
+        Returns: {
+          building: string
+          city: string
+          deposit_amount: number
+          door: string
+          end_date: string
+          expires_at: string
+          floor_number: number
+          floor_type: Database["public"]["Enums"]["floor_type"]
+          house_number: string
+          monthly_rent: number
+          postal_code: string
+          request_id: string
+          staircase: string
+          start_date: string
+          street_name: string
+          street_type: string
+          tenant_name: string
+        }[]
+      }
       referral_status: {
         Args: { p_account_id: string }
         Returns: {
@@ -1168,6 +1371,13 @@ export type Database = {
           created_at: string
           monthly_rent: number
           status: Database["public"]["Enums"]["application_status"]
+        }[]
+      }
+      remind_lease_request: {
+        Args: { p_request_id: string }
+        Returns: {
+          expires_at: string
+          token: string
         }[]
       }
       revoke_invitation: {
@@ -1214,9 +1424,19 @@ export type Database = {
         | "mezzanine"
         | "numbered"
         | "attic"
-      invitation_kind: "account_member" | "lease_tenant" | "lease_occupant"
+      invitation_kind:
+        | "account_member"
+        | "lease_tenant"
+        | "lease_occupant"
+        | "lease_landlord"
       landlord_kind: "private" | "company"
       lease_party_side: "landlord" | "tenant"
+      lease_request_status:
+        | "pending_landlord"
+        | "pending_tenant"
+        | "confirmed"
+        | "declined"
+        | "cancelled"
       lease_phase:
         | "draft"
         | "pending"
@@ -1411,9 +1631,21 @@ export const Constants = {
         "numbered",
         "attic",
       ],
-      invitation_kind: ["account_member", "lease_tenant", "lease_occupant"],
+      invitation_kind: [
+        "account_member",
+        "lease_tenant",
+        "lease_occupant",
+        "lease_landlord",
+      ],
       landlord_kind: ["private", "company"],
       lease_party_side: ["landlord", "tenant"],
+      lease_request_status: [
+        "pending_landlord",
+        "pending_tenant",
+        "confirmed",
+        "declined",
+        "cancelled",
+      ],
       lease_phase: [
         "draft",
         "pending",

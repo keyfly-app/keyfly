@@ -480,6 +480,254 @@
       "generic": "Something went wrong. Please try again."
     }
   },
+  "leaseRequest": {
+    "homeTitle": "My home",
+    "homeEmpty": "Renting, but your landlord isn’t on Keyfly yet? Invite them and set up the lease together.",
+    "inviteLandlord": "Invite your landlord",
+    "next": "Continue",
+    "back": "Back",
+    "progressLabel": "Step",
+    "stepCount": "{step} / {total}",
+    "steps": {
+      "home": "Home",
+      "lease": "Lease",
+      "landlord": "Landlord"
+    },
+    "address": {
+      "title": "Invite your landlord",
+      "lead": "Which home are you renting?",
+      "postalCode": "Postcode",
+      "city": "City",
+      "streetName": "Street name",
+      "streetType": "Street type",
+      "houseNumber": "House number",
+      "building": "Building",
+      "staircase": "Staircase",
+      "floor": "Floor",
+      "door": "Door",
+      "floorNone": "Not specified",
+      "floorNumbered": "Floor {number}",
+      "floors": {
+        "basement": "Basement",
+        "ground": "Ground floor",
+        "raised_ground": "Raised ground floor",
+        "mezzanine": "Mezzanine",
+        "attic": "Attic"
+      }
+    },
+    "terms": {
+      "title": "Lease details",
+      "lead": "Enter what you know. Your landlord will check it.",
+      "start": "Start",
+      "duration": "Term",
+      "fixed": "Fixed term",
+      "openEnded": "Open-ended",
+      "end": "End",
+      "rent": "Monthly rent",
+      "deposit": "Deposit (optional)",
+      "depositTip": "The deposit amount, if the lease requires one.",
+      "currency": "HUF"
+    },
+    "landlord": {
+      "title": "Who is your landlord?",
+      "email": "Landlord’s email",
+      "name": "Landlord’s name (optional)",
+      "summary": "Summary",
+      "submit": "Send invitation",
+      "submitting": "Sending…",
+      "free": "Free for landlords",
+      "freeTip": "The lease is created once the landlord approves it."
+    },
+    "rows": {
+      "property": "Property",
+      "rent": "Monthly rent",
+      "start": "Start",
+      "end": "End",
+      "deposit": "Deposit",
+      "paymentDay": "Rent due",
+      "landlord": "Landlord",
+      "sent": "Sent",
+      "expires": "Invitation expires"
+    },
+    "paymentDayValue": "Day {day} of each month",
+    "status": {
+      "pending_landlord": "Waiting for landlord",
+      "pending_tenant": "Waiting for you",
+      "confirmed": "Set up",
+      "declined": "Declined",
+      "cancelled": "Cancelled",
+      "expired": "Invitation expired"
+    },
+    "card": {
+      "label": "Lease",
+      "open": "Details"
+    },
+    "waiting": {
+      "text": "We’ll let you know when your landlord approves. If they change anything, you’ll need to approve it too.",
+      "expiredText": "The invitation has expired. If you send a reminder, your landlord gets a new link that’s valid for 7 days.",
+      "remind": "Send a reminder",
+      "reminded": "Reminder sent.",
+      "cancel": "Cancel invitation",
+      "sent": "Invitation sent to your landlord."
+    },
+    "outcome": {
+      "confirmed": "Your landlord approved it and the lease is set up.",
+      "declined": "Your landlord declined the invitation.",
+      "cancelled": "You cancelled the invitation, so no lease was created."
+    },
+    "reconfirm": {
+      "banner": "Your landlord changed the terms.",
+      "title": "Updated terms",
+      "lead": "{name} approved the lease with these terms:",
+      "changed": "Changed",
+      "added": "New",
+      "accept": "Accept",
+      "decline": "Decline",
+      "declineNote": "If you decline, the lease won’t be created."
+    },
+    "landlordSide": {
+      "title": "Take over the lease",
+      "intro": "{name} invited you as landlord.",
+      "account": "Account",
+      "accountTip": "This account manages the lease. You can choose any account where you’re an owner, admin or manager.",
+      "accountHint": "{plan} · {count, plural, one {# property} other {# properties}}",
+      "plans": {
+        "basic": "Basic",
+        "pro": "Pro",
+        "business": "Business"
+      },
+      "property": "Property",
+      "newProperty": "New property",
+      "newPropertyHint": "Using the address the tenant entered",
+      "existingProperty": "Existing property",
+      "existingPropertyHint": "Choose from this account’s properties",
+      "propertySelect": "Which property?",
+      "noProperties": "This account has no properties yet.",
+      "toReview": "Continue to review",
+      "decline": "Decline",
+      "reviewTitle": "Check the terms",
+      "reviewLead": "Correct anything that isn’t accurate. If you change something, the tenant approves it too.",
+      "changedNote": "Changed · the tenant entered {value}",
+      "addedNote": "New term · the tenant approves it too",
+      "deposit": "Deposit",
+      "paymentDay": "Rent due",
+      "paymentDayNone": "Not specified",
+      "submit": "Approve and send",
+      "submitting": "Sending…",
+      "doneTitle": "The lease is set up",
+      "doneText": "{name} is on the lease as tenant.",
+      "sentTitle": "Sent to the tenant",
+      "sentText": "The lease is created once {name} approves it.",
+      "continue": "Go to Keyfly"
+    },
+    "errors": {
+      "required": "Fill in this field.",
+      "postalCode": "Enter a 4-digit postcode.",
+      "amount": "Enter an amount in forints.",
+      "date": "Enter a date.",
+      "endBeforeStart": "The end can’t be before the start.",
+      "ended": "You can’t add a lease that has already ended.",
+      "email": "Enter a valid email address.",
+      "self": "Your landlord’s email can’t be your own.",
+      "tooMany": "You can have up to 5 invitations in progress at a time.",
+      "reminderTooSoon": "You can send one reminder a day.",
+      "reminderLimit": "You’ve already sent 3 reminders. If needed, cancel the invitation and send a new one.",
+      "closed": "This request is already closed.",
+      "overlaps": "This property already has a lease for this period.",
+      "property": "This property doesn’t belong to this account.",
+      "account": "You can’t take over the lease with this account. Choose one where you’re an owner, admin or manager.",
+      "ownAccount": "You can’t be the landlord with the tenant’s account.",
+      "generic": "Something went wrong. Please try again."
+    }
+  },
+  "invitationEmails": {
+    "common": {
+      "fallback": "If the button doesn’t work, copy this link into your browser:",
+      "privacy": "Privacy notice",
+      "taxNumber": "Tax no.",
+      "validUntil": "The invitation is valid until {date}.",
+      "validHours": "The invitation is valid for {hours} hours.",
+      "openEnded": "Open-ended",
+      "accessAll": "All properties",
+      "accessSelected": "{count, plural, one {# property} other {# properties}}",
+      "signInNote": "To open it, sign in or create an account with this email address: {email}",
+      "rows": {
+        "account": "Account",
+        "role": "Role",
+        "access": "Access",
+        "property": "Property",
+        "rent": "Monthly rent",
+        "start": "Start",
+        "end": "End"
+      }
+    },
+    "member": {
+      "subject": "Invitation to {account} on Keyfly",
+      "preheader": "{name} invited you to the team.",
+      "title": "Join the team",
+      "lead": "{name} invited you to the {account} account on Keyfly.",
+      "cta": "Open invitation",
+      "why": "You’re receiving this because {name} invited you to Keyfly. If you don’t know them, ignore it: the invitation expires on its own."
+    },
+    "tenant": {
+      "subject": "Approve your lease: {address}",
+      "preheader": "{name} has set up your lease.",
+      "title": "Approve your lease",
+      "lead": "{name} has set up your lease on Keyfly. Check the details and approve it.",
+      "cta": "Open lease",
+      "why": "You’re receiving this because {name} entered your email address as the tenant. If this isn’t about you, ignore it: the invitation expires on its own."
+    },
+    "landlord": {
+      "subject": "{name} invited you as landlord",
+      "reminderSubject": "Reminder: {name} invited you as landlord",
+      "preheader": "Check and approve the lease.",
+      "title": "Take over the lease",
+      "lead": "Your tenant, {name}, has added the lease on Keyfly. Check the details and approve it.",
+      "note": "Keyfly is free for landlords.",
+      "cta": "Open invitation",
+      "why": "You’re receiving this because {name} entered your email address as the landlord. If this isn’t about you, ignore it: the invitation expires on its own."
+    },
+    "occupant": {
+      "subject": "{name} invited you to join a lease",
+      "preheader": "Join as {role, select, co_tenant {co-tenant} other {occupant}}.",
+      "title": "Join the lease",
+      "lead": "{name} invited you as {role, select, co_tenant {co-tenant} other {occupant}} on the lease at {address}.",
+      "cta": "Open invitation",
+      "why": "You’re receiving this because {name} invited you to Keyfly. If you don’t know them, ignore it: the invitation expires on its own."
+    },
+    "staff": {
+      "subject": "Invitation to join the Keyfly team",
+      "preheader": "{name} invited you to Keyfly admin.",
+      "title": "Join the Keyfly team",
+      "lead": "{name} invited you to Keyfly admin.",
+      "note": "Two-factor authentication is required to sign in. Have an authenticator app ready on your phone.",
+      "cta": "Open invitation",
+      "why": "You’re receiving this because a Keyfly super admin invited this @keyfly.app address. If you think it’s a mistake, let them know.",
+      "roles": {
+        "superadmin": "Super admin",
+        "admin": "Admin",
+        "insurance": "Insurance",
+        "support": "Support",
+        "finance": "Finance"
+      }
+    },
+    "leaseApproved": {
+      "subject": "Your lease is set up: {address}",
+      "preheader": "{name} approved the lease.",
+      "title": "Your lease is set up",
+      "lead": "{name} approved the lease on Keyfly. You can see its details in your account at any time.",
+      "cta": "Open lease",
+      "why": "You’re receiving this because you invited your landlord to Keyfly."
+    },
+    "termsChanged": {
+      "subject": "Updated terms: {address}",
+      "preheader": "Check them and decide whether you accept.",
+      "title": "Your landlord changed the terms",
+      "lead": "{name} approved the lease with updated terms. Check them: the lease is created once you approve.",
+      "cta": "Open terms",
+      "why": "You’re receiving this because you invited your landlord to Keyfly."
+    }
+  },
   "portal": {
     "greeting": "Hi{name, select, none {} other { {name}}}!",
     "intro": {

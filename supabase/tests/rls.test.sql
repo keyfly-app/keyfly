@@ -365,6 +365,136 @@ select public.accept_invitation((select t from tok));
 select tests.ok((select count(*) from public.properties) = 1, 'a new member sees only the properties chosen in the invitation');
 rollback;
 
+-- ---------- The tenant invites the landlord ------------------------------------------------
+-- Gábor (no lease yet) invites Péter, or Lili (a Duna viewer).
+
+begin;
+select tests.act_as('00000000-0000-0000-0000-0000000000f3');
+create temp table req as select * from public.create_lease_request('1068', 'Budapest', 'Dózsa György', 'út', '30.', current_date + 30, 280000,
+  'Peter@Example.com', p_building => 'B', p_staircase => '2.', p_floor_type => 'numbered', p_floor_number => 1::smallint, p_door => '3.',
+  p_end_date => current_date + 395, p_landlord_name => 'Péter Szabó');
+select tests.ok(length((select token from req)) = 64, 'a tenant invites the landlord');
+select tests.ok((select count(*) from public.lease_requests) = 1 and (select status from public.lease_requests) = 'pending_landlord', 'the tenant sees the request, waiting for the landlord');
+select tests.ok((select landlord_email from public.lease_requests) = 'peter@example.com', 'the landlord''s email is stored in lower case');
+select tests.ok((select count(*) from public.invitations where kind = 'lease_landlord') = 1, 'the tenant sees the open landlord invitation');
+select tests.throws($$select public.remind_lease_request((select request_id from req))$$, 'a reminder waits 24 hours');
+select tests.throws($$select public.create_lease_request('1068', 'Budapest', 'X', 'utca', '1.', current_date, 1, 'gabor@example.com')$$, 'nobody invites themselves as landlord');
+select tests.throws($$select public.create_lease_request('1068', 'Budapest', 'X', 'utca', '1.', current_date - 400, 1, 'x@example.com', p_end_date => current_date - 1)$$, 'a lease that already ended cannot be requested');
+select tests.throws($$select public.create_lease_request('106', 'Budapest', 'X', 'utca', '1.', current_date, 1, 'x@example.com')$$, 'the request address follows the property rules');
+select tests.throws($$select public.revoke_invitation((select id from public.invitations where kind = 'lease_landlord'))$$, 'a landlord invitation is withdrawn only with the request');
+select tests.throws($$insert into public.lease_requests (tenant_account_id, postal_code, city, street_name, street_type, house_number, start_date, monthly_rent, landlord_email) values ((select id from fx where name = 'acc_gabor'), '1068', 'Budapest', 'X', 'utca', '1.', current_date, 1, 'x@example.com')$$, 'requests are created only through the function');
+select tests.throws($$update public.lease_requests set monthly_rent = 1$$, 'the tenant cannot edit a sent request');
+
+select tests.act_as('00000000-0000-0000-0000-0000000000a1');
+select tests.ok((select count(*) from public.lease_requests) = 0, 'others cannot see the request');
+select tests.ok((select not is_for_me and property_address is null and monthly_rent is null from public.invitation_preview((select token from req))), 'the preview shows others no details');
+select tests.ok((select count(*) from public.lease_request_preview((select token from req))) = 0, 'the full details are only for the landlord');
+select tests.throws($$select public.accept_landlord_invitation((select token from req), (select id from fx where name = 'acc_anna'), current_date + 30, 280000)$$, 'only the invited landlord can take over');
+select tests.throws($$select public.remind_lease_request((select request_id from req))$$, 'only the tenant side can send a reminder');
+select tests.throws($$select public.cancel_lease_request((select request_id from req))$$, 'only the tenant side can cancel');
+
+select tests.act_as('00000000-0000-0000-0000-0000000000b1');
+select tests.ok((select is_open and is_for_me and property_address like 'Dózsa György út 30.,%' from public.invitation_preview((select token from req))), 'the landlord opens the invitation');
+select tests.ok((select monthly_rent = 280000 and floor_number = 1 and tenant_name = 'gabor' from public.lease_request_preview((select token from req))), 'the landlord sees the address and the terms');
+select tests.ok((select count(*) from public.lease_requests) = 0, 'the landlord does not read the tenant''s request rows');
+select tests.throws($$select public.accept_invitation((select token from req))$$, 'the landlord invitation has its own acceptance');
+select tests.throws($$select public.accept_landlord_invitation((select token from req), '00000000-0000-0000-0000-00000000c0c0', current_date + 30, 280000)$$, 'the landlord takes over only with an account of his');
+select tests.throws($$select public.accept_landlord_invitation((select token from req), (select id from fx where name = 'acc_peter'), current_date + 30, 280000, p_property_id => '00000000-0000-0000-0000-00000000e003', p_end_date => current_date + 395)$$, 'an existing property must belong to the chosen account');
+select tests.throws($$select public.accept_landlord_invitation((select token from req), (select id from fx where name = 'acc_peter'), current_date + 30, 280000, p_property_id => '00000000-0000-0000-0000-00000000e001', p_end_date => current_date + 395)$$, 'the lease cannot overlap another one on the same property');
+create temp table took as select * from public.accept_landlord_invitation((select token from req), (select id from fx where name = 'acc_peter'),
+  current_date + 30, 280000, p_end_date => current_date + 395);
+select tests.ok((select not needs_tenant_approval from took), 'unchanged terms need no second approval');
+select tests.ok((select tenant_email = 'gabor@example.com' and tenant_locale = 'hu' from took), 'the landlord''s side learns where to notify the tenant');
+select tests.ok((select status from public.leases where id = (select lease_id from took)) = 'confirmed', 'the lease is confirmed at once');
+select tests.ok((select count(*) from public.properties p join public.leases l on l.property_id = p.id
+                 where l.id = (select lease_id from took) and p.street_name = 'Dózsa György' and p.floor_number = 1 and p.building = 'B'
+                   and p.account_id = (select id from fx where name = 'acc_peter')) = 1, 'the property is created from the tenant''s address');
+select tests.ok((select count(*) from public.lease_parties where lease_id = (select lease_id from took)) = 2, 'both parties are recorded');
+select tests.throws($$select public.accept_landlord_invitation((select token from req), (select id from fx where name = 'acc_peter'), current_date + 30, 280000)$$, 'the link works once');
+
+select tests.act_as('00000000-0000-0000-0000-0000000000f3');
+select tests.ok((select status from public.lease_requests) = 'confirmed', 'the tenant sees the request confirmed');
+select tests.ok((select count(*) from public.leases) = 1 and (select count(*) from public.properties) = 1, 'the tenant sees the new lease and its address');
+select tests.throws($$select public.cancel_lease_request((select request_id from req))$$, 'a confirmed request cannot be cancelled');
+rollback;
+
+-- Changed terms: the tenant approves them; nobody else can.
+begin;
+select tests.act_as('00000000-0000-0000-0000-0000000000f3');
+create temp table req as select * from public.create_lease_request('1068', 'Budapest', 'Dózsa György', 'út', '30.', current_date + 30, 280000, 'peter@example.com');
+select tests.act_as('00000000-0000-0000-0000-0000000000b1');
+create temp table took as select * from public.accept_landlord_invitation((select token from req), (select id from fx where name = 'acc_peter'),
+  current_date + 30, 290000, p_deposit_amount => 560000, p_payment_day => 5::smallint);
+select tests.ok((select needs_tenant_approval from took), 'changed or added terms go back to the tenant');
+select tests.ok((select status from public.leases where id = (select lease_id from took)) = 'pending', '… and the lease waits for the tenant');
+select tests.act_as('00000000-0000-0000-0000-0000000000f3');
+select tests.ok((select status from public.lease_requests) = 'pending_tenant', 'the tenant is asked to approve');
+select tests.ok((select monthly_rent = 290000 and payment_day = 5 from public.leases where id = (select lease_id from took)), 'the tenant sees the landlord''s terms');
+select tests.ok((select monthly_rent from public.lease_requests) = 280000, '… next to what she entered');
+select tests.act_as('00000000-0000-0000-0000-0000000000a1');
+select tests.throws($$select public.confirm_lease_request((select request_id from req))$$, 'only the tenant side approves the changes');
+select tests.act_as('00000000-0000-0000-0000-0000000000f3');
+select public.confirm_lease_request((select request_id from req));
+select tests.ok((select status from public.leases where id = (select lease_id from took)) = 'confirmed', 'the tenant''s approval confirms the lease');
+select tests.ok((select count(*) from public.lease_parties where lease_id = (select lease_id from took)) = 2, '… and records both parties');
+select tests.ok((select status from public.lease_requests) = 'confirmed', 'the request is closed as confirmed');
+rollback;
+
+-- The tenant turns down the changes.
+begin;
+select tests.act_as('00000000-0000-0000-0000-0000000000f3');
+create temp table req as select * from public.create_lease_request('1068', 'Budapest', 'Dózsa György', 'út', '30.', current_date + 30, 280000, 'peter@example.com');
+select tests.act_as('00000000-0000-0000-0000-0000000000b1');
+create temp table took as select * from public.accept_landlord_invitation((select token from req), (select id from fx where name = 'acc_peter'), current_date + 30, 300000);
+select tests.act_as('00000000-0000-0000-0000-0000000000f3');
+select public.cancel_lease_request((select request_id from req));
+select tests.ok((select status from public.lease_requests) = 'cancelled', 'the tenant can turn down the changed terms');
+select tests.act_as('00000000-0000-0000-0000-0000000000b1');
+select tests.ok((select status from public.leases where id = (select lease_id from took)) = 'cancelled', '… which cancels the pending lease');
+rollback;
+
+-- The landlord declines.
+begin;
+select tests.act_as('00000000-0000-0000-0000-0000000000f3');
+create temp table req as select * from public.create_lease_request('1068', 'Budapest', 'Dózsa György', 'út', '30.', current_date + 30, 280000, 'peter@example.com');
+select tests.act_as('00000000-0000-0000-0000-0000000000b1');
+select public.decline_invitation((select token from req));
+select tests.act_as('00000000-0000-0000-0000-0000000000f3');
+select tests.ok((select status from public.lease_requests) = 'declined', 'the landlord can decline');
+select tests.throws($$select public.remind_lease_request((select request_id from req))$$, 'no reminder after the landlord declined');
+rollback;
+
+-- The link expires; a reminder sends a new one.
+begin;
+select tests.act_as('00000000-0000-0000-0000-0000000000f3');
+create temp table req as select * from public.create_lease_request('1068', 'Budapest', 'Dózsa György', 'út', '30.', current_date + 30, 280000, 'peter@example.com');
+reset role;
+update public.invitations set expires_at = now() - interval '1 minute' where kind = 'lease_landlord';
+update public.lease_requests set last_sent_at = now() - interval '25 hours';
+select tests.act_as('00000000-0000-0000-0000-0000000000b1');
+select tests.ok((select not is_open from public.invitation_preview((select token from req))), 'an expired landlord invitation cannot be opened');
+select tests.throws($$select public.accept_landlord_invitation((select token from req), (select id from fx where name = 'acc_peter'), current_date + 30, 280000)$$, 'an expired landlord invitation cannot be accepted');
+select tests.act_as('00000000-0000-0000-0000-0000000000f3');
+create temp table rem as select * from public.remind_lease_request((select request_id from req));
+select tests.ok(length((select token from rem)) = 64 and (select reminder_count from public.lease_requests) = 1, 'a reminder sends a new link');
+select tests.act_as('00000000-0000-0000-0000-0000000000b1');
+select tests.ok((select count(*) from public.lease_request_preview((select token from req))) = 0, 'the old link stops working');
+select tests.ok((select count(*) from public.lease_request_preview((select token from rem))) = 1, 'the new link works');
+rollback;
+
+-- A landlord without rights in the company; the limit on open requests.
+begin;
+select tests.act_as('00000000-0000-0000-0000-0000000000f3');
+create temp table req as select * from public.create_lease_request('1068', 'Budapest', 'Dózsa György', 'út', '30.', current_date + 30, 280000, 'lili@example.com');
+select tests.act_as('00000000-0000-0000-0000-0000000000e3');
+select tests.throws($$select public.accept_landlord_invitation((select token from req), '00000000-0000-0000-0000-00000000c0c0', current_date + 30, 280000)$$, 'a viewer cannot take over a lease for the company');
+select tests.ok((select not needs_tenant_approval from public.accept_landlord_invitation((select token from req), (select id from fx where name = 'acc_lili'), current_date + 30, 280000)),
+  '… but can with her own account');
+select tests.act_as('00000000-0000-0000-0000-0000000000f3');
+select public.create_lease_request('1068', 'Budapest', 'X', 'utca', '1.', current_date, 1, 'x' || n || '@example.com') from generate_series(1, 5) n;
+select tests.throws($$select public.create_lease_request('1068', 'Budapest', 'X', 'utca', '9.', current_date, 1, 'y@example.com')$$, 'at most 5 open requests at a time');
+rollback;
+
 -- ---------- Staff ------------------------------------------------------------------
 
 begin;
@@ -456,5 +586,7 @@ select tests.ok(not has_column_privilege('authenticated', 'public.invitations', 
 select tests.ok(not has_column_privilege('authenticated', 'public.accounts', 'plan', 'update'), 'the plan is not editable by customers');
 select tests.ok(not has_column_privilege('authenticated', 'public.profiles', 'email', 'update'), 'login email is not updatable via the API');
 select tests.ok(not has_function_privilege('anon', 'public.accept_invitation(text, uuid)', 'execute'), 'anon cannot call invitation functions');
+select tests.ok(not has_table_privilege('authenticated', 'public.lease_requests', 'insert'), 'lease requests are created only through functions');
+select tests.ok(not has_function_privilege('anon', 'public.lease_request_preview(text)', 'execute'), 'anon cannot read lease requests');
 
 \echo '=== ALL ACCESS-CONTROL TESTS PASSED ==='

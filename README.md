@@ -62,6 +62,16 @@ Flow: branch from `staging` → PR into `staging` (CI) → test on staging.keyfl
   localhost equivalents), email templates linking to `{{ .RedirectTo }}&token_hash={{ .TokenHash }}&type=<type>`,
   password requirements matching `src/config/auth.ts`, email link expiry 24 h, custom SMTP (Resend).
 
+### Invitations and lease requests
+
+- Every invitation is created by a database function (it returns the one-time token) and emailed by the app in the
+  sender's language: `src/features/invitations/send.ts` (team member, tenant, co-tenant/occupant, staff),
+  `src/features/lease-requests/actions.ts` (the tenant invites the landlord, reminders, outcome emails to the tenant).
+  Templates: `src/features/invitations/emails.ts`, copy in `invitationEmails.*`. Without `RESEND_API_KEY` nothing is sent.
+- The tenant invites the landlord: `/lease-requests/new` → the landlord opens `/invite/<token>`, picks the managing
+  account and the property, checks the terms → unchanged terms confirm the lease, changed ones go back to the tenant
+  (`/lease-requests/<id>`). Rules and states: migration `20261101130100_lease_requests.sql`.
+
 ### Automatic migrations
 
 `.github/workflows/db-deploy.yml` pushes migrations on `main` to production and on `staging` to staging. It needs GitHub
@@ -85,7 +95,7 @@ On Vercel preview URLs (`*.vercel.app`) the app surfaces live under `/portal` an
 | `NEXT_PUBLIC_SUPABASE_URL` | prod URL | staging URL |
 | `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | prod publishable key | staging publishable key |
 | `NEXT_PUBLIC_APP_ENV` | `production` | `staging` |
-| `RESEND_API_KEY` | Resend key (newsletter sync), sensitive | – (sign-ups are not synced) |
+| `RESEND_API_KEY` | Resend key (newsletter sync, invitation and lease emails), sensitive | – (no newsletter sync and no invitation emails) |
 
 The publishable key is public; RLS is what protects data. **Service-role keys never go into the repo or the browser.**
 

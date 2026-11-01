@@ -1,0 +1,78 @@
+/**
+ * Field rules for the tenant's lease request and the landlord's review – shared by the forms (instant feedback)
+ * and the server actions (authoritative, together with the database checks).
+ */
+export type FieldError = "required" | "postalCode" | "amount" | "date" | "endBeforeStart" | "ended" | "email" | "self";
+export type Values = Record<string, string>;
+export type Errors = Partial<Record<string, FieldError>>;
+
+export const ADDRESS_FIELDS = ["postalCode", "city", "streetName", "streetType", "houseNumber", "building", "staircase", "floor", "door"] as const;
+export const TERM_FIELDS = ["startDate", "term", "endDate", "monthlyRent", "deposit"] as const;
+export const LANDLORD_FIELDS = ["landlordEmail", "landlordName"] as const;
+
+const EMAIL_RE = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
+const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
+const MAX_AMOUNT = 1_000_000_000;
+
+/** "280 000", "280000 Ft", "280.000" → 280000; "" → null; anything else → NaN. */
+export function parseAmount(value: string | undefined): number | null {
+  const v = (value ?? "").replace(/[\s .,]|Ft|HUF/gi, "");
+  if (!v) return null;
+  return /^\d+$/.test(v) ? Number(v) : Number.NaN;
+}
+
+/** Floor select value: "" (none), a floor type, or "numbered:3". */
+export function parseFloor(value: string | undefined): { floorType: string | null; floorNumber: number | null } {
+  const v = value ?? "";
+  if (v.startsWith("numbered:")) return { floorType: "numbered", floorNumber: Number(v.slice(9)) };
+  return { floorType: v || null, floorNumber: null };
+}
+
+/** Today in Budapest as YYYY-MM-DD. */
+export function todayIso(): string {
+  return new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/Budapest" }).format(new Date());
+}
+
+const filled = (v: Values, key: string) => (v[key] ?? "").trim() !== "";
+
+export function validateAddress(v: Values): Errors {
+  const e: Errors = {};
+  for (const key of ["postalCode", "city", "streetName", "streetType", "houseNumber"]) if (!filled(v, key)) e[key] = "required";
+  if (!e.postalCode && !/^\d{4}$/.test(v.postalCode.trim())) e.postalCode = "postalCode";
+  return e;
+}
+
+/** Start, term (fixed / open), end, rent, optional deposit. */
+export function validateTerms(v: Values): Errors {
+  const e: Errors = {};
+  if (!DATE_RE.test(v.startDate ?? "")) e.startDate = filled(v, "startDate") ? "date" : "required";
+  if (v.term !== "open") {
+    if (!DATE_RE.test(v.endDate ?? "")) e.endDate = filled(v, "endDate") ? "date" : "required";
+    else if (!e.startDate && v.endDate < v.startDate) e.endDate = "endBeforeStart";
+    else if (v.endDate < todayIso()) e.endDate = "ended";
+  }
+  const rent = parseAmount(v.monthlyRent);
+  if (rent === null) e.monthlyRent = "required";
+  else if (!(rent > 0 && rent <= MAX_AMOUNT)) e.monthlyRent = "amount";
+  const deposit = parseAmount(v.deposit);
+  if (deposit !== null && !(deposit >= 0 && deposit <= MAX_AMOUNT)) e.deposit = "amount";
+  return e;
+}
+
+export function validateLandlord(v: Values, myEmail?: string): Errors {
+  const e: Errors = {};
+  const email = (v.landlordEmail ?? "").trim().toLowerCase();
+  if (!email) e.landlordEmail = "required";
+  else if (!EMAIL_RE.test(email) || email.length > 254) e.landlordEmail = "email";
+  else if (myEmail && email === myEmail.toLowerCase()) e.landlordEmail = "self";
+  return e;
+}
+
+export const hasErrors = (e: Errors) => Object.keys(e).length > 0;
+
+/** The same errors without one field (once the visitor edits it). */
+export function clearError(e: Errors, key: string): Errors {
+  const next = { ...e };
+  delete next[key];
+  return next;
+}

@@ -25,3 +25,9 @@ export function date(iso: string | null | undefined, locale: Locale): string {
   }
   return new Intl.DateTimeFormat("hu-HU", { year: "numeric", month: "2-digit", day: "2-digit", timeZone: "Europe/Budapest" }).format(d);
 }
+
+/** Date before a suffix such as "-ig": hu "2026. 11. 08" (no closing dot), en "8 Nov 2026". */
+export function dateBeforeSuffix(iso: string, locale: Locale): string {
+  const d = date(iso, locale);
+  return locale === "hu" ? d.replace(/\.$/, "") : d;
+}
