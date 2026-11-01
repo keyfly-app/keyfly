@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
+import { redirect } from "next/navigation";
 import { getLocale, getTranslations } from "next-intl/server";
 import { AuthLayout } from "@/components/AuthLayout";
+import { SIGN_UP_OPEN } from "@/config/auth";
 import { PageTitle } from "@/components/ui/form";
 import { SignUpForm } from "@/features/auth/SignUpForm";
 import { isLocale, publicHref } from "@/i18n/config";
@@ -22,6 +24,7 @@ export default async function Register({ searchParams }: { searchParams: Promise
   const { origin, host } = await requestOrigin();
   const privacyHref = marketingOrigin(host, origin.split(":")[0]) + publicHref("privacy", locale);
   const loginHref = await siteHref("portal", next === "/" ? "/login" : `/login?next=${encodeURIComponent(next)}`);
+  if (!SIGN_UP_OPEN) redirect(loginHref);
 
   return (
     <AuthLayout back={{ href: loginHref, label: t("register.back") }}>

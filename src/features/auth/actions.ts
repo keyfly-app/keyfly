@@ -3,6 +3,7 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { getLocale } from "next-intl/server";
+import { SIGN_UP_OPEN } from "@/config/auth";
 import { CONSENT_VERSIONS } from "@/config/consent";
 import { isLocale } from "@/i18n/config";
 import { requestOrigin } from "@/lib/request-origin";
@@ -87,6 +88,7 @@ export async function sendEmailLink(_prev: FormState, form: FormData): Promise<F
 
 /** Sign-up with name, email, password and the accepted terms. The account works once the email is confirmed. */
 export async function signUp(_prev: FormState, form: FormData): Promise<FormState> {
+  if (!SIGN_UP_OPEN) return { status: "error", error: "generic" };
   const name = text(form, "fullName").replace(/\s+/g, " ");
   const email = emailOf(form);
   const password = String(form.get("password") ?? "");

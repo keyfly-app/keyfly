@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { getLocale, getTranslations } from "next-intl/server";
 import { AuthLayout } from "@/components/AuthLayout";
+import { SIGN_UP_OPEN } from "@/config/auth";
 import { Button, ButtonLink, Notice, PageTitle } from "@/components/ui/form";
 import { signOut } from "@/features/auth/actions";
 import { AnswerForm, type CompanyAccount } from "@/features/invitations/AnswerForm";
@@ -43,9 +44,11 @@ export default async function Invite({ params }: { params: Promise<{ token: stri
         <p className="text-[15px] text-muted">{t("signedOut.text")}</p>
         <div className="mt-auto flex flex-col gap-2.5 pt-4">
           <ButtonLink href={loginHref}>{t("signedOut.signIn")}</ButtonLink>
-          <ButtonLink href={registerHref} variant="secondary">
-            {t("signedOut.register")}
-          </ButtonLink>
+          {SIGN_UP_OPEN && (
+            <ButtonLink href={registerHref} variant="secondary">
+              {t("signedOut.register")}
+            </ButtonLink>
+          )}
         </div>
       </AuthLayout>
     );

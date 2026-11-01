@@ -3,6 +3,7 @@ import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import { AuthLayout } from "@/components/AuthLayout";
 import { Notice, PageTitle } from "@/components/ui/form";
+import { SIGN_UP_OPEN } from "@/config/auth";
 import { SignInForm } from "@/features/auth/SignInForm";
 import { safeNext } from "@/lib/safe-next";
 import { siteHref } from "@/lib/site-href";
@@ -24,7 +25,8 @@ export default async function Login({ searchParams }: { searchParams: Promise<{ 
       <PageTitle>{t("signIn.title")}</PageTitle>
       {error === "link" && <Notice kind="warning">{t("linkExpired")}</Notice>}
       <SignInForm next={next} forgotHref={forgotHref} />
-      <p className="mt-auto pt-4 text-center text-sm text-muted">
+      {SIGN_UP_OPEN && (
+        <p className="mt-auto pt-4 text-center text-sm text-muted">
         {t.rich("signIn.noAccount", {
           link: (chunks) => (
             <Link href={registerHref} className="font-semibold text-brand underline-offset-3 hover:underline">
@@ -32,7 +34,8 @@ export default async function Login({ searchParams }: { searchParams: Promise<{ 
             </Link>
           ),
         })}
-      </p>
+        </p>
+      )}
     </AuthLayout>
   );
 }
