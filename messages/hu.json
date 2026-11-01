@@ -799,7 +799,7 @@
     "no": "Nem",
     "navLabel": "Admin menü",
     "todayLine": "Ma: {date}",
-    "lastWeek": "+{count} az elmúlt 7 napban"
+    "lastWeek": "{count, plural, =0 {Nincs új az elmúlt 7 napban} other {+# az elmúlt 7 napban}}"
   },
   "status": {
     "draft": "Piszkozat",

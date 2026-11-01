@@ -24,20 +24,20 @@ export async function StartViewForm({ current }: { current: Enums<"start_view"> 
         {OPTIONS.map(({ view, icon }) => (
           <label
             key={view}
-            className="flex cursor-pointer items-center gap-3 rounded-xl border border-field bg-surface px-3.5 py-3 has-checked:border-[1.5px] has-checked:border-brand has-checked:bg-paper has-focus-visible:outline-3 has-focus-visible:outline-offset-2 has-focus-visible:outline-brand"
+            className="flex cursor-pointer items-center gap-3 rounded-lg border border-line bg-surface px-3 py-2.5 has-checked:border-ink has-checked:bg-paper has-focus-visible:outline-3 has-focus-visible:outline-offset-2 has-focus-visible:outline-brand"
           >
-            <span aria-hidden="true" className="inline-flex size-9 flex-none items-center justify-center rounded-[10px] bg-mist text-brand">
+            <span aria-hidden="true" className="inline-flex size-8 flex-none items-center justify-center rounded-lg bg-mist text-brand">
               <Icon name={icon} size={18} />
             </span>
             <span className="flex flex-1 flex-col">
               <span className="text-sm font-semibold">{t(`${view}.title`)}</span>
               <span className="text-[13px] text-muted">{t(`${view}.text`)}</span>
             </span>
-            <input type="radio" name="view" value={view} defaultChecked={(current ?? "tenant") === view} className="size-4.5 flex-none accent-brand" />
+            <input type="radio" name="view" value={view} defaultChecked={(current ?? "tenant") === view} className="size-4 flex-none accent-ink" />
           </label>
         ))}
       </fieldset>
-      <div className="mt-auto pt-4">
+      <div className="pt-1">
         <Button>{t("submit")}</Button>
       </div>
     </form>

@@ -276,7 +276,7 @@ export function RequestWizard({ myEmail }: { myEmail: string }) {
       )}
 
       {state.status === "error" && state.error && <Notice kind="error">{t(`errors.${state.error}`)}</Notice>}
-      <div className="mt-auto flex flex-col gap-2.5 pt-4">
+      <div className="flex flex-col gap-2.5 pt-1">
         {step < 2 ? (
           <button type="button" onClick={next} className="inline-flex h-11 w-full items-center justify-center rounded-lg bg-ink px-4 text-sm font-medium text-white shadow-[0_1px_2px_rgb(12_31_25/0.16)] transition-colors hover:bg-ink-soft sm:h-10">
             {t("next")}

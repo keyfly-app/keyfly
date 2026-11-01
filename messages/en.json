@@ -799,7 +799,7 @@
     "no": "No",
     "navLabel": "Admin menu",
     "todayLine": "Today: {date}",
-    "lastWeek": "+{count} in the last 7 days"
+    "lastWeek": "{count, plural, =0 {Nothing new in the last 7 days} other {+# in the last 7 days}}"
   },
   "status": {
     "draft": "Draft",

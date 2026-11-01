@@ -34,7 +34,7 @@ export function AnswerForm({
     return (
       <>
         <PageTitle sub={t("declined.text")}>{t("declined.title")}</PageTitle>
-        <div className="mt-auto pt-4">
+        <div className="pt-1">
           <ButtonLink href={homeHref}>{t("declined.continue")}</ButtonLink>
         </div>
       </>
@@ -47,15 +47,15 @@ export function AnswerForm({
       {companies && companies.length > 0 && (
         <>
           <fieldset className="flex flex-col gap-2">
-            <legend className="mb-2 flex items-center gap-1.5 text-[13px] font-semibold">
+            <legend className="mb-2 flex items-center gap-1.5 text-[13px] font-medium">
               {t("rentingAs")}
               <InfoTip text={t("rentingAsTip")} />
             </legend>
-            <div className="flex rounded-xl bg-mist p-0.75">
+            <div className="flex rounded-lg bg-paper p-0.5">
               {[false, true].map((company) => (
                 <label
                   key={String(company)}
-                  className="flex min-h-11 flex-1 cursor-pointer items-center justify-center rounded-[9px] text-sm font-semibold text-muted has-checked:bg-surface has-checked:text-ink has-checked:shadow-[0_1px_2px_rgba(12,31,25,.12)] has-focus-visible:outline-3 has-focus-visible:outline-brand"
+                  className="flex min-h-11 flex-1 cursor-pointer items-center justify-center rounded-md text-[13px] font-medium text-muted has-checked:bg-surface has-checked:text-ink has-checked:shadow-[0_1px_2px_rgb(12_31_25/0.12)] has-focus-visible:outline-3 has-focus-visible:outline-brand sm:min-h-9"
                 >
                   <input type="radio" name="as" checked={asCompany === company} onChange={() => setAsCompany(company)} className="sr-only" />
                   {company ? t("company") : t("individual")}
@@ -78,7 +78,7 @@ export function AnswerForm({
         </>
       )}
       {state.status === "error" && <Notice kind="error">{t(`errors.${state.error}`)}</Notice>}
-      <div className="mt-auto flex flex-col gap-2.5 pt-4">
+      <div className="flex flex-col gap-2.5 pt-1">
         <Button name="intent" value="accept" pending={pending}>
           {t("accept")}
         </Button>

@@ -89,7 +89,7 @@ export function LandlordTakeOver({
     return (
       <>
         <PageTitle sub={invite("declined.text")}>{invite("declined.title")}</PageTitle>
-        <div className="mt-auto pt-4">
+        <div className="pt-1">
           <ButtonLink href={homeHref}>{invite("declined.continue")}</ButtonLink>
         </div>
       </>
@@ -104,7 +104,7 @@ export function LandlordTakeOver({
         </span>
         <PageTitle>{t(`landlordSide.${key}Title`)}</PageTitle>
         <p className="text-sm text-muted">{t(`landlordSide.${key}Text`, { name: tenantName })}</p>
-        <div className="mt-auto pt-4">
+        <div className="pt-1">
           <ButtonLink href={homeHref}>{t("landlordSide.continue")}</ButtonLink>
         </div>
       </>
@@ -209,7 +209,7 @@ export function LandlordTakeOver({
                   checked={propertyMode === mode}
                   disabled={disabled}
                   onChange={() => setPropertyMode(mode)}
-                  className="size-4.5 flex-none accent-brand"
+                  className="size-4 flex-none accent-ink"
                 />
               </label>
             );
@@ -316,7 +316,7 @@ export function LandlordTakeOver({
         {notes.paymentDay && <ChangeNote id={`${id}-pay-note`}>{notes.paymentDay}</ChangeNote>}
       </div>
       {state.status === "error" && state.error && <Notice kind="error">{t(`errors.${state.error}`)}</Notice>}
-      <div className="mt-auto pt-4">
+      <div className="pt-1">
         <Button pending={pending}>{pending ? t("landlordSide.submitting") : t("landlordSide.submit")}</Button>
       </div>
     </form>

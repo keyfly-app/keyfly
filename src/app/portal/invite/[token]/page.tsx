@@ -37,7 +37,7 @@ export default async function Invite({ params }: { params: Promise<{ token: stri
     return (
       <AuthLayout>
         <PageTitle eyebrow={t("label")} sub={t("signedOut.text")}>{t("signedOut.title")}</PageTitle>
-        <div className="mt-auto flex flex-col gap-2.5 pt-4">
+        <div className="flex flex-col gap-2.5 pt-1">
           <ButtonLink href={loginHref}>{t("signedOut.signIn")}</ButtonLink>
           {SIGN_UP_OPEN && (
             <ButtonLink href={registerHref} variant="secondary">
@@ -57,7 +57,7 @@ export default async function Invite({ params }: { params: Promise<{ token: stri
     return (
       <AuthLayout>
         <PageTitle eyebrow={t("label")} sub={t("closed.text")}>{t("closed.title")}</PageTitle>
-        <div className="mt-auto pt-4">
+        <div className="pt-1">
           <ButtonLink href={homeHref}>{t("declined.continue")}</ButtonLink>
         </div>
       </AuthLayout>
@@ -96,7 +96,7 @@ export default async function Invite({ params }: { params: Promise<{ token: stri
       return (
         <AuthLayout>
           <PageTitle eyebrow={t("label")} sub={t("closed.text")}>{t("closed.title")}</PageTitle>
-          <div className="mt-auto pt-4">
+          <div className="pt-1">
             <ButtonLink href={homeHref}>{t("declined.continue")}</ButtonLink>
           </div>
         </AuthLayout>

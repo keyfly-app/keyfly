@@ -50,12 +50,15 @@ body {
 .font-display {
   letter-spacing: -0.022em;
 }
-:focus-visible {
-  outline: 3px solid var(--color-brand);
-  outline-offset: 2px;
-}
-.on-dark :focus-visible {
-  outline-color: var(--color-lime);
+/* In the base layer, so a component (e.g. a text field with its own focus ring) can replace it. */
+@layer base {
+  :focus-visible {
+    outline: 3px solid var(--color-brand);
+    outline-offset: 2px;
+  }
+  .on-dark :focus-visible {
+    outline-color: var(--color-lime);
+  }
 }
 
 /* ---------- Motion ---------- */
