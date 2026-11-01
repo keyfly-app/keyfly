@@ -9,7 +9,8 @@
     "legalNav": "Jogi információk",
     "languageNav": "Nyelv / Language",
     "aiImage": "AI-generált kép",
-    "proLabel": "PRO"
+    "proLabel": "PRO",
+    "moreInfo": "További információ"
   },
   "meta": {
     "title": "Albérlet kaució nélkül – Keyfly",
@@ -318,26 +319,175 @@
     }
   },
   "auth": {
-    "portalTitle": "Belépés a Keyflyba",
-    "portalText": "Bérlőknek, bérbeadóknak és partnereinknek.",
     "adminTitle": "Keyfly admin",
-    "adminText": "Csak Keyfly-munkatársaknak.",
-    "emailLabel": "E-mail cím",
-    "submit": "Belépési link küldése",
-    "submitting": "Küldés…",
-    "hint": "Jelszó nem kell: e-mailben küldünk egy egyszer használatos linket.",
-    "sentTitle": "Elküldtük a belépési linket.",
-    "sentText": "Nézd meg a postafiókod (a spam mappát is), és kattints a linkre.",
+    "adminText": "Csak Keyfly-munkatársaknak. Belépési linket küldünk e-mailben.",
+    "email": "E-mail-cím",
+    "password": "Jelszó",
+    "show": "Mutat",
+    "hide": "Elrejt",
+    "showPassword": "Jelszó megjelenítése",
+    "or": "vagy",
+    "newTab": "új lapon nyílik meg",
     "linkExpired": "A link lejárt vagy már felhasználtad. Kérj újat.",
+    "signIn": {
+      "title": "Belépés",
+      "remember": "Bejelentkezve maradok",
+      "forgot": "Elfelejtett jelszó",
+      "submit": "Belépés",
+      "submitting": "Belépés…",
+      "noAccount": "Nincs még fiókod? <link>Regisztráció</link>"
+    },
+    "emailLink": {
+      "submit": "Belépés e-mailes linkkel",
+      "sending": "Küldés…",
+      "sentTitle": "Elküldtük a belépési linket.",
+      "sentText": "Nézd meg a postafiókod (a spam mappát is), és kattints a linkre."
+    },
+    "register": {
+      "title": "Fiók létrehozása",
+      "back": "Belépés",
+      "fullName": "Teljes név",
+      "terms": "Elfogadom az <terms>ÁSZF</terms>-et és az <privacy>Adatkezelési tájékoztatót</privacy>.",
+      "submit": "Fiók létrehozása",
+      "submitting": "Létrehozás…"
+    },
+    "rules": {
+      "label": "Jelszókövetelmények",
+      "length": "Legalább 8 karakter",
+      "cases": "Kis- és nagybetű",
+      "digit": "Legalább egy szám",
+      "met": "teljesül",
+      "unmet": "még nem teljesül"
+    },
+    "verify": {
+      "title": "Erősítsd meg az e-mail-címed",
+      "sentTo": "Megerősítő linket küldtünk ide: <b>{email}</b>",
+      "validity": "A link {hours} óráig érvényes.",
+      "resend": "Levél újraküldése",
+      "resent": "Újra elküldtük.",
+      "otherEmail": "Másik e-mail-cím megadása"
+    },
+    "forgot": {
+      "title": "Elfelejtett jelszó",
+      "text": "Add meg az e-mail-címed, és küldünk egy linket az új jelszóhoz.",
+      "submit": "Link küldése",
+      "sentTitle": "Ha van fiók ezzel a címmel, elküldtük a linket.",
+      "sentText": "Nézd meg a postafiókod (a spam mappát is)."
+    },
+    "reset": {
+      "title": "Új jelszó",
+      "password": "Új jelszó",
+      "submit": "Jelszó mentése",
+      "submitting": "Mentés…"
+    },
+    "welcome": {
+      "title": "Hogyan használod a Keyflyt?",
+      "tip": "Ez csak a kezdőképernyőt állítja be. Később bármikor válthatsz.",
+      "tenant": {
+        "title": "Bérlő",
+        "text": "Keyfly-garancia kaució helyett"
+      },
+      "landlord": {
+        "title": "Bérbeadó",
+        "text": "Ingatlanok és bérletek kezelése"
+      },
+      "manager": {
+        "title": "Ingatlankezelő cég",
+        "text": "Portfólió és csapat kezelése"
+      },
+      "submit": "Tovább"
+    },
     "errors": {
-      "email": "Adj meg egy érvényes e-mail címet.",
-      "noAccount": "Ehhez az e-mail címhez nem tartozik fiók.",
-      "generic": "Nem sikerült elküldeni a belépési linket. Próbáld újra kicsit később."
+      "email": "Adj meg egy érvényes e-mail-címet.",
+      "passwordMissing": "Add meg a jelszavad.",
+      "password": "A jelszó nem felel meg a követelményeknek.",
+      "name": "Add meg a teljes neved.",
+      "terms": "A regisztrációhoz fogadd el az ÁSZF-et és az Adatkezelési tájékoztatót.",
+      "credentials": "Hibás e-mail-cím vagy jelszó.",
+      "unconfirmed": "Még nem erősítetted meg az e-mail-címed. Nézd meg a postafiókod.",
+      "noAccount": "Ehhez az e-mail-címhez nem tartozik fiók.",
+      "samePassword": "Az új jelszó nem lehet ugyanaz, mint a régi.",
+      "rateLimit": "Túl sok próbálkozás. Várj pár percet, és próbáld újra.",
+      "generic": "Valami nem sikerült. Próbáld újra."
+    }
+  },
+  "invite": {
+    "label": "Meghívó",
+    "property": "Ingatlan",
+    "rent": "Havi bérleti díj",
+    "start": "Kezdés",
+    "end": "Lejárat",
+    "openEnded": "Határozatlan",
+    "role": "Szerepkör",
+    "roles": {
+      "owner": "Tulajdonos",
+      "admin": "Admin",
+      "manager": "Kezelő",
+      "viewer": "Megtekintő"
+    },
+    "tenant": {
+      "title": "Bérlet jóváhagyása",
+      "intro": "{name} meghívott bérlőként."
+    },
+    "occupant": {
+      "title": "Csatlakozás a bérlethez",
+      "intro": "{name} meghívott {role, select, co_tenant {bérlőtársként} other {lakóként}}."
+    },
+    "member": {
+      "title": "Csatlakozás a csapathoz",
+      "intro": "{name} meghívott ebbe a fiókba: {account}."
+    },
+    "rentingAs": "Bérlőként",
+    "rentingAsTip": "Cégként akkor bérelj, ha a szerződő fél a cég, például a munkáltatód.",
+    "individual": "Magánszemély",
+    "company": "Cég",
+    "companySelect": "Cég",
+    "taxNumber": "Adószám: {number}",
+    "accept": "Elfogadás",
+    "decline": "Elutasítás",
+    "validUntil": "Érvényes: {date}-ig",
+    "signedOut": {
+      "title": "Meghívót kaptál",
+      "text": "A megnyitásához lépj be, vagy hozz létre fiókot azzal az e-mail-címmel, amelyre a meghívó érkezett.",
+      "signIn": "Belépés",
+      "register": "Fiók létrehozása"
+    },
+    "wrongEmail": {
+      "banner": "Ez a meghívó a {email} címre szól.",
+      "title": "Másik fiókkal vagy belépve",
+      "current": "Jelenleg: <b>{email}</b>",
+      "signOutIn": "Kilépés és belépés"
+    },
+    "closed": {
+      "title": "Ez a meghívó már nem érvényes",
+      "text": "Lejárt, visszavonták vagy már felhasználták. Kérj újat attól, aki meghívott."
+    },
+    "declined": {
+      "title": "Elutasítottad a meghívót",
+      "text": "A meghívó lezárult, a link többé nem használható.",
+      "continue": "Tovább a Keyflyba"
+    },
+    "staff": {
+      "label": "Meghívó",
+      "title": "Csatlakozás a Keyfly csapatához",
+      "text": "Lépj be azzal a @keyfly.app címmel, amelyre a meghívó érkezett. Ha még nincs fiókod, előbb hozd létre a Keyfly appban.",
+      "accept": "Csatlakozás"
+    },
+    "errors": {
+      "closed": "Ez a meghívó már nem érvényes.",
+      "forAnotherEmail": "Ez a meghívó egy másik e-mail-címre szól.",
+      "notAllowedForAccount": "Ezzel a fiókkal nem fogadhatod el. Olyan fiókot válassz, amelynek tulajdonosa vagy adminja vagy.",
+      "generic": "Valami nem sikerült. Próbáld újra."
     }
   },
   "portal": {
     "greeting": "Szia{name, select, none {} other {, {name}}}!",
-    "intro": "Itt látod az ajánlatkéréseidet és a fedezeti igazolásaidat.",
+    "intro": {
+      "tenant": "Itt látod az ajánlatkéréseidet és a fedezeti igazolásaidat.",
+      "landlord": "Hamarosan itt kezelheted az ingatlanjaidat és a bérleteidet.",
+      "manager": "Hamarosan itt kezelheted a portfóliót és a csapatot."
+    },
+    "changeView": "Kezdőképernyő módosítása",
     "applications": "Ajánlatkéréseim",
     "noApplications": "Még nincs ajánlatkérésed. Az online ajánlatkérés hamarosan itt indul.",
     "addressLater": "Cím később",

@@ -9,7 +9,8 @@
     "legalNav": "Legal information",
     "languageNav": "Nyelv / Language",
     "aiImage": "AI-generated image",
-    "proLabel": "PRO"
+    "proLabel": "PRO",
+    "moreInfo": "More information"
   },
   "meta": {
     "title": "Rent without a deposit in Hungary – Keyfly",
@@ -318,26 +319,175 @@
     }
   },
   "auth": {
-    "portalTitle": "Sign in to Keyfly",
-    "portalText": "For tenants, landlords and partners.",
     "adminTitle": "Keyfly admin",
-    "adminText": "Keyfly staff only.",
-    "emailLabel": "Email",
-    "submit": "Send sign-in link",
-    "submitting": "Sending…",
-    "hint": "No password needed: we'll email you a one-time link.",
-    "sentTitle": "Your sign-in link is on its way.",
-    "sentText": "Check your inbox (and spam folder) and click the link.",
+    "adminText": "Keyfly staff only. We'll email you a sign-in link.",
+    "email": "Email",
+    "password": "Password",
+    "show": "Show",
+    "hide": "Hide",
+    "showPassword": "Show password",
+    "or": "or",
+    "newTab": "opens in a new tab",
     "linkExpired": "That link has expired or was already used. Request a new one.",
+    "signIn": {
+      "title": "Sign in",
+      "remember": "Keep me signed in",
+      "forgot": "Forgot password",
+      "submit": "Sign in",
+      "submitting": "Signing in…",
+      "noAccount": "No account yet? <link>Sign up</link>"
+    },
+    "emailLink": {
+      "submit": "Sign in with an email link",
+      "sending": "Sending…",
+      "sentTitle": "Your sign-in link is on its way.",
+      "sentText": "Check your inbox (and spam folder) and click the link."
+    },
+    "register": {
+      "title": "Create account",
+      "back": "Sign in",
+      "fullName": "Full name",
+      "terms": "I accept the <terms>Terms</terms> and the <privacy>Privacy Notice</privacy>.",
+      "submit": "Create account",
+      "submitting": "Creating…"
+    },
+    "rules": {
+      "label": "Password requirements",
+      "length": "At least 8 characters",
+      "cases": "Upper- and lowercase",
+      "digit": "At least one number",
+      "met": "met",
+      "unmet": "not met yet"
+    },
+    "verify": {
+      "title": "Confirm your email",
+      "sentTo": "We sent a confirmation link to <b>{email}</b>",
+      "validity": "The link is valid for {hours} hours.",
+      "resend": "Resend email",
+      "resent": "Sent again.",
+      "otherEmail": "Use a different email"
+    },
+    "forgot": {
+      "title": "Forgot password",
+      "text": "Enter your email and we'll send you a link to set a new password.",
+      "submit": "Send link",
+      "sentTitle": "If there's an account with this email, the link is on its way.",
+      "sentText": "Check your inbox (and spam folder)."
+    },
+    "reset": {
+      "title": "New password",
+      "password": "New password",
+      "submit": "Save password",
+      "submitting": "Saving…"
+    },
+    "welcome": {
+      "title": "How will you use Keyfly?",
+      "tip": "This only sets your start screen. You can switch at any time.",
+      "tenant": {
+        "title": "Tenant",
+        "text": "Keyfly Guarantee instead of a deposit"
+      },
+      "landlord": {
+        "title": "Landlord",
+        "text": "Manage properties and leases"
+      },
+      "manager": {
+        "title": "Property manager",
+        "text": "Manage a portfolio and team"
+      },
+      "submit": "Continue"
+    },
     "errors": {
       "email": "Enter a valid email address.",
+      "passwordMissing": "Enter your password.",
+      "password": "The password doesn't meet the requirements.",
+      "name": "Enter your full name.",
+      "terms": "To sign up, accept the Terms and the Privacy Notice.",
+      "credentials": "Incorrect email or password.",
+      "unconfirmed": "You haven't confirmed your email yet. Check your inbox.",
       "noAccount": "There's no account for this email address.",
-      "generic": "We couldn't send the sign-in link. Please try again shortly."
+      "samePassword": "The new password must be different from the old one.",
+      "rateLimit": "Too many attempts. Wait a few minutes and try again.",
+      "generic": "Something went wrong. Please try again."
+    }
+  },
+  "invite": {
+    "label": "Invitation",
+    "property": "Property",
+    "rent": "Monthly rent",
+    "start": "Start",
+    "end": "End",
+    "openEnded": "Open-ended",
+    "role": "Role",
+    "roles": {
+      "owner": "Owner",
+      "admin": "Admin",
+      "manager": "Manager",
+      "viewer": "Viewer"
+    },
+    "tenant": {
+      "title": "Approve lease",
+      "intro": "{name} invited you as tenant."
+    },
+    "occupant": {
+      "title": "Join the lease",
+      "intro": "{name} invited you as {role, select, co_tenant {co-tenant} other {occupant}}."
+    },
+    "member": {
+      "title": "Join the team",
+      "intro": "{name} invited you to {account}."
+    },
+    "rentingAs": "Renting as",
+    "rentingAsTip": "Rent as a company if the company signs the lease, for example your employer.",
+    "individual": "Individual",
+    "company": "Company",
+    "companySelect": "Company",
+    "taxNumber": "Tax number: {number}",
+    "accept": "Accept",
+    "decline": "Decline",
+    "validUntil": "Valid until {date}",
+    "signedOut": {
+      "title": "You've been invited",
+      "text": "To open it, sign in or create an account with the email address the invitation was sent to.",
+      "signIn": "Sign in",
+      "register": "Create account"
+    },
+    "wrongEmail": {
+      "banner": "This invitation is for {email}.",
+      "title": "You're signed in with another account",
+      "current": "Current: <b>{email}</b>",
+      "signOutIn": "Sign out and sign in"
+    },
+    "closed": {
+      "title": "This invitation is no longer valid",
+      "text": "It has expired, been revoked or already been used. Ask the person who invited you for a new one."
+    },
+    "declined": {
+      "title": "You declined the invitation",
+      "text": "The invitation is closed and the link can't be used again.",
+      "continue": "Go to Keyfly"
+    },
+    "staff": {
+      "label": "Invitation",
+      "title": "Join the Keyfly team",
+      "text": "Sign in with the @keyfly.app address the invitation was sent to. If you don't have an account yet, create one in the Keyfly app first.",
+      "accept": "Join"
+    },
+    "errors": {
+      "closed": "This invitation is no longer valid.",
+      "forAnotherEmail": "This invitation is for a different email address.",
+      "notAllowedForAccount": "You can't accept with this account. Choose an account you own or administer.",
+      "generic": "Something went wrong. Please try again."
     }
   },
   "portal": {
     "greeting": "Hi{name, select, none {} other { {name}}}!",
-    "intro": "Your quote requests and coverage certificates in one place.",
+    "intro": {
+      "tenant": "Your quote requests and coverage certificates in one place.",
+      "landlord": "Soon you'll manage your properties and leases here.",
+      "manager": "Soon you'll manage your portfolio and team here."
+    },
+    "changeView": "Change start screen",
     "applications": "My quote requests",
     "noApplications": "No quote requests yet. Online quotes will start here soon.",
     "addressLater": "Address to follow",

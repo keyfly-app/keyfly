@@ -1,14 +1,17 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 import { DEFAULT_LOCALE, isLocale, LOCALE_COOKIE, resolvePublicPath, type Locale } from "@/i18n/config";
-import { isPreviewHost, PRODUCTION_HOSTS, resolveSite, SITE_PATH_PREFIX } from "@/lib/sites";
+import { safeNext } from "@/lib/safe-next";
+import { hrefFor, isPreviewHost, PRODUCTION_HOSTS, resolveSite, SITE_PATH_PREFIX, type AppSite } from "@/lib/sites";
+import { authCookieOptions, REMEMBER_COOKIE, wantsRemember } from "@/lib/supabase/session-cookies";
 
 /**
  * Runs before every request:
  *  1. routes the request to the right surface by host (keyfly.app / app. / admin.)
  *  2. maps public URLs to the internal /[lang]/<page> routes (hu default, en under /en)
  *     and remembers the visitor's language choice (?lang= from the switch → cookie)
- *  3. refreshes the Supabase session on surfaces that need sign-in
+ *  3. refreshes the Supabase session on surfaces that need sign-in, and sends signed-out
+ *     visitors to the sign-in page (signed-in visitors skip the sign-in and sign-up pages)
  */
 export async function proxy(request: NextRequest) {
   const host = request.headers.get("host");
@@ -39,8 +42,47 @@ export async function proxy(request: NextRequest) {
     response = NextResponse.rewrite(url, { request });
   }
 
-  if (site !== "marketing" || isAppPath) await refreshSession(request, response);
-  return response;
+  if (site === "marketing" && !isAppPath) return response;
+
+  const signedIn = await refreshSession(request, response);
+  const app = appLocation(site, pathname);
+  if (!app) return response;
+  const redirectTo = authRedirect(app.site, app.path, signedIn, request.nextUrl.searchParams.get("next"));
+  if (!redirectTo) return response;
+
+  const target = NextResponse.redirect(new URL(hrefFor(app.site, redirectTo, host), request.url), 307);
+  response.cookies.getAll().forEach((cookie) => target.cookies.set(cookie));
+  return target;
+}
+
+/** Pages a signed-out visitor may open, per surface (paths as the visitor sees them on the app host). */
+const PUBLIC_APP_PATHS: Record<AppSite, string[]> = {
+  portal: ["/login", "/register", "/verify-email", "/forgot-password", "/auth/", "/invite/"],
+  admin: ["/login", "/auth/", "/invite/"],
+};
+/** Pages that make no sense once signed in. */
+const SIGNED_OUT_ONLY = ["/login", "/register", "/verify-email", "/forgot-password"];
+
+function matches(path: string, list: string[]) {
+  return list.some((p) => (p.endsWith("/") ? path.startsWith(p) : path === p));
+}
+
+/** Which app surface a request belongs to, and its path without the /portal or /admin prefix. */
+function appLocation(site: ReturnType<typeof resolveSite>, pathname: string): { site: AppSite; path: string } | null {
+  for (const [target, prefix] of Object.entries(SITE_PATH_PREFIX) as [AppSite, string][]) {
+    if (site !== "marketing" && site !== target) continue;
+    if (pathname === prefix || pathname.startsWith(prefix + "/")) return { site: target, path: pathname.slice(prefix.length) || "/" };
+    if (site === target) return { site: target, path: pathname };
+  }
+  return null;
+}
+
+function authRedirect(site: AppSite, path: string, signedIn: boolean, next: string | null): string | null {
+  if (!signedIn && !matches(path, PUBLIC_APP_PATHS[site])) {
+    return path === "/" ? "/login" : `/login?next=${encodeURIComponent(path)}`;
+  }
+  if (signedIn && matches(path, SIGNED_OUT_ONLY)) return safeNext(next);
+  return null;
 }
 
 function routePublic(request: NextRequest) {
@@ -97,10 +139,11 @@ function setLocaleCookie(response: NextResponse, locale: Locale, host: string | 
   });
 }
 
-async function refreshSession(request: NextRequest, response: NextResponse) {
+async function refreshSession(request: NextRequest, response: NextResponse): Promise<boolean> {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const key = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
-  if (!url || !key) return;
+  if (!url || !key) return false;
+  const remember = wantsRemember(request.cookies.get(REMEMBER_COOKIE)?.value);
 
   const supabase = createServerClient(url, key, {
     cookies: {
@@ -109,12 +152,13 @@ async function refreshSession(request: NextRequest, response: NextResponse) {
       },
       setAll(cookiesToSet) {
         cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value));
-        cookiesToSet.forEach(({ name, value, options }) => response.cookies.set(name, value, options));
+        cookiesToSet.forEach(({ name, value, options }) => response.cookies.set(name, value, authCookieOptions(value, options, remember)));
       },
     },
   });
   // Refreshes an expired token; pages and RLS do the actual authorization.
-  await supabase.auth.getClaims();
+  const { data } = await supabase.auth.getClaims();
+  return Boolean(data?.claims);
 }
 
 export const config = {

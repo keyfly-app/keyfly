@@ -1,24 +1,25 @@
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
-import { LoginForm } from "@/components/LoginForm";
-import { LoginCard, Shell } from "@/components/Shell";
+import { AuthLayout } from "@/components/AuthLayout";
+import { Notice, PageTitle } from "@/components/ui/form";
+import { EmailLinkForm } from "@/features/auth/SimpleForms";
+import { safeNext } from "@/lib/safe-next";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("auth");
   return { title: t("adminTitle") };
 }
 
-export default async function Login({ searchParams }: { searchParams: Promise<{ error?: string }> }) {
-  const { error } = await searchParams;
+/** Staff sign in with a one-time email link; staff accounts are created by invitation only. */
+export default async function Login({ searchParams }: { searchParams: Promise<{ error?: string; next?: string }> }) {
+  const { error, next } = await searchParams;
   const t = await getTranslations("auth");
   return (
-    <Shell site="admin" badge="ADMIN">
-      <LoginCard title={t("adminTitle")} text={t("adminText")}>
-        {error === "link" && (
-          <p className="mb-4 rounded-2xl bg-warning-soft px-4 py-3 text-sm font-semibold text-warning-ink">{t("linkExpired")}</p>
-        )}
-        <LoginForm site="admin" />
-      </LoginCard>
-    </Shell>
+    <AuthLayout badge="ADMIN">
+      <PageTitle>{t("adminTitle")}</PageTitle>
+      <p className="text-[15px] text-muted">{t("adminText")}</p>
+      {error === "link" && <Notice kind="warning">{t("linkExpired")}</Notice>}
+      <EmailLinkForm site="admin" next={safeNext(next)} />
+    </AuthLayout>
   );
 }

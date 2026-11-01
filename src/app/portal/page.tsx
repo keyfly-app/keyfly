@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { getLocale, getTranslations } from "next-intl/server";
 import { Shell } from "@/components/Shell";
+import { TextLink } from "@/components/ui/form";
 import { isLocale } from "@/i18n/config";
 import { date, money } from "@/lib/format";
 import { siteHref } from "@/lib/site-href";
@@ -12,27 +13,34 @@ export default async function PortalHome() {
   const supabase = await createClient();
   const { data: claims } = await supabase.auth.getClaims();
   if (!claims) redirect(await siteHref("portal", "/login"));
+  const { data: profile } = await supabase.from("profiles").select("full_name, email, start_view").single();
+  // First visit: ask how they use Keyfly (sets the start screen only).
+  if (!profile?.start_view) redirect(await siteHref("portal", "/welcome"));
+  const view = profile.start_view;
 
   const raw = await getLocale();
   const locale = isLocale(raw) ? raw : "hu";
   const t = await getTranslations("portal");
   const status = await getTranslations("status");
 
-  const [{ data: profile }, { data: applications }, { data: policies }] = await Promise.all([
-    supabase.from("profiles").select("full_name, email").single(),
+  const [{ data: applications }, { data: policies }] = await Promise.all([
     supabase.from("applications").select("id, status, monthly_rent, deposit_amount, address_text, created_at").order("created_at", { ascending: false }),
     supabase.from("policies").select("id, policy_number, status, coverage_amount, premium_amount, billing_period"),
   ]);
 
   // Hungarian names are "Family Given": greet with the last word; English with the first.
-  const parts = profile?.full_name?.trim().split(/\s+/) ?? [];
+  const parts = profile.full_name?.trim().split(/\s+/) ?? [];
   const name = (locale === "hu" ? parts.at(-1) : parts[0]) ?? "none";
 
   return (
-    <Shell site="portal" email={profile?.email}>
+    <Shell site="portal" email={profile.email}>
       <h1 className="font-display text-4xl font-bold">{t("greeting", { name })}</h1>
-      <p className="mt-2 text-muted">{t("intro")}</p>
+      <p className="mt-2 text-muted">{t(`intro.${view}`)}</p>
+      <p className="mt-1">
+        <TextLink href={await siteHref("portal", "/welcome")}>{t("changeView")}</TextLink>
+      </p>
 
+      {view === "tenant" && (
       <section className="mt-8 grid gap-6 lg:grid-cols-2">
         <div className="rounded-3xl bg-white p-6">
           <h2 className="font-display text-xl font-bold">{t("applications")}</h2>
@@ -76,6 +84,7 @@ export default async function PortalHome() {
           )}
         </div>
       </section>
+      )}
     </Shell>
   );
 }

@@ -42,7 +42,7 @@ grant execute on all functions in schema tests to anon, authenticated;
 -- d1 superadmin, d2 support, h1 future staff member.
 
 insert into auth.users (id, email, raw_user_meta_data) values
-  ('00000000-0000-0000-0000-0000000000a1', 'anna@example.com',    '{"full_name":"Anna Kovács"}'),
+  ('00000000-0000-0000-0000-0000000000a1', 'anna@example.com',    '{"full_name":"Anna Kovács","consents":{"terms":"terms-1","privacy":"privacy-1","marketing":"x"}}'),
   ('00000000-0000-0000-0000-0000000000a2', 'bela@example.com',    '{"full_name":"Béla Nagy","locale":"en"}'),
   ('00000000-0000-0000-0000-0000000000b1', 'peter@example.com',   '{"full_name":"Péter Szabó"}'),
   ('00000000-0000-0000-0000-0000000000c1', 'duna@example.com',    '{"full_name":"Duna Owner"}'),
@@ -115,6 +115,9 @@ select tests.ok((select count(*) from public.account_members m join public.accou
 select tests.ok((select name from public.accounts where id = (select id from fx where name = 'acc_gabor')) = 'gabor', 'nameless sign-up: account named after the email');
 select tests.ok((select full_name from public.profiles where email = 'anna@example.com') = 'Anna Kovács', 'name is copied from sign-up metadata');
 select tests.ok((select locale from public.profiles where email = 'bela@example.com') = 'en', 'locale is copied from sign-up metadata');
+select tests.ok((select string_agg(kind || '=' || version, ',' order by kind) from public.consents
+                 where user_id = '00000000-0000-0000-0000-0000000000a1') = 'privacy=privacy-1,terms=terms-1', 'sign-up records the terms and privacy consents');
+select tests.ok((select count(*) from public.consents where user_id <> '00000000-0000-0000-0000-0000000000a1') = 0, 'no consents without a ticked box');
 select tests.ok((select deposit_amount from public.applications where id = '00000000-0000-0000-0000-00000000a001') = 1050000, 'deposit = rent × months');
 select tests.ok((select policy_number from public.policies limit 1) ~ '^KF-\d{4}-\d{6}$', 'policy number format KF-YYYY-000000');
 select tests.ok((select district from public.properties where id = '00000000-0000-0000-0000-00000000e001') = 6, 'Budapest district comes from the postcode');

@@ -39,3 +39,11 @@ export function isPreviewHost(host: string | null): boolean {
 export function hrefFor(site: AppSite, path: string, host: string | null): string {
   return resolveSite(host) === site ? path : SITE_PATH_PREFIX[site] + (path === "/" ? "" : path);
 }
+
+/** Origin of the public site that belongs to an app host (app-staging.keyfly.app → https://staging.keyfly.app). */
+export function marketingOrigin(host: string | null, proto = "https"): string {
+  const h = (host ?? "").toLowerCase();
+  if (h.startsWith("app-staging.") || h.startsWith("admin-staging.")) return `${proto}://staging.${h.split(".").slice(1).join(".")}`;
+  if (h.startsWith("app.") || h.startsWith("admin.")) return `${proto}://${h.split(".").slice(1).join(".")}`;
+  return `${proto}://${h || PRODUCTION_HOSTS.marketing}`;
+}

@@ -45,12 +45,22 @@ Flow: branch from `staging` → PR into `staging` (CI) → test on staging.keyfl
 
 ### First superadmin
 
-1. Sign in once at app.keyfly.app with the admin address (creates the account).
+1. Create an account at app.keyfly.app/register with the admin address and confirm the email.
 2. Supabase → `keyfly-prod` → SQL editor:
    ```sql
    insert into public.staff (user_id, role)
    select id, 'superadmin' from auth.users where email = 'admin@keyfly.app';
    ```
+
+### Sign-in (customer app and admin)
+
+- Customer app: email + password (rules in `src/config/auth.ts`), one-time email link for existing accounts; Google is
+  prepared behind `AUTH_METHODS.google`. Sign-up stores the accepted terms/privacy versions (`src/config/consent.ts`).
+- Admin: email link only, never creates accounts; staff join through `/invite/<token>` and need two-factor sign-in.
+- Email links land on `/auth/confirm` (token hash, works in any browser); OAuth on `/auth/callback`.
+- Supabase Auth settings per project: Site URL, redirect URLs (`https://app…/auth/confirm`, `…/auth/callback`, preview and
+  localhost equivalents), email templates linking to `{{ .RedirectTo }}&token_hash={{ .TokenHash }}&type=<type>`,
+  password requirements matching `src/config/auth.ts`, email link expiry 24 h, custom SMTP (Resend).
 
 ### Automatic migrations
 

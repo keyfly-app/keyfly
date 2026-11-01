@@ -1,24 +1,38 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { getTranslations } from "next-intl/server";
-import { LoginForm } from "@/components/LoginForm";
-import { LoginCard, Shell } from "@/components/Shell";
+import { AuthLayout } from "@/components/AuthLayout";
+import { Notice, PageTitle } from "@/components/ui/form";
+import { SignInForm } from "@/features/auth/SignInForm";
+import { safeNext } from "@/lib/safe-next";
+import { siteHref } from "@/lib/site-href";
 
 export async function generateMetadata(): Promise<Metadata> {
-  const t = await getTranslations("auth");
-  return { title: t("portalTitle") };
+  const t = await getTranslations("auth.signIn");
+  return { title: t("title") };
 }
 
-export default async function Login({ searchParams }: { searchParams: Promise<{ error?: string }> }) {
-  const { error } = await searchParams;
+export default async function Login({ searchParams }: { searchParams: Promise<{ error?: string; next?: string }> }) {
+  const { error, next: rawNext } = await searchParams;
+  const next = safeNext(rawNext);
   const t = await getTranslations("auth");
+  const withNext = (path: string) => (next === "/" ? path : `${path}?next=${encodeURIComponent(next)}`);
+  const [registerHref, forgotHref] = await Promise.all([siteHref("portal", withNext("/register")), siteHref("portal", "/forgot-password")]);
+
   return (
-    <Shell site="portal">
-      <LoginCard title={t("portalTitle")} text={t("portalText")}>
-        {error === "link" && (
-          <p className="mb-4 rounded-2xl bg-warning-soft px-4 py-3 text-sm font-semibold text-warning-ink">{t("linkExpired")}</p>
-        )}
-        <LoginForm site="portal" />
-      </LoginCard>
-    </Shell>
+    <AuthLayout>
+      <PageTitle>{t("signIn.title")}</PageTitle>
+      {error === "link" && <Notice kind="warning">{t("linkExpired")}</Notice>}
+      <SignInForm next={next} forgotHref={forgotHref} />
+      <p className="mt-auto pt-4 text-center text-sm text-muted">
+        {t.rich("signIn.noAccount", {
+          link: (chunks) => (
+            <Link href={registerHref} className="font-semibold text-brand underline-offset-3 hover:underline">
+              {chunks}
+            </Link>
+          ),
+        })}
+      </p>
+    </AuthLayout>
   );
 }
