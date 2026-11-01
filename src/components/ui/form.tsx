@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Icon } from "@/components/Icon";
+import { Icon, type IconName } from "@/components/Icon";
 
 /**
  * App v2.2 controls: 40 px on desktop, 44 px on phones (touch), 8 px corners, 3:1 field border, visible focus.
@@ -11,6 +11,7 @@ export const INPUT_CLASS =
 const BUTTON = {
   primary: "bg-ink text-white shadow-[0_1px_2px_rgb(12_31_25/0.16)] hover:bg-ink-soft",
   secondary: "border border-field bg-surface text-ink hover:border-ink",
+  danger: "bg-danger-ink text-white hover:bg-danger-ink/90",
 } as const;
 const BUTTON_BASE =
   "inline-flex h-11 w-full items-center justify-center gap-2 rounded-lg px-4 text-sm font-medium whitespace-nowrap transition-colors aria-disabled:cursor-progress aria-disabled:opacity-80 motion-reduce:transition-none sm:h-10";
@@ -27,6 +28,7 @@ export function Button({
   formAction,
   name,
   value,
+  fit = false,
 }: {
   children: React.ReactNode;
   variant?: keyof typeof BUTTON;
@@ -34,6 +36,8 @@ export function Button({
   formAction?: (form: FormData) => void;
   name?: string;
   value?: string;
+  /** Full width on phones, as wide as the label from 640 px. */
+  fit?: boolean;
 }) {
   return (
     <button
@@ -43,7 +47,7 @@ export function Button({
       value={value}
       aria-disabled={pending || undefined}
       onClick={pending ? (e) => e.preventDefault() : undefined}
-      className={`${BUTTON_BASE} ${BUTTON[variant]}`}
+      className={`${BUTTON_BASE} ${BUTTON[variant]} ${fit ? "sm:w-auto" : ""}`}
     >
       {pending && <Spinner />}
       {children}
@@ -75,22 +79,36 @@ export function Label({ htmlFor, children }: { htmlFor: string; children: React.
   );
 }
 
+/** "(nem kötelező)" after a label, quieter than the label itself. */
+export function Optional({ children }: { children?: React.ReactNode }) {
+  return children ? <span className="font-normal text-muted">{children}</span> : null;
+}
+
+export function FieldHint({ id, children }: { id: string; children: React.ReactNode }) {
+  return (
+    <p id={id} className="text-[12.5px] leading-[18px] text-muted">
+      {children}
+    </p>
+  );
+}
+
 export function TextField({
   id,
   label,
   error,
+  hint,
+  optional,
   ...input
-}: { id: string; label: string; error?: string } & React.InputHTMLAttributes<HTMLInputElement>) {
+}: { id: string; label: string; error?: string; hint?: string; optional?: string } & React.InputHTMLAttributes<HTMLInputElement>) {
+  const described = [hint && `${id}-hint`, error && `${id}-error`].filter(Boolean).join(" ") || undefined;
   return (
     <div className="flex flex-col gap-1.5">
-      <Label htmlFor={id}>{label}</Label>
-      <input
-        id={id}
-        aria-invalid={error ? true : undefined}
-        aria-describedby={error ? `${id}-error` : undefined}
-        className={INPUT_CLASS}
-        {...input}
-      />
+      <Label htmlFor={id}>
+        {label}
+        <Optional>{optional}</Optional>
+      </Label>
+      <input id={id} aria-invalid={error ? true : undefined} aria-describedby={described} className={INPUT_CLASS} {...input} />
+      {hint && <FieldHint id={`${id}-hint`}>{hint}</FieldHint>}
       {error && <FieldError id={`${id}-error`} message={error} />}
     </div>
   );
@@ -144,7 +162,7 @@ const NOTICE = {
 } as const;
 
 /** Banner above or inside a form. Errors are announced to screen readers. */
-export function Notice({ kind, children, icon = kind === "success" ? "check" : "alert" }: { kind: keyof typeof NOTICE; children: React.ReactNode; icon?: "check" | "alert" | "mail" | "phone" }) {
+export function Notice({ kind, children, icon = kind === "success" ? "check" : "alert" }: { kind: keyof typeof NOTICE; children: React.ReactNode; icon?: IconName }) {
   return (
     <div role={kind === "error" ? "alert" : "status"} className={`flex items-start gap-2 rounded-lg px-3 py-2.5 text-[13px] leading-[18px] font-medium ${NOTICE[kind]}`}>
       <Icon name={icon} size={16} strokeWidth={2} className="mt-px flex-none" />

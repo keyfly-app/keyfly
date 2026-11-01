@@ -8,8 +8,8 @@ import { pickAddress, suggestAddresses } from "./actions";
 import type { FoundAddress, Suggestion } from "./places";
 
 const DEBOUNCE_MS = 250;
-/** The standard field with room for the search icon; 16 px text so phones don't zoom in. */
-const SEARCH_INPUT = INPUT_CLASS.replace("px-3.5", "pr-3.5 pl-10.5").replace("text-[15px]", "text-base");
+/** The standard field with room for the search icon on the left. */
+const SEARCH_INPUT = INPUT_CLASS.replace(/\bpx-3\b/, "pr-3 pl-10");
 
 /**
  * "Search address" combobox (approved design: canvas "Címkereső (Google)"). Suggestions come from our
@@ -88,7 +88,7 @@ export function AddressSearch({
     <div className="flex flex-col gap-1.5">
       <Label htmlFor={`${id}-input`}>{t("label")}</Label>
       <div className="relative">
-        <Icon name="search" size={18} strokeWidth={1.75} className="pointer-events-none absolute top-[15px] left-3.5 text-muted" />
+        <Icon name="search" size={18} strokeWidth={1.75} className="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-muted" />
         <input
           id={`${id}-input`}
           role="combobox"
@@ -157,8 +157,9 @@ export function AddressSearch({
                 type="button"
                 onMouseDown={(e) => e.preventDefault()}
                 onClick={onManual}
-                className="flex min-h-11 w-full items-center border-b border-line pr-3.5 pl-10.5 text-left text-[13px] font-medium text-brand"
+                className="flex min-h-11 w-full items-center gap-2 border-b border-line px-3.5 text-left text-[13px] font-medium text-brand"
               >
+                <Icon name="edit" size={15} strokeWidth={2} />
                 {t("manual")}
               </button>
             )}

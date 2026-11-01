@@ -11,7 +11,13 @@
     "aiImage": "AI-generated image",
     "proLabel": "PRO",
     "moreInfo": "More information",
-    "privacyShort": "Privacy"
+    "privacyShort": "Privacy",
+    "timeline": {
+      "done": "Done",
+      "now": "In progress",
+      "todo": "Up next",
+      "err": "Stopped"
+    }
   },
   "meta": {
     "title": "Rent without a deposit in Hungary – Keyfly",
@@ -480,30 +486,46 @@
   },
   "leaseRequest": {
     "homeTitle": "Leases",
-    "homeEmpty": "Renting, but your landlord isn’t on Keyfly yet? Invite them and set up the lease together.",
     "inviteLandlord": "Invite your landlord",
     "next": "Continue",
     "back": "Back",
-    "progressLabel": "Step",
-    "stepCount": "{step} / {total}",
+    "change": "Edit",
+    "optional": "(optional)",
+    "flow": {
+      "title": "Invite your landlord",
+      "progress": "Steps",
+      "stepOf": "{step} of {total}",
+      "current": "current step",
+      "done": "done",
+      "cancel": "Cancel",
+      "leaveTitle": "Leave this invitation?",
+      "leaveText": "What you entered won’t be saved.",
+      "leaveStay": "Stay",
+      "leaveConfirm": "Leave",
+      "close": "Close",
+      "errorSummary": "{count, plural, one {# field still needs your input.} other {# fields still need your input.}}"
+    },
     "steps": {
       "home": "Home",
-      "lease": "Lease",
-      "landlord": "Landlord"
+      "lease": "Terms",
+      "landlord": "Landlord",
+      "review": "Review"
     },
     "address": {
-      "title": "Invite your landlord",
-      "lead": "Which home are you renting?",
+      "title": "Which home is it?",
+      "lead": "Start typing the address and pick it from the list.",
+      "unitTitle": "Add the flat details",
+      "unitLead": "Leave empty what isn’t part of the address.",
       "postalCode": "Postcode",
       "city": "City",
       "streetName": "Street name",
-      "streetType": "Street type",
-      "houseNumber": "House number",
+      "streetType": "Type",
+      "houseNumber": "Number",
       "building": "Building",
       "staircase": "Staircase",
       "floor": "Floor",
       "door": "Door",
-      "floorNone": "Not specified",
+      "floorNone": "–",
       "floorNumbered": "Floor {number}",
       "floors": {
         "basement": "Basement",
@@ -514,27 +536,48 @@
       }
     },
     "terms": {
-      "title": "Lease details",
-      "lead": "Enter what you know. Your landlord will check it.",
-      "start": "Start",
-      "duration": "Term",
+      "title": "Lease terms",
+      "lead": "Enter them as they are in your contract. Your landlord checks them and can adjust them.",
+      "duration": "Duration",
       "fixed": "Fixed term",
       "openEnded": "Open-ended",
+      "start": "Start",
       "end": "End",
+      "plusYears": "+{count, plural, one {# year} other {# years}}",
+      "plusYearsLabel": "End: {count, plural, one {# year} other {# years}} after the start",
       "rent": "Monthly rent",
-      "deposit": "Deposit (optional)",
-      "depositTip": "The deposit amount, if the lease requires one.",
+      "deposit": "Deposit",
+      "depositHint": "Only if your contract requires one.",
       "currency": "HUF"
     },
     "landlord": {
-      "title": "Who is your landlord?",
+      "title": "Who should get the invitation?",
+      "lead": "Your landlord gets it by email and approves on Keyfly.",
       "email": "Landlord’s email",
-      "name": "Landlord’s name (optional)",
-      "summary": "Summary",
+      "name": "Landlord’s name",
+      "nameHint": "We use it to greet them in the email.",
+      "nextTitle": "What happens next?",
+      "nextSend": "We send the invitation",
+      "nextSendText": "By email, with your name.",
+      "nextApprove": "Your landlord approves",
+      "nextApproveText": "Or suggests changes for you to approve.",
+      "nextRecord": "We record the lease",
+      "nextRecordText": "We let you know, and it’s always here."
+    },
+    "review": {
+      "title": "Review and send",
+      "lead": "This is what your landlord gets. You can edit any part.",
+      "editSection": "Edit {section}",
+      "note": "By sending, {name} receives the details above and your name. We don’t share them with anyone else.",
       "submit": "Send invitation",
-      "submitting": "Sending…",
-      "free": "Free for landlords",
-      "freeTip": "The lease is created once the landlord approves it."
+      "submitting": "Sending…"
+    },
+    "rail": {
+      "title": "Invitation",
+      "empty": "Not added yet",
+      "termsLine": "{rent} / mo · {period}",
+      "free": "Free for your landlord.",
+      "privacy": "We only share your details with your landlord."
     },
     "rows": {
       "property": "Property",
@@ -542,46 +585,118 @@
       "start": "Start",
       "end": "End",
       "deposit": "Deposit",
-      "paymentDay": "Rent due",
-      "landlord": "Landlord",
-      "sent": "Sent",
-      "expires": "Invitation expires"
+      "paymentDay": "Payment day",
+      "term": "Term",
+      "email": "Email",
+      "name": "Name"
     },
-    "paymentDayValue": "Day {day} of each month",
+    "paymentDayValue": "{day, selectordinal, one {#st} two {#nd} few {#rd} other {#th}} of each month",
     "status": {
       "pending_landlord": "Waiting for landlord",
-      "pending_tenant": "Waiting for you",
-      "confirmed": "Set up",
+      "pending_tenant": "Action needed",
+      "confirmed": "Recorded",
       "declined": "Declined",
-      "cancelled": "Cancelled",
-      "expired": "Invitation expired"
+      "cancelled": "Withdrawn",
+      "expired": "Expired"
     },
-    "card": {
+    "page": {
+      "crumbs": "Breadcrumb",
+      "home": "Overview",
       "label": "Lease",
-      "open": "Details"
+      "statusTitle": "Status",
+      "termsTitle": "Terms",
+      "landlordTitle": "Landlord",
+      "sentAt": "Sent",
+      "valid": "Valid",
+      "reminders": "Reminders",
+      "remindersValue": "{count} of 3 sent",
+      "remindHint": "You can send one reminder a day. Your landlord gets a new link, valid for 7 days.",
+      "nextReminder": "Next reminder: {time}",
+      "remind": "Send reminder",
+      "revoke": "Withdraw invitation",
+      "sent": "Invitation sent to {name}.",
+      "reminded": "Reminder sent. Your landlord got a new link.",
+      "newInvite": "Start a new invitation",
+      "readOnly": "The account’s owners and admins manage this lease."
     },
-    "waiting": {
-      "text": "We’ll let you know when your landlord approves. If they change anything, you’ll need to approve it too.",
-      "expiredText": "The invitation has expired. If you send a reminder, your landlord gets a new link that’s valid for 7 days.",
-      "remind": "Send a reminder",
-      "reminded": "Reminder sent.",
-      "cancel": "Cancel invitation",
-      "sent": "Invitation sent to your landlord."
+    "timeline": {
+      "sent": "Invitation sent",
+      "sentSub": "{time} · {email}",
+      "waiting": "Waiting for your landlord",
+      "waitingSub": "They approve or adjust the terms. The link is valid {until}.",
+      "recorded": "Lease recorded",
+      "recordedSub": "We’ll email you.",
+      "changed": "Landlord updated the terms",
+      "changedSub": "{date} · {count, plural, one {# change} other {# changes}}",
+      "yours": "Waiting for you",
+      "yoursSub": "Accept or decline.",
+      "approved": "Landlord approved",
+      "expired": "Expired",
+      "expiredSub": "{date} · no answer",
+      "declined": "Landlord declined",
+      "cancelled": "You withdrew it",
+      "termsDeclined": "You declined the changes"
+    },
+    "revoke": {
+      "title": "Withdraw the invitation?",
+      "text": "The link stops working right away, and {name} can no longer approve the lease. You can send a new invitation later.",
+      "confirm": "Withdraw"
+    },
+    "expired": {
+      "note": "The invitation expired ({date}) without an answer from {name}. Send a new one: they get a new link, valid for 7 days.",
+      "resend": "Send a new invitation",
+      "limit": "You can’t resend this invitation any more. Withdraw it and start a new one."
     },
     "outcome": {
-      "confirmed": "Your landlord approved it and the lease is set up.",
-      "declined": "Your landlord declined the invitation.",
-      "cancelled": "You cancelled the invitation, so no lease was created."
+      "declined": "{name} declined the invitation, so the lease wasn’t recorded.",
+      "cancelled": "You withdrew the invitation, so the lease wasn’t recorded.",
+      "termsDeclined": "You declined the updated terms, so the lease wasn’t recorded."
     },
     "reconfirm": {
-      "banner": "Your landlord changed the terms.",
+      "banner": "{name} updated the terms. We only record the lease once you approve.",
       "title": "Updated terms",
-      "lead": "{name} approved the lease with these terms:",
+      "changes": "{count, plural, one {# change} other {# changes}}",
+      "colTerm": "Term",
+      "colYours": "You entered",
+      "colTheirs": "Landlord’s version",
       "changed": "Changed",
       "added": "New",
-      "accept": "Accept",
+      "none": "–",
+      "accept": "Accept terms",
       "decline": "Decline",
-      "declineNote": "If you decline, the lease won’t be created."
+      "declineNote": "If you decline, we won’t record the lease. You can talk it through with your landlord directly.",
+      "declineTitle": "Decline the updated terms?",
+      "declineText": "We won’t record the lease, and we’ll let your landlord know. This can’t be undone."
+    },
+    "guarantee": {
+      "title": "Keyfly guarantee",
+      "text": "Coming soon: a small monthly fee instead of a deposit. The deposit money stays with you."
+    },
+    "home": {
+      "progressTitle": "In progress",
+      "details": "Details",
+      "miniSent": "Sent",
+      "miniLandlord": "Landlord",
+      "miniYou": "Your decision",
+      "miniRecorded": "Recorded",
+      "pendingMeta": "Sent: {sent} · Expires: {expires}",
+      "decisionMeta": "Your landlord updated the terms.",
+      "expiredMeta": "Expired: {date}",
+      "closedMeta": "Closed: {date}",
+      "todoTitle": "To-dos",
+      "todoDecide": "Decide on the updated terms",
+      "todoResend": "Send a new invitation",
+      "todoEmpty": "Nothing to do right now.",
+      "todoEmptyText": "When you need to decide, you’ll see it here first.",
+      "emptyTitle": "Invite your landlord",
+      "emptyText": "Record your lease together on Keyfly. About 2 minutes.",
+      "empty1": "Add the home and the terms",
+      "empty1Text": "As they are in your contract.",
+      "empty2": "Your landlord approves",
+      "empty2Text": "Free, with an email invitation.",
+      "empty3": "It’s on Keyfly",
+      "empty3Text": "Always at hand, and we tell you about changes.",
+      "noLeases": "Your recorded leases will show up here."
     },
     "landlordSide": {
       "title": "Take over the lease",
@@ -638,16 +753,15 @@
       "generic": "Something went wrong. Please try again."
     },
     "addressSearch": {
-      "label": "Search address",
+      "label": "Address",
       "placeholder": "Street, number, city",
       "suggestions": "Address suggestions",
       "count": "{count, plural, one {# result} other {# results}}",
       "none": "No match for:",
       "noneHint": "Check the spelling, or enter the address by hand.",
-      "manual": "Can’t find it? Enter it by hand",
+      "manual": "Can’t find it? Enter it manually",
       "manualButton": "Enter address by hand",
       "chosen": "Selected address",
-      "change": "Change",
       "backToSearch": "Back to address search",
       "pickRequired": "Pick an address from the list, or enter it by hand."
     }

@@ -11,7 +11,13 @@
     "aiImage": "AI-generált kép",
     "proLabel": "PRO",
     "moreInfo": "További információ",
-    "privacyShort": "Adatkezelés"
+    "privacyShort": "Adatkezelés",
+    "timeline": {
+      "done": "Kész",
+      "now": "Folyamatban",
+      "todo": "Következik",
+      "err": "Megszakadt"
+    }
   },
   "meta": {
     "title": "Albérlet kaució nélkül – Keyfly",
@@ -480,30 +486,46 @@
   },
   "leaseRequest": {
     "homeTitle": "Bérleti szerződések",
-    "homeEmpty": "Bérelsz, de a bérbeadód még nincs a Keyflyon? Hívd meg, és rögzítsétek együtt a bérleti szerződést.",
     "inviteLandlord": "Bérbeadó meghívása",
     "next": "Tovább",
     "back": "Vissza",
-    "progressLabel": "Lépés",
-    "stepCount": "{step} / {total}",
+    "change": "Módosítás",
+    "optional": "(nem kötelező)",
+    "flow": {
+      "title": "Bérbeadó meghívása",
+      "progress": "Lépések",
+      "stepOf": "{step}/{total}",
+      "current": "aktuális lépés",
+      "done": "kész",
+      "cancel": "Mégse",
+      "leaveTitle": "Kilépsz a meghívásból?",
+      "leaveText": "A megadott adatokat nem mentjük el.",
+      "leaveStay": "Maradok",
+      "leaveConfirm": "Kilépés",
+      "close": "Bezárás",
+      "errorSummary": "{count, plural, one {# mezőt még ki kell töltened vagy javítanod.} other {# mezőt még ki kell töltened vagy javítanod.}}"
+    },
     "steps": {
       "home": "Lakás",
-      "lease": "Szerződés",
-      "landlord": "Bérbeadó"
+      "lease": "Feltételek",
+      "landlord": "Bérbeadó",
+      "review": "Ellenőrzés"
     },
     "address": {
-      "title": "Bérbeadó meghívása",
-      "lead": "Melyik lakást béreled?",
+      "title": "Melyik lakásról van szó?",
+      "lead": "Kezdd el beírni a címet, és válaszd ki a listából.",
+      "unitTitle": "Pontosítsd a lakást",
+      "unitLead": "Ami nincs a címben, maradjon üresen.",
       "postalCode": "Irányítószám",
       "city": "Település",
       "streetName": "Közterület neve",
-      "streetType": "Közterület jellege",
+      "streetType": "Jellege",
       "houseNumber": "Házszám",
       "building": "Épület",
       "staircase": "Lépcsőház",
       "floor": "Emelet",
       "door": "Ajtó",
-      "floorNone": "Nincs megadva",
+      "floorNone": "–",
       "floorNumbered": "{number}. emelet",
       "floors": {
         "basement": "Pince, alagsor",
@@ -514,27 +536,48 @@
       }
     },
     "terms": {
-      "title": "A szerződés adatai",
-      "lead": "Add meg, amit tudsz. A bérbeadó ellenőrzi.",
-      "start": "Kezdés",
+      "title": "A szerződés feltételei",
+      "lead": "Úgy add meg, ahogy a szerződésben szerepel. A bérbeadó ellenőrzi, és szükség esetén módosítja.",
       "duration": "Időtartam",
       "fixed": "Határozott",
       "openEnded": "Határozatlan",
+      "start": "Kezdés",
       "end": "Lejárat",
+      "plusYears": "+{count} év",
+      "plusYearsLabel": "Lejárat: {count} év a kezdéstől",
       "rent": "Havi bérleti díj",
-      "deposit": "Kaució (nem kötelező)",
-      "depositTip": "Ha a szerződés kauciót ír elő, az összege.",
+      "deposit": "Kaució",
+      "depositHint": "Csak ha a szerződés kauciót ír elő.",
       "currency": "Ft"
     },
     "landlord": {
-      "title": "Ki a bérbeadód?",
-      "email": "Bérbeadó e-mail-címe",
-      "name": "Bérbeadó neve (nem kötelező)",
-      "summary": "Összegzés",
+      "title": "Kinek küldjük a meghívót?",
+      "lead": "A bérbeadód e-mailben kapja meg, és a Keyflyon jóváhagyja.",
+      "email": "A bérbeadó e-mail-címe",
+      "name": "A bérbeadó neve",
+      "nameHint": "Így szólítjuk a levélben.",
+      "nextTitle": "Mi történik ezután?",
+      "nextSend": "Elküldjük a meghívót",
+      "nextSendText": "E-mailben, a te neveddel.",
+      "nextApprove": "A bérbeadó jóváhagyja",
+      "nextApproveText": "Vagy módosít, és azt te hagyod jóvá.",
+      "nextRecord": "Rögzítjük a szerződést",
+      "nextRecordText": "Értesítünk, és itt mindig eléred."
+    },
+    "review": {
+      "title": "Ellenőrizd, és küldd el",
+      "lead": "Ezt kapja meg a bérbeadód. Bármelyik részt módosíthatod.",
+      "editSection": "{section} módosítása",
+      "note": "A meghívó elküldésével {name} megkapja a fenti adatokat és a nevedet. Másnak nem adjuk tovább.",
       "submit": "Meghívó küldése",
-      "submitting": "Küldés…",
-      "free": "A bérbeadónak díjmentes",
-      "freeTip": "A szerződés a bérbeadó jóváhagyásával kerül be a Keyflyba."
+      "submitting": "Küldés…"
+    },
+    "rail": {
+      "title": "Meghívó",
+      "empty": "Még nincs megadva",
+      "termsLine": "{rent} / hó · {period}",
+      "free": "A bérbeadódnak díjmentes.",
+      "privacy": "Az adataidat csak a bérbeadóddal osztjuk meg."
     },
     "rows": {
       "property": "Ingatlan",
@@ -542,46 +585,118 @@
       "start": "Kezdés",
       "end": "Lejárat",
       "deposit": "Kaució",
-      "paymentDay": "Fizetési határidő",
-      "landlord": "Bérbeadó",
-      "sent": "Elküldve",
-      "expires": "Meghívó lejár"
+      "paymentDay": "Fizetési nap",
+      "term": "Időtartam",
+      "email": "E-mail-cím",
+      "name": "Név"
     },
     "paymentDayValue": "Minden hónap {day}.",
     "status": {
       "pending_landlord": "Bérbeadóra vár",
-      "pending_tenant": "Jóváhagyásodra vár",
-      "confirmed": "Létrejött",
+      "pending_tenant": "Döntésed szükséges",
+      "confirmed": "Rögzítve",
       "declined": "Elutasítva",
       "cancelled": "Visszavonva",
-      "expired": "Lejárt meghívó"
+      "expired": "Lejárt"
     },
-    "card": {
+    "page": {
+      "crumbs": "Morzsamenü",
+      "home": "Áttekintés",
       "label": "Bérleti szerződés",
-      "open": "Részletek"
-    },
-    "waiting": {
-      "text": "Ha a bérbeadó jóváhagyja, értesítünk. Ha módosít valamit, azt neked is jóvá kell hagynod.",
-      "expiredText": "A meghívó lejárt. Ha emlékeztetőt küldesz, a bérbeadó új linket kap, amely 7 napig érvényes.",
+      "statusTitle": "Állapot",
+      "termsTitle": "Feltételek",
+      "landlordTitle": "Bérbeadó",
+      "sentAt": "Elküldve",
+      "valid": "Érvényes",
+      "reminders": "Emlékeztetők",
+      "remindersValue": "{count} / 3 elküldve",
+      "remindHint": "Emlékeztetőt naponta egyszer küldhetsz. A bérbeadó új linket kap, amely 7 napig érvényes.",
+      "nextReminder": "Következő emlékeztető: {time}",
       "remind": "Emlékeztető küldése",
-      "reminded": "Elküldtük az emlékeztetőt.",
-      "cancel": "Meghívó visszavonása",
-      "sent": "Elküldtük a meghívót a bérbeadónak."
+      "revoke": "Meghívó visszavonása",
+      "sent": "Elküldtük a meghívót {name} részére.",
+      "reminded": "Elküldtük az emlékeztetőt. A bérbeadó új linket kapott.",
+      "newInvite": "Új meghívás indítása",
+      "readOnly": "A szerződés kezelése a fiók tulajdonosánál és adminjainál van."
+    },
+    "timeline": {
+      "sent": "Meghívó elküldve",
+      "sentSub": "{time} · {email}",
+      "waiting": "Bérbeadói jóváhagyásra vár",
+      "waitingSub": "Jóváhagyja, vagy módosítja a feltételeket. A link {until} érvényes.",
+      "recorded": "Szerződés rögzítve",
+      "recordedSub": "Értesítünk e-mailben.",
+      "changed": "Bérbeadó módosította",
+      "changedSub": "{date} · {count} változás",
+      "yours": "Jóváhagyásodra vár",
+      "yoursSub": "Fogadd el, vagy utasítsd el.",
+      "approved": "Bérbeadó jóváhagyta",
+      "expired": "Lejárt",
+      "expiredSub": "{date} · nem érkezett válasz",
+      "declined": "A bérbeadó elutasította",
+      "cancelled": "Visszavontad",
+      "termsDeclined": "Elutasítottad a módosítást"
+    },
+    "revoke": {
+      "title": "Visszavonod a meghívót?",
+      "text": "A link azonnal érvényét veszti, és {name} nem tudja jóváhagyni a szerződést. Később új meghívót küldhetsz.",
+      "confirm": "Visszavonás"
+    },
+    "expired": {
+      "note": "A meghívó lejárt ({date}), {name} nem válaszolt. Küldj újat: új linket kap, amely 7 napig érvényes.",
+      "resend": "Új meghívó küldése",
+      "limit": "Ehhez a meghívóhoz már nem küldhetsz újat. Vond vissza, és indíts új meghívást."
     },
     "outcome": {
-      "confirmed": "A bérbeadó jóváhagyta, a szerződés bekerült a Keyflyba.",
-      "declined": "A bérbeadó elutasította a meghívót.",
-      "cancelled": "A meghívót visszavontad, ezért a szerződést nem rögzítettük."
+      "declined": "{name} elutasította a meghívót, ezért a szerződést nem rögzítettük.",
+      "cancelled": "Visszavontad a meghívót, ezért a szerződést nem rögzítettük.",
+      "termsDeclined": "Elutasítottad a módosított feltételeket, ezért a szerződést nem rögzítettük."
     },
     "reconfirm": {
-      "banner": "A bérbeadó módosította a feltételeket.",
+      "banner": "{name} módosította a feltételeket. A szerződést csak a jóváhagyásod után rögzítjük.",
       "title": "Módosított feltételek",
-      "lead": "{name} ezekkel a feltételekkel hagyta jóvá a szerződést:",
-      "changed": "Módosult",
+      "changes": "{count} változás",
+      "colTerm": "Feltétel",
+      "colYours": "Te adtad meg",
+      "colTheirs": "Bérbeadó javaslata",
+      "changed": "Módosítva",
       "added": "Új",
-      "accept": "Elfogadás",
+      "none": "–",
+      "accept": "Feltételek elfogadása",
       "decline": "Elutasítás",
-      "declineNote": "Ha elutasítod, a szerződést nem rögzítjük."
+      "declineNote": "Ha elutasítod, a szerződést nem rögzítjük. A bérbeadóddal közvetlenül egyeztethetsz.",
+      "declineTitle": "Elutasítod a módosított feltételeket?",
+      "declineText": "A szerződést nem rögzítjük, és értesítjük a bérbeadódat. Ezt nem lehet visszavonni."
+    },
+    "guarantee": {
+      "title": "Keyfly-garancia",
+      "text": "Hamarosan: kaució helyett kis havi díj. A kaució összege nálad marad."
+    },
+    "home": {
+      "progressTitle": "Folyamatban",
+      "details": "Részletek",
+      "miniSent": "Elküldve",
+      "miniLandlord": "Bérbeadó",
+      "miniYou": "Döntésed",
+      "miniRecorded": "Rögzítve",
+      "pendingMeta": "Elküldve: {sent} · Lejár: {expires}",
+      "decisionMeta": "A bérbeadó módosította a feltételeket.",
+      "expiredMeta": "Lejárt: {date}",
+      "closedMeta": "Lezárva: {date}",
+      "todoTitle": "Teendők",
+      "todoDecide": "Döntsd el a módosított feltételeket",
+      "todoResend": "Küldj új meghívót",
+      "todoEmpty": "Most nincs teendőd.",
+      "todoEmptyText": "Ha döntésed kell, itt látod elsőként.",
+      "emptyTitle": "Hívd meg a bérbeadódat",
+      "emptyText": "Rögzítsétek együtt a bérleti szerződést a Keyflyon. Kb. 2 perc.",
+      "empty1": "Megadod a lakást és a feltételeket",
+      "empty1Text": "Ahogy a szerződésben szerepel.",
+      "empty2": "A bérbeadó jóváhagyja",
+      "empty2Text": "Díjmentesen, e-mailes meghívóval.",
+      "empty3": "Bekerül a Keyflyba",
+      "empty3Text": "Mindig eléred, és értesítünk a változásokról.",
+      "noLeases": "Itt látod majd a rögzített bérleti szerződéseidet."
     },
     "landlordSide": {
       "title": "Bérleti szerződés jóváhagyása",
@@ -638,7 +753,7 @@
       "generic": "Valami nem sikerült. Próbáld újra."
     },
     "addressSearch": {
-      "label": "Cím keresése",
+      "label": "Cím",
       "placeholder": "Utca, házszám, település",
       "suggestions": "Címjavaslatok",
       "count": "{count, plural, one {# találat} other {# találat}}",
@@ -647,7 +762,6 @@
       "manual": "Nem találod? Add meg kézzel",
       "manualButton": "Cím megadása kézzel",
       "chosen": "Kiválasztott cím",
-      "change": "Módosítás",
       "backToSearch": "Vissza a címkereséshez",
       "pickRequired": "Válassz egy címet a listából, vagy add meg kézzel."
     }

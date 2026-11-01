@@ -43,3 +43,8 @@ export function dateBeforeSuffix(iso: string, locale: Locale): string {
   const d = date(iso, locale);
   return locale === "hu" ? d.replace(/\.$/, "") : d;
 }
+
+/** "Valid until": hu "2026. 11. 08-ig", en "until 8 Nov 2026". */
+export function until(iso: string, locale: Locale): string {
+  return locale === "hu" ? `${dateBeforeSuffix(iso, locale)}-ig` : `until ${date(iso, locale)}`;
+}

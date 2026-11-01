@@ -1,12 +1,11 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getLocale, getTranslations } from "next-intl/server";
 import { Shell } from "@/components/Shell";
 import { Icon } from "@/components/Icon";
 import { ButtonLink, TextLink } from "@/components/ui/form";
 import { Tag } from "@/components/ui/Tag";
-import { Chip, STATUS_TONE } from "@/features/lease-requests/ui";
+import { TenantHome, type HomeCard } from "@/features/lease-requests/TenantHome";
 import { isLocale } from "@/i18n/config";
 import { ADDRESS_COLUMNS, addressFromRow, cityLine, streetLine } from "@/lib/address";
 import { date, money } from "@/lib/format";
@@ -39,82 +38,66 @@ export default async function PortalHome() {
     supabase.from("applications").select("id, status, monthly_rent, deposit_amount, address_text, created_at").order("created_at", { ascending: false }),
     supabase.from("policies").select("id, policy_number, status, coverage_amount, premium_amount, billing_period"),
     view === "tenant"
-      ? supabase.from("lease_requests").select(`id, status, invitation_expires_at, monthly_rent, start_date, end_date, ${ADDRESS_COLUMNS}`).neq("status", "cancelled")
-          .order("created_at", { ascending: false }).limit(5)
+      ? supabase
+          .from("lease_requests")
+          .select(
+            `id, status, invitation_expires_at, reminder_count, monthly_rent, start_date, end_date, created_at, decided_at, updated_at, ${ADDRESS_COLUMNS}, leases(monthly_rent, start_date, end_date, properties(${ADDRESS_COLUMNS}))`,
+          )
+          .neq("status", "cancelled")
+          .order("created_at", { ascending: false })
+          .limit(20)
       : Promise.resolve({ data: null }),
   ]);
   const lr = await getTranslations("leaseRequest");
-  const newRequestHref = await siteHref("portal", "/lease-requests/new");
-  const requestCards = await Promise.all(
+  const [newRequestHref, changeViewHref] = await Promise.all([siteHref("portal", "/lease-requests/new"), siteHref("portal", "/welcome")]);
+  const now = new Date();
+  const cards: HomeCard[] = await Promise.all(
     (requests ?? []).map(async (r) => {
       // The row carries the latest link's expiry (a reminder replaces the link), readable by every member of the account.
-      const expired = r.status === "pending_landlord" && new Date(r.invitation_expires_at) <= new Date();
-      const address = addressFromRow(r);
+      const expired = r.status === "pending_landlord" && new Date(r.invitation_expires_at) <= now;
+      const lease = r.leases;
+      const address = lease?.properties ? addressFromRow(lease.properties) : addressFromRow(r);
+      const start = lease?.start_date ?? r.start_date;
+      const end = lease ? lease.end_date : r.end_date;
       return {
         id: r.id,
         status: expired ? ("expired" as const) : r.status,
         street: streetLine(address),
         city: cityLine(address),
-        rent: money(r.monthly_rent, locale),
-        period: r.end_date ? `${date(r.start_date, locale)} – ${date(r.end_date, locale)}` : `${date(r.start_date, locale)} –`,
+        rent: money(lease?.monthly_rent ?? r.monthly_rent, locale),
+        period: `${date(start, locale)} – ${end ? date(end, locale) : lr("terms.openEnded")}`,
+        sent: date(r.created_at, locale),
+        expires: date(r.invitation_expires_at, locale),
+        closed: date(r.decided_at ?? r.updated_at, locale),
+        canResend: r.reminder_count < 3,
         href: await siteHref("portal", `/lease-requests/${r.id}`),
       };
     }),
   );
-
   // Hungarian names are "Family Given": greet with the last word; English with the first.
   const parts = profile.full_name?.trim().split(/\s+/) ?? [];
   const name = (locale === "hu" ? parts.at(-1) : parts[0]) ?? "none";
+  const tenant = view === "tenant";
+  const empty = tenant && cards.length === 0;
 
   return (
     <Shell site="portal">
       <div className="flex flex-col gap-6">
-        <div className="flex flex-wrap items-end justify-between gap-4">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div className="flex flex-col gap-1">
-            <h1 className="font-display text-[26px] leading-8 font-semibold">{t("greeting", { name })}</h1>
+            <h1 className="font-display text-[22px] leading-7 font-semibold sm:text-[26px] sm:leading-8">{t("greeting", { name })}</h1>
             <p className="text-sm text-muted">{t(`intro.${view}`)}</p>
-            <TextLink href={await siteHref("portal", "/welcome")}>{t("changeView")}</TextLink>
+            <TextLink href={changeViewHref}>{t("changeView")}</TextLink>
           </div>
-          {view === "tenant" && (
-            <div className="w-full sm:w-auto">
-              <ButtonLink href={newRequestHref} fit>
-                {lr("inviteLandlord")}
-              </ButtonLink>
-            </div>
+          {tenant && !empty && (
+            <ButtonLink href={newRequestHref} fit>
+              <Icon name="plus" size={16} strokeWidth={2} />
+              {lr("inviteLandlord")}
+            </ButtonLink>
           )}
         </div>
 
-        {view === "tenant" && (
-          <section aria-labelledby="home-title" className="flex flex-col gap-2.5">
-            <h2 id="home-title" className="text-sm font-semibold">{lr("homeTitle")}</h2>
-            {requestCards.length ? (
-              <ul className="grid gap-3 lg:grid-cols-2">
-                {requestCards.map((c) => (
-                  <li key={c.id}>
-                    <Link href={c.href} className="flex h-full flex-col gap-3 rounded-xl border border-line bg-surface px-4.5 py-4 transition-colors hover:border-field motion-reduce:transition-none">
-                      <span className="flex items-start justify-between gap-3">
-                        <span className="flex min-w-0 flex-col gap-0.5">
-                          <span className="text-sm font-semibold [overflow-wrap:anywhere]">{c.street}</span>
-                          <span className="text-[13px] text-muted">{c.city}</span>
-                        </span>
-                        <Chip tone={STATUS_TONE[c.status]}>{lr(`status.${c.status}`)}</Chip>
-                      </span>
-                      <span className="flex flex-wrap items-center gap-x-4 gap-y-1 border-t border-paper pt-3 text-[13px] text-muted">
-                        <span className="font-medium text-ink tabular-nums">
-                          {c.rent} / {t("perMonth")}
-                        </span>
-                        <span className="tabular-nums">{c.period}</span>
-                        <Icon name="chevronRight" size={16} className="ml-auto text-muted" />
-                      </span>
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p className="rounded-xl border border-dashed border-line bg-surface p-5 text-sm text-muted">{lr("homeEmpty")}</p>
-            )}
-          </section>
-        )}
+        {tenant && <TenantHome cards={cards} newRequestHref={newRequestHref} />}
 
         {view === "tenant" && Boolean(applications?.length || policies?.length) && (
           <div className="grid gap-3 lg:grid-cols-2">
