@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { getLocale, getTranslations } from "next-intl/server";
 import { Shell } from "@/components/Shell";
+import { TextLink } from "@/components/ui/form";
 import { isLocale } from "@/i18n/config";
 import { date } from "@/lib/format";
 import { siteHref } from "@/lib/site-href";
@@ -18,10 +19,11 @@ export default async function AdminHome() {
   const t = await getTranslations("admin");
   const status = await getTranslations("status");
   const segments = await getTranslations("segments");
+  const staffT = await getTranslations("adminStaff");
   const email = claims.claims.email as string | undefined;
 
-  const { data: me } = await supabase.from("staff").select("role").eq("user_id", claims.claims.sub).maybeSingle();
-  if (!me) {
+  const { data: me } = await supabase.from("staff").select("role, disabled_at").eq("user_id", claims.claims.sub).maybeSingle();
+  if (!me || me.disabled_at) {
     return (
       <Shell site="admin" badge="ADMIN" email={email}>
         <div className="mx-auto mt-6 max-w-md rounded-3xl bg-white p-7">
@@ -53,7 +55,10 @@ export default async function AdminHome() {
 
   return (
     <Shell site="admin" badge={`ADMIN · ${me.role.toUpperCase()}`} email={email}>
-      <h1 className="font-display text-3xl font-bold">{t("overview")}</h1>
+      <div className="flex flex-wrap items-center justify-between gap-x-6">
+        <h1 className="font-display text-3xl font-bold">{t("overview")}</h1>
+        {me.role === "superadmin" && <TextLink href={await siteHref("admin", "/staff")}>{staffT("nav")}</TextLink>}
+      </div>
       <div className="mt-6 grid grid-cols-2 gap-4 lg:grid-cols-4">
         {stats.map((s) => (
           <div key={s.key} className="rounded-3xl bg-white p-5">

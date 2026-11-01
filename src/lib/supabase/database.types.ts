@@ -1170,9 +1170,33 @@ export type Database = {
           status: Database["public"]["Enums"]["application_status"]
         }[]
       }
+      reset_staff_mfa: { Args: { p_user_id: string }; Returns: undefined }
       revoke_invitation: {
         Args: { p_invitation_id: string }
         Returns: undefined
+      }
+      staff_invitation_preview: {
+        Args: { p_token: string }
+        Returns: {
+          email: string
+          expires_at: string
+          inviter_name: string
+          is_open: boolean
+          role: Database["public"]["Enums"]["staff_role"]
+        }[]
+      }
+      staff_overview: {
+        Args: never
+        Returns: {
+          created_at: string
+          disabled_at: string
+          email: string
+          full_name: string
+          has_2fa: boolean
+          last_sign_in_at: string
+          role: Database["public"]["Enums"]["staff_role"]
+          user_id: string
+        }[]
       }
       transfer_account_ownership: {
         Args: { p_account_id: string; p_new_owner: string }

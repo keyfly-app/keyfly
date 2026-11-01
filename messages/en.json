@@ -319,8 +319,6 @@
     }
   },
   "auth": {
-    "adminTitle": "Keyfly admin",
-    "adminText": "Keyfly staff only. We'll email you a sign-in link.",
     "email": "Email",
     "password": "Password",
     "show": "Show",
@@ -468,9 +466,6 @@
       "continue": "Go to Keyfly"
     },
     "staff": {
-      "label": "Invitation",
-      "title": "Join the Keyfly team",
-      "text": "Sign in with the @keyfly.app address the invitation was sent to. If you don't have an account yet, create one in the Keyfly app first.",
       "accept": "Join"
     },
     "errors": {
@@ -585,6 +580,127 @@
       "signRole": "founder of Keyfly",
       "why": "You are receiving this email because you joined the Keyfly waitlist on keyfly.app. If this was not you, write to us and we will delete your data.",
       "privacy": "Privacy notice"
+    }
+  },
+  "adminAuth": {
+    "title": "Keyfly admin",
+    "text": "For Keyfly staff only. After your password, we ask for the code from your authenticator app.",
+    "submit": "Continue",
+    "submitting": "Signing in…",
+    "setup": {
+      "eyebrow": "First sign-in",
+      "title": "Two-factor authentication",
+      "text": "Scan the QR code with an authenticator app, such as Google Authenticator or Microsoft Authenticator.",
+      "qrAlt": "QR code for your authenticator app",
+      "keyLabel": "Can’t scan it? Enter this key:",
+      "copy": "Copy",
+      "copied": "Copied",
+      "code": "The 6-digit code shown in the app",
+      "submit": "Turn on",
+      "lostPhone": "If you lose your phone, a super admin resets two-factor authentication for you."
+    },
+    "challenge": {
+      "title": "Two-factor authentication",
+      "text": "Enter the 6-digit code shown in your authenticator app.",
+      "code": "6-digit code",
+      "submit": "Sign in",
+      "noPhone": "Can’t get to your phone?",
+      "noPhoneTip": "Ask a super admin: they can reset your two-factor authentication."
+    },
+    "checking": "Checking…",
+    "invite": {
+      "label": "Invitation",
+      "title": "Join the Keyfly team",
+      "intro": "{name} invited you to join as {role, select, superadmin {a super admin} admin {an admin} insurance {an insurance specialist} support {a support agent} finance {a finance specialist} other {a team member}}.",
+      "emailHelp": "The invitation is for this address.",
+      "after": "We’ll then send a confirmation link to this address.",
+      "haveAccount": "Already have an account? <link>Sign in</link>",
+      "sentTitle": "Confirm your email",
+      "sentText": "We’ve sent a confirmation link to <b>{email}</b>. It brings you back here to join.",
+      "sentExisting": "If you already have an account with this address, we don’t send a new email: sign in instead.",
+      "signedInAs": "Signed in as <b>{email}</b>",
+      "needs2fa": "Signing in needs two-factor authentication. Have an authenticator app ready on your phone."
+    },
+    "errors": {
+      "email": "Enter a valid email address.",
+      "password": "Enter your password.",
+      "newPassword": "The password doesn’t meet the requirements.",
+      "name": "Enter your full name.",
+      "terms": "To create the account, accept the Terms and the Privacy notice.",
+      "credentials": "Wrong email or password.",
+      "unconfirmed": "You haven’t confirmed your email yet. Check your inbox.",
+      "code": "Wrong code. Try again.",
+      "codeFormat": "The code has 6 digits.",
+      "rateLimit": "Too many attempts. Wait a few minutes and try again.",
+      "generic": "Something went wrong. Try again."
+    }
+  },
+  "adminStaff": {
+    "nav": "Staff",
+    "title": "Staff",
+    "count": "{count, plural, one {# staff member} other {# staff members}}",
+    "columns": {
+      "member": "Staff member",
+      "role": "Role",
+      "twoFactor": "Two-factor authentication",
+      "status": "Status"
+    },
+    "roles": {
+      "superadmin": "Super admin",
+      "admin": "Admin",
+      "insurance": "Insurance",
+      "support": "Support",
+      "finance": "Finance"
+    },
+    "on": "On",
+    "notSetUp": "Not set up yet",
+    "active": "Active",
+    "disabled": "Disabled",
+    "lastSignIn": "Last sign-in: {date}",
+    "never": "Never signed in",
+    "you": "(you)",
+    "selfNote": "Another super admin can reset your own two-factor authentication.",
+    "reset": {
+      "open": "Reset",
+      "openLabel": "Reset two-factor authentication for {name}",
+      "title": "Reset two-factor authentication for {name}?",
+      "text": "They’ll be signed out on every device and set up an authenticator app again at their next sign-in.",
+      "warning": "Only reset it after you’ve confirmed in person or by phone that they’re the one asking.",
+      "cancel": "Cancel",
+      "confirm": "Reset",
+      "resetting": "Resetting…",
+      "done": "Reset. They set it up again at their next sign-in.",
+      "error": "The reset didn’t work. Try again."
+    }
+  },
+  "authEmails": {
+    "fallback": "If the button doesn’t work, copy this link into your browser:",
+    "privacy": "Privacy notice",
+    "taxNumber": "Tax no.",
+    "validity": "The link is valid for 24 hours and works once.",
+    "confirmation": {
+      "subject": "Confirm your email",
+      "preheader": "One click and your Keyfly account is ready.",
+      "title": "Confirm your email",
+      "lead": "Thanks for signing up for Keyfly. Confirm your email to start using your account.",
+      "cta": "Confirm email",
+      "why": "You’re receiving this because someone signed up for Keyfly with this address. If it wasn’t you, ignore it: the account can’t be used without confirmation."
+    },
+    "magicLink": {
+      "subject": "Your Keyfly sign-in link",
+      "preheader": "One click, no password.",
+      "title": "Sign in to Keyfly",
+      "lead": "Click the button and you’re in. No password needed.",
+      "cta": "Sign in",
+      "why": "You’re receiving this because a sign-in link was requested for this address. If it wasn’t you, ignore it: no one can get into your account without the link."
+    },
+    "recovery": {
+      "subject": "Set a new password",
+      "preheader": "The link is valid for 24 hours.",
+      "title": "Set a new password",
+      "lead": "You asked for a new password for your Keyfly account. Click the button to set it.",
+      "cta": "Set new password",
+      "why": "You’re receiving this because a new password was requested for this address. If it wasn’t you, ignore it: your password stays the same."
     }
   }
 }

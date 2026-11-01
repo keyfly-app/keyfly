@@ -7,7 +7,8 @@ export const PASSWORD_RULES: readonly PasswordRule[] = ["length", "cases", "digi
 export function checkPassword(password: string): Record<PasswordRule, boolean> {
   return {
     length: password.length >= PASSWORD_MIN_LENGTH,
-    cases: /\p{Ll}/u.test(password) && /\p{Lu}/u.test(password),
+    // Same character sets as Supabase Auth ("lowercase, uppercase letters and digits"): accented letters alone do not count.
+    cases: /[a-z]/.test(password) && /[A-Z]/.test(password),
     digit: /\d/.test(password),
   };
 }

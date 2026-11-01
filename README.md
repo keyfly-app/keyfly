@@ -56,11 +56,18 @@ Flow: branch from `staging` → PR into `staging` (CI) → test on staging.keyfl
 
 - Customer app: email + password (rules in `src/config/auth.ts`), one-time email link for existing accounts; Google is
   prepared behind `AUTH_METHODS.google`. Sign-up stores the accepted terms/privacy versions (`src/config/consent.ts`).
-- Admin: email link only, never creates accounts; staff join through `/invite/<token>` and need two-factor sign-in.
+- Admin: email + password, then a TOTP code (Supabase MFA); the first sign-in sets up the authenticator at `/mfa`.
+  Every admin page needs aal2 (enforced in `src/proxy.ts`). Admin never creates accounts on its own: staff create theirs
+  from the invitation at `/invite/<token>` (address fixed by the invitation). A super admin can reset a colleague's
+  2FA on `/staff` (`reset_staff_mfa`: removes the factor, signs them out everywhere; never one's own).
 - Email links land on `/auth/confirm` (token hash, works in any browser); OAuth on `/auth/callback`.
+- Auth emails: `npm run email:auth` builds `supabase/templates/*.html` and `subjects.json` from `messages/*.json`
+  (`authEmails`) and `src/config/company.ts`. Each template holds both languages (user metadata `locale`); paste them
+  into Supabase → Authentication → Emails → Templates. Links need the app's redirect (`{{ .RedirectTo }}` with `?next=`),
+  so emails triggered from the Supabase dashboard itself won't work – use the app.
 - Supabase Auth settings per project: Site URL, redirect URLs (`https://app…/auth/confirm`, `…/auth/callback`, preview and
-  localhost equivalents), email templates linking to `{{ .RedirectTo }}&token_hash={{ .TokenHash }}&type=<type>`,
-  password requirements matching `src/config/auth.ts`, email link expiry 24 h, custom SMTP (Resend).
+  localhost equivalents), the templates above, MFA TOTP enabled, password requirements matching `src/config/auth.ts`
+  (lowercase, uppercase letters and digits), leaked-password protection, email link expiry 24 h, custom SMTP (Resend).
 
 ### Automatic migrations
 

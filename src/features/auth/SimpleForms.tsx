@@ -4,43 +4,10 @@ import { useActionState, useId } from "react";
 import { useTranslations } from "next-intl";
 import { Button, Notice, TextField } from "@/components/ui/form";
 import type { AppSite } from "@/lib/sites";
-import { requestPasswordReset, resendConfirmation, sendEmailLink, updatePassword, type FormState } from "./actions";
+import { requestPasswordReset, resendConfirmation, updatePassword, type FormState } from "./actions";
 import { PasswordField } from "./PasswordField";
 
 const idle: FormState = { status: "idle" };
-
-/** One-time sign-in link only (admin surface: staff sign in by email link). */
-export function EmailLinkForm({ site, next }: { site: AppSite; next: string }) {
-  const t = useTranslations("auth");
-  const id = useId();
-  const [state, action, pending] = useActionState(sendEmailLink, idle);
-  if (state.status === "sent") {
-    return (
-      <Notice kind="success" icon="mail">
-        <p>{t("emailLink.sentTitle")}</p>
-        <p className="mt-0.5 font-normal text-ink-soft">{t("emailLink.sentText")}</p>
-      </Notice>
-    );
-  }
-  const error = state.status === "error" ? state.error : undefined;
-  return (
-    <form action={action} noValidate className="flex flex-col gap-4">
-      <input type="hidden" name="site" value={site} />
-      <input type="hidden" name="next" value={next} />
-      <TextField
-        id={`${id}-email`}
-        name="email"
-        type="email"
-        label={t("email")}
-        autoComplete="email"
-        defaultValue={state.status === "error" ? state.email : undefined}
-        error={error === "email" ? t("errors.email") : undefined}
-      />
-      {error && error !== "email" && <Notice kind="error">{t(`errors.${error}`)}</Notice>}
-      <Button pending={pending}>{pending ? t("emailLink.sending") : t("emailLink.submit")}</Button>
-    </form>
-  );
-}
 
 export function ResendConfirmationForm() {
   const t = useTranslations("auth");
@@ -56,7 +23,8 @@ export function ResendConfirmationForm() {
   );
 }
 
-export function ForgotPasswordForm() {
+/** Password-reset request; `site` decides where the emailed link lands (customer app or admin). */
+export function ForgotPasswordForm({ site = "portal" }: { site?: AppSite }) {
   const t = useTranslations("auth");
   const id = useId();
   const [state, action, pending] = useActionState(requestPasswordReset, idle);
@@ -71,6 +39,7 @@ export function ForgotPasswordForm() {
   const error = state.status === "error" ? state.error : undefined;
   return (
     <form action={action} noValidate className="flex flex-col gap-4">
+      <input type="hidden" name="site" value={site} />
       <TextField
         id={`${id}-email`}
         name="email"
@@ -86,13 +55,14 @@ export function ForgotPasswordForm() {
   );
 }
 
-export function NewPasswordForm() {
+export function NewPasswordForm({ site = "portal" }: { site?: AppSite }) {
   const t = useTranslations("auth");
   const id = useId();
   const [state, action, pending] = useActionState(updatePassword, idle);
   const error = state.status === "error" ? state.error : undefined;
   return (
     <form action={action} noValidate className="flex flex-col gap-4">
+      <input type="hidden" name="site" value={site} />
       <PasswordField
         id={`${id}-password`}
         label={t("reset.password")}
