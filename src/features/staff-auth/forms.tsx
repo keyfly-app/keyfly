@@ -219,12 +219,17 @@ export function TotpSetup({ next }: { next: string }) {
 export function SetupKey({ secret }: { secret: string }) {
   const t = useTranslations("adminAuth.setup");
   const [copied, setCopied] = useState(false);
-  const grouped = secret.match(/.{1,4}/g)?.join(" ") ?? secret;
+  const groups = secret.match(/.{1,4}/g) ?? [secret];
   return (
     <div className="flex flex-col gap-1.5">
       <p className="text-[13px] text-muted">{t("keyLabel")}</p>
       <div className="flex items-center gap-2.5 rounded-xl bg-paper py-1.5 pr-1.5 pl-3.5">
-        <code className="flex-1 font-mono text-[15px] font-semibold tracking-[0.06em] break-all">{grouped}</code>
+        <code className="flex min-w-0 flex-1 flex-wrap gap-x-2 font-mono text-[15px] font-semibold tracking-[0.06em]">
+          {/* Groups of four never break apart, so the key reads like the design. */}
+          {groups.map((group, i) => (
+            <span key={i}>{group}</span>
+          ))}
+        </code>
         <button
           type="button"
           onClick={async () => {

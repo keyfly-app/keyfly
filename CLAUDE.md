@@ -13,6 +13,9 @@ https://claude.ai/artifact/AttVCwnk4JJP3kqG7mV1Ns
 - **Design and copy first**: every feature – and every change the owner asks for – is first shown in the Keyfly
   design canvas (desktop 1440 + mobile 390, all states, both languages, final wording) and coded only after the
   owner has reviewed and approved it. Use only design-system tokens (`globals.css`) and components.
+- **Enterprise fintech UI/UX**: every screen must look and behave like a top-tier fintech product (precise
+  spacing, real loading/empty/error states, no raw browser defaults). Every task list ends with a UI/UX check
+  of the screens touched, on desktop and on a phone, before the owner sees them.
 - **Mobile first, WCAG 2.2 AA**: no horizontal scroll 320–1440 px, 44×44 px touch targets, labelled fields,
   visible focus, 4.5:1 text contrast, keyboard and screen-reader friendly.
 - **Voice**: informal "te" (tegezés) everywhere, for tenants and companies alike. Formats: `1 050 000 Ft`

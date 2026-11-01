@@ -899,7 +899,7 @@
       "unconfirmed": "You haven’t confirmed your email yet. Check your inbox.",
       "code": "Wrong code. Try again.",
       "codeFormat": "The code has 6 digits.",
-      "expired": "This QR code is no longer valid because a newer one was created. Get a new QR code and scan that one.",
+      "expired": "This QR code has expired. Get a new one, scan it and enter the new code.",
       "rateLimit": "Too many attempts. Wait a few minutes and try again.",
       "generic": "Something went wrong. Try again."
     }

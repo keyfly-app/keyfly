@@ -899,7 +899,7 @@
       "unconfirmed": "Még nem erősítetted meg az e-mail-címed. Nézd meg a postafiókod.",
       "code": "Hibás kód. Próbáld újra.",
       "codeFormat": "A kód 6 számjegyből áll.",
-      "expired": "Ez a QR-kód már nem érvényes, mert közben újat készítettünk. Kérj új QR-kódot, és olvasd be azt.",
+      "expired": "Ez a QR-kód lejárt. Kérj újat, olvasd be, és írd be az új kódot.",
       "rateLimit": "Túl sok próbálkozás. Várj pár percet, és próbáld újra.",
       "generic": "Valami nem sikerült. Próbáld újra."
     }

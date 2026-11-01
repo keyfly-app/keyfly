@@ -27,6 +27,8 @@ export function CodeInput({
   const [value, setValue] = useState("");
   const [focused, setFocused] = useState(Boolean(autoFocus));
   const active = Math.min(value.length, length - 1);
+  // A wrong code is shown until the person starts typing again.
+  const invalid = Boolean(error) && value === "";
 
   return (
     <div className="flex flex-col gap-1.5">
@@ -34,12 +36,12 @@ export function CodeInput({
       <div className="relative">
         <div aria-hidden="true" className="flex gap-2">
           {Array.from({ length }, (_, i) => {
-            const current = focused && i === active && !error;
+            const current = focused && i === active && !invalid;
             return (
               <span
                 key={i}
                 className={`flex h-14 min-w-0 flex-1 items-center justify-center rounded-xl border bg-surface font-display text-[22px] font-semibold tabular-nums transition-[border-color,box-shadow] motion-reduce:transition-none ${
-                  error ? "border-danger-ink" : current ? "border-brand ring-3 ring-brand/20" : "border-field"
+                  invalid ? "border-danger-ink" : current ? "border-brand ring-3 ring-brand/20" : "border-field"
                 }`}
               >
                 {value[i] ?? (current ? <span className="h-6 w-px animate-pulse bg-ink" /> : "")}
@@ -68,12 +70,12 @@ export function CodeInput({
           maxLength={length}
           autoFocus={autoFocus}
           spellCheck={false}
-          aria-invalid={error ? true : undefined}
-          aria-describedby={error ? `${id}-error` : undefined}
+          aria-invalid={invalid || undefined}
+          aria-describedby={invalid ? `${id}-error` : undefined}
           className="absolute inset-0 h-full w-full cursor-text text-base opacity-0"
         />
       </div>
-      {error && <FieldError id={`${id}-error`} message={error} />}
+      {invalid && error && <FieldError id={`${id}-error`} message={error} />}
     </div>
   );
 }

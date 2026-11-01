@@ -16,6 +16,8 @@ import { REMEMBER_COOKIE } from "@/lib/supabase/session-cookies";
 
 const EMAIL_RE = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
 const CODE_RE = /^\d{6}$/;
+/** An authenticator setup nobody confirmed within this time is treated as abandoned. */
+const STALE_SETUP_MS = 15 * 60 * 1000;
 
 export type StaffFormError = "email" | "password" | "name" | "terms" | "credentials" | "unconfirmed" | "code" | "codeFormat" | "expired" | "rateLimit" | "generic";
 export type StaffFormState = { status: "idle" } | { status: "sent"; email: string } | { status: "error"; error: StaffFormError; email?: string };
@@ -120,11 +122,16 @@ export async function verifyTotp(_prev: StaffFormState, form: FormData): Promise
   const { error } = await supabase.auth.mfa.challengeAndVerify({ factorId, code });
   if (error) {
     if (error.code === "mfa_verification_failed" || error.code === "mfa_challenge_expired") return { status: "error", error: "code" };
-    // The setup was replaced (another tab, or a newer QR code): the scanned key no longer exists.
+    // The setup expired or was cleaned up: the scanned key no longer exists.
     if (error.code === "mfa_factor_not_found") return { status: "error", error: "expired" };
     if (rateLimited(error.code) || error.code === "mfa_verification_rejected") return { status: "error", error: "rateLimit" };
     console.error("mfa verify failed", error.code);
     return { status: "error", error: "generic" };
+  }
+  // The authenticator is on: setups left open elsewhere are no longer needed.
+  const { data: factors } = await supabase.auth.mfa.listFactors();
+  for (const factor of factors?.all ?? []) {
+    if (factor.factor_type === "totp" && factor.status === "unverified") await supabase.auth.mfa.unenroll({ factorId: factor.id });
   }
   const { data } = await supabase.auth.getUser();
   await syncEmailLocale(supabase, data.user?.user_metadata);
@@ -144,11 +151,15 @@ export async function startTotpSetup(): Promise<TotpSetupState> {
 
   const { data: factors } = await supabase.auth.mfa.listFactors();
   if (factors?.totp.length) return { status: "error" }; // already set up: the page asks for the code instead
-  // Earlier setups that were never confirmed are removed, so only the newest QR code works.
+  // Setups open in other tabs or devices stay valid; only abandoned ones are removed.
+  const staleBefore = Date.now() - STALE_SETUP_MS;
   for (const factor of factors?.all ?? []) {
-    if (factor.factor_type === "totp" && factor.status === "unverified") await supabase.auth.mfa.unenroll({ factorId: factor.id });
+    if (factor.factor_type === "totp" && factor.status === "unverified" && Date.parse(factor.created_at) < staleBefore) {
+      await supabase.auth.mfa.unenroll({ factorId: factor.id });
+    }
   }
-  const { data, error } = await supabase.auth.mfa.enroll({ factorType: "totp", friendlyName: "Keyfly admin", issuer: "Keyfly" });
+  // No friendly name: names must be unique, and parallel setups would collide.
+  const { data, error } = await supabase.auth.mfa.enroll({ factorType: "totp", issuer: "Keyfly" });
   if (error || !data) {
     console.error("mfa enroll failed", error?.code);
     return { status: "error" };
