@@ -52,8 +52,11 @@ export async function senderLocale(): Promise<Locale> {
 /** The signed-in user's name for "X invited you" (falls back to the email address). */
 export async function myDisplayName(): Promise<string> {
   const supabase = await createClient();
-  const { data } = await supabase.from("profiles").select("full_name, email").single();
-  return data?.full_name ?? data?.email ?? "";
+  const { data: auth } = await supabase.auth.getClaims();
+  if (!auth?.claims) return "";
+  // Filter by id: staff (with 2FA) may read every profile, so an unfiltered single() would fail for them.
+  const { data } = await supabase.from("profiles").select("full_name, email").eq("id", auth.claims.sub).single();
+  return data?.full_name || data?.email || "";
 }
 
 export type InviteResult = { ok: true; emailSent: boolean } | { ok: false; error: string };

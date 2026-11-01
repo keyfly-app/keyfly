@@ -22,7 +22,7 @@ export default async function PortalHome() {
   const supabase = await createClient();
   const { data: claims } = await supabase.auth.getClaims();
   if (!claims) redirect(await siteHref("portal", "/login"));
-  const { data: profile } = await supabase.from("profiles").select("full_name, email, start_view").single();
+  const { data: profile } = await supabase.from("profiles").select("full_name, email, start_view").eq("id", claims.claims.sub).single();
   // First visit: ask how they use Keyfly (sets the start screen only).
   if (!profile?.start_view) redirect(await siteHref("portal", "/welcome"));
   const view = profile.start_view;

@@ -13,7 +13,10 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function Welcome() {
   const supabase = await createClient();
-  const { data: profile } = await supabase.from("profiles").select("start_view").maybeSingle();
+  const { data: auth } = await supabase.auth.getClaims();
+  const { data: profile } = auth?.claims
+    ? await supabase.from("profiles").select("start_view").eq("id", auth.claims.sub).maybeSingle()
+    : { data: null };
   return (
     <AuthLayout>
       <StartViewForm current={profile?.start_view ?? null} />
