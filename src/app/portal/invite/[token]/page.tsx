@@ -114,6 +114,7 @@ export default async function Invite({ params }: { params: Promise<{ token: stri
         tenantName={request.tenant_name}
         street={streetLine(place)}
         city={cityLine(place)}
+        kind={(await getTranslations("propertyKinds"))(request.property_kind)}
         proposed={{ startDate: request.start_date, endDate: request.end_date, monthlyRent: request.monthly_rent, deposit: request.deposit_amount }}
         accounts={accounts}
         properties={properties}

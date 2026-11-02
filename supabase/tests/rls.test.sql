@@ -400,6 +400,7 @@ select tests.act_as(null);
 select tests.ok((select is_open and kind = 'lease_landlord' and inviter_name = 'gabor' and street = 'Dózsa György út' and house_number = '30.' and postal_code = '1068'
                  from public.invitation_teaser((select token from req))), 'the signed-out landing shows who invited and which home');
 select tests.ok((select masked_email = 'p•••@example.com' from public.invitation_teaser((select token from req))), 'the teaser masks the address');
+select tests.ok((select property_kind = 'office' from public.invitation_teaser((select token from req))), 'the teaser says what is rented');
 select tests.ok((select count(*) from public.invitation_teaser('not-a-token')) = 0, 'an unknown link shows nothing');
 
 select tests.act_as('00000000-0000-0000-0000-0000000000a1');
@@ -412,7 +413,7 @@ select tests.throws($$select public.cancel_lease_request((select request_id from
 
 select tests.act_as('00000000-0000-0000-0000-0000000000b1');
 select tests.ok((select is_open and is_for_me and property_address like 'Dózsa György út 30.,%' from public.invitation_preview((select token from req))), 'the landlord opens the invitation');
-select tests.ok((select monthly_rent = 280000 and floor_number = 1 and tenant_name = 'gabor' from public.lease_request_preview((select token from req))), 'the landlord sees the address and the terms');
+select tests.ok((select monthly_rent = 280000 and floor_number = 1 and tenant_name = 'gabor' and property_kind = 'office' from public.lease_request_preview((select token from req))), 'the landlord sees the address and the terms');
 select tests.ok((select count(*) from public.lease_requests) = 0, 'the landlord does not read the tenant''s request rows');
 select tests.throws($$select public.accept_invitation((select token from req))$$, 'the landlord invitation has its own acceptance');
 select tests.throws($$select public.accept_landlord_invitation((select token from req), '00000000-0000-0000-0000-00000000c0c0', current_date + 30, 280000)$$, 'the landlord takes over only with an account of his');

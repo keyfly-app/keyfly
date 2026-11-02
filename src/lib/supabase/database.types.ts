@@ -1478,6 +1478,7 @@ export type Database = {
           kind: Database["public"]["Enums"]["invitation_kind"]
           masked_email: string
           postal_code: string
+          property_kind: Database["public"]["Enums"]["property_kind"]
           street: string
         }[]
       }
@@ -1522,6 +1523,7 @@ export type Database = {
           start_date: string
           street_name: string
           street_type: string
+          property_kind: Database["public"]["Enums"]["property_kind"]
           tenant_name: string
         }[]
       }

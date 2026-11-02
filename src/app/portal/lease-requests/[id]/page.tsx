@@ -30,7 +30,7 @@ export default async function LeaseRequest({
     r.lease_id
       ? supabase
           .from("leases")
-          .select(`start_date, end_date, monthly_rent, deposit_amount, payment_day, created_at, landlord_confirmed_at, properties(${ADDRESS_COLUMNS})`)
+          .select(`start_date, end_date, monthly_rent, deposit_amount, payment_day, created_at, landlord_confirmed_at, properties(kind, ${ADDRESS_COLUMNS})`)
           .eq("id", r.lease_id)
           .maybeSingle()
       : Promise.resolve({ data: null }),

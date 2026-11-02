@@ -69,6 +69,7 @@ export function LandlordTakeOver({
   tenantName,
   street,
   city,
+  kind,
   proposed,
   accounts,
   properties,
@@ -79,6 +80,8 @@ export function LandlordTakeOver({
   tenantName: string;
   street: string;
   city: string;
+  /** What is rented, in the page's language ("Lakás"). */
+  kind: string;
   proposed: ProposedTerms;
   accounts: LandlordAccount[];
   properties: LandlordProperty[];
@@ -429,7 +432,7 @@ export function LandlordTakeOver({
               </div>
               <KeyValues
                 rows={[
-                  [t("rows.property"), `${street}, ${city}`],
+                  [t("rows.property"), `${kind} · ${street}, ${city}`],
                   [t("rows.rent"), money(proposed.monthlyRent, locale)],
                   ...(proposed.deposit != null ? [[t("rows.deposit"), money(proposed.deposit, locale)] as [string, string]] : []),
                   [t("rows.start"), date(proposed.startDate, locale)],

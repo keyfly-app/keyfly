@@ -41,14 +41,14 @@ export default async function PortalHome() {
       ? supabase
           .from("lease_requests")
           .select(
-            `id, status, invitation_expires_at, reminder_count, monthly_rent, start_date, end_date, created_at, decided_at, updated_at, ${ADDRESS_COLUMNS}, leases(monthly_rent, start_date, end_date, properties(${ADDRESS_COLUMNS}))`,
+            `id, status, invitation_expires_at, reminder_count, monthly_rent, start_date, end_date, created_at, decided_at, updated_at, property_kind, ${ADDRESS_COLUMNS}, leases(monthly_rent, start_date, end_date, properties(kind, ${ADDRESS_COLUMNS}))`,
           )
           .neq("status", "cancelled")
           .order("created_at", { ascending: false })
           .limit(20)
       : Promise.resolve({ data: null }),
   ]);
-  const lr = await getTranslations("leaseRequest");
+  const [lr, kinds] = await Promise.all([getTranslations("leaseRequest"), getTranslations("propertyKinds")]);
   const newRequestHref = await siteHref("portal", "/lease-requests/new");
   const now = new Date();
   const cards: HomeCard[] = await Promise.all(
@@ -63,7 +63,8 @@ export default async function PortalHome() {
         id: r.id,
         status: expired ? ("expired" as const) : r.status,
         street: streetLine(address),
-        city: cityLine(address),
+        // "Lakás · 1138 Budapest, XIII. kerület": what is rented, then where.
+        city: `${kinds(lease?.properties?.kind ?? r.property_kind)} · ${cityLine(address)}`,
         rent: money(lease?.monthly_rent ?? r.monthly_rent, locale),
         period: `${date(start, locale)} – ${end ? date(end, locale) : lr("terms.openEnded")}`,
         sent: date(r.created_at, locale),
