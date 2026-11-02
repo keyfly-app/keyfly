@@ -5,7 +5,7 @@ import { date } from "@/lib/format";
 import type { Database } from "@/lib/supabase/database.types";
 import { SettingsHeader } from "@/features/settings/SettingsHeader";
 import { accountInitials } from "./accounts";
-import { InvitationActions, InviteMember, RemoveMember, RequestActions } from "./TeamActions";
+import { InvitationActions, InviteMember, LeaveCompany, RemoveMember, RequestActions } from "./TeamActions";
 
 type Fn = Database["public"]["Functions"];
 export type TeamMember = Fn["account_members_list"]["Returns"][number];
@@ -23,6 +23,7 @@ function Initials({ name }: { name: string }) {
 /** Csapat (canvas "Csapat"): access requests first (they wait on you), then members, then pending invitations. */
 export async function TeamView({
   accountId,
+  companyName,
   manage,
   enterprise,
   me,
@@ -33,6 +34,7 @@ export async function TeamView({
   invitations,
 }: {
   accountId: string;
+  companyName: string;
   manage: boolean;
   enterprise: boolean;
   me: string | undefined;
@@ -157,6 +159,8 @@ export async function TeamView({
           </ul>
         </section>
       )}
+
+      {list.some((m) => m.user_id === me && m.role !== "owner") && <LeaveCompany accountId={accountId} company={companyName} />}
     </>
   );
 }

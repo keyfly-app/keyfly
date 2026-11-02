@@ -52,7 +52,7 @@ export function AddCompanyFlow({ homeHref, myName, companyPrefix }: { homeHref: 
   if (access.status === "sent") {
     return (
       <div className="flex min-h-dvh flex-col bg-surface sm:bg-paper">
-        <FlowHeader title={t("flow.title")} steps={STEPS.map((s) => t(`flow.steps.${s}`))} current={0} onCancel={() => router.push(homeHref)} labels={headerLabels()} />
+        <FlowHeader title={t("flow.title")} steps={STEPS.map((s) => t(`flow.steps.${s}`))} current={0} homeHref={homeHref} onCancel={() => router.push(homeHref)} labels={headerLabels()} />
         <main className="flex flex-1 justify-center px-5 py-10 sm:py-16">
           <section className="flex w-full max-w-[480px] flex-col gap-5 sm:rounded-xl sm:border sm:border-line sm:bg-surface sm:p-8">
             <span aria-hidden="true" className="flex size-12 items-center justify-center rounded-full bg-mist text-brand">
@@ -77,6 +77,7 @@ export function AddCompanyFlow({ homeHref, myName, companyPrefix }: { homeHref: 
       current: lr("flow.current"),
       back: t("back"),
       cancel: lr("flow.cancel"),
+      home: lr("flow.home"),
     };
   }
 
@@ -108,6 +109,7 @@ export function AddCompanyFlow({ homeHref, myName, companyPrefix }: { homeHref: 
         title={t("flow.title")}
         steps={STEPS.map((s) => t(`flow.steps.${s}`))}
         current={step}
+        homeHref={homeHref}
         onBack={step > 0 ? () => go(0) : undefined}
         onCancel={() => router.push(homeHref)}
         labels={headerLabels()}
@@ -319,14 +321,10 @@ export function AddCompanyFlow({ homeHref, myName, companyPrefix }: { homeHref: 
 
             {primary && (
               <div className="hidden items-center justify-between gap-4 border-t border-paper pt-5 sm:flex">
-                {step === 1 ? (
-                  <button type="button" onClick={() => go(0)} className="-ml-3 inline-flex h-10 items-center gap-2 rounded-lg px-3 text-sm font-medium hover:bg-paper">
-                    <Icon name="back" size={16} strokeWidth={2} />
-                    {t("back")}
-                  </button>
-                ) : (
-                  <span />
-                )}
+                <button type="button" onClick={step === 1 ? () => go(0) : () => router.push(homeHref)} className="-ml-3 inline-flex h-10 items-center gap-2 rounded-lg px-3 text-sm font-medium hover:bg-paper">
+                  <Icon name="back" size={16} strokeWidth={2} />
+                  {t("back")}
+                </button>
                 {primary}
               </div>
             )}

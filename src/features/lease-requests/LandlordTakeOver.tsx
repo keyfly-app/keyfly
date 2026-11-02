@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useActionState, useId, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
@@ -180,7 +181,9 @@ export function LandlordTakeOver({
       <div className="flex min-h-dvh flex-col bg-surface sm:bg-paper">
         <header className="border-b border-line bg-surface">
           <div className="mx-auto flex h-14 max-w-[1120px] items-center px-4 sm:px-8">
-            <LogoFull height={20} />
+            <Link href={homeHref} aria-label={t("flow.home")} className="flex rounded-md">
+              <LogoFull height={20} />
+            </Link>
           </div>
         </header>
         <main className="flex flex-1 justify-center px-5 py-10 sm:py-16">
@@ -236,6 +239,7 @@ export function LandlordTakeOver({
         title={ls("title")}
         steps={STEPS.map((k) => ls(`steps.${k}`))}
         current={step}
+        homeHref={homeHref}
         onBack={step > 0 ? () => go(0) : undefined}
         onCancel={cancel}
         labels={{
@@ -245,6 +249,7 @@ export function LandlordTakeOver({
           current: t("flow.current"),
           back: t("back"),
           cancel: t("flow.cancel"),
+          home: t("flow.home"),
         }}
       />
       <form action={action} onSubmit={onSubmit} noValidate className="flex flex-1 flex-col">

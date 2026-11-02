@@ -17,7 +17,8 @@
       "now": "In progress",
       "todo": "Up next",
       "err": "Stopped"
-    }
+    },
+    "homeLink": "Keyfly – home"
   },
   "meta": {
     "title": "Rent without a deposit in Hungary – Keyfly",
@@ -517,7 +518,8 @@
       "leaveStay": "Stay",
       "leaveConfirm": "Leave",
       "close": "Close",
-      "errorSummary": "{count, plural, one {# field still needs your input.} other {# fields still need your input.}}"
+      "errorSummary": "{count, plural, one {# field still needs your input.} other {# fields still need your input.}}",
+      "home": "Keyfly – home"
     },
     "steps": {
       "home": "Home",
@@ -1342,6 +1344,7 @@
       "enterprise": "Enterprise"
     },
     "add": "Add a company",
+    "settings": "Company settings",
     "note": "Each account has its own data, plan and team. Your profile and sign-in are shared.",
     "close": "Close"
   },
@@ -1504,6 +1507,11 @@
       "invited": "Invitation sent: {email}",
       "invitedNoEmail": "The invitation is ready, but the email didn’t go out. Try resending it.",
       "readOnly": "The owner and admins manage the team.",
+      "leaveTitle": "Leave this company account",
+      "leaveText": "Your own account and your other companies stay. To come back you need a new invitation or an approved request.",
+      "leave": "Leave",
+      "leaveConfirmTitle": "Leave {company}?",
+      "leaveConfirmText": "You will no longer see the company’s properties, leases or team. The owner and admins can invite you again later.",
       "roleText": {
         "admin": "Manages everything, the team too.",
         "manager": "Manages properties, leases, insurance and tenants.",

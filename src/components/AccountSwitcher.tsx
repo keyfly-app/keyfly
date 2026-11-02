@@ -31,6 +31,7 @@ export function AccountSwitcher({
   current,
   labels,
   addHref,
+  settings,
 }: {
   accounts: SwitcherAccount[];
   currentId: string;
@@ -38,6 +39,8 @@ export function AccountSwitcher({
   current: SwitcherAccount;
   labels: { button: string; title: string; add: string; note: string; close: string };
   addHref: string;
+  /** In a company account: its settings (details, team), one tap from where you see which account you are in. */
+  settings?: { href: string; label: string };
 }) {
   const [open, setOpen] = useState(false);
   const id = useId();
@@ -74,7 +77,7 @@ export function AccountSwitcher({
   };
 
   return (
-    <div ref={root} className="relative min-w-0">
+    <div ref={root} className="relative max-w-[200px] min-w-0 sm:max-w-[280px]">
       <button
         ref={button}
         type="button"
@@ -83,7 +86,7 @@ export function AccountSwitcher({
         aria-controls={`${id}-menu`}
         aria-label={labels.button}
         onClick={() => setOpen((v) => !v)}
-        className={`flex h-11 max-w-[200px] min-w-0 items-center gap-2 rounded-lg border pr-2 pl-1 text-left sm:h-9 sm:max-w-[280px] ${open ? "border-ink bg-paper" : "border-line bg-surface hover:border-field"}`}
+        className={`flex h-11 max-w-full min-w-0 items-center gap-2 rounded-lg border pr-2 pl-1 text-left sm:h-9 ${open ? "border-ink bg-paper" : "border-line bg-surface hover:border-field"}`}
       >
         <AccountMark account={current} size={28} />
         <span className="flex min-w-0 flex-col leading-[15px]">
@@ -134,6 +137,12 @@ export function AccountSwitcher({
               })}
             </div>
             <div className="mx-1 my-1.5 h-px bg-line" />
+            {settings && (
+              <Link href={settings.href} role="menuitem" onClick={() => setOpen(false)} className="flex min-h-11 items-center gap-2.5 rounded-lg px-2.5 text-sm font-medium hover:bg-paper focus-visible:bg-paper sm:min-h-9">
+                <Icon name="settings" size={16} className="text-muted" />
+                {settings.label}
+              </Link>
+            )}
             <Link href={addHref} role="menuitem" onClick={() => setOpen(false)} className="flex min-h-11 items-center gap-2.5 rounded-lg px-2.5 text-sm font-semibold text-brand hover:bg-paper focus-visible:bg-paper sm:min-h-9">
               <Icon name="plus" size={16} strokeWidth={2} />
               {labels.add}

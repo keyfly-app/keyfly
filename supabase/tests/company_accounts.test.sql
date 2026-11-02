@@ -65,6 +65,25 @@ select tests.act_as('00000000-0000-0000-0000-00000000cc03');
 select tests.ok((select invitation_only from public.company_lookup('34567812')), 'the lookup says Enterprise is invitation-only');
 select tests.throws($$select public.request_company_access((select id from co))$$, 'no access requests to Enterprise');
 
+-- One person, several companies: Anna adds a second one and works in both.
+reset role;
+set local role service_role;
+create temp table co2 as select public.create_company_account('00000000-0000-0000-0000-00000000cc01', 'Kovács és Társa Betéti Társaság', '45678123-1-42',
+  p_name => 'Kovács és Társa') as id;
+reset role;
+grant select on co2 to authenticated;
+select tests.act_as('00000000-0000-0000-0000-00000000cc01');
+select tests.ok((select count(*) from public.account_members m join public.accounts a on a.id = m.account_id
+                 where m.user_id = '00000000-0000-0000-0000-00000000cc01' and a.kind = 'company' and m.role = 'owner') = 2, 'a person can own several companies');
+
+-- Eszter leaves Duna herself; the owner cannot leave.
+select tests.act_as('00000000-0000-0000-0000-00000000cc02');
+delete from public.account_members where account_id = (select id from co) and user_id = '00000000-0000-0000-0000-00000000cc02';
+select tests.ok((select count(*) from public.account_members_list((select id from co))) = 0, 'a member can leave a company');
+select tests.act_as('00000000-0000-0000-0000-00000000cc01');
+delete from public.account_members where account_id = (select id from co2) and user_id = '00000000-0000-0000-0000-00000000cc01';
+select tests.ok((select count(*) from public.account_members_list((select id from co2))) = 1, 'the owner cannot leave (ownership is handed over first)');
+
 -- The retired "manager" view.
 select tests.ok(not exists (select 1 from public.profiles where start_view = 'manager'), 'nobody is left on the manager view');
 

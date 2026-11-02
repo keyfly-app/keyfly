@@ -7,7 +7,7 @@ import { toast } from "@/components/Toaster";
 import { Dialog, DialogActions } from "@/components/ui/Dialog";
 import { Button, Notice, TextField } from "@/components/ui/form";
 import type { Enums } from "@/lib/supabase/database.types";
-import { decideRequest, inviteMember, manageInvitation, removeMember, type TeamState } from "./actions";
+import { decideRequest, inviteMember, leaveCompany, manageInvitation, removeMember, type TeamState } from "./actions";
 
 const idle: TeamState = { status: "idle" };
 type Role = "manager" | "viewer" | "admin";
@@ -256,6 +256,43 @@ export function RemoveMember({ accountId, userId, name }: { accountId: string; u
         </Dialog>
       )}
     </>
+  );
+}
+
+/** "Leave this company": the last card of the Team page for members who are not the owner. */
+export function LeaveCompany({ accountId, company }: { accountId: string; company: string }) {
+  const t = useTranslations("companies.team");
+  const c = useTranslations("companies");
+  const [open, setOpen] = useState(false);
+  const [state, action, pending] = useActionState<TeamState, FormData>(leaveCompany, idle);
+  return (
+    <section aria-labelledby="team-leave" className="flex flex-col gap-3 rounded-xl border border-line bg-surface px-5 py-5 sm:flex-row sm:items-center sm:justify-between sm:px-6">
+      <div className="flex flex-col gap-0.5">
+        <h2 id="team-leave" className="text-[15px] font-semibold">
+          {t("leaveTitle")}
+        </h2>
+        <p className="text-[13px] text-muted">{t("leaveText")}</p>
+      </div>
+      <button type="button" onClick={() => setOpen(true)} className="inline-flex h-11 flex-none items-center justify-center rounded-lg border border-field px-4 text-sm font-medium text-danger-ink hover:border-danger-ink sm:h-10">
+        {t("leave")}
+      </button>
+      {open && (
+        <Dialog open onClose={() => setOpen(false)} title={t("leaveConfirmTitle", { company })} description={t("leaveConfirmText")} closeLabel={c("close")}>
+          <form action={action} className="flex flex-col gap-4">
+            <input type="hidden" name="accountId" value={accountId} />
+            {state.status === "error" && <Notice kind="error">{errorText(t, state)}</Notice>}
+            <DialogActions>
+              <button type="button" data-autofocus onClick={() => setOpen(false)} className={SECONDARY}>
+                {c("cancel")}
+              </button>
+              <Button variant="danger" pending={pending} fit>
+                {t("leave")}
+              </Button>
+            </DialogActions>
+          </form>
+        </Dialog>
+      )}
+    </section>
   );
 }
 

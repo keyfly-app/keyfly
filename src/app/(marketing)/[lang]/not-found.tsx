@@ -12,7 +12,9 @@ export default function NotFound() {
   const c = useTranslations("common");
   return (
     <div className="mx-auto flex min-h-dvh max-w-md flex-col items-start justify-center gap-4 px-4">
-      <LogoFull height={28} />
+      <Link href={publicHref("home", locale)} aria-label={c("homeLink")} className="flex rounded-md">
+        <LogoFull height={28} />
+      </Link>
       <h1 className="font-display text-4xl font-bold">{t("title")}</h1>
       <Link href={publicHref("home", locale)} className="rounded-full bg-brand px-6 py-3 font-bold text-white">
         {c("backHome")}

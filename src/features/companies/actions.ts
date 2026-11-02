@@ -198,6 +198,23 @@ export async function removeMember(_: TeamState, form: FormData): Promise<TeamSt
   return { status: "done", message: "removed" };
 }
 
+/** Leave a company account yourself (not the owner: ownership is handed over first). Then back to your own account. */
+export async function leaveCompany(_: TeamState, form: FormData): Promise<TeamState> {
+  const supabase = await createClient();
+  const { data: auth } = await supabase.auth.getClaims();
+  if (!auth?.claims) return { status: "error", error: "generic" };
+  const { error, count } = await supabase
+    .from("account_members")
+    .delete({ count: "exact" })
+    .eq("account_id", String(form.get("accountId") ?? ""))
+    .eq("user_id", String(auth.claims.sub))
+    .neq("role", "owner");
+  if (error || !count) return { status: "error", error: "notAllowed" };
+  revalidatePath("/", "layout");
+  const { host } = await requestOrigin();
+  redirect(hrefFor("portal", "/", host));
+}
+
 export type DetailsState = { status: "idle" } | { status: "saved" } | { status: "error"; error: "name" | "generic" };
 
 export async function updateCompanyName(_: DetailsState, form: FormData): Promise<DetailsState> {

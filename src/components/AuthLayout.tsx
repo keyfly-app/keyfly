@@ -1,10 +1,13 @@
 import { Suspense } from "react";
 import Link from "next/link";
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 import { AppFooter } from "@/components/AppFooter";
 import { Icon } from "@/components/Icon";
 import { LogoFull } from "@/components/Logo";
 import { LanguageMenu } from "@/features/language/LanguageMenu";
+import { BRAND } from "@/config/company";
+import { isLocale, publicHref } from "@/i18n/config";
+import { siteHref } from "@/lib/site-href";
 
 /** Phone: plain white page. From 640 px: the App v2.2 card (same look as CARD_CLASS). */
 const AUTH_CARD =
@@ -33,6 +36,9 @@ export async function AuthLayout({
 }) {
   const t = await getTranslations("common");
   const admin = await getTranslations("adminAuth");
+  const raw = await getLocale();
+  // The logo goes to the public site (or, on admin, to the admin start page).
+  const home = badge ? await siteHref("admin", "/") : `${BRAND.url}${publicHref("home", isLocale(raw) ? raw : "hu")}`;
   return (
     <div className="flex min-h-dvh flex-col bg-surface sm:bg-paper">
       <header className="flex h-14 items-center justify-between gap-4 px-4 sm:h-16 sm:px-8">
@@ -43,8 +49,9 @@ export async function AuthLayout({
           </Link>
         ) : (
           <div className="flex items-center gap-2.5">
-            <LogoFull height={22} />
-            <span className="sr-only">{t("brand")}</span>
+            <a href={home} aria-label={t("homeLink")} className="flex rounded-md">
+              <LogoFull height={22} />
+            </a>
             {badge && <AdminBadge label={admin("badge")} />}
           </div>
         )}

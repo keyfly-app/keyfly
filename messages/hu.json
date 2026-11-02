@@ -17,7 +17,8 @@
       "now": "Folyamatban",
       "todo": "Következik",
       "err": "Megszakadt"
-    }
+    },
+    "homeLink": "Keyfly – főoldal"
   },
   "meta": {
     "title": "Albérlet kaució nélkül – Keyfly",
@@ -517,7 +518,8 @@
       "leaveStay": "Maradok",
       "leaveConfirm": "Kilépés",
       "close": "Bezárás",
-      "errorSummary": "{count, plural, one {# mezőt még ki kell töltened vagy javítanod.} other {# mezőt még ki kell töltened vagy javítanod.}}"
+      "errorSummary": "{count, plural, one {# mezőt még ki kell töltened vagy javítanod.} other {# mezőt még ki kell töltened vagy javítanod.}}",
+      "home": "Keyfly – főoldal"
     },
     "steps": {
       "home": "Lakás",
@@ -1342,6 +1344,7 @@
       "enterprise": "Enterprise"
     },
     "add": "Cég hozzáadása",
+    "settings": "Cégbeállítások",
     "note": "Minden fióknak saját adatai, csomagja és csapata van. A profilod és a belépésed közös.",
     "close": "Bezárás"
   },
@@ -1504,6 +1507,11 @@
       "invited": "Elküldtük a meghívót: {email}",
       "invitedNoEmail": "A meghívó elkészült, de a levelet nem sikerült elküldeni. Próbáld újraküldeni.",
       "readOnly": "A csapatot a tulajdonos és az adminok kezelik.",
+      "leaveTitle": "Kilépés a cégfiókból",
+      "leaveText": "A saját fiókod és a többi céged megmarad. Később csak új meghívóval vagy jóváhagyott kéréssel léphetsz vissza.",
+      "leave": "Kilépés",
+      "leaveConfirmTitle": "Kilépsz innen: {company}?",
+      "leaveConfirmText": "Nem látod többé a cég ingatlanjait, szerződéseit és a csapatot. A tulajdonos és az adminok később újra meghívhatnak.",
       "roleText": {
         "admin": "Mindent kezel, a csapatot is.",
         "manager": "Ingatlanokat, szerződéseket, biztosításokat és bérlőket kezel.",

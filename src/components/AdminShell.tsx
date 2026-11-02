@@ -50,7 +50,9 @@ export async function AdminShell({
     <div className="flex min-h-dvh flex-col bg-paper md:flex-row">
       <aside className="flex flex-col border-b border-line bg-surface md:sticky md:top-0 md:h-dvh md:w-59 md:flex-none md:border-r md:border-b-0">
         <div className="flex h-14 items-center gap-2.5 px-4 md:h-16 md:px-5">
-          <LogoFull height={20} />
+          <Link href={items[0]!.href} aria-label={common("homeLink")} className="flex rounded-md">
+            <LogoFull height={20} />
+          </Link>
           <AdminBadge label={auth("badge")} />
         </div>
         <nav aria-label={t("navLabel")} className="px-2 pb-2 md:px-3 md:pb-0">

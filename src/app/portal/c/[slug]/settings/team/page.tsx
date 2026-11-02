@@ -44,6 +44,7 @@ export default async function CompanyTeam({ params }: { params: Promise<{ slug: 
   return (
     <TeamView
       accountId={account.id}
+      companyName={account.name}
       manage={manage}
       enterprise={account.plan === "enterprise"}
       me={auth?.claims.sub}

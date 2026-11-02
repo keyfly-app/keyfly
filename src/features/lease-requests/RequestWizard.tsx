@@ -220,6 +220,7 @@ export function RequestWizard({ myEmail, homeHref }: { myEmail: string; homeHref
         title={t("flow.title")}
         steps={STEPS.map((k) => t(`steps.${k}`))}
         current={step}
+        homeHref={homeHref}
         onBack={step > 0 ? () => go(step - 1) : undefined}
         onCancel={cancel}
         labels={{
@@ -229,6 +230,7 @@ export function RequestWizard({ myEmail, homeHref }: { myEmail: string; homeHref
           current: t("flow.current"),
           back: t("back"),
           cancel: t("flow.cancel"),
+          home: t("flow.home"),
         }}
       />
       <form ref={form} action={action} onSubmit={onSubmit} noValidate className="flex flex-1 flex-col">
@@ -435,14 +437,10 @@ export function RequestWizard({ myEmail, homeHref }: { myEmail: string; homeHref
               {state.status === "error" && state.error && <Notice kind="error">{t(`errors.${state.error}`)}</Notice>}
 
               <div className="hidden items-center justify-between gap-4 border-t border-paper pt-5 sm:flex">
-                {step > 0 ? (
-                  <button type="button" onClick={() => go(step - 1)} className="-ml-3 inline-flex h-10 items-center gap-2 rounded-lg px-3 text-sm font-medium hover:bg-paper">
-                    <Icon name="back" size={16} strokeWidth={2} />
-                    {t("back")}
-                  </button>
-                ) : (
-                  <span />
-                )}
+                <button type="button" onClick={step > 0 ? () => go(step - 1) : cancel} className="-ml-3 inline-flex h-10 items-center gap-2 rounded-lg px-3 text-sm font-medium hover:bg-paper">
+                  <Icon name="back" size={16} strokeWidth={2} />
+                  {t("back")}
+                </button>
                 {primary}
               </div>
             </section>

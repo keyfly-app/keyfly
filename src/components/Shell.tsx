@@ -3,7 +3,7 @@ import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import { AppFooter } from "@/components/AppFooter";
 import { Toaster } from "@/components/Toaster";
-import { LogoFull } from "@/components/Logo";
+import { LogoFull, LogoMark } from "@/components/Logo";
 import { UserMenu } from "@/components/UserMenu";
 import { AccountSwitcher, type SwitcherAccount } from "@/components/AccountSwitcher";
 import { CONTACT } from "@/config/company";
@@ -49,9 +49,17 @@ export async function Shell({ site, account, children }: { site: AppSite; accoun
     <div className="flex min-h-dvh flex-col bg-paper">
       <header className="border-b border-line bg-surface">
         <div className="mx-auto flex h-14 max-w-[1120px] items-center justify-between gap-3 px-4 sm:px-8">
-          <div className="flex min-w-0 items-center gap-4">
-            <Link href={active?.href ?? home} className={`flex-none rounded-md ${current ? "hidden sm:block" : ""}`} aria-label={common("brand")}>
-              <LogoFull height={20} />
+          <div className="flex min-w-0 items-center gap-1 sm:gap-4">
+            {/* The logo goes to the Overview of the account you are in. Phones show the mark only, beside the switcher. */}
+            <Link href={active?.href ?? home} className="flex flex-none rounded-md" aria-label={common("homeLink")}>
+              <span className={current ? "hidden sm:block" : ""}>
+                <LogoFull height={20} />
+              </span>
+              {current && (
+                <span className="-ml-2.5 flex size-11 items-center justify-center sm:hidden">
+                  <LogoMark size={26} />
+                </span>
+              )}
             </Link>
             {user && current && active && (
               <>
@@ -61,6 +69,7 @@ export async function Shell({ site, account, children }: { site: AppSite; accoun
                   currentId={active.id}
                   current={current}
                   addHref={addCompany}
+                  settings={account?.slug ? { href: await siteHref(site, `/c/${account.slug}/settings`), label: a("settings") } : undefined}
                   labels={{ button: a("label", { name: current.name }), title: a("title"), add: a("add"), note: a("note"), close: a("close") }}
                 />
               </>
@@ -84,6 +93,7 @@ export async function Shell({ site, account, children }: { site: AppSite; accoun
                 items={[
                   { href: profile, label: t("nav.profile"), icon: "user" },
                   { href: devices, label: t("nav.devices"), icon: "laptop" },
+                  ...(site === "portal" ? [{ href: addCompany, label: a("add"), icon: "building" as const }] : []),
                   { href: `mailto:${CONTACT.support}`, label: t("userMenu.help"), icon: "help", external: true },
                 ]}
               />

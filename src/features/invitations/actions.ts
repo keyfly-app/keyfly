@@ -36,12 +36,26 @@ export async function answerInvitation(_prev: InvitationState, form: FormData): 
   }
 
   const tenantAccount = String(form.get("tenantAccount") ?? "");
+  const { data: preview } = await supabase.rpc("invitation_preview", { p_token: token });
   const { error } = await supabase.rpc("accept_invitation", { p_token: token, ...(tenantAccount ? { p_tenant_account_id: tenantAccount } : {}) });
   if (error) {
     if (invitationError(error.message) === "generic") console.error("accept invitation failed", error.code);
     return { status: "error", error: invitationError(error.message) };
   }
   const { host } = await requestOrigin();
+  // A team invitation lands in the company it is for (the membership just created); everything else on Overview.
+  if (preview?.[0]?.kind === "account_member") {
+    const { data: auth } = await supabase.auth.getClaims();
+    const { data: joined } = await supabase
+      .from("account_members")
+      .select("accounts!inner(slug, kind)")
+      .eq("user_id", String(auth?.claims.sub ?? ""))
+      .eq("accounts.kind", "company")
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    if (joined?.accounts.slug) redirect(hrefFor("portal", `/c/${joined.accounts.slug}`, host));
+  }
   redirect(hrefFor("portal", "/", host));
 }
 
