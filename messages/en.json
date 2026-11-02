@@ -1254,7 +1254,8 @@
       "profile": "Profile",
       "security": "Sign-in and security",
       "notifications": "Notifications",
-      "data": "Your data"
+      "data": "Your data",
+      "companies": "My companies"
     },
     "back": "Settings",
     "index": {
@@ -1262,7 +1263,8 @@
       "profileText": "Photo, name, phone, language.",
       "securityText": "Email, password, two-step verification, sign-ins.",
       "notificationsText": "Which emails you get.",
-      "dataText": "Download your data, delete your account."
+      "dataText": "Download your data, delete your account.",
+      "companiesText": "Your company accounts and your role in them."
     },
     "userMenu": {
       "open": "Open account menu"
@@ -1429,6 +1431,53 @@
         "rate": "Too many tries. Wait a few minutes.",
         "setup": "Deleting accounts isn’t available right now. Write to us: support@keyfly.app.",
         "generic": "Something went wrong. Try again."
+      },
+      "blockedRecords": "Properties or leases belong to your account, so customer support deletes it for you: {email}."
+    },
+    "companies": {
+      "title": "My companies",
+      "lead": "The company accounts you can access.",
+      "card": "Company accounts",
+      "count": "{count, plural, one {# company} other {# companies}}",
+      "company": "Company",
+      "role": "Your role",
+      "plan": "Plan",
+      "open": "Open",
+      "more": "{name} – more actions",
+      "details": "Company details",
+      "team": "Team",
+      "pending": "Pending requests",
+      "pendingTag": "Awaiting approval",
+      "requested": "Requested: {date}",
+      "cancelRequest": "Withdraw request",
+      "cancelled": "You withdrew the request.",
+      "empty": "You have no company accounts yet.",
+      "error": "Something went wrong. Try again."
+    },
+    "addresses": {
+      "title": "Addresses",
+      "home": "Home address",
+      "mailing": "Mailing address",
+      "sameAsHome": "Same as the home address",
+      "notSet": "Not added",
+      "add": "Add",
+      "edit": "Change",
+      "country": "Country",
+      "postalCode": "Postal code",
+      "city": "City",
+      "street": "Street and number",
+      "unit": "Floor, door",
+      "optional": "(optional)",
+      "save": "Save",
+      "cancel": "Cancel",
+      "remove": "Remove address",
+      "saved": "Saved.",
+      "removed": "Address removed.",
+      "close": "Close",
+      "errors": {
+        "required": "Fill in this field.",
+        "postalCode": "A Hungarian postal code has 4 digits.",
+        "generic": "Something went wrong. Try again."
       }
     }
   },
@@ -1459,11 +1508,6 @@
     "label": "Account switcher – now: {name}",
     "title": "Your accounts",
     "personal": "Personal account",
-    "company": "Company account",
-    "kind": {
-      "person": "Individual",
-      "company": "Company"
-    },
     "plans": {
       "basic": "Basic",
       "pro": "Pro",
@@ -1471,8 +1515,8 @@
     },
     "add": "Add a company",
     "settings": "Company settings",
-    "note": "Each account has its own data, plan and team. Your profile and sign-in are shared.",
-    "close": "Close"
+    "close": "Close",
+    "manage": "Manage my companies"
   },
   "companies": {
     "flow": {
@@ -1496,7 +1540,7 @@
     "menu": {
       "company": "Company details",
       "team": "Team",
-      "companyText": "Display name, NAV data.",
+      "companyText": "Name, tax number, registered office, contact.",
       "teamText": "Members, invitations, access requests."
     },
     "displayName": "Display name",
@@ -1576,16 +1620,42 @@
     },
     "details": {
       "title": "Company details",
-      "lead": "These details appear on leases and invoices.",
-      "card": "Name and NAV data",
-      "verified": "Verified with NAV",
+      "verified": "Checked with NAV",
       "save": "Save",
       "saved": "Saved.",
-      "owner": "Account holder",
-      "readOnly": "The account holder and admins can change the company details.",
-      "navNote": "We checked the NAV data when the company account was created ({date}). If anything changed, write to support@keyfly.app.",
-      "navNoteManual": "NAV data can only be changed through Keyfly support: support@keyfly.app.",
-      "ownerText": "The account holder manages the plan, the team and the company details. They can hand it over on the Team page."
+      "identity": "Name and identifiers",
+      "legalName": "Legal name",
+      "taxNumber": "Tax number",
+      "taxFixed": "First eight digits of the tax number: {digits}",
+      "taxEnd": "Last three digits of the tax number",
+      "euVat": "EU VAT number",
+      "regNumber": "Company registration number",
+      "office": "Registered office",
+      "postalCode": "Postal code",
+      "city": "City",
+      "street": "Street and number",
+      "mailing": "Mailing address",
+      "sameAsOffice": "Same as the registered office",
+      "contact": "Contact",
+      "email": "Email",
+      "phone": "Phone",
+      "discard": "Discard",
+      "unsaved": "Unsaved changes",
+      "navRefresh": "Refresh from NAV",
+      "navLoaded": "NAV data loaded. Check it, then save.",
+      "navInvalid": "NAV says this tax number is not valid. Write to us: support@keyfly.app.",
+      "navUnavailable": "NAV can’t be reached right now. Try again later.",
+      "errors": {
+        "required": "Fill in this field.",
+        "taxEnd": "The end of the tax number is a digit, a hyphen and two digits, for example 2-41.",
+        "euVat": "EU VAT number format: HU12345678.",
+        "regNumber": "Company registration number format: 01-09-123456.",
+        "postalCode": "The postal code has 4 digits.",
+        "email": "Check the email address.",
+        "phone": "Check the phone number.",
+        "notAllowed": "The account holder and admins can change the company details.",
+        "generic": "Something went wrong. Try again."
+      }
     },
     "team": {
       "title": "Team",
@@ -1693,7 +1763,8 @@
         "backup": "That backup code isn’t right or has been used.",
         "locked": "Too many wrong backup codes. Try again in an hour, or write to us: support@keyfly.app.",
         "setup": "Backup codes can’t be used right now. Write to us: support@keyfly.app."
-      }
+      },
+      "remember": "Don’t ask for a code on this device for 30 days"
     },
     "setup": {
       "title": "Two-step verification",
@@ -1764,7 +1835,20 @@
         "expired": "This setup is no longer valid. Reload the page.",
         "rate": "Too many tries. Wait a few minutes.",
         "generic": "Something went wrong. Try again."
-      }
+      },
+      "renewCode": "Enter the code from your authenticator app."
+    },
+    "trusted": {
+      "title": "Trusted devices",
+      "removeAll": "Remove all",
+      "remove": "Remove",
+      "removeLabel": "Remove {device}",
+      "thisDevice": "This device",
+      "marked": "Marked: {date} · Expires: {expires}",
+      "removed": "Removed. We’ll ask for the code there again.",
+      "removedAll": "We’ll ask for the code on every device again.",
+      "unknown": "Unknown device",
+      "error": "Something went wrong. Try again."
     }
   }
 }

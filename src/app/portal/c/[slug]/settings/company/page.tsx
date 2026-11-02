@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
-import { getLocale, getTranslations } from "next-intl/server";
+import { getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
+import type { Office } from "@/features/companies/actions";
 import { canManage, companyBySlug } from "@/features/companies/accounts";
-import { CompanyDetailsView } from "@/features/companies/CompanyDetailsView";
-import { isLocale } from "@/i18n/config";
+import { CompanyDetailsForm } from "@/features/companies/CompanyDetailsForm";
 import { siteHref } from "@/lib/site-href";
 import { createClient } from "@/lib/supabase/server";
 
@@ -14,28 +14,35 @@ export async function generateMetadata(): Promise<Metadata> {
   return { title: t("title"), robots: { index: false } };
 }
 
-/** Cégadatok: loads the company row and its owner. */
+const office = (v: unknown): Office | null => {
+  if (!v || typeof v !== "object") return null;
+  const o = v as Record<string, unknown>;
+  return { postal_code: String(o.postal_code ?? ""), city: String(o.city ?? ""), street: String(o.street ?? "") };
+};
+
+/** Cégadatok: loads the company row; owners and admins edit it, everyone else reads it. */
 export default async function CompanyDetails({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const account = await companyBySlug(slug);
   if (!account) notFound();
   const supabase = await createClient();
-  const [raw, { data: company }, { data: members }, backHref] = await Promise.all([
-    getLocale(),
-    supabase.from("accounts").select("name, legal_name, tax_number, registered_address, nav_verified_at").eq("id", account.id).single(),
-    supabase.rpc("account_members_list", { p_account_id: account.id }),
+  const [{ data: row }, backHref] = await Promise.all([
+    supabase
+      .from("accounts")
+      .select("name, legal_name, tax_number, eu_vat_number, company_reg_number, office_address, mailing_address, contact_email, contact_phone, nav_verified_at")
+      .eq("id", account.id)
+      .single(),
     siteHref("portal", `/c/${slug}/settings`),
   ]);
-  if (!company) notFound();
-  const owner = members?.find((m) => m.role === "owner");
+  if (!row) notFound();
+  const { office_address, mailing_address, ...rest } = row;
   return (
-    <CompanyDetailsView
+    <CompanyDetailsForm
+      key={JSON.stringify(row)}
       accountId={account.id}
       manage={canManage(account)}
-      locale={isLocale(raw) ? raw : "hu"}
       backHref={backHref}
-      company={company}
-      owner={owner ? { name: owner.full_name, email: owner.email } : null}
+      company={{ ...rest, office: office(office_address), mailing: office(mailing_address) }}
     />
   );
 }

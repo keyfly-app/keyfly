@@ -134,6 +134,11 @@ export type Database = {
         Row: {
           archived_at: string | null
           company_reg_number: string | null
+          contact_email: string | null
+          contact_phone: string | null
+          eu_vat_number: string | null
+          mailing_address: Json | null
+          office_address: Json | null
           created_at: string
           created_by: string | null
           id: string
@@ -152,6 +157,11 @@ export type Database = {
         Insert: {
           archived_at?: string | null
           company_reg_number?: string | null
+          contact_email?: string | null
+          contact_phone?: string | null
+          eu_vat_number?: string | null
+          mailing_address?: Json | null
+          office_address?: Json | null
           created_at?: string
           created_by?: string | null
           id?: string
@@ -170,6 +180,11 @@ export type Database = {
         Update: {
           archived_at?: string | null
           company_reg_number?: string | null
+          contact_email?: string | null
+          contact_phone?: string | null
+          eu_vat_number?: string | null
+          mailing_address?: Json | null
+          office_address?: Json | null
           created_at?: string
           created_by?: string | null
           id?: string
@@ -851,6 +866,12 @@ export type Database = {
         Update: { code_hash?: string; created_at?: string; id?: string; used_at?: string | null; user_id?: string }
         Relationships: []
       }
+      trusted_devices: {
+        Row: { created_at: string; expires_at: string; id: string; label: string; last_used_at: string | null; token_hash: string; user_id: string }
+        Insert: { created_at?: string; expires_at?: string; id?: string; label: string; last_used_at?: string | null; token_hash: string; user_id: string }
+        Update: { created_at?: string; expires_at?: string; id?: string; label?: string; last_used_at?: string | null; token_hash?: string; user_id?: string }
+        Relationships: []
+      }
       policies: {
         Row: {
           application_id: string
@@ -954,6 +975,8 @@ export type Database = {
           email: string | null
           email_prefs: Json
           full_name: string | null
+          home_address: Json | null
+          mailing_address: Json | null
           id: string
           locale: Database["public"]["Enums"]["locale"]
           password_changed_at: string | null
@@ -968,6 +991,8 @@ export type Database = {
           email?: string | null
           email_prefs?: Json
           full_name?: string | null
+          home_address?: Json | null
+          mailing_address?: Json | null
           id: string
           locale?: Database["public"]["Enums"]["locale"]
           password_changed_at?: string | null
@@ -982,6 +1007,8 @@ export type Database = {
           email?: string | null
           email_prefs?: Json
           full_name?: string | null
+          home_address?: Json | null
+          mailing_address?: Json | null
           id?: string
           locale?: Database["public"]["Enums"]["locale"]
           password_changed_at?: string | null
@@ -1275,6 +1302,9 @@ export type Database = {
       delete_recovery_codes: { Args: never; Returns: undefined }
       recovery_codes_left: { Args: never; Returns: number }
       set_recovery_codes: { Args: { p_hashes: string[] }; Returns: undefined }
+      my_access_requests: { Args: never; Returns: { account_id: string; created_at: string; id: string; name: string; tax_number: string | null }[] }
+      trust_device: { Args: { p_token_hash: string; p_label: string }; Returns: string }
+      trusted_device_ok: { Args: { p_token_hash: string }; Returns: boolean }
       account_access_requests_list: {
         Args: { p_account_id: string }
         Returns: { created_at: string; email: string; full_name: string | null; id: string; message: string | null; user_id: string }[]

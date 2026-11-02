@@ -3,6 +3,7 @@ import { createServerClient } from "@supabase/ssr";
 import { DEFAULT_LOCALE, isLocale, LOCALE_COOKIE, resolvePublicPath, type Locale } from "@/i18n/config";
 import { localeCookie } from "@/lib/locale-cookie";
 import { safeNext } from "@/lib/safe-next";
+import { parseTrusted, sha256Hex, TRUSTED_COOKIE } from "@/lib/trusted-device";
 import { hrefFor, isPreviewHost, PRODUCTION_HOSTS, resolveSite, SITE_PATH_PREFIX, type AppSite } from "@/lib/sites";
 import { authCookieOptions, REMEMBER_COOKIE, wantsRemember } from "@/lib/supabase/session-cookies";
 
@@ -47,8 +48,8 @@ export async function proxy(request: NextRequest) {
 
   if (site === "marketing" && !isAppPath) return response;
 
-  const session = await refreshSession(request, response);
   const app = appLocation(site, pathname);
+  const session = await refreshSession(request, response, app?.site);
   if (!app) return response;
   const redirectTo = authRedirect(app.site, app.path, session, request.nextUrl.searchParams.get("next"));
   if (!redirectTo) return response;
@@ -146,7 +147,7 @@ function setLocaleCookie(response: NextResponse, locale: Locale, host: string | 
   response.cookies.set(localeCookie(locale, host));
 }
 
-async function refreshSession(request: NextRequest, response: NextResponse): Promise<Session> {
+async function refreshSession(request: NextRequest, response: NextResponse, site: AppSite | undefined): Promise<Session> {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const key = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
   if (!url || !key) return { signedIn: false, aal: null, needsTwoStep: false };
@@ -171,6 +172,12 @@ async function refreshSession(request: NextRequest, response: NextResponse): Pro
   if (data?.claims && aal !== "aal2") {
     const { data: level } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
     needsTwoStep = level?.nextLevel === "aal2";
+    // A browser the person marked as trusted skips the code for 30 days (customer app only; staff always need it).
+    const trusted = site === "portal" && needsTwoStep ? parseTrusted(request.cookies.get(TRUSTED_COOKIE)?.value) : null;
+    if (trusted) {
+      const { data: ok } = await supabase.rpc("trusted_device_ok", { p_token_hash: await sha256Hex(trusted.token) });
+      needsTwoStep = !ok;
+    }
   }
   return { signedIn: Boolean(data?.claims), aal, needsTwoStep };
 }

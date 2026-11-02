@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useId, useState, useTransition } from "react";
+import { useActionState, useId, useState } from "react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { Icon } from "@/components/Icon";
@@ -10,7 +10,7 @@ import { Dialog, DialogActions } from "@/components/ui/Dialog";
 import { Button, Notice } from "@/components/ui/form";
 import { MenuPopover } from "@/components/ui/MenuPopover";
 import { Tag } from "@/components/ui/Tag";
-import { renewBackupCodes, turnOffTwoStep, type OffState } from "./actions";
+import { renewBackupCodes, turnOffTwoStep, type OffState, type RenewState } from "./actions";
 
 const SECONDARY = "inline-flex h-11 items-center justify-center gap-2 rounded-lg border border-field bg-surface px-3.5 text-[13px] font-medium hover:border-ink sm:h-9";
 
@@ -34,13 +34,25 @@ function Row({ icon, label, value, sub, action }: { icon: "phone" | "key"; label
  * Kétlépcsős azonosítás card (canvas "Bejelentkezés és biztonság"): off → one line and "Bekapcsolás";
  * on → the authenticator (⋯: turn off, behind its current code) and the backup codes (make new ones).
  */
-export function TwoStepCard({ enabled, since, codesLeft, setupHref }: { enabled: boolean; since: string | null; codesLeft: number; setupHref: string }) {
+export function TwoStepCard({
+  enabled,
+  since,
+  codesLeft,
+  setupHref,
+  needsCode,
+}: {
+  enabled: boolean;
+  since: string | null;
+  codesLeft: number;
+  setupHref: string;
+  /** Signed in on a trusted device without the code: making new backup codes asks for one. */
+  needsCode: boolean;
+}) {
   const t = useTranslations("security.card");
   const c = useTranslations("companies");
   const id = useId();
   const [dialog, setDialog] = useState<"off" | "codes" | null>(null);
   const [codes, setCodes] = useState<string[] | null>(null);
-  const [renewing, startRenew] = useTransition();
   const [offState, offAction, offPending] = useActionState<OffState, FormData>(async (prev, form) => {
     const next = await turnOffTwoStep(prev, form);
     if (next.status === "idle") {
@@ -50,12 +62,12 @@ export function TwoStepCard({ enabled, since, codesLeft, setupHref }: { enabled:
     return next;
   }, { status: "idle" });
 
-  const renew = () =>
-    startRenew(async () => {
-      const result = await renewBackupCodes();
-      if (result.status === "codes") setCodes(result.codes);
-      else toast(t("error"), "error");
-    });
+  const [renewState, renewAction, renewing] = useActionState<RenewState, FormData>(async (prev, form) => {
+    const next = await renewBackupCodes(prev, form);
+    if (next.status === "codes") setCodes(next.codes);
+    else if (!needsCode) toast(t("error"), "error");
+    return next;
+  }, { status: "idle" });
   const copy = async () => {
     try {
       await navigator.clipboard.writeText((codes ?? []).join("\n"));
@@ -163,6 +175,16 @@ export function TwoStepCard({ enabled, since, codesLeft, setupHref }: { enabled:
       {dialog === "codes" && (
         <Dialog open onClose={() => setDialog(null)} title={codes ? t("codesTitle") : t("renewTitle")} description={codes ? t("codesText") : t("renewText")} closeLabel={c("close")}>
           <div className="flex flex-col gap-5">
+            {!codes && (
+              <form id={`${id}-renew`} action={renewAction} className={needsCode ? "flex flex-col gap-2" : "hidden"}>
+                {needsCode && (
+                  <>
+                    <p className="text-sm text-ink-soft">{t("renewCode")}</p>
+                    <CodeInput id={`${id}-renew-code`} name="code" label={t("codeLabel")} fill autoFocus error={renewState.status === "error" ? t(`errors.${renewState.error}`) : undefined} />
+                  </>
+                )}
+              </form>
+            )}
             {codes && (
               <>
                 <ul className="grid grid-cols-2 gap-x-8 gap-y-1 rounded-xl border border-line bg-paper/60 px-5 py-4 font-mono text-[15px] tracking-[0.04em]">
@@ -193,14 +215,9 @@ export function TwoStepCard({ enabled, since, codesLeft, setupHref }: { enabled:
                   <button type="button" onClick={() => setDialog(null)} className="inline-flex h-11 items-center justify-center rounded-lg border border-field px-4 text-sm font-medium hover:border-ink sm:h-10">
                     {c("cancel")}
                   </button>
-                  <button
-                    type="button"
-                    onClick={renew}
-                    aria-disabled={renewing || undefined}
-                    className="inline-flex h-11 items-center justify-center rounded-lg bg-ink px-4 text-sm font-medium text-white hover:bg-ink-soft aria-disabled:opacity-80 sm:h-10"
-                  >
+                  <Button pending={renewing} formId={`${id}-renew`} fit>
                     {t("renew")}
-                  </button>
+                  </Button>
                 </>
               )}
             </DialogActions>

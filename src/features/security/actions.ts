@@ -2,6 +2,7 @@
 
 import { createHash, randomInt } from "node:crypto";
 import { revalidatePath } from "next/cache";
+import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { securityEmail } from "@/features/invitations/emails";
 import { appUrl, sendEmail } from "@/features/invitations/send";
@@ -11,6 +12,8 @@ import { safeNext } from "@/lib/safe-next";
 import { hrefFor } from "@/lib/sites";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
+import { TRUSTED_COOKIE } from "@/lib/trusted-device";
+import { currentTrustedId, forgetTrustedDevices, trustThisDevice } from "./trusted";
 
 const CODE_RE = /^\d{6}$/;
 /** Backup codes: 8 characters from an alphabet without look-alikes, shown as "xxxx-xxxx". */
@@ -90,12 +93,26 @@ export async function confirmTwoStep(_: ConfirmState, form: FormData): Promise<C
   return { status: "codes", codes };
 }
 
-/** New backup codes (the old ones stop working). Needs the second factor, which this session has. */
-export async function renewBackupCodes(): Promise<{ status: "codes"; codes: string[] } | { status: "error" }> {
+export type RenewState = { status: "idle" } | { status: "codes"; codes: string[] } | { status: "error"; error: MfaError | "format" };
+
+/**
+ * New backup codes (the old ones stop working). Needs the second factor: a session that skipped the code on a trusted
+ * device sends a current code with the request.
+ */
+export async function renewBackupCodes(_: RenewState, form: FormData): Promise<RenewState> {
   const supabase = await createClient();
+  const code = String(form.get("code") ?? "").replace(/\s/g, "");
+  if (code) {
+    if (!CODE_RE.test(code)) return { status: "error", error: "format" };
+    const { data: factors } = await supabase.auth.mfa.listFactors();
+    const factor = factors?.totp[0];
+    if (!factor) return { status: "error", error: "generic" };
+    const { error } = await supabase.auth.mfa.challengeAndVerify({ factorId: factor.id, code });
+    if (error) return { status: "error", error: mfaError(error.code) };
+  }
   const codes = await saveCodes(supabase);
   revalidatePath("/", "layout");
-  return codes ? { status: "codes", codes } : { status: "error" };
+  return codes ? { status: "codes", codes } : { status: "error", error: "generic" };
 }
 
 export type OffState = { status: "idle" } | { status: "error"; error: MfaError | "format" };
@@ -111,6 +128,7 @@ export async function turnOffTwoStep(_: OffState, form: FormData): Promise<OffSt
   const { error } = await supabase.auth.mfa.challengeAndVerify({ factorId: factor.id, code });
   if (error) return { status: "error", error: mfaError(error.code) };
   await supabase.rpc("delete_recovery_codes");
+  await forgetTrustedDevices(supabase);
   for (const f of factors?.all ?? []) {
     if (f.factor_type === "totp") await supabase.auth.mfa.unenroll({ factorId: f.id });
   }
@@ -134,6 +152,7 @@ export async function verifySignInCode(_: ChallengeState, form: FormData): Promi
   if (!factor) return { status: "error", error: "generic" };
   const { error } = await supabase.auth.mfa.challengeAndVerify({ factorId: factor.id, code });
   if (error) return { status: "error", error: mfaError(error.code) };
+  if (form.get("remember") === "on") await trustThisDevice(supabase);
   const { host } = await requestOrigin();
   redirect(hrefFor("portal", safeNext(form.get("next")), host));
 }
@@ -158,8 +177,25 @@ export async function useBackupCode(_: ChallengeState, form: FormData): Promise<
   const { data: factors } = await admin.auth.admin.mfa.listFactors({ userId });
   for (const f of factors?.factors ?? []) await admin.auth.admin.mfa.deleteFactor({ userId, id: f.id });
   await admin.from("mfa_recovery_codes").delete().eq("user_id", userId);
+  await admin.from("trusted_devices").delete().eq("user_id", userId);
+  (await cookies()).delete(TRUSTED_COOKIE);
   await supabase.auth.refreshSession();
   await notify(supabase, "recoveryUsed");
   const { host } = await requestOrigin();
   redirect(hrefFor("portal", "/settings/security?recovered=1", host));
+}
+
+// ---------- Trusted devices (canvas "Biztonságos eszközök") ------------------------------
+
+/** Remove one trusted device, or all ("Összes eltávolítása"). */
+export async function removeTrustedDevice(id: string | "all"): Promise<{ ok: boolean }> {
+  const supabase = await createClient();
+  const { data: auth } = await supabase.auth.getClaims();
+  if (!auth?.claims) return { ok: false };
+  const query = supabase.from("trusted_devices").delete();
+  const { error } = await (id === "all" ? query.eq("user_id", String(auth.claims.sub)) : query.eq("id", id));
+  if (error) return { ok: false };
+  if (id === "all" || id === (await currentTrustedId())) (await cookies()).delete(TRUSTED_COOKIE);
+  revalidatePath("/", "layout");
+  return { ok: true };
 }

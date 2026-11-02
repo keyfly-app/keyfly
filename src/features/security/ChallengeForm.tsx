@@ -11,7 +11,8 @@ const IDLE: ChallengeState = { status: "idle" };
 
 /**
  * Sign-in, step 2 (canvas "Belépés – kétlépcsős kód"): the code from the authenticator app, centred; or a backup
- * code when the phone is not at hand. The full code signs in by itself, without pressing the button.
+ * code when the phone is not at hand. The full code signs in by itself, without pressing the button. "Ezen az eszközön
+ * 30 napig ne kérjen kódot" (unticked) marks this browser as trusted (canvas "Belépés – kód, eszköz megjelölése").
  */
 export function ChallengeForm({ next }: { next: string }) {
   const t = useTranslations("security.challenge");
@@ -45,6 +46,10 @@ export function ChallengeForm({ next }: { next: string }) {
             error={err(codeState)}
             onComplete={() => form.current?.requestSubmit()}
           />
+          <label className="flex min-h-11 cursor-pointer items-center justify-center gap-2.5 text-sm sm:min-h-6">
+            <input type="checkbox" name="remember" className="size-[18px] flex-none accent-ink" />
+            {t("remember")}
+          </label>
           <Button pending={codePending}>{t("submit")}</Button>
         </form>
       ) : (

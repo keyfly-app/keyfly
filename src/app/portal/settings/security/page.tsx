@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { getLocale, getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { Notice } from "@/components/ui/form";
+import { TrustedDevices, type TrustedRow } from "@/features/security/TrustedDevices";
+import { currentTrustedId } from "@/features/security/trusted";
 import { TwoStepCard } from "@/features/security/TwoStepCard";
 import { currentUser } from "@/features/settings/current-user";
 import { ProfileDetails } from "@/features/settings/ProfileDetails";
@@ -20,18 +22,32 @@ export async function generateMetadata(): Promise<Metadata> {
   return { title: t("security.title"), robots: { index: false } };
 }
 
-/** Bejelentkezés és biztonság: email and password, two-step verification, the active sign-ins (formerly Eszközök). */
+/** Bejelentkezés és biztonság: email and password, two-step verification, trusted devices, the active sign-ins. */
 export default async function SecuritySettings({ searchParams }: { searchParams: Promise<{ recovered?: string }> }) {
   const [{ recovered }, t, raw, user, supabase] = await Promise.all([searchParams, getTranslations("settings"), getLocale(), currentUser(), createClient()]);
   if (!user) notFound();
   const locale = isLocale(raw) ? raw : "hu";
-  const [{ data: sessions }, { data: factors }, { data: codesLeft }, setupHref] = await Promise.all([
+  const [{ data: sessions }, { data: factors }, { data: codesLeft }, { data: trustedRows }, { data: level }, currentTrusted, setupHref] = await Promise.all([
     supabase.rpc("my_sessions"),
     supabase.auth.mfa.listFactors(),
     supabase.rpc("recovery_codes_left"),
+    supabase.from("trusted_devices").select("id, label, created_at, expires_at").gt("expires_at", new Date().toISOString()).order("created_at", { ascending: false }),
+    supabase.auth.mfa.getAuthenticatorAssuranceLevel(),
+    currentTrustedId(),
     siteHref("portal", "/security/two-step"),
   ]);
   const factor = factors?.totp[0];
+  const nbsp = (s: string) => s.replace(/ /g, "\u00a0");
+  const trusted: TrustedRow[] = factor
+    ? (trustedRows ?? []).map((d) => ({
+        id: d.id,
+        label: d.label === "–" ? t("devices.unknown") : d.label,
+        mobile: /iPhone|Android|iPad/.test(d.label),
+        marked: nbsp(date(d.created_at, locale)),
+        expires: nbsp(date(d.expires_at, locale)),
+        current: d.id === currentTrusted,
+      }))
+    : [];
   const rows: SessionRow[] = (sessions ?? []).map((s) => {
     const device = describeDevice(s.user_agent);
     return {
@@ -55,7 +71,14 @@ export default async function SecuritySettings({ searchParams }: { searchParams:
         phone={user.phone}
         passwordChanged={user.passwordChangedAt ? date(user.passwordChangedAt, locale).replace(/ /g, "\u00a0") : null}
       />
-      <TwoStepCard enabled={Boolean(factor)} since={factor ? date(factor.updated_at, locale) : null} codesLeft={codesLeft ?? 0} setupHref={setupHref} />
+      <TwoStepCard
+        enabled={Boolean(factor)}
+        since={factor ? date(factor.updated_at, locale) : null}
+        codesLeft={codesLeft ?? 0}
+        setupHref={setupHref}
+        needsCode={level?.currentLevel !== "aal2"}
+      />
+      <TrustedDevices devices={trusted} />
       <SessionList sessions={rows} />
     </>
   );

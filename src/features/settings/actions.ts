@@ -6,9 +6,11 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { getLocale } from "next-intl/server";
 import { BRAND } from "@/config/company";
+import { isCountry } from "@/config/countries";
 import { publicHref } from "@/i18n/config";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { isValidPassword } from "@/features/auth/password";
+import { forgetTrustedDevices } from "@/features/security/trusted";
 import { requestOrigin } from "@/lib/request-origin";
 import { hrefFor } from "@/lib/sites";
 import type { Database } from "@/lib/supabase/database.types";
@@ -114,6 +116,7 @@ export async function changePassword(_: SettingsState, form: FormData): Promise<
     return { status: "error", error: "generic" };
   }
   await supabase.auth.signOut({ scope: "others" });
+  await forgetTrustedDevices(supabase);
   return done("password");
 }
 
@@ -216,4 +219,42 @@ export async function deleteAccount(_: DeleteState, form: FormData): Promise<Del
   }
   await supabase.auth.signOut({ scope: "local" });
   redirect(`${BRAND.url}${publicHref("home", (await getLocale()) === "en" ? "en" : "hu")}`);
+}
+
+// ---------- Addresses (canvas "Profil – lakcím és levelezési cím") ----------
+
+export type PersonalAddress = { country: string; postal_code: string; city: string; street: string; unit?: string };
+export type AddressState = { status: "idle" } | { status: "saved"; removed?: boolean } | { status: "error"; fields?: Partial<Record<"postal_code" | "city" | "street", "required" | "postalCode">> };
+
+/** Saves the home or the mailing address; the mailing address may also be "same as home" (null) or removed. */
+export async function saveAddress(_: AddressState, form: FormData): Promise<AddressState> {
+  const kind = form.get("kind") === "mailing" ? "mailing_address" : "home_address";
+  const intent = String(form.get("intent") ?? "save");
+  const { supabase, id } = await signedIn();
+  if (!id) return { status: "error" };
+  let value: PersonalAddress | null = null;
+  if (intent === "save" && !(kind === "mailing_address" && form.get("sameAsHome") === "on")) {
+    const clean = (k: string) => String(form.get(k) ?? "").replace(/\s+/g, " ").trim();
+    const country = clean("country");
+    const address: PersonalAddress = { country: isCountry(country) ? country : "HU", postal_code: clean("postal_code").toUpperCase(), city: clean("city"), street: clean("street") };
+    const unit = clean("unit").slice(0, 50);
+    if (unit) address.unit = unit;
+    const fields: NonNullable<Extract<AddressState, { status: "error" }>["fields"]> = {};
+    if (!address.postal_code) fields.postal_code = "required";
+    else if (address.country === "HU" ? !/^\d{4}$/.test(address.postal_code) : address.postal_code.length > 10) fields.postal_code = "postalCode";
+    if (!address.city || address.city.length > 100) fields.city = "required";
+    if (!address.street || address.street.length > 200) fields.street = "required";
+    if (Object.keys(fields).length) return { status: "error", fields };
+    value = address;
+  }
+  const { error } = await supabase
+    .from("profiles")
+    .update(kind === "home_address" ? { home_address: value } : { mailing_address: value })
+    .eq("id", id);
+  if (error) {
+    console.error("address failed", error.code);
+    return { status: "error" };
+  }
+  revalidatePath("/", "layout");
+  return { status: "saved", removed: intent === "remove" };
 }

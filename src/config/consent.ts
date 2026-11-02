@@ -13,6 +13,6 @@ export const CONSENT_VERSIONS = {
    * Customer app sign-up (messages: register.terms). Drafts on staging: the general terms (ÁSZF) and the
    * app privacy notice must be published, and these versions set to them, before production.
    */
-  accountTerms: "terms-draft-2026-11-01",
-  accountPrivacy: "account-privacy-draft-2026-11-01",
+  accountTerms: "terms-draft-2026-11-02",
+  accountPrivacy: "account-privacy-draft-2026-11-02",
 } as const;

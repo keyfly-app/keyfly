@@ -14,6 +14,8 @@ export type Taxpayer = {
   shortName: string | null;
   /** "1139 Budapest, Váci út 81." */
   address: string | null;
+  /** The same address in parts, for the company details form. */
+  office: { postal_code: string; city: string; street: string } | null;
 };
 export type TaxpayerResult = { status: "found"; taxpayer: Taxpayer } | { status: "invalid" } | { status: "unavailable" };
 
@@ -58,6 +60,7 @@ export function parseTaxpayer(xml: string): TaxpayerResult {
   const items = xml.match(/<(?:[\w-]+:)?taxpayerAddressItem>[\s\S]*?<\/(?:[\w-]+:)?taxpayerAddressItem>/g) ?? [];
   const hq = items.find((i) => tag(i, "taxpayerAddressType") === "HQ") ?? items[0];
   let address: string | null = null;
+  let office: Taxpayer["office"] = null;
   if (hq) {
     const category = tag(hq, "publicPlaceCategory")?.toLocaleLowerCase("hu");
     const streetName = tag(hq, "streetName");
@@ -68,6 +71,8 @@ export function parseTaxpayer(xml: string): TaxpayerResult {
     const line = [street, unit].filter(Boolean).join(" ");
     address = [city, line].filter(Boolean).join(", ") || null;
     if (address && /\d$/.test(address)) address += ".";
+    const postal = tag(hq, "postalCode");
+    if (postal && cityName && line) office = { postal_code: postal, city: prettyName(cityName), street: /\d$/.test(line) ? `${line}.` : line };
   }
   return {
     status: "found",
@@ -79,6 +84,7 @@ export function parseTaxpayer(xml: string): TaxpayerResult {
         return short ? prettyName(short) : null;
       })(),
       address,
+      office,
     },
   };
 }

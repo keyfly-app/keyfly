@@ -34,12 +34,12 @@ export async function companyBySlug(slug: string): Promise<AccountSummary | null
 
 export const canManage = (a: Pick<AccountSummary, "role">) => a.role === "owner" || a.role === "admin";
 
-/** "Duna Lakáskezelő" → "DL". */
+/** "Duna Lakáskezelő" → "DL"; "Horváth és Partner Bt." → "HP" (joining words are skipped). */
 export function accountInitials(name: string): string {
   return name
     .replace(/\b(kft|bt|zrt|nyrt|kkt|ev)\.?$/i, "")
     .split(/\s+/)
-    .filter(Boolean)
+    .filter((w) => w && !/^(és|and|&|a|az|the)$/i.test(w))
     .slice(0, 2)
     .map((w) => w[0]!.toLocaleUpperCase("hu"))
     .join("");

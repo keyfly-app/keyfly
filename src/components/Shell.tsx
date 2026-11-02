@@ -19,22 +19,25 @@ import type { AppSite } from "@/lib/sites";
  * `account`: the company account of a /c/<slug> page; otherwise the personal account.
  */
 export async function Shell({ site, account, children }: { site: AppSite; account?: AccountSummary; children: React.ReactNode }) {
-  const [t, a, user, accounts] = await Promise.all([getTranslations("settings"), getTranslations("accounts"), currentUser(), myAccounts()]);
+  const [t, a, inv, user, accounts] = await Promise.all([getTranslations("settings"), getTranslations("accounts"), getTranslations("invite"), currentUser(), myAccounts()]);
   const common = await getTranslations("common");
-  const [home, profile, security, notifications, data, addCompany] = await Promise.all([
+  const [home, profile, security, notifications, companies, data, addCompany] = await Promise.all([
     siteHref(site, "/"),
     siteHref(site, "/settings/profile"),
     siteHref(site, "/settings/security"),
     siteHref(site, "/settings/notifications"),
+    siteHref(site, "/settings/companies"),
     siteHref(site, "/settings/data"),
     siteHref(site, "/companies/new"),
   ]);
+  // Companies show your role in them and their plan ("Fiókgazda · Alap"); the personal account just "Magánfiók".
+  const sub = (acc: AccountSummary) => (acc.kind === "person" ? a("personal") : `${inv(`roles.${acc.role}`)} · ${a(`plans.${acc.plan}`)}`);
   const switcher: SwitcherAccount[] = await Promise.all(
     accounts.map(async (acc) => ({
       id: acc.id,
       company: acc.kind === "company",
       name: acc.kind === "person" ? (user?.fullName ?? user?.email ?? acc.name) : acc.name,
-      sub: `${a(`kind.${acc.kind}`)} · ${a(`plans.${acc.plan}`)}`,
+      sub: sub(acc),
       href: acc.kind === "person" ? home : await siteHref(site, `/c/${acc.slug}`),
       initials: acc.kind === "person" ? (user?.initials ?? "") : accountInitials(acc.name),
       avatarUrl: acc.kind === "person" ? (user?.avatarUrl ?? null) : null,
@@ -42,10 +45,7 @@ export async function Shell({ site, account, children }: { site: AppSite; accoun
   );
   const personal = switcher.find((s) => !s.company);
   const active = account ? switcher.find((s) => s.id === account.id) : personal;
-  const current = active && {
-    ...active,
-    sub: account ? `${a("company")} · ${a(`plans.${account.plan}`)}` : a("personal"),
-  };
+  const current = active;
   return (
     <div className="flex min-h-dvh flex-col bg-paper">
       <header className="border-b border-line bg-surface">
@@ -70,8 +70,9 @@ export async function Shell({ site, account, children }: { site: AppSite; accoun
                   currentId={active.id}
                   current={current}
                   addHref={addCompany}
+                  manage={site === "portal" ? { href: companies, label: a("manage") } : undefined}
                   settings={account?.slug ? { href: await siteHref(site, `/c/${account.slug}/settings`), label: a("settings") } : undefined}
-                  labels={{ button: a("label", { name: current.name }), title: a("title"), add: a("add"), note: a("note"), close: a("close") }}
+                  labels={{ button: a("label", { name: current.name }), title: a("title"), add: a("add"), close: a("close") }}
                 />
               </>
             )}
@@ -95,6 +96,7 @@ export async function Shell({ site, account, children }: { site: AppSite; accoun
                   { href: profile, label: t("nav.profile"), icon: "user" },
                   { href: security, label: t("nav.security"), icon: "lock" },
                   { href: notifications, label: t("nav.notifications"), icon: "bell" },
+                  ...(site === "portal" ? [{ href: companies, label: t("nav.companies"), icon: "list" as const }] : []),
                   { href: data, label: t("nav.data"), icon: "shield" },
                 ]}
                 more={site === "portal" ? [{ href: addCompany, label: a("add"), icon: "building" }] : []}

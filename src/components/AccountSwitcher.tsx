@@ -22,8 +22,9 @@ export function AccountMark({ account, size }: { account: Pick<SwitcherAccount, 
 }
 
 /**
- * Top-left account switcher (canvas "Fiókváltó"): shows where you work now; lists your personal and company accounts,
- * and "Add a company". Dropdown from 640 px, bottom sheet on phones. Escape, outside click or Tab closes it.
+ * Top-left account switcher (canvas "Fiókváltó – szerepkör, cégbeállítások, Cégeim"): shows where you work now; lists
+ * your accounts with your role and plan, then the company's settings, "Cégeim kezelése" and "Add a company".
+ * Dropdown from 640 px, bottom sheet on phones. Escape, outside click or Tab closes it.
  */
 export function AccountSwitcher({
   accounts,
@@ -31,14 +32,17 @@ export function AccountSwitcher({
   current,
   labels,
   addHref,
+  manage,
   settings,
 }: {
   accounts: SwitcherAccount[];
   currentId: string;
-  /** The account shown on the button, with its context line ("Magánfiók", "Cégfiók · Alap"). */
+  /** The account shown on the button, with its context line ("Magánfiók", "Fiókgazda · Alap"). */
   current: SwitcherAccount;
-  labels: { button: string; title: string; add: string; note: string; close: string };
+  labels: { button: string; title: string; add: string; close: string };
   addHref: string;
+  /** "Cégeim kezelése": all your companies, your role in them, pending requests. */
+  manage?: { href: string; label: string };
   /** In a company account: its settings (details, team), one tap from where you see which account you are in. */
   settings?: { href: string; label: string };
 }) {
@@ -143,11 +147,16 @@ export function AccountSwitcher({
                 {settings.label}
               </Link>
             )}
+            {manage && (
+              <Link href={manage.href} role="menuitem" onClick={() => setOpen(false)} className="flex min-h-11 items-center gap-2.5 rounded-lg px-2.5 text-sm font-medium hover:bg-paper focus-visible:bg-paper sm:min-h-9">
+                <Icon name="list" size={16} className="text-muted" />
+                {manage.label}
+              </Link>
+            )}
             <Link href={addHref} role="menuitem" onClick={() => setOpen(false)} className="flex min-h-11 items-center gap-2.5 rounded-lg px-2.5 text-sm font-semibold text-brand hover:bg-paper focus-visible:bg-paper sm:min-h-9">
               <Icon name="plus" size={16} strokeWidth={2} />
               {labels.add}
             </Link>
-            <p className="px-2.5 pt-1.5 pb-1 text-[12.5px] leading-[17px] text-muted">{labels.note}</p>
           </div>
         </>
       )}

@@ -257,14 +257,102 @@ export async function leaveCompany(_: TeamState, form: FormData): Promise<TeamSt
   redirect(hrefFor("portal", "/", host));
 }
 
-export type DetailsState = { status: "idle" } | { status: "saved" } | { status: "error"; error: "name" | "generic" };
+// ---------- Company details --------------------------------------------------------------
 
-export async function updateCompanyName(_: DetailsState, form: FormData): Promise<DetailsState> {
-  const name = String(form.get("name") ?? "").replace(/\s+/g, " ").trim();
-  if (name.length < 2 || name.length > 200) return { status: "error", error: "name" };
+export type Office = { postal_code: string; city: string; street: string };
+export type DetailsField = "name" | "legalName" | "taxEnd" | "euVat" | "regNumber" | "officePostal" | "officeCity" | "officeStreet" | "mailPostal" | "mailCity" | "mailStreet" | "email" | "phone";
+export type DetailsState =
+  | { status: "idle" }
+  | { status: "saved" }
+  | { status: "error"; error: "notAllowed" | "generic" }
+  | { status: "invalid"; fields: Partial<Record<DetailsField, "required" | "format">> };
+
+const clean = (v: FormDataEntryValue | null) => String(v ?? "").replace(/\s+/g, " ").trim();
+
+/** Saves the company details (canvas "Cégadatok – szerkeszthető"). The first eight digits of the tax number never change. */
+export async function updateCompanyDetails(_: DetailsState, form: FormData): Promise<DetailsState> {
+  const accountId = String(form.get("accountId") ?? "");
+  const fields: Partial<Record<DetailsField, "required" | "format">> = {};
+  const need = (key: DetailsField, value: string, max: number) => {
+    if (!value) fields[key] = "required";
+    else if (value.length > max) fields[key] = "format";
+    return value;
+  };
+  const name = need("name", clean(form.get("name")), 200);
+  const legalName = need("legalName", clean(form.get("legalName")), 300);
+  const taxEndRaw = clean(form.get("taxEnd")).replace(/\s/g, "");
+  const taxEnd = /^\d-?\d{2}$/.test(taxEndRaw) ? `${taxEndRaw[0]}-${taxEndRaw.slice(-2)}` : null;
+  if (!taxEnd) fields.taxEnd = taxEndRaw ? "format" : "required";
+  const euVat = clean(form.get("euVat")).replace(/\s/g, "").toUpperCase();
+  if (euVat && !/^HU\d{8}$/.test(euVat)) fields.euVat = "format";
+  const regNumber = clean(form.get("regNumber")).replace(/\s/g, "");
+  if (regNumber && !/^\d{2}-\d{2}-\d{6}$/.test(regNumber)) fields.regNumber = "format";
+  const address = (prefix: "office" | "mail"): Office => {
+    const postal_code = clean(form.get(`${prefix}Postal`));
+    if (!postal_code) fields[`${prefix}Postal`] = "required";
+    else if (!/^\d{4}$/.test(postal_code)) fields[`${prefix}Postal`] = "format";
+    return { postal_code, city: need(`${prefix}City`, clean(form.get(`${prefix}City`)), 100), street: need(`${prefix}Street`, clean(form.get(`${prefix}Street`)), 200) };
+  };
+  const office = address("office");
+  const mailing = form.get("sameAsOffice") === "on" ? null : address("mail");
+  const email = clean(form.get("email"));
+  if (email && (!EMAIL_RE.test(email) || email.length > 254)) fields.email = "format";
+  const phone = clean(form.get("phone"));
+  if (phone && !/^\+?[0-9 ()/-]{6,30}$/.test(phone)) fields.phone = "format";
+  if (Object.keys(fields).length) return { status: "invalid", fields };
+
   const supabase = await createClient();
-  const { error, count } = await supabase.from("accounts").update({ name }, { count: "exact" }).eq("id", String(form.get("accountId") ?? ""));
-  if (error || !count) return { status: "error", error: "generic" };
+  const { data: current } = await supabase.from("accounts").select("tax_number").eq("id", accountId).maybeSingle();
+  if (!current?.tax_number) return { status: "error", error: "notAllowed" };
+  const { error, count } = await supabase
+    .from("accounts")
+    .update(
+      {
+        name,
+        legal_name: legalName,
+        tax_number: `${current.tax_number.slice(0, 8)}-${taxEnd}`,
+        eu_vat_number: euVat || null,
+        company_reg_number: regNumber || null,
+        office_address: office,
+        mailing_address: mailing,
+        contact_email: email || null,
+        contact_phone: phone || null,
+      },
+      { count: "exact" },
+    )
+    .eq("id", accountId);
+  if (error) {
+    console.error("company details failed", error.code);
+    return { status: "error", error: "generic" };
+  }
+  if (!count) return { status: "error", error: "notAllowed" };
   revalidatePath("/", "layout");
   return { status: "saved" };
+}
+
+export type NavRefresh = { status: "found"; legalName: string; taxEnd: string | null; office: Office | null } | { status: "invalid" | "unavailable" | "notAllowed" };
+
+/** "Frissítés a NAV-ból": NAV's current data for the form; nothing is saved until the person presses Save. */
+export async function refreshFromNav(accountId: string): Promise<NavRefresh> {
+  const supabase = await createClient();
+  const { data: auth } = await supabase.auth.getClaims();
+  if (!auth?.claims) return { status: "notAllowed" };
+  const [{ data: account }, { data: me }] = await Promise.all([
+    supabase.from("accounts").select("tax_number").eq("id", accountId).maybeSingle(),
+    supabase.from("account_members").select("role").eq("account_id", accountId).eq("user_id", String(auth.claims.sub)).maybeSingle(),
+  ]);
+  const tax8 = account?.tax_number ? taxId(account.tax_number) : null;
+  if (!tax8 || (me?.role !== "owner" && me?.role !== "admin")) return { status: "notAllowed" };
+  const nav = await queryTaxpayer(tax8);
+  if (nav.status !== "found") return { status: nav.status };
+  const end = nav.taxpayer.taxNumber.length === 13 ? nav.taxpayer.taxNumber.slice(9) : null;
+  return { status: "found", legalName: nav.taxpayer.legalName, taxEnd: end, office: nav.taxpayer.office };
+}
+
+/** Withdraw one's own pending access request (canvas "Cégeim"). */
+export async function cancelAccessRequest(requestId: string): Promise<{ ok: boolean }> {
+  const supabase = await createClient();
+  const { error } = await supabase.rpc("cancel_access_request", { p_request_id: requestId });
+  if (!error) revalidatePath("/", "layout");
+  return { ok: !error };
 }

@@ -11,6 +11,7 @@ import { requestOrigin } from "@/lib/request-origin";
 import { safeNext } from "@/lib/safe-next";
 import { hrefFor, type AppSite } from "@/lib/sites";
 import type { Enums } from "@/lib/supabase/database.types";
+import { forgetTrustedDevices } from "@/features/security/trusted";
 import { createClient } from "@/lib/supabase/server";
 import { REMEMBER_COOKIE } from "@/lib/supabase/session-cookies";
 import { syncEmailLocale } from "./locale-sync";
@@ -170,6 +171,7 @@ export async function updatePassword(_prev: FormState, form: FormData): Promise<
     console.error("password update failed", error.code);
     return { status: "error", error: "generic" };
   }
+  await forgetTrustedDevices(supabase);
   return goTo(site(form), "/");
 }
 

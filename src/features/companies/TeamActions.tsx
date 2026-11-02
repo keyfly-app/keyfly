@@ -12,7 +12,7 @@ import { decideRequest, inviteMember, leaveCompany, manageInvitation, removeMemb
 
 const idle: TeamState = { status: "idle" };
 type Role = "manager" | "viewer" | "admin";
-const ROLE_ORDER: Role[] = ["manager", "viewer", "admin"];
+const ROLE_ORDER: Role[] = ["admin", "manager", "viewer"];
 
 const SECONDARY = "inline-flex h-11 items-center justify-center rounded-lg border border-field bg-surface px-4 text-sm font-medium hover:border-ink sm:h-10";
 

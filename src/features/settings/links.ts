@@ -10,6 +10,7 @@ export async function personalSettingsLinks(): Promise<SettingsLink[]> {
     { href: await siteHref("portal", "/settings/profile"), label: t("nav.profile"), icon: "user", text: t("index.profileText") },
     { href: await siteHref("portal", "/settings/security"), label: t("nav.security"), icon: "lock", text: t("index.securityText") },
     { href: await siteHref("portal", "/settings/notifications"), label: t("nav.notifications"), icon: "bell", text: t("index.notificationsText") },
+    { href: await siteHref("portal", "/settings/companies"), label: t("nav.companies"), icon: "list", text: t("index.companiesText") },
     { href: await siteHref("portal", "/settings/data"), label: t("nav.data"), icon: "shield", text: t("index.dataText") },
   ];
 }

@@ -28,6 +28,7 @@ export default async function DataSettings() {
   const holderOf = (blockers ?? []).filter((b) => b.kind === "holder").map((b) => b.name);
   const insurance = blockers?.some((b) => b.kind === "insurance");
   const staff = blockers?.some((b) => b.kind === "staff");
+  const records = blockers?.some((b) => b.kind === "records");
 
   return (
     <>
@@ -60,6 +61,7 @@ export default async function DataSettings() {
               {holderOf.length > 0 && <p>{t("blockedHolder", { companies: holderOf.join(", ") })}</p>}
               {insurance && <p>{t("blockedInsurance", { email: CONTACT.support })}</p>}
               {staff && <p>{t("blockedStaff")}</p>}
+              {records && !insurance && <p>{t("blockedRecords", { email: CONTACT.support })}</p>}
             </div>
           </div>
         )}

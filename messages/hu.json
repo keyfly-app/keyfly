@@ -1254,7 +1254,8 @@
       "profile": "Profil",
       "security": "Bejelentkezés és biztonság",
       "notifications": "Értesítések",
-      "data": "Adataid"
+      "data": "Adataid",
+      "companies": "Cégeim"
     },
     "back": "Beállítások",
     "index": {
@@ -1262,7 +1263,8 @@
       "profileText": "Profilkép, név, telefonszám, nyelv.",
       "securityText": "E-mail-cím, jelszó, kétlépcsős azonosítás, belépések.",
       "notificationsText": "Miről kérsz e-mailt.",
-      "dataText": "Az adataid letöltése, a fiók törlése."
+      "dataText": "Az adataid letöltése, a fiók törlése.",
+      "companiesText": "A cégfiókjaid és a szereped bennük."
     },
     "userMenu": {
       "open": "Fiókmenü megnyitása"
@@ -1429,6 +1431,53 @@
         "rate": "Túl sok próbálkozás. Várj pár percet.",
         "setup": "A fiók törlése most nem érhető el. Írj nekünk: support@keyfly.app.",
         "generic": "Valami nem sikerült. Próbáld újra."
+      },
+      "blockedRecords": "Ingatlanok vagy bérleti szerződések tartoznak a fiókodhoz, ezért a törlését az ügyfélszolgálat intézi: {email}."
+    },
+    "companies": {
+      "title": "Cégeim",
+      "lead": "A cégfiókok, amelyekhez hozzáférsz.",
+      "card": "Cégfiókok",
+      "count": "{count, plural, other {# cég}}",
+      "company": "Cég",
+      "role": "Szerepköröd",
+      "plan": "Csomag",
+      "open": "Megnyitás",
+      "more": "{name} – további műveletek",
+      "details": "Cégadatok",
+      "team": "Csapat",
+      "pending": "Függő kérések",
+      "pendingTag": "Jóváhagyásra vár",
+      "requested": "Kérted: {date}",
+      "cancelRequest": "Kérés visszavonása",
+      "cancelled": "Visszavontad a kérést.",
+      "empty": "Még nincs cégfiókod.",
+      "error": "Valami nem sikerült. Próbáld újra."
+    },
+    "addresses": {
+      "title": "Címek",
+      "home": "Lakcím",
+      "mailing": "Levelezési cím",
+      "sameAsHome": "Megegyezik a lakcímmel",
+      "notSet": "Nincs megadva",
+      "add": "Hozzáadás",
+      "edit": "Módosítás",
+      "country": "Ország",
+      "postalCode": "Irányítószám",
+      "city": "Település",
+      "street": "Közterület és házszám",
+      "unit": "Emelet, ajtó",
+      "optional": "(nem kötelező)",
+      "save": "Mentés",
+      "cancel": "Mégse",
+      "remove": "Cím törlése",
+      "saved": "Elmentettük.",
+      "removed": "Töröltük a címet.",
+      "close": "Bezárás",
+      "errors": {
+        "required": "Töltsd ki ezt a mezőt.",
+        "postalCode": "A magyar irányítószám 4 számjegy.",
+        "generic": "Valami nem sikerült. Próbáld újra."
       }
     }
   },
@@ -1459,20 +1508,15 @@
     "label": "Fiókváltó – most: {name}",
     "title": "Fiókjaid",
     "personal": "Magánfiók",
-    "company": "Cégfiók",
-    "kind": {
-      "person": "Magánszemély",
-      "company": "Cég"
-    },
     "plans": {
       "basic": "Alap",
       "pro": "Pro",
       "enterprise": "Enterprise"
     },
     "add": "Cég hozzáadása",
-    "settings": "Cégbeállítások",
-    "note": "Minden fióknak saját adatai, csomagja és csapata van. A profilod és a belépésed közös.",
-    "close": "Bezárás"
+    "settings": "A cég beállításai",
+    "close": "Bezárás",
+    "manage": "Cégeim kezelése"
   },
   "companies": {
     "flow": {
@@ -1496,7 +1540,7 @@
     "menu": {
       "company": "Cégadatok",
       "team": "Csapat",
-      "companyText": "Megjelenő név, NAV-adatok.",
+      "companyText": "Név, adószám, székhely, kapcsolattartás.",
       "teamText": "Tagok, meghívók, hozzáférési kérések."
     },
     "displayName": "Megjelenő név",
@@ -1576,16 +1620,42 @@
     },
     "details": {
       "title": "Cégadatok",
-      "lead": "A szerződéseken és a számlákon ezek az adatok szerepelnek.",
-      "card": "Név és NAV-adatok",
-      "verified": "Ellenőrizve a NAV-nál",
+      "verified": "NAV-ellenőrzött",
       "save": "Mentés",
       "saved": "Elmentettük.",
-      "owner": "Fiókgazda",
-      "readOnly": "A cégadatokat a fiókgazda és az adminok módosíthatják.",
-      "navNote": "A NAV-adatokat a cégfiók létrehozásakor ellenőriztük ({date}). Ha változtak, írj a support@keyfly.app címre.",
-      "navNoteManual": "A NAV-adatok csak a Keyfly ügyfélszolgálatán keresztül módosíthatók: support@keyfly.app.",
-      "ownerText": "A fiókgazda kezeli a csomagot, a csapatot és a cégadatokat. A Csapat oldalon átadhatja."
+      "identity": "Név és azonosítók",
+      "legalName": "Hivatalos cégnév",
+      "taxNumber": "Adószám",
+      "taxFixed": "Az adószám első nyolc számjegye: {digits}",
+      "taxEnd": "Az adószám utolsó három számjegye",
+      "euVat": "Közösségi adószám",
+      "regNumber": "Cégjegyzékszám",
+      "office": "Székhely",
+      "postalCode": "Irányítószám",
+      "city": "Település",
+      "street": "Közterület és házszám",
+      "mailing": "Levelezési cím",
+      "sameAsOffice": "Megegyezik a székhellyel",
+      "contact": "Kapcsolattartás",
+      "email": "E-mail-cím",
+      "phone": "Telefonszám",
+      "discard": "Elvetés",
+      "unsaved": "Nem mentett módosítások",
+      "navRefresh": "Frissítés a NAV-ból",
+      "navLoaded": "Betöltöttük a NAV adatait. Ellenőrizd, és mentsd.",
+      "navInvalid": "A NAV szerint ez az adószám nem érvényes. Írj nekünk: support@keyfly.app.",
+      "navUnavailable": "A NAV most nem érhető el. Próbáld újra később.",
+      "errors": {
+        "required": "Töltsd ki ezt a mezőt.",
+        "taxEnd": "Az adószám vége egy számjegy, kötőjel és két számjegy, például 2-41.",
+        "euVat": "A közösségi adószám formátuma: HU12345678.",
+        "regNumber": "A cégjegyzékszám formátuma: 01-09-123456.",
+        "postalCode": "Az irányítószám 4 számjegy.",
+        "email": "Ellenőrizd az e-mail-címet.",
+        "phone": "Ellenőrizd a telefonszámot.",
+        "notAllowed": "A cégadatokat a fiókgazda és az adminok módosíthatják.",
+        "generic": "Valami nem sikerült. Próbáld újra."
+      }
     },
     "team": {
       "title": "Csapat",
@@ -1693,7 +1763,8 @@
         "backup": "Ez a tartalék kód nem jó, vagy már felhasználtad.",
         "locked": "Túl sok rossz tartalék kód. Egy óra múlva próbáld újra, vagy írj nekünk: support@keyfly.app.",
         "setup": "A tartalék kód most nem használható. Írj nekünk: support@keyfly.app."
-      }
+      },
+      "remember": "Ezen az eszközön 30 napig ne kérjen kódot"
     },
     "setup": {
       "title": "Kétlépcsős azonosítás",
@@ -1764,7 +1835,20 @@
         "expired": "Ez a beállítás már nem érvényes. Frissítsd az oldalt.",
         "rate": "Túl sok próbálkozás. Várj pár percet.",
         "generic": "Valami nem sikerült. Próbáld újra."
-      }
+      },
+      "renewCode": "Írd be a hitelesítő alkalmazásod kódját."
+    },
+    "trusted": {
+      "title": "Biztonságos eszközök",
+      "removeAll": "Összes eltávolítása",
+      "remove": "Eltávolítás",
+      "removeLabel": "{device} eltávolítása",
+      "thisDevice": "Ez az eszköz",
+      "marked": "Megjelölve: {date} · Lejár: {expires}",
+      "removed": "Eltávolítottuk. Ott újra kérjük a kódot.",
+      "removedAll": "Minden eszközön újra kérjük a kódot.",
+      "unknown": "Ismeretlen eszköz",
+      "error": "Valami nem sikerült. Próbáld újra."
     }
   }
 }
