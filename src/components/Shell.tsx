@@ -21,11 +21,12 @@ import type { AppSite } from "@/lib/sites";
 export async function Shell({ site, account, children }: { site: AppSite; account?: AccountSummary; children: React.ReactNode }) {
   const [t, a, inv, user, accounts] = await Promise.all([getTranslations("settings"), getTranslations("accounts"), getTranslations("invite"), currentUser(), myAccounts()]);
   const common = await getTranslations("common");
-  const [home, profile, security, notifications, companies, data, addCompany] = await Promise.all([
+  const [home, profile, security, notifications, bank, companies, data, addCompany] = await Promise.all([
     siteHref(site, "/"),
     siteHref(site, "/settings/profile"),
     siteHref(site, "/settings/security"),
     siteHref(site, "/settings/notifications"),
+    siteHref(site, "/settings/bank"),
     siteHref(site, "/settings/companies"),
     siteHref(site, "/settings/data"),
     siteHref(site, "/companies/new"),
@@ -96,7 +97,12 @@ export async function Shell({ site, account, children }: { site: AppSite; accoun
                   { href: profile, label: t("nav.profile"), icon: "user" },
                   { href: security, label: t("nav.security"), icon: "lock" },
                   { href: notifications, label: t("nav.notifications"), icon: "bell" },
-                  ...(site === "portal" ? [{ href: companies, label: t("nav.companies"), icon: "list" as const }] : []),
+                  ...(site === "portal"
+                    ? [
+                        { href: bank, label: t("nav.bank"), icon: "bank" as const },
+                        { href: companies, label: t("nav.companies"), icon: "list" as const },
+                      ]
+                    : []),
                   { href: data, label: t("nav.data"), icon: "shield" },
                 ]}
                 more={site === "portal" ? [{ href: addCompany, label: a("add"), icon: "building" }] : []}

@@ -13,8 +13,8 @@ export async function GET() {
   if (!auth?.claims) return new NextResponse(null, { status: 401 });
   const me = String(auth.claims.sub);
 
-  const [profile, memberships, accessRequests, leaseRequests, leases, properties, invitations, consents, applications, policies, claims, sessions, factors, trusted] = await Promise.all([
-    supabase.from("profiles").select("id, email, full_name, phone, birth_date, locale, start_view, email_prefs, avatar_path, home_address, mailing_address, created_at, updated_at").eq("id", me).maybeSingle(),
+  const [profile, memberships, accessRequests, leaseRequests, leases, properties, invitations, consents, applications, policies, claims, sessions, factors, trusted, bank] = await Promise.all([
+    supabase.from("profiles").select("id, email, full_name, phone, phone_verified_at, birth_date, locale, start_view, email_prefs, avatar_path, home_address, mailing_address, created_at, updated_at").eq("id", me).maybeSingle(),
     supabase.from("account_members").select("role, property_scope, created_at, accounts(id, kind, name, legal_name, tax_number, eu_vat_number, company_reg_number, registered_address, mailing_address, contact_email, contact_phone, plan)").eq("user_id", me),
     supabase.from("account_access_requests").select("account_id, message, status, created_at, decided_at").eq("user_id", me),
     supabase.from("lease_requests").select("*"),
@@ -28,6 +28,7 @@ export async function GET() {
     supabase.rpc("my_sessions"),
     supabase.auth.mfa.listFactors(),
     supabase.from("trusted_devices").select("label, created_at, expires_at, last_used_at"),
+    supabase.from("bank_accounts").select("account_id, currency, iban, holder_name, label, is_primary, created_at, updated_at"),
   ]);
 
   const body = {
@@ -47,6 +48,7 @@ export async function GET() {
     sign_ins: (sessions.data ?? []).map((s) => ({ device: s.user_agent, started: s.created_at, last_active: s.last_active_at })),
     two_step_verification: (factors.data?.totp ?? []).map((f) => ({ type: "authenticator app", added: f.created_at })),
     trusted_devices: trusted.data ?? [],
+    bank_accounts: bank.data ?? [],
   };
   const day = new Date().toISOString().slice(0, 10);
   return new NextResponse(JSON.stringify(body, null, 2), {

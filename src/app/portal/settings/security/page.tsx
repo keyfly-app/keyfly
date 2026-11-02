@@ -69,6 +69,7 @@ export default async function SecuritySettings({ searchParams }: { searchParams:
         email={user.email}
         pendingEmail={user.pendingEmail}
         phone={user.phone}
+        phoneVerified={Boolean(user.phoneVerifiedAt)}
         passwordChanged={user.passwordChangedAt ? date(user.passwordChangedAt, locale).replace(/ /g, "\u00a0") : null}
       />
       <TwoStepCard

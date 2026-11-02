@@ -1255,7 +1255,8 @@
       "security": "Sign-in and security",
       "notifications": "Notifications",
       "data": "Your data",
-      "companies": "My companies"
+      "companies": "My companies",
+      "bank": "Bank accounts"
     },
     "back": "Settings",
     "index": {
@@ -1264,7 +1265,8 @@
       "securityText": "Email, password, two-step verification, sign-ins.",
       "notificationsText": "Which emails you get.",
       "dataText": "Download your data, delete your account.",
-      "companiesText": "Your company accounts and your role in them."
+      "companiesText": "Your company accounts and your role in them.",
+      "bankText": "For claim payouts and refunds."
     },
     "userMenu": {
       "open": "Open account menu"
@@ -1298,10 +1300,6 @@
       "nameTitle": "Change your name",
       "nameLabel": "Full name",
       "nameHint": "As it appears on your leases.",
-      "phoneTitle": "Phone",
-      "phoneLabel": "Phone",
-      "phoneHint": "We only call about urgent matters and never share it.",
-      "phoneRemove": "Remove phone",
       "emailTitle": "Change your email",
       "emailLead": "We send a confirmation link to the new address. Until you confirm, you sign in with your current one.",
       "emailNew": "New email",
@@ -1319,8 +1317,6 @@
     },
     "saved": {
       "name": "Your name is saved.",
-      "phone": "Your phone number is saved.",
-      "phoneRemoved": "Your phone number is removed.",
       "email": "We sent the confirmation link to {email}.",
       "password": "Your password is changed. We signed you out on your other devices.",
       "photo": "Your profile photo is saved.",
@@ -1330,7 +1326,6 @@
     },
     "errors": {
       "name": "Enter a name of 2–200 characters.",
-      "phone": "Enter a phone number, e.g. +36 30 123 4567.",
       "email": "Enter a valid email address.",
       "sameEmail": "That’s your current email.",
       "emailTaken": "An account with this email already exists.",
@@ -1479,6 +1474,84 @@
         "postalCode": "A Hungarian postal code has 4 digits.",
         "generic": "Something went wrong. Try again."
       }
+    },
+    "bank": {
+      "title": "Bank accounts",
+      "lead": "Where we pay claims and refunds.",
+      "card": "Accounts",
+      "count": "{count, plural, one {# account} other {# accounts}}",
+      "add": "Add bank account",
+      "primary": "Primary",
+      "more": "{name} – more actions",
+      "makePrimary": "Primary for its currency",
+      "edit": "Change",
+      "delete": "Delete",
+      "emptyTitle": "No bank account yet",
+      "emptyText": "You can add one later for a claim payout or a refund.",
+      "addTitle": "Add a bank account",
+      "editTitle": "Change bank account",
+      "currency": "Currency",
+      "number": "Account number or IBAN",
+      "valid": "Valid account number",
+      "bank": "Bank",
+      "bic": "BIC (SWIFT)",
+      "iban": "IBAN",
+      "country": "Country",
+      "holder": "Account holder",
+      "label": "Label",
+      "optional": "(optional)",
+      "primaryIn": "Primary {currency} account",
+      "save": "Save",
+      "addButton": "Add",
+      "cancel": "Cancel",
+      "close": "Close",
+      "saved": "Bank account saved.",
+      "deleted": "Bank account deleted.",
+      "primarySet": "This is now the primary account in its currency.",
+      "deleteTitle": "Delete this bank account?",
+      "deleteText": "{number}. Earlier payouts are not affected.",
+      "errors": {
+        "empty": "Enter the account number.",
+        "format": "This is not an account number: we expect 16 or 24 digits, or an IBAN.",
+        "checksum": "This account number is not valid: the check digit doesn’t match. Check the digits again.",
+        "duplicate": "This account is already listed in this currency.",
+        "holder": "Enter the account holder’s name.",
+        "notAllowed": "The account holder and admins manage bank accounts.",
+        "generic": "Something went wrong. Try again."
+      },
+      "fallback": "Bank account",
+      "readOnly": "The account holder and admins manage bank accounts."
+    },
+    "phone": {
+      "title": "Phone",
+      "lead": "We’ll text you a confirmation code.",
+      "label": "Mobile number",
+      "send": "Send code",
+      "codeTitle": "Confirm your phone number",
+      "codeText": "We sent a 6-digit code to {phone}.",
+      "codeLabel": "6-digit code",
+      "resendIn": "You can ask for a new code in {seconds} s",
+      "resend": "Send a new code",
+      "other": "Use another number",
+      "confirm": "Confirm",
+      "verified": "Confirmed",
+      "unverified": "Not confirmed",
+      "verify": "Confirm",
+      "remove": "Remove phone number",
+      "saved": "Your phone number is confirmed.",
+      "removed": "Phone number removed.",
+      "sms": "Your Keyfly code: {code}. Don’t share it with anyone.",
+      "errors": {
+        "format": "Enter a mobile number with its country code, for example +36 30 123 4567.",
+        "country": "We can’t text this country yet. Write to us: support@keyfly.app.",
+        "mobile": "We can only text mobile numbers.",
+        "limit": "You’ve asked for too many codes. Try again later.",
+        "sms": "We couldn’t send the text. Check the number and try again.",
+        "code": "That code isn’t right. Check the text and enter it again.",
+        "expired": "The code has expired. Ask for a new one.",
+        "email": "First confirm your email address.",
+        "generic": "Something went wrong. Try again."
+      }
     }
   },
   "header": {
@@ -1541,7 +1614,9 @@
       "company": "Company details",
       "team": "Team",
       "companyText": "Name, tax number, registered office, contact.",
-      "teamText": "Members, invitations, access requests."
+      "teamText": "Members, invitations, access requests.",
+      "bank": "Bank accounts",
+      "bankText": "For claim payouts and refunds."
     },
     "displayName": "Display name",
     "displayNameHint": "How your tenants and team see it.",

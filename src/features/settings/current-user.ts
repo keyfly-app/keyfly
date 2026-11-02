@@ -9,7 +9,9 @@ export type CurrentUser = {
   /** Address waiting for confirmation after an email change. */
   pendingEmail: string | null;
   fullName: string | null;
+  /** E.164; set only through the SMS check. */
   phone: string | null;
+  phoneVerifiedAt: string | null;
   initials: string;
   /** Short-lived signed link to the profile photo (private bucket). */
   avatarUrl: string | null;
@@ -39,7 +41,7 @@ export const currentUser = cache(async (): Promise<CurrentUser | null> => {
   if (!user?.email) return null;
   const { data: profile } = await supabase
     .from("profiles")
-    .select("full_name, phone, avatar_path, password_changed_at, start_view")
+    .select("full_name, phone, phone_verified_at, avatar_path, password_changed_at, start_view")
     .eq("id", user.id)
     .maybeSingle();
   const avatarPath = profile?.avatar_path ?? null;
@@ -50,6 +52,7 @@ export const currentUser = cache(async (): Promise<CurrentUser | null> => {
     pendingEmail: user.new_email ?? null,
     fullName: profile?.full_name ?? null,
     phone: profile?.phone ?? null,
+    phoneVerifiedAt: profile?.phone_verified_at ?? null,
     initials: initialsOf(profile?.full_name ?? null, user.email),
     avatarUrl: signed?.signedUrl ?? null,
     avatarPath,

@@ -10,6 +10,7 @@ export async function personalSettingsLinks(): Promise<SettingsLink[]> {
     { href: await siteHref("portal", "/settings/profile"), label: t("nav.profile"), icon: "user", text: t("index.profileText") },
     { href: await siteHref("portal", "/settings/security"), label: t("nav.security"), icon: "lock", text: t("index.securityText") },
     { href: await siteHref("portal", "/settings/notifications"), label: t("nav.notifications"), icon: "bell", text: t("index.notificationsText") },
+    { href: await siteHref("portal", "/settings/bank"), label: t("nav.bank"), icon: "bank", text: t("index.bankText") },
     { href: await siteHref("portal", "/settings/companies"), label: t("nav.companies"), icon: "list", text: t("index.companiesText") },
     { href: await siteHref("portal", "/settings/data"), label: t("nav.data"), icon: "shield", text: t("index.dataText") },
   ];
@@ -20,6 +21,7 @@ export async function companySettingsLinks(slug: string): Promise<SettingsLink[]
   const t = await getTranslations("companies.menu");
   return [
     { href: await siteHref("portal", `/c/${slug}/settings/company`), label: t("company"), icon: "building", text: t("companyText") },
+    { href: await siteHref("portal", `/c/${slug}/settings/bank`), label: t("bank"), icon: "bank", text: t("bankText") },
     { href: await siteHref("portal", `/c/${slug}/settings/team`), label: t("team"), icon: "users", text: t("teamText") },
   ];
 }

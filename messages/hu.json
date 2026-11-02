@@ -1255,7 +1255,8 @@
       "security": "Bejelentkezés és biztonság",
       "notifications": "Értesítések",
       "data": "Adataid",
-      "companies": "Cégeim"
+      "companies": "Cégeim",
+      "bank": "Bankszámlák"
     },
     "back": "Beállítások",
     "index": {
@@ -1264,7 +1265,8 @@
       "securityText": "E-mail-cím, jelszó, kétlépcsős azonosítás, belépések.",
       "notificationsText": "Miről kérsz e-mailt.",
       "dataText": "Az adataid letöltése, a fiók törlése.",
-      "companiesText": "A cégfiókjaid és a szereped bennük."
+      "companiesText": "A cégfiókjaid és a szereped bennük.",
+      "bankText": "Kárkifizetéshez és visszatérítéshez."
     },
     "userMenu": {
       "open": "Fiókmenü megnyitása"
@@ -1298,10 +1300,6 @@
       "nameTitle": "Név módosítása",
       "nameLabel": "Teljes név",
       "nameHint": "Ahogy a szerződésekben szerepel.",
-      "phoneTitle": "Telefonszám",
-      "phoneLabel": "Telefonszám",
-      "phoneHint": "Csak sürgős ügyben hívunk. Nem adjuk tovább.",
-      "phoneRemove": "Telefonszám törlése",
       "emailTitle": "E-mail-cím módosítása",
       "emailLead": "Megerősítő linket küldünk az új címre. Amíg nem erősíted meg, a mostani címeddel lépsz be.",
       "emailNew": "Új e-mail-cím",
@@ -1319,8 +1317,6 @@
     },
     "saved": {
       "name": "Elmentettük a neved.",
-      "phone": "Elmentettük a telefonszámod.",
-      "phoneRemoved": "Töröltük a telefonszámod.",
       "email": "Elküldtük a megerősítő linket ide: {email}.",
       "password": "Megváltoztattuk a jelszavad. A többi eszközödön kijelentkeztettünk.",
       "photo": "Elmentettük a profilképed.",
@@ -1330,7 +1326,6 @@
     },
     "errors": {
       "name": "Adj meg egy 2–200 karakteres nevet.",
-      "phone": "Adj meg egy telefonszámot, pl. +36 30 123 4567.",
       "email": "Adj meg egy érvényes e-mail-címet.",
       "sameEmail": "Ez a mostani e-mail-címed.",
       "emailTaken": "Ezzel az e-mail-címmel már van fiók.",
@@ -1479,6 +1474,84 @@
         "postalCode": "A magyar irányítószám 4 számjegy.",
         "generic": "Valami nem sikerült. Próbáld újra."
       }
+    },
+    "bank": {
+      "title": "Bankszámlák",
+      "lead": "Ide utaljuk a kárkifizetéseket és a visszatérítéseket.",
+      "card": "Számlák",
+      "count": "{count, plural, other {# számla}}",
+      "add": "Bankszámla hozzáadása",
+      "primary": "Elsődleges",
+      "more": "{name} – további műveletek",
+      "makePrimary": "Elsődleges a pénznemében",
+      "edit": "Módosítás",
+      "delete": "Törlés",
+      "emptyTitle": "Még nincs bankszámla",
+      "emptyText": "Kárkifizetéshez vagy visszatérítéshez később is megadhatod.",
+      "addTitle": "Bankszámla hozzáadása",
+      "editTitle": "Bankszámla módosítása",
+      "currency": "Pénznem",
+      "number": "Számlaszám vagy IBAN",
+      "valid": "Érvényes számlaszám",
+      "bank": "Bank",
+      "bic": "BIC (SWIFT)",
+      "iban": "IBAN",
+      "country": "Ország",
+      "holder": "Számlatulajdonos",
+      "label": "Megnevezés",
+      "optional": "(nem kötelező)",
+      "primaryIn": "Elsődleges számla {currency, select, HUF {forintban} EUR {euróban} USD {dollárban} GBP {fontban} CHF {frankban} CZK {cseh koronában} PLN {zlotyban} RON {lejben} other {ebben a pénznemben}}",
+      "save": "Mentés",
+      "addButton": "Hozzáadás",
+      "cancel": "Mégse",
+      "close": "Bezárás",
+      "saved": "Elmentettük a bankszámlát.",
+      "deleted": "Töröltük a bankszámlát.",
+      "primarySet": "Mostantól ez az elsődleges számla ebben a pénznemben.",
+      "deleteTitle": "Törlöd a bankszámlát?",
+      "deleteText": "{number}. A korábbi kifizetéseket nem érinti.",
+      "errors": {
+        "empty": "Add meg a számlaszámot.",
+        "format": "Ez nem számlaszám: 16 vagy 24 számjegyet, illetve IBAN-t várunk.",
+        "checksum": "A számlaszám hibás: az ellenőrző számjegy nem egyezik. Nézd meg újra a számjegyeket.",
+        "duplicate": "Ez a számla már szerepel ebben a pénznemben.",
+        "holder": "Add meg a számlatulajdonos nevét.",
+        "notAllowed": "A bankszámlákat a fiókgazda és az adminok kezelik.",
+        "generic": "Valami nem sikerült. Próbáld újra."
+      },
+      "fallback": "Bankszámla",
+      "readOnly": "A bankszámlákat a fiókgazda és az adminok kezelik."
+    },
+    "phone": {
+      "title": "Telefonszám",
+      "lead": "Megerősítő kódot küldünk SMS-ben.",
+      "label": "Mobilszám",
+      "send": "Kód küldése",
+      "codeTitle": "Telefonszám megerősítése",
+      "codeText": "Elküldtük a 6 jegyű kódot ide: {phone}.",
+      "codeLabel": "6 jegyű kód",
+      "resendIn": "Új kódot {seconds} mp múlva kérhetsz",
+      "resend": "Új kód küldése",
+      "other": "Másik számot adok meg",
+      "confirm": "Megerősítés",
+      "verified": "Megerősítve",
+      "unverified": "Nincs megerősítve",
+      "verify": "Megerősítés",
+      "remove": "Telefonszám törlése",
+      "saved": "Megerősítettük a telefonszámod.",
+      "removed": "Töröltük a telefonszámod.",
+      "sms": "A Keyfly kódod: {code}. Ne add meg senkinek.",
+      "errors": {
+        "format": "Adj meg egy mobilszámot országkóddal, például +36 30 123 4567.",
+        "country": "Erre az országra még nem tudunk SMS-t küldeni. Írj nekünk: support@keyfly.app.",
+        "mobile": "SMS-t csak mobilszámra tudunk küldeni.",
+        "limit": "Elérted a kódkérések számát. Próbáld újra később.",
+        "sms": "Nem sikerült elküldeni az SMS-t. Ellenőrizd a számot, és próbáld újra.",
+        "code": "A kód nem jó. Nézd meg az SMS-t, és írd be újra.",
+        "expired": "A kód lejárt. Kérj újat.",
+        "email": "Előbb erősítsd meg az e-mail-címed.",
+        "generic": "Valami nem sikerült. Próbáld újra."
+      }
     }
   },
   "header": {
@@ -1541,7 +1614,9 @@
       "company": "Cégadatok",
       "team": "Csapat",
       "companyText": "Név, adószám, székhely, kapcsolattartás.",
-      "teamText": "Tagok, meghívók, hozzáférési kérések."
+      "teamText": "Tagok, meghívók, hozzáférési kérések.",
+      "bank": "Bankszámlák",
+      "bankText": "Kárkifizetéshez és visszatérítéshez."
     },
     "displayName": "Megjelenő név",
     "displayNameHint": "Így látják a bérlőid és a csapatod.",

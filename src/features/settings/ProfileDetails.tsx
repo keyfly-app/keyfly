@@ -1,12 +1,15 @@
 "use client";
 
-import { useActionState, useEffect, useId, useRef, useState } from "react";
+import { useActionState, useEffect, useId, useRef, useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
 import { Icon, type IconName } from "@/components/Icon";
+import { CodeInput } from "@/components/ui/CodeInput";
 import { Dialog, DialogActions } from "@/components/ui/Dialog";
 import { Button, Notice, TextField } from "@/components/ui/form";
+import { Tag } from "@/components/ui/Tag";
 import { PasswordField } from "@/features/auth/PasswordField";
-import { changeEmail, changePassword, updateName, updatePhone, type SettingsState } from "./actions";
+import { formatPhone } from "@/lib/phone";
+import { changeEmail, changePassword, phoneStep, removePhone, updateName, type PhoneState, type SettingsState } from "./actions";
 
 type Editing = "name" | "email" | "password" | "phone" | null;
 const IDLE: SettingsState = { status: "idle" };
@@ -22,6 +25,7 @@ export function ProfileDetails({
   email,
   pendingEmail,
   phone,
+  phoneVerified = false,
   passwordChanged,
   extra,
 }: {
@@ -35,6 +39,7 @@ export function ProfileDetails({
   email: string;
   pendingEmail: string | null;
   phone: string | null;
+  phoneVerified?: boolean;
   passwordChanged: string | null;
 }) {
   const t = useTranslations("settings");
@@ -67,9 +72,11 @@ export function ProfileDetails({
       ),
     },
     { key: "password", icon: "lock", label: t("profile.password"), value: <span className="tracking-[0.2em]">••••••••••</span> },
-    { key: "phone", icon: "phone", label: t("profile.phone"), value: phone ?? t("profile.phoneEmpty"), empty: !phone },
+    { key: "phone", icon: "phone", label: t("profile.phone"), value: phone ? formatPhone(phone) : t("profile.phoneEmpty"), empty: !phone },
   ];
   const rows = items.map((key) => all.find((r) => r.key === key)!);
+  const actionLabel = (row: (typeof all)[number]) =>
+    row.empty ? t("profile.add") : row.key === "phone" && !phoneVerified ? t("phone.verify") : t("profile.edit");
 
   return (
     <section aria-labelledby={`${headingId}-title`} className="rounded-xl border border-line bg-surface">
@@ -89,7 +96,10 @@ export function ProfileDetails({
             </span>
             <div className="flex min-w-0 flex-1 flex-col">
               <span className="text-[12.5px] text-muted">{row.label}</span>
-              <span className={`text-sm font-medium [overflow-wrap:break-word] ${row.empty ? "text-muted" : ""}`}>{row.value}</span>
+              <span className={`flex flex-wrap items-center gap-x-2 gap-y-1 text-sm font-medium [overflow-wrap:break-word] ${row.empty ? "text-muted" : ""}`}>
+                {row.value}
+                {row.key === "phone" && phone && <Tag tone={phoneVerified ? "ok" : "warning"}>{phoneVerified ? t("phone.verified") : t("phone.unverified")}</Tag>}
+              </span>
               {row.key === "email" && pendingEmail && <span className="mt-1 text-[12.5px] font-medium text-info-ink">{t("profile.pending", { email: pendingEmail })}</span>}
               {row.key === "password" && passwordChanged && <span className="text-[12.5px] text-muted">{t("profile.passwordChanged", { date: passwordChanged })}</span>}
             </div>
@@ -100,10 +110,10 @@ export function ProfileDetails({
                 setNotice(null);
                 setEditing(row.key);
               }}
-              aria-label={`${row.label}: ${row.empty ? t("profile.add") : t("profile.edit")}`}
+              aria-label={`${row.label}: ${actionLabel(row)}`}
               className="inline-flex h-11 flex-none items-center rounded-lg border border-field bg-surface px-3.5 text-[13px] font-medium hover:border-ink sm:h-9"
             >
-              {row.empty ? t("profile.add") : t("profile.edit")}
+              {actionLabel(row)}
             </button>
           </li>
         ))}
@@ -114,7 +124,7 @@ export function ProfileDetails({
       {editing === "name" && <NameDialog open onClose={close} onSaved={onSaved} current={name ?? ""} />}
       {editing === "email" && <EmailDialog open onClose={close} onSaved={onSaved} />}
       {editing === "password" && <PasswordDialog open onClose={close} onSaved={onSaved} />}
-      {editing === "phone" && <PhoneDialog open onClose={close} onSaved={onSaved} current={phone ?? ""} />}
+      {editing === "phone" && <PhoneDialog open onClose={close} onSaved={onSaved} current={phone} />}
     </section>
   );
 }
@@ -154,23 +164,157 @@ function NameDialog({ open, onClose, onSaved, current }: DialogProps & { current
   );
 }
 
-function PhoneDialog({ open, onClose, onSaved, current }: DialogProps & { current: string }) {
-  const t = useTranslations("settings.dialogs");
+const RESEND_AFTER = 60;
+
+/** Seconds left until a new code may be asked for; ticks once a second. */
+function useCountdown(from: number | undefined) {
+  const [now, setNow] = useState(() => Date.now());
+  useEffect(() => {
+    if (!from) return;
+    const timer = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(timer);
+  }, [from]);
+  return from ? Math.min(RESEND_AFTER, Math.max(0, RESEND_AFTER - Math.floor((now - from) / 1000))) : 0;
+}
+
+/** Telefonszám megerősítése (canvas V23TelefonKod): the number, then the 6-digit code from the SMS. */
+function PhoneDialog({ open, onClose, onSaved, current }: DialogProps & { current: string | null }) {
+  const t = useTranslations("settings.phone");
   const id = useId();
-  const { run, pending, fieldError, formError } = useSettingsAction(updatePhone, onSaved);
+  // "Másik számot adok meg" starts the dialog over with a fresh action state.
+  const [round, setRound] = useState(0);
+  const [removing, startRemove] = useTransition();
+  const [removeFailed, setRemoveFailed] = useState(false);
+  const remove = () =>
+    startRemove(async () => {
+      const { ok } = await removePhone();
+      if (ok) onSaved(t("removed"));
+      else setRemoveFailed(true);
+    });
   return (
-    <Dialog open={open} onClose={onClose} title={t("phoneTitle")} description={t("phoneHint")} closeLabel={t("close")}>
-      <form action={run} className="flex flex-col gap-4">
-        <TextField id={`${id}-phone`} name="phone" type="tel" inputMode="tel" label={t("phoneLabel")} defaultValue={current} placeholder="+36 30 123 4567" autoComplete="tel" maxLength={20} required error={fieldError("phone")} />
+    <PhoneSteps
+      key={round}
+      id={id}
+      open={open}
+      onClose={onClose}
+      onSaved={onSaved}
+      current={current}
+      onRestart={() => setRound((r) => r + 1)}
+      remove={current ? { run: remove, pending: removing, failed: removeFailed } : null}
+    />
+  );
+}
+
+function PhoneSteps({
+  id,
+  open,
+  onClose,
+  onSaved,
+  current,
+  onRestart,
+  remove,
+}: DialogProps & {
+  id: string;
+  current: string | null;
+  onRestart: () => void;
+  remove: { run: () => void; pending: boolean; failed: boolean } | null;
+}) {
+  const t = useTranslations("settings.phone");
+  const d = useTranslations("settings.dialogs");
+  const closeLabel = d("close");
+  const cancelLabel = d("cancel");
+  const [state, run, pending] = useActionState<PhoneState, FormData>(phoneStep, { step: "number" });
+  const [, startResend] = useTransition();
+  // Every answer from the server clears the boxes, so a wrong code can be typed again straight away.
+  const [seen, setSeen] = useState(state);
+  const [answers, setAnswers] = useState(0);
+  if (seen !== state) {
+    setSeen(state);
+    setAnswers(answers + 1);
+  }
+  const form = useRef<HTMLFormElement>(null);
+  const resend = () =>
+    startResend(() => {
+      const data = new FormData();
+      data.set("intent", "send");
+      data.set("phone", state.phone ?? "");
+      run(data);
+    });
+  const left = useCountdown(state.step === "code" ? state.at : undefined);
+  useEffect(() => {
+    if (state.step === "done") onSaved(t("saved"));
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- report the result once
+  }, [state.step]);
+  const error = state.error ? t(`errors.${state.error}`) : undefined;
+  const cancel = (
+    <button type="button" onClick={onClose} className="inline-flex h-11 items-center justify-center rounded-lg border border-field px-4 text-sm font-medium hover:border-ink sm:h-10">
+      {cancelLabel}
+    </button>
+  );
+
+  if (state.step === "number")
+    return (
+      <Dialog open={open} onClose={onClose} title={t("title")} description={t("lead")} closeLabel={closeLabel}>
+        <form action={run} className="flex flex-col gap-4">
+          <input type="hidden" name="intent" value="send" />
+          <TextField
+            id={`${id}-phone`}
+            name="phone"
+            type="tel"
+            inputMode="tel"
+            label={t("label")}
+            defaultValue={state.input ?? (current ? formatPhone(current) : "")}
+            placeholder="+36 30 123 4567"
+            autoComplete="tel"
+            maxLength={24}
+            required
+            error={error}
+          />
+          {remove?.failed && <Notice kind="error">{t("errors.generic")}</Notice>}
+          <DialogActions>
+            {remove && (
+              <button
+                type="button"
+                onClick={remove.run}
+                aria-disabled={remove.pending || undefined}
+                className="mr-auto inline-flex h-11 items-center justify-center rounded-lg px-1 text-sm font-medium text-danger-ink hover:underline sm:h-10"
+              >
+                {t("remove")}
+              </button>
+            )}
+            {cancel}
+            <Button pending={pending}>{t("send")}</Button>
+          </DialogActions>
+        </form>
+      </Dialog>
+    );
+
+  // Code step (also stays open on a wrong or expired code, or a failed resend).
+  const codeError = state.error === "code" || state.error === "expired" ? error : undefined;
+  const formError = codeError ? undefined : error;
+  return (
+    <Dialog open={open} onClose={onClose} title={t("codeTitle")} description={t("codeText", { phone: formatPhone(state.phone ?? "") })} closeLabel={closeLabel}>
+      <form ref={form} action={run} className="flex flex-col gap-4">
+        <input type="hidden" name="intent" value="confirm" />
+        <CodeInput key={answers} id={`${id}-code`} name="code" label={t("codeLabel")} autoFocus fill error={codeError} onComplete={() => form.current?.requestSubmit()} />
         {formError && <Notice kind="error">{formError}</Notice>}
-        <DialogActions>
-          {current && (
-            <button type="submit" name="intent" value="remove" formNoValidate className="mr-auto inline-flex h-11 items-center justify-center rounded-lg px-1 text-sm font-medium text-danger-ink hover:underline sm:h-10">
-              {t("phoneRemove")}
+        <div className="flex flex-col items-start gap-1 text-[13px]">
+          {left > 0 ? (
+            <p className="py-1 text-muted" aria-live="off">
+              {t("resendIn", { seconds: left })}
+            </p>
+          ) : (
+            <button type="button" onClick={resend} disabled={pending} className="inline-flex min-h-11 items-center font-medium text-brand hover:underline sm:min-h-8">
+              {t("resend")}
             </button>
           )}
-          <button type="button" onClick={onClose} className="inline-flex h-11 items-center justify-center rounded-lg border border-field px-4 text-sm font-medium hover:border-ink sm:h-10">{t("cancel")}</button>
-          <Button pending={pending}>{t("save")}</Button>
+          <button type="button" onClick={onRestart} className="inline-flex min-h-11 items-center font-medium text-brand hover:underline sm:min-h-8">
+            {t("other")}
+          </button>
+        </div>
+        <DialogActions>
+          {cancel}
+          <Button pending={pending}>{t("confirm")}</Button>
         </DialogActions>
       </form>
     </Dialog>

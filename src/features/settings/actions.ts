@@ -1,10 +1,10 @@
 "use server";
 
-import { randomBytes } from "node:crypto";
+import { createHash, randomBytes, randomInt } from "node:crypto";
 import { createClient as createPlainClient } from "@supabase/supabase-js";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { getLocale } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 import { BRAND } from "@/config/company";
 import { isCountry } from "@/config/countries";
 import { publicHref } from "@/i18n/config";
@@ -12,7 +12,9 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { isValidPassword } from "@/features/auth/password";
 import { forgetTrustedDevices } from "@/features/security/trusted";
 import { requestOrigin } from "@/lib/request-origin";
+import { parsePhone } from "@/lib/phone";
 import { hrefFor } from "@/lib/sites";
+import { sendSms } from "@/lib/sms";
 import type { Database } from "@/lib/supabase/database.types";
 import { supabaseEnv } from "@/lib/supabase/env";
 import { createClient } from "@/lib/supabase/server";
@@ -24,7 +26,6 @@ export type SettingsState =
   | { status: "error"; error: string; field?: string };
 
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
-const PHONE = /^\+?[0-9][0-9 ]{6,19}$/;
 const PHOTO_MAX_BYTES = 1024 * 1024;
 
 async function signedIn() {
@@ -63,15 +64,57 @@ export async function updateName(_: SettingsState, form: FormData): Promise<Sett
   return done("name");
 }
 
-export async function updatePhone(_: SettingsState, form: FormData): Promise<SettingsState> {
-  const remove = form.get("intent") === "remove";
-  const phone = remove ? null : String(form.get("phone") ?? "").replace(/\s+/g, " ").trim();
-  if (phone !== null && !PHONE.test(phone)) return { status: "error", error: "phone", field: "phone" };
+// ---------- Phone: confirmed with an SMS code (canvas "Telefonszám megerősítése") ----------
+
+export type PhoneError = "format" | "country" | "mobile" | "limit" | "sms" | "code" | "expired" | "email" | "generic";
+/** number → code (after the SMS went out; `at` starts the resend countdown) → done. */
+export type PhoneState = { step: "number" | "code" | "done"; phone?: string; at?: number; error?: PhoneError; /** What was typed, kept after an error. */ input?: string };
+
+const hashCode = (code: string) => createHash("sha256").update(code).digest("hex");
+
+/** One action for both steps of the dialog: intent "send" texts a code, intent "confirm" checks it. */
+export async function phoneStep(prev: PhoneState, form: FormData): Promise<PhoneState> {
+  return form.get("intent") === "confirm" ? confirmPhoneCode(prev, form) : sendPhoneCode(prev, form);
+}
+
+/** Step 1: checks the number, stores a hashed 6-digit code (3 an hour, 10 a day) and texts it. */
+async function sendPhoneCode(prev: PhoneState, form: FormData): Promise<PhoneState> {
+  const input = String(form.get("phone") ?? prev.phone ?? "").slice(0, 24);
+  const fail = (error: PhoneError): PhoneState => ({ ...prev, step: prev.step === "code" ? "code" : "number", error, input });
+  const parsed = parsePhone(input);
+  if (!parsed.ok) return fail(parsed.error);
   const { supabase, id } = await signedIn();
-  if (!id) return { status: "error", error: "generic" };
-  const { error } = await supabase.from("profiles").update({ phone }).eq("id", id);
-  if (error) return { status: "error", error: "generic" };
-  return done(remove ? "phoneRemoved" : "phone");
+  if (!id) return fail("generic");
+  const code = String(randomInt(0, 1_000_000)).padStart(6, "0");
+  const { error } = await supabase.rpc("start_phone_check", { p_phone: parsed.e164, p_code_hash: hashCode(code) });
+  if (error) return fail(error.message === "too_many_codes" ? "limit" : error.message === "email_not_confirmed" ? "email" : "generic");
+  const [t, { host }] = await Promise.all([getTranslations("settings.phone"), requestOrigin()]);
+  // The last line lets phones offer the code from the SMS automatically (WebOTP / iOS one-time codes).
+  const sent = await sendSms(parsed.e164, `${t("sms", { code })}\n\n@${host.split(":")[0]} #${code}`);
+  if (!sent) return fail("sms");
+  return { step: "code", phone: parsed.e164, at: Date.now() };
+}
+
+/** Step 2: the code from the SMS; the number becomes the profile's confirmed phone. */
+async function confirmPhoneCode(prev: PhoneState, form: FormData): Promise<PhoneState> {
+  const fail = (error: PhoneError): PhoneState => ({ ...prev, step: "code", error });
+  const code = String(form.get("code") ?? "").replace(/\D/g, "");
+  if (code.length !== 6) return fail("code");
+  const { supabase, id } = await signedIn();
+  if (!id) return fail("generic");
+  const { data, error } = await supabase.rpc("confirm_phone_code", { p_code_hash: hashCode(code) });
+  if (error) return fail(error.message === "code_expired" ? "expired" : "generic");
+  if (data !== "ok") return fail("code");
+  revalidatePath("/", "layout");
+  return { step: "done", phone: prev.phone };
+}
+
+export async function removePhone(): Promise<{ ok: boolean }> {
+  const { supabase, id } = await signedIn();
+  if (!id) return { ok: false };
+  const { error } = await supabase.rpc("remove_phone");
+  if (!error) revalidatePath("/", "layout");
+  return { ok: !error };
 }
 
 /** Email change: password first, then Supabase sends the confirmation link (template "email_change"). */

@@ -26,9 +26,7 @@ select tests.throws($$update public.profiles set avatar_path = '00000000-0000-00
 select tests.throws($$update public.profiles set avatar_path = '00000000-0000-0000-0000-00000000bb01/Xy3kQ9pL2mN4.png' where id = '00000000-0000-0000-0000-00000000bb01'$$, 'only WebP or JPEG photos');
 select tests.throws($$update public.profiles set avatar_path = '00000000-0000-0000-0000-00000000bb01/../x.webp' where id = '00000000-0000-0000-0000-00000000bb01'$$, 'a crafted photo path is refused');
 select tests.throws($$update public.profiles set password_changed_at = now() where id = '00000000-0000-0000-0000-00000000bb01'$$, 'the password date is not writable via the API');
-select tests.throws($$update public.profiles set phone = 'call me' where id = '00000000-0000-0000-0000-00000000bb01'$$, 'a phone number in the wrong format is refused');
-update public.profiles set phone = '+36 30 123 4567' where id = '00000000-0000-0000-0000-00000000bb01';
-select tests.ok((select phone from public.profiles where id = '00000000-0000-0000-0000-00000000bb01') = '+36 30 123 4567', '… a valid one is saved');
+select tests.throws($$update public.profiles set phone = '+36 30 123 4567' where id = '00000000-0000-0000-0000-00000000bb01'$$, 'the phone is set only through the SMS check (bank_phone.test.sql)');
 
 -- Storage: own folder only.
 select tests.throws($$insert into storage.objects (bucket_id, name) values ('avatars', '00000000-0000-0000-0000-00000000bb02/a1b2c3d4e5f6.webp')$$, 'a photo cannot be uploaded into another user''s folder');

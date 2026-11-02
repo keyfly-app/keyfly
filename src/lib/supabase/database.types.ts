@@ -866,6 +866,12 @@ export type Database = {
         Update: { code_hash?: string; created_at?: string; id?: string; used_at?: string | null; user_id?: string }
         Relationships: []
       }
+      bank_accounts: {
+        Row: { account_id: string; created_at: string; created_by: string | null; currency: string; holder_name: string; iban: string; id: string; is_primary: boolean; label: string | null; updated_at: string }
+        Insert: { account_id: string; created_at?: string; created_by?: string | null; currency: string; holder_name: string; iban: string; id?: string; is_primary?: boolean; label?: string | null; updated_at?: string }
+        Update: { account_id?: string; created_at?: string; created_by?: string | null; currency?: string; holder_name?: string; iban?: string; id?: string; is_primary?: boolean; label?: string | null; updated_at?: string }
+        Relationships: []
+      }
       trusted_devices: {
         Row: { created_at: string; expires_at: string; id: string; label: string; last_used_at: string | null; token_hash: string; user_id: string }
         Insert: { created_at?: string; expires_at?: string; id?: string; label: string; last_used_at?: string | null; token_hash: string; user_id: string }
@@ -981,6 +987,7 @@ export type Database = {
           locale: Database["public"]["Enums"]["locale"]
           password_changed_at: string | null
           phone: string | null
+          phone_verified_at: string | null
           start_view: Database["public"]["Enums"]["start_view"] | null
           updated_at: string
         }
@@ -997,6 +1004,7 @@ export type Database = {
           locale?: Database["public"]["Enums"]["locale"]
           password_changed_at?: string | null
           phone?: string | null
+          phone_verified_at?: string | null
           start_view?: Database["public"]["Enums"]["start_view"] | null
           updated_at?: string
         }
@@ -1013,6 +1021,7 @@ export type Database = {
           locale?: Database["public"]["Enums"]["locale"]
           password_changed_at?: string | null
           phone?: string | null
+          phone_verified_at?: string | null
           start_view?: Database["public"]["Enums"]["start_view"] | null
           updated_at?: string
         }
@@ -1303,6 +1312,9 @@ export type Database = {
       recovery_codes_left: { Args: never; Returns: number }
       set_recovery_codes: { Args: { p_hashes: string[] }; Returns: undefined }
       my_access_requests: { Args: never; Returns: { account_id: string; created_at: string; id: string; name: string; tax_number: string | null }[] }
+      start_phone_check: { Args: { p_phone: string; p_code_hash: string }; Returns: number }
+      confirm_phone_code: { Args: { p_code_hash: string }; Returns: string }
+      remove_phone: { Args: never; Returns: undefined }
       trust_device: { Args: { p_token_hash: string; p_label: string }; Returns: string }
       trusted_device_ok: { Args: { p_token_hash: string }; Returns: boolean }
       account_access_requests_list: {

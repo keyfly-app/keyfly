@@ -208,8 +208,9 @@ select tests.throws($$insert into public.applications (tenant_id, monthly_rent, 
 insert into public.applications (tenant_id, monthly_rent) values ('00000000-0000-0000-0000-0000000000a1', 300000);
 select tests.ok(true, 'tenant can create her own request');
 select tests.throws($$update public.profiles set email = 'x@y.hu' where id = '00000000-0000-0000-0000-0000000000a1'$$, 'tenant cannot change her login email');
-update public.profiles set phone = '+36301234567', locale = 'en', start_view = 'tenant' where id = '00000000-0000-0000-0000-0000000000a1';
-select tests.ok(true, 'tenant can change phone, language and start view');
+update public.profiles set locale = 'en', start_view = 'tenant' where id = '00000000-0000-0000-0000-0000000000a1';
+select tests.ok(true, 'tenant can change language and start view');
+select tests.throws($$update public.profiles set phone = '+36301234567' where id = '00000000-0000-0000-0000-0000000000a1'$$, 'the phone changes only through the SMS check');
 select tests.throws($$insert into public.claims (policy_id, submitted_by, reason, amount_claimed) values ('00000000-0000-0000-0000-00000000b001', '00000000-0000-0000-0000-0000000000a1', 'x', 1000)$$, 'tenant cannot file a claim');
 select tests.throws($$insert into public.verifications (application_id, method, status) values ('00000000-0000-0000-0000-00000000a001', 'manual', 'passed')$$, 'tenant cannot verify herself');
 select tests.throws($$insert into public.staff (user_id, role) values ('00000000-0000-0000-0000-0000000000a1', 'superadmin')$$, 'tenant cannot make herself admin');
