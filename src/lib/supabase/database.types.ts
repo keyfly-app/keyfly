@@ -15,6 +15,39 @@ export type Database = {
   }
   public: {
     Tables: {
+      account_access_requests: {
+        Row: {
+          account_id: string
+          created_at: string
+          decided_at: string | null
+          decided_by: string | null
+          id: string
+          message: string | null
+          status: Database["public"]["Enums"]["access_request_status"]
+          user_id: string
+        }
+        Insert: {
+          account_id: string
+          created_at?: string
+          decided_at?: string | null
+          decided_by?: string | null
+          id?: string
+          message?: string | null
+          status?: Database["public"]["Enums"]["access_request_status"]
+          user_id: string
+        }
+        Update: {
+          account_id?: string
+          created_at?: string
+          decided_at?: string | null
+          decided_by?: string | null
+          id?: string
+          message?: string | null
+          status?: Database["public"]["Enums"]["access_request_status"]
+          user_id?: string
+        }
+        Relationships: []
+      }
       account_member_properties: {
         Row: {
           account_id: string
@@ -108,8 +141,10 @@ export type Database = {
           kind: Database["public"]["Enums"]["account_kind"]
           legal_name: string | null
           name: string
+          nav_verified_at: string | null
           personal_user_id: string | null
           plan: Database["public"]["Enums"]["account_plan"]
+          slug: string | null
           registered_address: string | null
           tax_number: string | null
           updated_at: string
@@ -124,8 +159,10 @@ export type Database = {
           kind: Database["public"]["Enums"]["account_kind"]
           legal_name?: string | null
           name: string
+          nav_verified_at?: string | null
           personal_user_id?: string | null
           plan?: Database["public"]["Enums"]["account_plan"]
+          slug?: string | null
           registered_address?: string | null
           tax_number?: string | null
           updated_at?: string
@@ -140,8 +177,10 @@ export type Database = {
           kind?: Database["public"]["Enums"]["account_kind"]
           legal_name?: string | null
           name?: string
+          nav_verified_at?: string | null
           personal_user_id?: string | null
           plan?: Database["public"]["Enums"]["account_plan"]
+          slug?: string | null
           registered_address?: string | null
           tax_number?: string | null
           updated_at?: string
@@ -1222,6 +1261,37 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      account_access_requests_list: {
+        Args: { p_account_id: string }
+        Returns: { created_at: string; email: string; full_name: string | null; id: string; message: string | null; user_id: string }[]
+      }
+      account_members_list: {
+        Args: { p_account_id: string }
+        Returns: {
+          email: string
+          full_name: string | null
+          joined_at: string
+          property_scope: Database["public"]["Enums"]["property_scope"]
+          role: Database["public"]["Enums"]["account_role"]
+          user_id: string
+        }[]
+      }
+      cancel_access_request: { Args: { p_request_id: string }; Returns: undefined }
+      company_lookup: {
+        Args: { p_tax8: string }
+        Returns: { account_id: string; i_am_member: boolean; invitation_only: boolean; name: string; requested_at: string | null; slug: string | null }[]
+      }
+      decide_access_request: {
+        Args: { p_approve: boolean; p_request_id: string; p_role?: Database["public"]["Enums"]["account_role"] }
+        Returns: {
+          account_name: string
+          account_slug: string
+          requester_email: string
+          requester_locale: Database["public"]["Enums"]["locale"]
+          requester_name: string | null
+        }[]
+      }
+      request_company_access: { Args: { p_account_id: string; p_message?: string }; Returns: string }
       accept_invitation: {
         Args: { p_tenant_account_id?: string; p_token: string }
         Returns: string
@@ -1288,13 +1358,7 @@ export type Database = {
         Returns: string
       }
       create_company_account: {
-        Args: {
-          p_company_reg_number?: string
-          p_legal_name: string
-          p_name?: string
-          p_registered_address?: string
-          p_tax_number: string
-        }
+        Args: { p_legal_name: string; p_name?: string; p_owner: string; p_registered_address?: string; p_tax_number: string }
         Returns: string
       }
       create_lease_invitation: {
@@ -1460,8 +1524,9 @@ export type Database = {
       }
     }
     Enums: {
+      access_request_status: "pending" | "approved" | "declined" | "cancelled"
       account_kind: "person" | "company"
-      account_plan: "basic" | "pro" | "business"
+      account_plan: "basic" | "pro" | "enterprise"
       account_role: "owner" | "admin" | "manager" | "viewer"
       application_status:
         | "draft"
@@ -1663,8 +1728,9 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      access_request_status: ["pending", "approved", "declined", "cancelled"],
       account_kind: ["person", "company"],
-      account_plan: ["basic", "pro", "business"],
+      account_plan: ["basic", "pro", "enterprise"],
       account_role: ["owner", "admin", "manager", "viewer"],
       application_status: [
         "draft",

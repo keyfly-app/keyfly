@@ -187,7 +187,7 @@ export type ViewState = { status: "idle" } | { status: "saved"; view: Enums<"sta
 /** Header "Nézet" menu: what Overview shows. Stays on the page; the toast confirms. */
 export async function switchView(_prev: ViewState, form: FormData): Promise<ViewState> {
   const view = String(form.get("view") ?? "") as Enums<"start_view">;
-  if (!START_VIEWS.includes(view)) return { status: "error" };
+  if (view !== "tenant" && view !== "landlord") return { status: "error" };
   const supabase = await createClient();
   const { data } = await supabase.auth.getClaims();
   if (!data?.claims) return { status: "error" };
@@ -197,13 +197,16 @@ export async function switchView(_prev: ViewState, form: FormData): Promise<View
   return { status: "saved", view };
 }
 
-/** "How will you use Keyfly?" – only picks the start screen. */
+/**
+ * "How will you use Keyfly?" – picks the view. A property management company works in a company account:
+ * that answer sets the landlord view and goes on to "Add a company".
+ */
 export async function setStartView(form: FormData) {
   const view = String(form.get("view") ?? "") as Enums<"start_view">;
   if (START_VIEWS.includes(view)) {
     const supabase = await createClient();
     const { data } = await supabase.auth.getClaims();
-    if (data?.claims) await supabase.from("profiles").update({ start_view: view }).eq("id", data.claims.sub);
+    if (data?.claims) await supabase.from("profiles").update({ start_view: view === "manager" ? "landlord" : view }).eq("id", data.claims.sub);
   }
-  return goTo("portal", "/");
+  return goTo("portal", view === "manager" ? "/companies/new" : "/");
 }

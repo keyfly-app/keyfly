@@ -29,6 +29,7 @@ export function Button({
   name,
   value,
   fit = false,
+  formId,
 }: {
   children: React.ReactNode;
   variant?: keyof typeof BUTTON;
@@ -38,10 +39,13 @@ export function Button({
   value?: string;
   /** Full width on phones, as wide as the label from 640 px. */
   fit?: boolean;
+  /** Submits this form when the button sits outside it (e.g. in a sticky bar). */
+  formId?: string;
 }) {
   return (
     <button
       type="submit"
+      form={formId}
       formAction={formAction}
       name={name}
       value={value}

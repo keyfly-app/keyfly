@@ -250,7 +250,8 @@
           "Keyfly cover for all your properties",
           "Invite your tenant, confirm the cover",
           "Report a claim online",
-          "A list of your properties"
+          "A list of your properties",
+          "Unlimited users, team included"
         ]
       },
       "pro": {
@@ -268,24 +269,24 @@
           "Free tenant space"
         ]
       },
-      "business": {
-        "label": "KEYFLY BUSINESS",
+      "enterprise": {
+        "label": "KEYFLY ENTERPRISE",
         "badge": "For property managers",
         "price": "Price: coming soon",
         "sub": "Above 15 properties, for teams",
         "items": [
           "Everything in Pro",
-          "User management and permissions",
-          "Several colleagues, shared work",
+          "Access to selected properties",
+          "Invitation-only team, activity log",
           "Portfolio per owner and monthly statements",
           "Bulk reminders, Excel export",
           "Your logo on emails"
         ]
       }
     },
-    "plansNote": "The Keyfly cover is paid by the tenant and is free for landlords in every plan. The cover is available without Pro or Business too. Prices will be published before launch.",
+    "plansNote": "The Keyfly cover is paid by the tenant and is free for landlords in every plan. The cover is available without Pro or Enterprise too. Prices will be published before launch.",
     "cta": {
-      "title": "Interested in Pro or Business?",
+      "title": "Interested in Pro or Enterprise?",
       "text": "Join as a landlord or agency and tick the box to hear about the workspace."
     }
   },
@@ -725,7 +726,7 @@
       "plans": {
         "basic": "Basic",
         "pro": "Pro",
-        "business": "Business"
+        "enterprise": "Enterprise"
       },
       "property": "Property",
       "newProperty": "Add as a new property",
@@ -902,13 +903,48 @@
       "leadDeclined": "{name} didn’t accept the updated terms, so the lease won’t be recorded.",
       "why": "You’re receiving this because {name} invited you to Keyfly as landlord.",
       "tag": "Closed"
+    },
+    "accessRequest": {
+      "tag": "Access request",
+      "subject": "{name} wants to join {account}",
+      "preheader": "They asked for access to the company account.",
+      "title": "Access request",
+      "lead": "{name} asked for access to this company account: {account}. If you know them, approve and choose what they can access.",
+      "rows": {
+        "name": "Name",
+        "email": "Email",
+        "message": "Message"
+      },
+      "cta": "Open request",
+      "note": "If you don’t know them, decline. Only the owner or an admin can grant access.",
+      "why": "You get this because you’re an owner or admin of this company account: {account}."
+    },
+    "accessApproved": {
+      "tag": "Approved",
+      "subject": "You now have access: {account}",
+      "preheader": "You’ll find it in the account switcher.",
+      "title": "You now have access",
+      "lead": "You can now work in this company account: {account}. You’ll find it in the account switcher.",
+      "rows": {
+        "role": "Role",
+        "access": "Access"
+      },
+      "cta": "Open",
+      "why": "You asked for access to this company account: {account}."
+    },
+    "accessDeclined": {
+      "tag": "Declined",
+      "subject": "Access not granted: {account}",
+      "preheader": "The account owner declined your request.",
+      "title": "Access not granted",
+      "lead": "The owner of this company account declined your request: {account}. If you have questions, contact them directly.",
+      "why": "You asked for access to this company account: {account}."
     }
   },
   "portal": {
     "title": "Overview",
     "intro": {
-      "landlord": "Soon you'll manage your properties and leases here.",
-      "manager": "Soon you'll manage your portfolio and team here."
+      "landlord": "Soon you'll manage your properties and leases here."
     },
     "applications": "My quote requests",
     "addressLater": "Address to follow",
@@ -1168,7 +1204,6 @@
   },
   "settings": {
     "title": "Settings",
-    "personalAccount": "Personal account",
     "nav": {
       "label": "Settings menu",
       "personal": "Personal",
@@ -1272,8 +1307,8 @@
   "header": {
     "view": "View",
     "viewLead": "What should Overview show?",
-    "viewNote": "This only sets what you see first. Your account and data stay the same.",
-    "viewSaved": "Switched to the {view, select, tenant {tenant} landlord {landlord} other {property manager}} view.",
+    "viewNote": "This only sets what you see first. For company work, switch to a company account top left.",
+    "viewSaved": "Switched to the {view, select, tenant {tenant} other {landlord}} view.",
     "viewError": "Couldn’t switch. Please try again.",
     "views": {
       "tenant": {
@@ -1283,10 +1318,6 @@
       "landlord": {
         "title": "Landlord",
         "text": "Your properties, tenants and leases"
-      },
-      "manager": {
-        "title": "Property manager",
-        "text": "Portfolio and team"
       }
     },
     "language": "Language",
@@ -1295,5 +1326,202 @@
       "en": "English"
     },
     "close": "Close"
+  },
+  "accounts": {
+    "label": "Account switcher – now: {name}",
+    "title": "Your accounts",
+    "personal": "Personal account",
+    "company": "Company account",
+    "kind": {
+      "person": "Individual",
+      "company": "Company"
+    },
+    "plans": {
+      "basic": "Basic",
+      "pro": "Pro",
+      "enterprise": "Enterprise"
+    },
+    "add": "Add a company",
+    "note": "Each account has its own data, plan and team. Your profile and sign-in are shared.",
+    "close": "Close"
+  },
+  "companies": {
+    "flow": {
+      "title": "Add a company",
+      "steps": {
+        "company": "Company",
+        "review": "Review"
+      }
+    },
+    "s1Title": "Which company are you adding?",
+    "s1Lead": "Enter the tax number and we fill in the rest from the NAV register.",
+    "tax": "Tax number",
+    "search": "Look up",
+    "nav": {
+      "title": "NAV data",
+      "valid": "Valid tax number",
+      "legalName": "Legal name",
+      "address": "Registered office",
+      "taxNumber": "Tax number"
+    },
+    "menu": {
+      "company": "Company details",
+      "team": "Team",
+      "companyText": "Display name, NAV data.",
+      "teamText": "Members, invitations, access requests."
+    },
+    "displayName": "Display name",
+    "displayNameHint": "How your tenants and team see it.",
+    "ownerNote": "You’ll be the owner of the account. You can hand it over later.",
+    "declaration": "I confirm that I’m authorised to represent the company or act on its behalf.",
+    "states": {
+      "format": "Enter 8 digits, or the full tax number (12345678-2-41).",
+      "invalid": "NAV says this tax number isn’t valid. Check the digits.",
+      "unavailable": "We can’t reach NAV right now. Try again in a few minutes.",
+      "member": "You’re already a member of this company account: {name}.",
+      "switchTo": "Switch to this account",
+      "requested": "You already asked for access ({date}). We’ll email you once it’s approved.",
+      "inviteOnly": "{name} can only be joined by invitation. Ask its Keyfly administrator for one."
+    },
+    "exists": {
+      "title": "This company is already on Keyfly",
+      "lead": "This tax number already has a company account.",
+      "tag": "On Keyfly",
+      "text": "A company can have one account. Ask for access: the account’s owner and admins get your request by email.",
+      "message": "Message to the owner",
+      "messagePh": "E.g. I work in finance and would manage the leases.",
+      "privacy": "With the request, the account’s owner and admins see your name and email.",
+      "request": "Request access",
+      "sending": "Sending…"
+    },
+    "sent": {
+      "title": "Request sent",
+      "text": "The company account’s owner and admins get your request. Once approved, the company shows up among your accounts.",
+      "toHome": "Go to Overview"
+    },
+    "review": {
+      "title": "Review and create",
+      "lead": "The company account is created with these details. NAV data can’t be edited by hand.",
+      "company": "Company",
+      "you": "You",
+      "youValue": "{name} · owner",
+      "plan": "Plan",
+      "create": "Create company account",
+      "creating": "Creating…"
+    },
+    "rail": {
+      "planTitle": "Plan",
+      "planName": "Basic · free",
+      "planText": "A new company account starts on Basic: insurance for any number of properties, policies, claims, unlimited users. You can switch to Pro later.",
+      "one": "A company can have one account on Keyfly. If yours is already here, you can ask for access.",
+      "nextTitle": "What happens next?",
+      "next1": "The company account is created",
+      "next1Text": "You’re its owner.",
+      "next2": "We switch to it",
+      "next2Text": "Go back to your personal account any time from the account switcher.",
+      "next3": "Invite your team",
+      "next3Text": "As many colleagues as you need, on every plan."
+    },
+    "errors": {
+      "declaration": "Accept the declaration to continue.",
+      "name": "Enter a display name (2–200 characters).",
+      "exists": "Someone has just added this company. Look it up again and ask for access.",
+      "setup": "Creating company accounts isn’t available right now. Write to support@keyfly.app.",
+      "alreadyRequested": "You’ve already asked for access to this company.",
+      "inviteOnly": "This company can only be joined by invitation.",
+      "alreadyMember": "You’re already a member of this company account.",
+      "message": "The message can be at most 500 characters.",
+      "generic": "Something went wrong. Please try again."
+    },
+    "overview": {
+      "created": "Company account created. You’re now working in it.",
+      "title": "Overview",
+      "firstSteps": "First steps",
+      "details": "Check the company details",
+      "detailsText": "Display name and NAV data.",
+      "team": "Invite your team",
+      "teamText": "Colleagues with their own sign-in, on every plan.",
+      "property": "Add your first property",
+      "propertyText": "Coming soon: properties and leases in the company’s name.",
+      "soon": "Coming soon"
+    },
+    "details": {
+      "title": "Company details",
+      "lead": "These details appear on leases and invoices.",
+      "card": "Name and NAV data",
+      "verified": "Verified with NAV",
+      "save": "Save",
+      "saved": "Saved.",
+      "owner": "Owner",
+      "readOnly": "The owner and admins can change the company details.",
+      "navNote": "We checked the NAV data when the company account was created ({date}). If anything changed, write to support@keyfly.app.",
+      "navNoteManual": "NAV data can only be changed through Keyfly support: support@keyfly.app.",
+      "ownerText": "The owner manages the team and the plan. Ownership can be handed over later."
+    },
+    "team": {
+      "title": "Team",
+      "lead": "Who works in this account and what they can access.",
+      "invite": "Invite a member",
+      "members": "Members",
+      "count": "{count, plural, one {# user} other {# users}}",
+      "colMember": "Member",
+      "colRole": "Role",
+      "colAccess": "Access",
+      "colJoined": "Joined",
+      "accessAll": "All properties",
+      "accessSelected": "Selected properties",
+      "you": "you",
+      "memberActions": "{name} – actions",
+      "remove": "Remove from the team",
+      "removeTitle": "Remove from the team?",
+      "removeText": "{name} will no longer have access to the company account. You can invite them again later.",
+      "removeConfirm": "Remove",
+      "pendingTitle": "Pending invitations",
+      "expires": "Expires: {date}",
+      "resend": "Resend",
+      "withdraw": "Withdraw",
+      "resent": "Invitation sent again: {email}",
+      "withdrawn": "Invitation withdrawn.",
+      "requestsTitle": "Access requests",
+      "requested": "Requested: {date}",
+      "approve": "Approve",
+      "decline": "Decline",
+      "approveTitle": "{name} joins",
+      "approveLead": "Choose what they can access. You can change it later.",
+      "role": "Role",
+      "access": "Access",
+      "selectedEnterprise": "Limiting access to selected properties is part of Enterprise.",
+      "selectedSoon": "Choosing properties is coming soon.",
+      "unlimited": "Every plan has unlimited users. Pro features come with the account’s plan.",
+      "declineTitle": "Decline the request?",
+      "declineText": "{name} gets an email about it. They can ask again later.",
+      "approved": "{name} joined the team.",
+      "declined": "You declined the request.",
+      "inviteTitle": "Invite a member",
+      "inviteLead": "They get an email invitation and work with their own sign-in. The account’s data stays with the company.",
+      "email": "Email",
+      "send": "Send invitation",
+      "invited": "Invitation sent: {email}",
+      "invitedNoEmail": "The invitation is ready, but the email didn’t go out. Try resending it.",
+      "readOnly": "The owner and admins manage the team.",
+      "roleText": {
+        "admin": "Manages everything, the team too.",
+        "manager": "Manages properties, leases, insurance and tenants.",
+        "viewer": "Sees everything, changes nothing."
+      },
+      "errors": {
+        "email": "Enter a valid email address.",
+        "alreadyMember": "They’re already on the team.",
+        "notAllowed": "You don’t have permission for this.",
+        "closed": "This request is already closed.",
+        "generic": "Something went wrong. Please try again."
+      }
+    },
+    "close": "Close",
+    "cancel": "Cancel",
+    "next": "Continue",
+    "back": "Back",
+    "edit": "Edit",
+    "optional": "(optional)"
   }
 }

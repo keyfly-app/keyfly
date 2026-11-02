@@ -86,7 +86,7 @@ export default async function PortalHome() {
         <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div className="flex flex-col gap-1">
             <h1 className="font-display text-[22px] leading-7 font-semibold sm:text-[26px] sm:leading-8">{t("title")}</h1>
-            <p className="text-sm text-muted">{tenant ? t("summary", { todos, open }) : t(`intro.${view}`)}</p>
+            <p className="text-sm text-muted">{tenant ? t("summary", { todos, open }) : t("intro.landlord")}</p>
           </div>
           {tenant && !empty && (
             <ButtonLink href={newRequestHref} fit>

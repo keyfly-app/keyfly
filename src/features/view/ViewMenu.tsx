@@ -5,17 +5,16 @@ import { useTranslations } from "next-intl";
 import { HeaderMenu } from "@/components/HeaderMenu";
 import { Icon, type IconName } from "@/components/Icon";
 import { switchView, type ViewState } from "@/features/auth/actions";
-import type { Enums } from "@/lib/supabase/database.types";
 
-const VIEWS: { view: Enums<"start_view">; icon: IconName }[] = [
+type View = "tenant" | "landlord";
+const VIEWS: { view: View; icon: IconName }[] = [
   { view: "tenant", icon: "key" },
   { view: "landlord", icon: "home" },
-  { view: "manager", icon: "building" },
 ];
 const TOAST_MS = 4000;
 
-/** Header "Nézet" (canvas "Fejléc ikonok"): what Overview shows. Only the start view changes, never rights or data. */
-export function ViewMenu({ current }: { current: Enums<"start_view"> }) {
+/** Header "Nézet" (canvas "Fejléc ikonok"): tenant or landlord Overview. Company work happens in a company account. */
+export function ViewMenu({ current }: { current: View }) {
   const t = useTranslations("header");
   const [state, action] = useActionState<ViewState, FormData>(switchView, { status: "idle" });
   const [toast, setToast] = useState<string | null>(null);

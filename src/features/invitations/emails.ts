@@ -210,3 +210,59 @@ export function requestCancelledEmail(i: { locale: Locale; tenant: string; stree
     why: t("requestCancelled.why", { name: i.tenant }),
   });
 }
+
+// ---------- Company access requests -------------------------------------------------------------
+
+/** To the owner and admins: someone found the company by tax number and asks to join. */
+export function accessRequestEmail(i: { locale: Locale; url: string; account: string; name: string; email: string; message: string | null }): Email {
+  const t = translator(i.locale);
+  const rows: [string, string][] = [
+    [t("accessRequest.rows.name"), i.name],
+    [t("accessRequest.rows.email"), i.email],
+  ];
+  if (i.message) rows.push([t("accessRequest.rows.message"), i.message]);
+  return render({
+    locale: i.locale,
+    tag: { tone: "info", label: t("accessRequest.tag") },
+    subject: t("accessRequest.subject", { name: i.name, account: i.account }),
+    preheader: t("accessRequest.preheader"),
+    title: t("accessRequest.title"),
+    lead: t("accessRequest.lead", { name: i.name, account: i.account }),
+    rows,
+    note: t("accessRequest.note"),
+    action: { cta: t("accessRequest.cta"), url: i.url },
+    why: t("accessRequest.why", { account: i.account }),
+  });
+}
+
+export function accessApprovedEmail(i: { locale: Locale; url: string; account: string; role: Enums<"account_role"> }): Email {
+  const t = translator(i.locale);
+  const roles = createTranslator({ locale: i.locale, messages: i.locale === "en" ? en : hu, namespace: "invite.roles" });
+  return render({
+    locale: i.locale,
+    tag: { tone: "ok", label: t("accessApproved.tag") },
+    subject: t("accessApproved.subject", { account: i.account }),
+    preheader: t("accessApproved.preheader"),
+    title: t("accessApproved.title"),
+    lead: t("accessApproved.lead", { account: i.account }),
+    rows: [
+      [t("accessApproved.rows.role"), roles(i.role)],
+      [t("accessApproved.rows.access"), t("common.accessAll")],
+    ],
+    action: { cta: t("accessApproved.cta"), url: i.url },
+    why: t("accessApproved.why", { account: i.account }),
+  });
+}
+
+export function accessDeclinedEmail(i: { locale: Locale; account: string }): Email {
+  const t = translator(i.locale);
+  return render({
+    locale: i.locale,
+    tag: { tone: "neutral", label: t("accessDeclined.tag") },
+    subject: t("accessDeclined.subject", { account: i.account }),
+    preheader: t("accessDeclined.preheader"),
+    title: t("accessDeclined.title"),
+    lead: t("accessDeclined.lead", { account: i.account }),
+    why: t("accessDeclined.why", { account: i.account }),
+  });
+}

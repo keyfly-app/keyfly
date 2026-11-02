@@ -32,8 +32,8 @@ begin
   perform set_config('role', case when uid is null then 'anon' else 'authenticated' end, true);
 end $$;
 
-grant usage on schema tests to anon, authenticated;
-grant execute on all functions in schema tests to anon, authenticated;
+grant usage on schema tests to anon, authenticated, service_role;
+grant execute on all functions in schema tests to anon, authenticated, service_role;
 
 -- ---------- Fixtures (as postgres, RLS bypassed) ----------------------------
 -- Users: a1 Anna (tenant), a2 Béla (Anna's co-tenant), b1 Péter (private landlord),
@@ -66,7 +66,7 @@ insert into fx select 'acc_' || split_part(p.email, '@', 1), a.id
 from public.accounts a join public.profiles p on p.id = a.personal_user_id;
 
 insert into public.accounts (id, kind, name, legal_name, tax_number, plan, is_referral_partner) values
-  ('00000000-0000-0000-0000-00000000c0c0', 'company', 'Duna Ingatlankezelő', 'Duna Ingatlankezelő Kft.', '12345678-2-42', 'business', true);
+  ('00000000-0000-0000-0000-00000000c0c0', 'company', 'Duna Ingatlankezelő', 'Duna Ingatlankezelő Kft.', '12345678-2-42', 'enterprise', true);
 insert into public.account_members (account_id, user_id, role, property_scope) values
   ('00000000-0000-0000-0000-00000000c0c0', '00000000-0000-0000-0000-0000000000c1', 'owner', 'all'),
   ('00000000-0000-0000-0000-00000000c0c0', '00000000-0000-0000-0000-0000000000e1', 'admin', 'all'),
@@ -148,7 +148,7 @@ select tests.throws('select * from public.applications', 'anon cannot read quote
 select tests.throws('select * from public.profiles', 'anon cannot read profiles');
 select tests.throws('select * from public.accounts', 'anon cannot read accounts');
 select tests.throws('select * from public.leases', 'anon cannot read leases');
-select tests.throws($$select public.create_company_account('X Kft.', '12345678-1-41')$$, 'anon cannot create accounts');
+select tests.throws($$select public.create_company_account('00000000-0000-0000-0000-0000000000a1', 'X Kft.', '12345678-1-41')$$, 'anon cannot create accounts');
 insert into public.waitlist (email, segment, locale, privacy_notice_version, source) values ('new@example.com', 'tenant', 'hu', '2026-10-31', 'coming-soon');
 select tests.ok(true, 'anon can join the waitlist');
 insert into public.waitlist (email, segment, locale, privacy_notice_version, marketing_consent, marketing_consent_version) values ('news@example.com', 'landlord', 'en', '2026-10-31', true, 'newsletter-2026-10-31');
@@ -192,9 +192,13 @@ select tests.throws($$select public.create_staff_invitation('x@keyfly.app', 'adm
 select tests.throws($$select public.close_lease('00000000-0000-0000-0000-0000000001a2')$$, 'tenant cannot close a lease');
 select tests.ok(length(public.create_lease_invitation('00000000-0000-0000-0000-0000000001a1', 'gabor@example.com', 'lease_occupant', 'occupant')) = 64,
   'tenant can invite an occupant to her home');
-select tests.ok(public.create_company_account('Anna Lakásai Kft.', '23456789-2-41') is not null, 'anyone can create a company account');
+select tests.throws($$select public.create_company_account('00000000-0000-0000-0000-0000000000a1', 'Anna Lakásai Kft.', '23456789-2-41')$$, 'users cannot create companies directly (the server does, after the NAV check)');
+reset role;
+set local role service_role;
+select tests.ok(public.create_company_account('00000000-0000-0000-0000-0000000000a1', 'Anna Lakásai Kft.', '23456789-2-41') is not null, 'the server creates a company for its owner');
+select tests.act_as('00000000-0000-0000-0000-0000000000a1');
 select tests.ok((select count(*) from public.accounts) = 2, 'the creator sees the new company account');
-select tests.throws($$select public.create_account_invitation((select id from public.accounts where kind = 'company'), 'x@example.com', 'manager')$$, 'a Basic company cannot add members');
+select tests.ok(length(public.create_account_invitation((select id from public.accounts where kind = 'company'), 'x@example.com', 'manager')) = 64, 'a Basic company invites members too');
 update public.applications set monthly_rent = 360000 where id = '00000000-0000-0000-0000-00000000a001';
 select tests.ok((select monthly_rent from public.applications where id = '00000000-0000-0000-0000-00000000a001') = 360000, 'tenant can edit a submitted request');
 select tests.throws($$update public.applications set quoted_premium_monthly = 1 where id = '00000000-0000-0000-0000-00000000a001'$$, 'tenant cannot change the premium');
@@ -310,19 +314,23 @@ update public.leases set termination_date = current_date where id = '00000000-00
 select tests.ok((select termination_date from public.leases where id = '00000000-0000-0000-0000-0000000001a2') is null, 'viewer cannot change a lease');
 rollback;
 
--- ---------- Plans: Pro allows 3 users, no admin ----------------------------------------------
+-- ---------- Plans: unlimited users and every role on every plan; selected properties only on Enterprise ----
 
 begin;
 insert into public.accounts (id, kind, name, legal_name, tax_number, plan) values
-  ('00000000-0000-0000-0000-00000000c1c1', 'company', 'Pro Kft.', 'Pro Kft.', '11111111-2-42', 'pro');
+  ('00000000-0000-0000-0000-00000000c1c1', 'company', 'Alap Kft.', 'Alap Kft.', '11111111-2-42', 'basic');
 insert into public.account_members (account_id, user_id, role) values ('00000000-0000-0000-0000-00000000c1c1', '00000000-0000-0000-0000-0000000000b1', 'owner');
 select tests.act_as('00000000-0000-0000-0000-0000000000b1');
-select tests.throws($$select public.create_account_invitation('00000000-0000-0000-0000-00000000c1c1', 'x@example.com', 'admin')$$, 'Pro has no admin role');
+select public.create_account_invitation('00000000-0000-0000-0000-00000000c1c1', 'x@example.com', 'admin');
 select public.create_account_invitation('00000000-0000-0000-0000-00000000c1c1', 'one@example.com', 'manager');
 select public.create_account_invitation('00000000-0000-0000-0000-00000000c1c1', 'two@example.com', 'viewer');
-select tests.throws($$select public.create_account_invitation('00000000-0000-0000-0000-00000000c1c1', 'three@example.com', 'viewer')$$, 'Pro allows at most 3 users');
+select public.create_account_invitation('00000000-0000-0000-0000-00000000c1c1', 'three@example.com', 'viewer');
+select tests.ok((select count(*) from public.invitations where account_id = '00000000-0000-0000-0000-00000000c1c1' and revoked_at is null) = 4, 'Basic invites any number of members, admins too');
+select tests.throws($$select public.create_account_invitation('00000000-0000-0000-0000-00000000c1c1', 'four@example.com', 'manager', 'selected')$$, 'selected properties only on Enterprise');
+select tests.throws($$select public.create_account_invitation('00000000-0000-0000-0000-00000000c1c1', 'four@example.com', 'owner')$$, 'the owner is transferred, not invited');
 select public.create_account_invitation('00000000-0000-0000-0000-00000000c1c1', 'two@example.com', 'manager');
-select tests.ok((select count(*) from public.invitations where account_id = '00000000-0000-0000-0000-00000000c1c1' and revoked_at is null) = 2, 're-sending replaces the open invitation');
+select tests.ok((select count(*) from public.invitations where account_id = '00000000-0000-0000-0000-00000000c1c1' and revoked_at is null) = 4, 're-sending replaces the open invitation');
+select tests.ok((select slug from public.accounts where id = '00000000-0000-0000-0000-00000000c1c1') = 'alap-kft', 'a company gets a URL slug from its name');
 rollback;
 
 -- ---------- Accepting invitations -----------------------------------------------------------

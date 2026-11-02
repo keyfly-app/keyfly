@@ -250,7 +250,8 @@
           "Keyfly-fedezet minden ingatlanodra",
           "Bérlő meghívása, fedezet igazolása",
           "Kárbejelentés online",
-          "Ingatlanjaid listája"
+          "Ingatlanjaid listája",
+          "Korlátlan felhasználó, csapattal is"
         ]
       },
       "pro": {
@@ -268,24 +269,24 @@
           "Ingyenes bérlői felület"
         ]
       },
-      "business": {
-        "label": "KEYFLY BUSINESS",
+      "enterprise": {
+        "label": "KEYFLY ENTERPRISE",
         "badge": "Ingatlankezelőknek",
         "price": "Ár: hamarosan",
         "sub": "15 ingatlan felett, csapatoknak",
         "items": [
           "Minden, ami a Pro-ban",
-          "Felhasználókezelés és jogosultságok",
-          "Több kolléga, közös munka",
+          "Hozzáférés kiválasztott ingatlanokra",
+          "Csatlakozás csak meghívással, műveleti napló",
           "Tulajdonosonkénti portfólió és havi kimutatás",
           "Tömeges értesítők, Excel-export",
           "Saját logó a leveleken"
         ]
       }
     },
-    "plansNote": "A Keyfly-fedezet díját a bérlő fizeti, a bérbeadónak minden csomagban ingyenes. A fedezet a Pro és a Business nélkül is igényelhető. Az árakat indulás előtt tesszük közzé.",
+    "plansNote": "A Keyfly-fedezet díját a bérlő fizeti, a bérbeadónak minden csomagban ingyenes. A fedezet a Pro és a Enterprise nélkül is igényelhető. Az árakat indulás előtt tesszük közzé.",
     "cta": {
-      "title": "Érdekel a Pro vagy a Business?",
+      "title": "Érdekel a Pro vagy a Enterprise?",
       "text": "Iratkozz fel bérbeadóként vagy ingatlanirodaként, és jelöld be, hogy a kezelőfelület is érdekel."
     }
   },
@@ -725,7 +726,7 @@
       "plans": {
         "basic": "Alap",
         "pro": "Pro",
-        "business": "Business"
+        "enterprise": "Enterprise"
       },
       "property": "Ingatlan",
       "newProperty": "Új ingatlanként veszem fel",
@@ -902,13 +903,48 @@
       "leadDeclined": "{name} nem fogadta el a módosított feltételeket, ezért a szerződést nem rögzítjük.",
       "why": "Ezt a levelet azért kapod, mert {name} bérbeadóként meghívott a Keyflyra.",
       "tag": "Lezárva"
+    },
+    "accessRequest": {
+      "tag": "Hozzáférési kérés",
+      "subject": "{name} csatlakozna: {account}",
+      "preheader": "Hozzáférést kért a cégfiókhoz.",
+      "title": "Hozzáférési kérés",
+      "lead": "{name} hozzáférést kért ehhez a cégfiókhoz: {account}. Ha ismered, hagyd jóvá, és válaszd ki, mit érhet el.",
+      "rows": {
+        "name": "Név",
+        "email": "E-mail",
+        "message": "Üzenet"
+      },
+      "cta": "Kérés megnyitása",
+      "note": "Ha nem ismered, utasítsd el. Hozzáférést csak a tulajdonos vagy egy admin adhat.",
+      "why": "Azért kaptad, mert tulajdonos vagy admin vagy ebben a cégfiókban: {account}."
+    },
+    "accessApproved": {
+      "tag": "Jóváhagyva",
+      "subject": "Hozzáférést kaptál: {account}",
+      "preheader": "Mostantól a fiókváltóban megtalálod.",
+      "title": "Hozzáférést kaptál",
+      "lead": "Mostantól dolgozhatsz ebben a cégfiókban: {account}. A fiókváltóban találod.",
+      "rows": {
+        "role": "Szerepkör",
+        "access": "Hozzáférés"
+      },
+      "cta": "Megnyitás",
+      "why": "Hozzáférést kértél ehhez a cégfiókhoz: {account}."
+    },
+    "accessDeclined": {
+      "tag": "Elutasítva",
+      "subject": "Nem kaptál hozzáférést: {account}",
+      "preheader": "A cégfiók tulajdonosa elutasította a kérésed.",
+      "title": "Nem kaptál hozzáférést",
+      "lead": "A cégfiók tulajdonosa elutasította a kérésed: {account}. Ha kérdésed van, keresd közvetlenül.",
+      "why": "Hozzáférést kértél ehhez a cégfiókhoz: {account}."
     }
   },
   "portal": {
     "title": "Áttekintés",
     "intro": {
-      "landlord": "Hamarosan itt kezelheted az ingatlanjaidat és a bérleti szerződéseidet.",
-      "manager": "Hamarosan itt kezelheted a portfóliót és a csapatot."
+      "landlord": "Hamarosan itt kezelheted az ingatlanjaidat és a bérleti szerződéseidet."
     },
     "applications": "Ajánlatkéréseim",
     "addressLater": "Cím később",
@@ -1168,7 +1204,6 @@
   },
   "settings": {
     "title": "Beállítások",
-    "personalAccount": "Magánfiók",
     "nav": {
       "label": "Beállítások menü",
       "personal": "Személyes",
@@ -1272,8 +1307,8 @@
   "header": {
     "view": "Nézet",
     "viewLead": "Mit mutasson az Áttekintés?",
-    "viewNote": "Csak azt állítja be, mit látsz elsőként. A fiókod és az adataid nem változnak.",
-    "viewSaved": "{view, select, tenant {Bérlői} landlord {Bérbeadói} other {Ingatlankezelői}} nézetre váltottál.",
+    "viewNote": "Csak azt állítja be, mit látsz elsőként. Céges munkához válts cégfiókra a bal felső fiókváltóban.",
+    "viewSaved": "{view, select, tenant {Bérlői} other {Bérbeadói}} nézetre váltottál.",
     "viewError": "Nem sikerült váltani. Próbáld újra.",
     "views": {
       "tenant": {
@@ -1283,10 +1318,6 @@
       "landlord": {
         "title": "Bérbeadó",
         "text": "Ingatlanjaid, bérlőid és szerződéseid"
-      },
-      "manager": {
-        "title": "Ingatlankezelő",
-        "text": "Portfólió és csapat"
       }
     },
     "language": "Nyelv",
@@ -1295,5 +1326,202 @@
       "en": "English"
     },
     "close": "Bezárás"
+  },
+  "accounts": {
+    "label": "Fiókváltó – most: {name}",
+    "title": "Fiókjaid",
+    "personal": "Magánfiók",
+    "company": "Cégfiók",
+    "kind": {
+      "person": "Magánszemély",
+      "company": "Cég"
+    },
+    "plans": {
+      "basic": "Alap",
+      "pro": "Pro",
+      "enterprise": "Enterprise"
+    },
+    "add": "Cég hozzáadása",
+    "note": "Minden fióknak saját adatai, csomagja és csapata van. A profilod és a belépésed közös.",
+    "close": "Bezárás"
+  },
+  "companies": {
+    "flow": {
+      "title": "Cég hozzáadása",
+      "steps": {
+        "company": "Cégadatok",
+        "review": "Ellenőrzés"
+      }
+    },
+    "s1Title": "Melyik céget adod hozzá?",
+    "s1Lead": "Add meg az adószámot, a többit kitöltjük a NAV nyilvántartásából.",
+    "tax": "Adószám",
+    "search": "Keresés",
+    "nav": {
+      "title": "NAV-adatok",
+      "valid": "Érvényes adószám",
+      "legalName": "Cégnév",
+      "address": "Székhely",
+      "taxNumber": "Adószám"
+    },
+    "menu": {
+      "company": "Cégadatok",
+      "team": "Csapat",
+      "companyText": "Megjelenő név, NAV-adatok.",
+      "teamText": "Tagok, meghívók, hozzáférési kérések."
+    },
+    "displayName": "Megjelenő név",
+    "displayNameHint": "Így látják a bérlőid és a csapatod.",
+    "ownerNote": "A fiók tulajdonosa te leszel. Később átadhatod.",
+    "declaration": "Kijelentem, hogy jogosult vagyok a cég képviseletére, vagy a cég megbízásából járok el.",
+    "states": {
+      "format": "Adj meg 8 számjegyet, vagy a teljes adószámot (12345678-2-41).",
+      "invalid": "A NAV szerint ez az adószám nem érvényes. Ellenőrizd a számjegyeket.",
+      "unavailable": "Most nem érjük el a NAV-ot. Próbáld újra pár perc múlva.",
+      "member": "Már tagja vagy ennek a cégfióknak: {name}.",
+      "switchTo": "Váltás erre a fiókra",
+      "requested": "Már kértél hozzáférést ({date}). Ha jóváhagyják, e-mailben értesítünk.",
+      "inviteOnly": "Ehhez a céghez ({name}) csak meghívással lehet csatlakozni. Kérj meghívót a cég Keyfly-adminisztrátorától."
+    },
+    "exists": {
+      "title": "Ez a cég már szerepel a Keyflyon",
+      "lead": "Ehhez az adószámhoz már tartozik cégfiók.",
+      "tag": "Már a Keyflyon",
+      "text": "Egy cégnek egy fiókja lehet. Kérj hozzáférést: a kérést a fiók tulajdonosa és adminjai kapják meg e-mailben.",
+      "message": "Üzenet a tulajdonosnak",
+      "messagePh": "Pl. a pénzügyön dolgozom, a bérleti szerződéseket kezelném.",
+      "privacy": "A kéréssel a neved és az e-mail-címed látja a fiók tulajdonosa és adminjai.",
+      "request": "Hozzáférés kérése",
+      "sending": "Küldés…"
+    },
+    "sent": {
+      "title": "Elküldtük a kérésed",
+      "text": "A kérést a cégfiók tulajdonosa és adminjai kapják meg. Ha jóváhagyják, a cég megjelenik a fiókjaid között.",
+      "toHome": "Tovább az Áttekintésre"
+    },
+    "review": {
+      "title": "Ellenőrizd, és hozd létre",
+      "lead": "Ezekkel az adatokkal jön létre a cégfiók. A NAV-adatokat nem lehet kézzel módosítani.",
+      "company": "Cég",
+      "you": "Te",
+      "youValue": "{name} · tulajdonos",
+      "plan": "Csomag",
+      "create": "Cégfiók létrehozása",
+      "creating": "Létrehozás…"
+    },
+    "rail": {
+      "planTitle": "Csomag",
+      "planName": "Alap · ingyenes",
+      "planText": "Az új cégfiók az Alap csomaggal indul: biztosítás bármennyi ingatlanra, kötvények, kárbejelentés, korlátlan felhasználó. Pro-ra később válthatsz.",
+      "one": "Egy cégnek egy fiókja lehet a Keyflyon. Ha a céged már itt van, hozzáférést kérhetsz.",
+      "nextTitle": "Mi történik ezután?",
+      "next1": "Létrejön a cégfiók",
+      "next1Text": "Te leszel a tulajdonosa.",
+      "next2": "Átváltunk rá",
+      "next2Text": "A fiókváltóban bármikor visszaléphetsz a magánfiókodba.",
+      "next3": "Meghívhatod a csapatod",
+      "next3Text": "Bármennyi kollégát, minden csomagban."
+    },
+    "errors": {
+      "declaration": "A létrehozáshoz fogadd el a nyilatkozatot.",
+      "name": "Adj meg egy megjelenő nevet (2–200 karakter).",
+      "exists": "Ezt a céget közben valaki hozzáadta. Keresd meg újra, és kérj hozzáférést.",
+      "setup": "A cégfiók létrehozása most nem érhető el. Írj nekünk a support@keyfly.app címre.",
+      "alreadyRequested": "Már kértél hozzáférést ehhez a céghez.",
+      "inviteOnly": "Ehhez a céghez csak meghívással lehet csatlakozni.",
+      "alreadyMember": "Már tagja vagy ennek a cégfióknak.",
+      "message": "Az üzenet legfeljebb 500 karakter lehet.",
+      "generic": "Valami nem sikerült. Próbáld újra."
+    },
+    "overview": {
+      "created": "Létrehoztuk a cégfiókot. Most ebben dolgozol.",
+      "title": "Áttekintés",
+      "firstSteps": "Első lépések",
+      "details": "Nézd át a cégadatokat",
+      "detailsText": "Megjelenő név és a NAV-adatok.",
+      "team": "Hívd meg a csapatod",
+      "teamText": "Kollégák saját belépéssel, minden csomagban.",
+      "property": "Vedd fel az első ingatlant",
+      "propertyText": "Hamarosan: ingatlanok és szerződések a cég nevén.",
+      "soon": "Hamarosan"
+    },
+    "details": {
+      "title": "Cégadatok",
+      "lead": "A szerződéseken és a számlákon ezek az adatok szerepelnek.",
+      "card": "Név és NAV-adatok",
+      "verified": "Ellenőrizve a NAV-nál",
+      "save": "Mentés",
+      "saved": "Elmentettük.",
+      "owner": "Tulajdonos",
+      "readOnly": "A cégadatokat a tulajdonos és az adminok módosíthatják.",
+      "navNote": "A NAV-adatokat a cégfiók létrehozásakor ellenőriztük ({date}). Ha változtak, írj a support@keyfly.app címre.",
+      "navNoteManual": "A NAV-adatok csak a Keyfly ügyfélszolgálatán keresztül módosíthatók: support@keyfly.app.",
+      "ownerText": "A tulajdonos kezeli a csapatot és a csomagot. A tulajdonjogot később át lehet adni."
+    },
+    "team": {
+      "title": "Csapat",
+      "lead": "Kik dolgoznak ebben a fiókban, és mit érhetnek el.",
+      "invite": "Tag meghívása",
+      "members": "Tagok",
+      "count": "{count} felhasználó",
+      "colMember": "Tag",
+      "colRole": "Szerepkör",
+      "colAccess": "Hozzáférés",
+      "colJoined": "Csatlakozott",
+      "accessAll": "Minden ingatlan",
+      "accessSelected": "Kiválasztott ingatlanok",
+      "you": "te",
+      "memberActions": "{name} – műveletek",
+      "remove": "Eltávolítás a csapatból",
+      "removeTitle": "Eltávolítod a csapatból?",
+      "removeText": "{name} nem fér hozzá többé a cégfiókhoz. Később újra meghívhatod.",
+      "removeConfirm": "Eltávolítás",
+      "pendingTitle": "Függő meghívók",
+      "expires": "Lejár: {date}",
+      "resend": "Újraküldés",
+      "withdraw": "Visszavonás",
+      "resent": "Újraküldtük a meghívót: {email}",
+      "withdrawn": "Visszavontuk a meghívót.",
+      "requestsTitle": "Hozzáférési kérések",
+      "requested": "Kérte: {date}",
+      "approve": "Jóváhagyás",
+      "decline": "Elutasítás",
+      "approveTitle": "{name} csatlakozik",
+      "approveLead": "Válaszd ki, mit érhet el. Később módosíthatod.",
+      "role": "Szerepkör",
+      "access": "Hozzáférés",
+      "selectedEnterprise": "Kiválasztott ingatlanokra szűkíteni Enterprise csomagban lehet.",
+      "selectedSoon": "Az ingatlanok kiválasztása hamarosan érkezik.",
+      "unlimited": "Minden csomagban korlátlan számú felhasználó lehet. A Pro-funkciókat a fiók csomagja adja.",
+      "declineTitle": "Elutasítod a kérést?",
+      "declineText": "{name} e-mailt kap róla. Később újra kérhet hozzáférést.",
+      "approved": "{name} csatlakozott a csapathoz.",
+      "declined": "Elutasítottad a kérést.",
+      "inviteTitle": "Tag meghívása",
+      "inviteLead": "E-mailben kap meghívót, és saját belépéssel dolgozik. A fiók adatai a cégé maradnak.",
+      "email": "E-mail-cím",
+      "send": "Meghívó küldése",
+      "invited": "Elküldtük a meghívót: {email}",
+      "invitedNoEmail": "A meghívó elkészült, de a levelet nem sikerült elküldeni. Próbáld újraküldeni.",
+      "readOnly": "A csapatot a tulajdonos és az adminok kezelik.",
+      "roleText": {
+        "admin": "Mindent kezel, a csapatot is.",
+        "manager": "Ingatlanokat, szerződéseket, biztosításokat és bérlőket kezel.",
+        "viewer": "Mindent lát, de nem módosít."
+      },
+      "errors": {
+        "email": "Adj meg egy érvényes e-mail-címet.",
+        "alreadyMember": "Ő már tagja a csapatnak.",
+        "notAllowed": "Ehhez nincs jogosultságod.",
+        "closed": "Ez a kérés már lezárult.",
+        "generic": "Valami nem sikerült. Próbáld újra."
+      }
+    },
+    "close": "Bezárás",
+    "cancel": "Mégse",
+    "next": "Tovább",
+    "back": "Vissza",
+    "edit": "Módosítás",
+    "optional": "(nem kötelező)"
   }
 }
