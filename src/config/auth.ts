@@ -1,11 +1,10 @@
 /**
- * Sign-in methods offered in the customer app. Google needs an OAuth client in Supabase first
- * (see the launch checklist); flip the flag once it is configured for the environment.
+ * Sign-in methods offered in the customer app (canvas v2.4): password and Google. The one-time sign-in link by email
+ * was removed (2026-11-02); password reset by email stays. Staff (admin.) sign in with a password only.
  */
 export const AUTH_METHODS = {
   password: true,
-  emailLink: true,
-  google: false,
+  google: true,
 } as const;
 
 /**
@@ -17,5 +16,5 @@ export const SIGN_UP_OPEN = process.env.NEXT_PUBLIC_APP_ENV !== "production";
 /** Password rules – keep in sync with Supabase Auth → Password requirements. */
 export const PASSWORD_MIN_LENGTH = 8;
 
-/** Sign-up confirmation, email sign-in and password-reset links (Supabase → Auth → Email OTP expiration). */
-export const EMAIL_LINK_VALID_HOURS = 24;
+/** Sign-up confirmation, password-reset and email-change links (Supabase → Auth → Email OTP expiration: 3600 s). */
+export const EMAIL_LINK_VALID_HOURS = 1;

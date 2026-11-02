@@ -345,12 +345,6 @@
       "noAccount": "Még nincs fiókod? <link>Fiók létrehozása</link>",
       "sub": "Üdv újra a Keyflyon."
     },
-    "emailLink": {
-      "submit": "Belépési link kérése e-mailben",
-      "sending": "Küldés…",
-      "sentTitle": "Elküldtük a belépési linket.",
-      "sentText": "Ellenőrizd a postafiókod, a Spam mappát is. A link 24 óráig érvényes."
-    },
     "register": {
       "title": "Hozd létre a fiókod",
       "back": "Belépés",
@@ -381,7 +375,7 @@
       "text": "Add meg a fiókodhoz tartozó e-mail-címet. Küldünk egy biztonságos linket az új jelszó beállításához.",
       "submit": "Visszaállító link küldése",
       "sentTitle": "Ellenőrizd a postafiókod",
-      "sentText": "Ha ehhez a címhez tartozik fiók, elküldtük rá a linket. A link 24 óráig érvényes; nézd meg a Spam mappát is."
+      "sentText": "Ha ehhez a címhez tartozik fiók, elküldtük rá a linket. A link 1 óráig érvényes; nézd meg a Spam mappát is."
     },
     "reset": {
       "title": "Új jelszó beállítása",
@@ -418,6 +412,16 @@
       "samePassword": "Az új jelszó nem lehet ugyanaz, mint a régi.",
       "rateLimit": "Túl sok próbálkozás. Próbáld újra néhány perc múlva.",
       "generic": "Átmeneti hiba történt. Próbáld újra."
+    },
+    "sending": "Küldés…",
+    "google": {
+      "signIn": "Folytatás Google-fiókkal",
+      "signUp": "Regisztráció Google-fiókkal",
+      "title": "Még egy lépés",
+      "lead": "A Google-fiókoddal hozod létre a Keyfly-fiókodat.",
+      "other": "Másik fiókot választok",
+      "failed": "A Google-belépés most nem sikerült. Próbáld újra, vagy lépj be a jelszavaddal.",
+      "noAccount": "Ehhez a Google-fiókhoz még nincs Keyfly-fiók. Lépj be azzal az e-mail-címmel, amellyel regisztráltál."
     }
   },
   "invite": {
@@ -987,6 +991,13 @@
         "title": "Tartalék kóddal léptél be",
         "lead": "Egy tartalék kóddal léptél be, ezért kikapcsoltuk a kétlépcsős azonosítást és a régi kódokat. Állítsd be újra a hitelesítő alkalmazásoddal."
       }
+    },
+    "signInCode": {
+      "subject": "Belépési kódod: {code}",
+      "preheader": "5 percig érvényes.",
+      "title": "Belépési kód",
+      "lead": "Ezzel a kóddal léphetsz be a Keyflyba. 5 percig érvényes.",
+      "note": "Ha nem te próbáltál belépni, változtasd meg a jelszavad a Bejelentkezés és biztonság oldalon."
     }
   },
   "portal": {
@@ -1201,7 +1212,7 @@
     }
   },
   "authEmails": {
-    "validity": "A link 24 óráig érvényes, és egyszer használható.",
+    "validity": "A link 1 óráig érvényes, és egyszer használható.",
     "security": "A Keyfly soha nem kéri el e-mailben a jelszavad vagy a kódjaidat.",
     "confirmation": {
       "tag": "Regisztráció",
@@ -1224,7 +1235,7 @@
     "recovery": {
       "tag": "Biztonság",
       "subject": "Jelszó visszaállítása",
-      "preheader": "A link 24 óráig érvényes.",
+      "preheader": "A link 1 óráig érvényes.",
       "title": "Jelszó visszaállítása",
       "lead": "Új jelszót kértél a Keyfly-fiókodhoz. Az alábbi linken beállíthatod.",
       "cta": "Új jelszó beállítása",
@@ -1260,18 +1271,10 @@
       "notifications": "Értesítések",
       "data": "Adataid",
       "companies": "Cégeim",
-      "bank": "Bankszámlák"
+      "bank": "Bankszámlák",
+      "summary": "Összefoglaló"
     },
     "back": "Beállítások",
-    "index": {
-      "lead": "A profilod és a belépésed minden fiókodban ugyanaz.",
-      "profileText": "Profilkép, név, telefonszám, nyelv.",
-      "securityText": "E-mail-cím, jelszó, kétlépcsős azonosítás, belépések.",
-      "notificationsText": "Miről kérsz e-mailt.",
-      "dataText": "Az adataid letöltése, a fiók törlése.",
-      "companiesText": "A cégfiókjaid és a szereped bennük.",
-      "bankText": "Kárkifizetéshez és visszatérítéshez."
-    },
     "userMenu": {
       "open": "Fiókmenü megnyitása"
     },
@@ -1295,7 +1298,9 @@
       "passwordNever": "Beállítva",
       "pending": "Megerősítésre vár: {email}. A linket elküldtük erre a címre.",
       "language": "Nyelv",
-      "languageText": "A felület és a leveleink nyelve."
+      "languageText": "A felület és a leveleink nyelve.",
+      "passwordNone": "Nincs beállítva",
+      "set": "Beállítás"
     },
     "dialogs": {
       "cancel": "Mégse",
@@ -1317,7 +1322,9 @@
       "cropLead": "Húzd a képet a helyére, és állítsd be a méretét.",
       "zoom": "Nagyítás",
       "cropSave": "Kép mentése",
-      "cropAlt": "A feltöltött kép előnézete"
+      "cropAlt": "A feltöltött kép előnézete",
+      "passwordFirstTitle": "Jelszó beállítása",
+      "passwordFirstLead": "Ezután a Google-fiókod mellett az e-mail-címeddel és ezzel a jelszóval is beléphetsz."
     },
     "saved": {
       "name": "Elmentettük a neved.",
@@ -1326,7 +1333,8 @@
       "photo": "Elmentettük a profilképed.",
       "photoRemoved": "Eltávolítottuk a profilképed.",
       "session": "Kijelentkeztettük az eszközt.",
-      "sessions": "Minden más eszközön kijelentkeztettünk."
+      "sessions": "Minden más eszközön kijelentkeztettünk.",
+      "passwordSet": "Beállítottad a jelszavad."
     },
     "errors": {
       "name": "Adj meg egy 2–200 karakteres nevet.",
@@ -1339,7 +1347,8 @@
       "rate": "Túl sok próbálkozás. Próbáld újra néhány perc múlva.",
       "photoType": "Ezt a képet nem tudjuk megnyitni. Próbálj JPG-t vagy PNG-t.",
       "photoSize": "A kép legfeljebb 10 MB lehet.",
-      "generic": "Nem sikerült menteni. Próbáld újra."
+      "generic": "Nem sikerült menteni. Próbáld újra.",
+      "noPassword": "Ehhez előbb állíts be jelszót a Bejelentkezés és biztonság oldalon."
     },
     "devices": {
       "title": "Aktív belépések",
@@ -1429,7 +1438,8 @@
         "blocked": "Előbb rendezd a fent jelzett teendőket.",
         "rate": "Túl sok próbálkozás. Várj pár percet.",
         "setup": "A fiók törlése most nem érhető el. Írj nekünk: support@keyfly.app.",
-        "generic": "Valami nem sikerült. Próbáld újra."
+        "generic": "Valami nem sikerült. Próbáld újra.",
+        "noPassword": "Ehhez előbb állíts be jelszót a Bejelentkezés és biztonság oldalon."
       },
       "blockedRecords": "Ingatlanok vagy bérleti szerződések tartoznak a fiókodhoz, ezért a törlését az ügyfélszolgálat intézi: {email}."
     },
@@ -1556,6 +1566,51 @@
         "email": "Előbb erősítsd meg az e-mail-címed.",
         "generic": "Valami nem sikerült. Próbáld újra."
       }
+    },
+    "companyTabs": "{name} beállításai",
+    "summary": {
+      "title": "Beállítások",
+      "lead": "A személyes és a céges adataid egy helyen.",
+      "personalSub": "Személyes adatok",
+      "companySub": "Céges adatok · {role}",
+      "add": "Hozzáadás",
+      "addCompany": "Cég hozzáadása",
+      "name": "Név",
+      "phone": "Telefonszám",
+      "confirmed": "Megerősítve",
+      "home": "Lakcím",
+      "mailing": "Levelezési cím",
+      "mailingSame": "Azonos a lakcímmel",
+      "bank": "Bankszámla",
+      "twoStep": "Kétlépcsős azonosítás",
+      "on": "Bekapcsolva",
+      "off": "Kikapcsolva",
+      "details": "Cégadatok",
+      "navChecked": "NAV-ellenőrzött",
+      "office": "Székhely",
+      "contactEmail": "Kapcsolattartó e-mail",
+      "contactPhone": "Kapcsolattartó telefon",
+      "team": "Csapat",
+      "members": "{count} tag",
+      "guide": {
+        "title": "Fiókod beállítása",
+        "hide": "Elrejtés",
+        "done": "kész",
+        "progress": "{done} kész a {total} lépésből",
+        "personal": "Személyes",
+        "steps": {
+          "phone": "Telefonszám megerősítése",
+          "twoStep": "Kétlépcsős azonosítás bekapcsolása",
+          "nav": "Cégadatok ellenőrzése",
+          "bank": "Bankszámla megadása"
+        },
+        "actions": {
+          "phone": "Megerősítés",
+          "twoStep": "Bekapcsolás",
+          "nav": "Ellenőrzés",
+          "bank": "Hozzáadás"
+        }
+      }
     }
   },
   "header": {
@@ -1617,10 +1672,7 @@
     "menu": {
       "company": "Cégadatok",
       "team": "Csapat",
-      "companyText": "Név, adószám, székhely, kapcsolattartás.",
-      "teamText": "Tagok, meghívók, hozzáférési kérések.",
-      "bank": "Bankszámlák",
-      "bankText": "Kárkifizetéshez és visszatérítéshez."
+      "bank": "Bankszámlák"
     },
     "displayName": "Megjelenő név",
     "displayNameHint": "Így látják a bérlőid és a csapatod.",
@@ -1844,7 +1896,24 @@
         "locked": "Túl sok rossz tartalék kód. Egy óra múlva próbáld újra, vagy írj nekünk: support@keyfly.app.",
         "setup": "A tartalék kód most nem használható. Írj nekünk: support@keyfly.app."
       },
-      "remember": "Ezen az eszközön 30 napig ne kérjen kódot"
+      "remember": "Ezen az eszközön 30 napig ne kérjen kódot",
+      "noPhone": "Nincs nálad a telefonod?",
+      "byEmail": "Kód küldése e-mailben",
+      "emailTitle": "Nézd meg a leveleidet",
+      "emailLead": "Elküldtük a 6 jegyű kódot a {email} címre. 5 percig érvényes.",
+      "resendIn": "Új kódot {time} múlva kérhetsz",
+      "resend": "Új kód küldése",
+      "useAppInstead": "Inkább a hitelesítő alkalmazást használom",
+      "emailErrors": {
+        "format": "Írd be a 6 számjegyet.",
+        "code": "A kód nem jó. Nézd meg a legutóbbi levelünket.",
+        "expired": "Ez a kód lejárt, vagy túl sokszor próbáltad. Kérj újat.",
+        "tooSoon": "Az előző kódot most küldtük. Egy perc múlva kérhetsz újat.",
+        "limit": "Ma már sok kódot kértél. Használd a hitelesítő alkalmazást vagy egy tartalék kódot.",
+        "off": "A kód e-mailben ki van kapcsolva ennél a fióknál.",
+        "send": "Nem sikerült elküldeni a levelet. Próbáld újra egy perc múlva.",
+        "generic": "Valami nem sikerült. Próbáld újra."
+      }
     },
     "setup": {
       "title": "Kétlépcsős azonosítás",
@@ -1916,7 +1985,11 @@
         "rate": "Túl sok próbálkozás. Várj pár percet.",
         "generic": "Valami nem sikerült. Próbáld újra."
       },
-      "renewCode": "Írd be a hitelesítő alkalmazásod kódját."
+      "renewCode": "Írd be a hitelesítő alkalmazásod kódját.",
+      "email": "Kód e-mailben",
+      "emailText": "Ha nincs nálad a telefonod, e-mailben is kérhetsz kódot.",
+      "emailOn": "Bekapcsoltad a kódot e-mailben.",
+      "emailOff": "Kikapcsoltad a kódot e-mailben."
     },
     "trusted": {
       "title": "Biztonságos eszközök",
@@ -1929,6 +2002,27 @@
       "removedAll": "Minden eszközön újra kérjük a kódot.",
       "unknown": "Ismeretlen eszköz",
       "error": "Valami nem sikerült. Próbáld újra."
+    },
+    "google": {
+      "title": "Kapcsolt fiókok",
+      "off": "Nincs összekapcsolva",
+      "offText": "Lépj be egy kattintással a Google-fiókoddal.",
+      "since": "Összekapcsolva: {date}",
+      "link": "Összekapcsolás",
+      "unlink": "Leválasztás",
+      "unlinkTitle": "Leválasztod a Google-fiókot?",
+      "unlinkText": "Ezután az e-mail-címeddel és a jelszavaddal lépsz be. Bármikor újra összekapcsolhatod, akár egy másik Google-fiókkal is.",
+      "passwordTitle": "Állíts be jelszót a leválasztás előtt",
+      "passwordText": "Most csak a Google-fiókoddal tudsz belépni. Ezután az e-mail-címeddel és ezzel a jelszóval lépsz be.",
+      "newPassword": "Új jelszó",
+      "passwordUnlink": "Jelszó mentése és leválasztás",
+      "weakPassword": "A jelszó legalább 8 karakter legyen, kis- és nagybetűvel és számmal.",
+      "single": "Előbb állíts be jelszót.",
+      "failed": "A leválasztás most nem sikerült. Próbáld újra.",
+      "linked": "Összekapcsoltad a Google-fiókodat.",
+      "unlinked": "Leválasztottad a Google-fiókot.",
+      "taken": "Ez a Google-fiók már egy másik Keyfly-fiókhoz tartozik. Válassz másikat.",
+      "error": "Az összekapcsolás most nem sikerült. Próbáld újra."
     }
   },
   "phoneInput": {

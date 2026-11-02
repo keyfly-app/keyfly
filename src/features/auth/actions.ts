@@ -12,6 +12,7 @@ import { safeNext } from "@/lib/safe-next";
 import { hrefFor, type AppSite } from "@/lib/sites";
 import type { Enums } from "@/lib/supabase/database.types";
 import { forgetTrustedDevices } from "@/features/security/trusted";
+import { hasAcceptedTerms, isFreshGoogleAccount, removeUnfinishedAccount } from "./google";
 import { createClient } from "@/lib/supabase/server";
 import { REMEMBER_COOKIE } from "@/lib/supabase/session-cookies";
 import { syncEmailLocale } from "./locale-sync";
@@ -70,24 +71,63 @@ export async function signIn(_prev: FormState, form: FormData): Promise<FormStat
   return goTo("portal", safeNext(form.get("next")));
 }
 
-/** Sends a one-time sign-in link to an existing account (app. and admin.). Never creates accounts. */
-export async function sendEmailLink(_prev: FormState, form: FormData): Promise<FormState> {
-  const email = emailOf(form);
-  if (!EMAIL_RE.test(email)) return { status: "error", error: "email", email };
-
+/**
+ * "Folytatás Google-fiókkal" / "Regisztráció Google-fiókkal" (canvas v2.4): off to Google, back through /auth/callback.
+ * Google always lets the person choose the account. An unknown account becomes a new Keyfly account only after the
+ * terms are accepted on /register/google.
+ */
+export async function continueWithGoogle(form: FormData) {
+  const { origin, host } = await requestOrigin();
+  const next = safeNext(form.get("next"));
   const supabase = await createClient();
-  const { error } = await supabase.auth.signInWithOtp({
-    email,
-    options: { emailRedirectTo: await emailLinkTarget(site(form), String(form.get("next") ?? "/")), shouldCreateUser: false },
+  const { data, error } = await supabase.auth.signInWithOAuth({
+    provider: "google",
+    options: {
+      redirectTo: `${origin}${hrefFor("portal", "/auth/callback", host)}?next=${encodeURIComponent(next)}`,
+      queryParams: { prompt: "select_account" },
+    },
   });
-  if (error) {
-    if (error.code === "otp_disabled" || error.code === "signup_disabled" || error.code === "user_not_found") {
-      return { status: "error", error: "noAccount", email };
-    }
-    console.error("email link failed", error.code);
-    return { status: "error", error: authError(error.code), email };
+  if (error || !data.url) {
+    console.error("google sign-in failed", error?.code);
+    return goTo("portal", "/login?error=google");
   }
-  return { status: "sent" };
+  redirect(data.url);
+}
+
+/** The terms on /register/google, after the first sign-in with Google: records the consents and the name. */
+export async function finishGoogleSignUp(_prev: FormState, form: FormData): Promise<FormState> {
+  const name = text(form, "fullName").replace(/\s+/g, " ");
+  if (name.length < 2 || name.length > 200) return { status: "error", error: "name" };
+  if (form.get("terms") !== "on") return { status: "error", error: "terms" };
+  const supabase = await createClient();
+  const { data: auth } = await supabase.auth.getClaims();
+  if (!auth?.claims) return { status: "error", error: "generic" };
+  const id = String(auth.claims.sub);
+  const locale = await getLocale();
+  const [{ error: consentError }, { error: profileError }] = await Promise.all([
+    supabase.from("consents").insert([
+      { user_id: id, kind: "terms", version: CONSENT_VERSIONS.accountTerms },
+      { user_id: id, kind: "privacy", version: CONSENT_VERSIONS.accountPrivacy },
+    ]),
+    supabase.from("profiles").update({ full_name: name, locale: isLocale(locale) ? locale : "hu" }).eq("id", id),
+  ]);
+  if (consentError || profileError) {
+    console.error("google sign-up failed", consentError?.code ?? profileError?.code);
+    return { status: "error", error: "generic" };
+  }
+  revalidatePath("/", "layout");
+  return goTo("portal", safeNext(form.get("next")));
+}
+
+/** "Másik fiókot választok": the half-made account (no terms accepted yet) is removed, then Google again. */
+export async function cancelGoogleSignUp(form: FormData) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (user && isFreshGoogleAccount(user) && !(await hasAcceptedTerms(supabase, user.id))) await removeUnfinishedAccount(user.id);
+  await supabase.auth.signOut({ scope: "local" });
+  return continueWithGoogle(form);
 }
 
 /** Sign-up with name, email, password and the accepted terms. The account works once the email is confirmed. */

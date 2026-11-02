@@ -4,7 +4,6 @@ import { notFound } from "next/navigation";
 import type { Office } from "@/features/companies/actions";
 import { canManage, companyBySlug } from "@/features/companies/accounts";
 import { CompanyDetailsForm } from "@/features/companies/CompanyDetailsForm";
-import { siteHref } from "@/lib/site-href";
 import { createClient } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
@@ -26,14 +25,11 @@ export default async function CompanyDetails({ params }: { params: Promise<{ slu
   const account = await companyBySlug(slug);
   if (!account) notFound();
   const supabase = await createClient();
-  const [{ data: row }, backHref] = await Promise.all([
-    supabase
+  const { data: row } = await supabase
       .from("accounts")
       .select("name, legal_name, tax_number, eu_vat_number, company_reg_number, office_address, mailing_address, contact_email, contact_phone, nav_verified_at")
       .eq("id", account.id)
-      .single(),
-    siteHref("portal", `/c/${slug}/settings`),
-  ]);
+      .single();
   if (!row) notFound();
   const { office_address, mailing_address, ...rest } = row;
   return (
@@ -41,7 +37,6 @@ export default async function CompanyDetails({ params }: { params: Promise<{ slu
       key={JSON.stringify(row)}
       accountId={account.id}
       manage={canManage(account)}
-      backHref={backHref}
       company={{ ...rest, office: office(office_address), mailing: office(mailing_address) }}
     />
   );

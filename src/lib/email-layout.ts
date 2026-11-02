@@ -41,6 +41,8 @@ export type EmailContent = {
   title: string;
   lead: string;
   rows?: [string, string][];
+  /** A one-time code shown large ("482 913"), e.g. the two-step sign-in code. */
+  code?: string;
   note?: string;
   /** The button; a notice that needs no action has none. */
   action?: { cta: string; url: string };
@@ -104,6 +106,10 @@ export function renderEmailHtml(c: EmailContent): string {
     </td></tr>`
     : "";
 
+  const code = c.code
+    ? `<tr><td style="padding:20px 0 0;"><div style="padding:16px;border-radius:10px;background:${C.paper};text-align:center;font:600 30px/36px ${SANS};letter-spacing:6px;color:${C.ink};">${e(c.code)}</div></td></tr>`
+    : "";
+
   const note = c.note
     ? `<tr><td style="padding:12px 0 0;"><div style="padding:10px 14px;border-radius:8px;background:${C.paper};font:13px/20px ${SANS};color:${C.inkSoft};">${e(c.note)}</div></td></tr>`
     : "";
@@ -154,7 +160,7 @@ export function renderEmailHtml(c: EmailContent): string {
         ${tag}
         <tr><td><h1 style="margin:0;font:600 22px/28px ${SANS};letter-spacing:-0.3px;color:${C.ink};">${e(c.title)}</h1></td></tr>
         <tr><td style="padding:10px 0 0;font:15px/24px ${SANS};color:${C.inkSoft};">${e(c.lead)}</td></tr>
-        ${rows}${note}${action}
+        ${rows}${code}${note}${action}
       </table>
     </td></tr>
     </table>
@@ -179,6 +185,7 @@ export function renderEmailText(c: EmailContent): string {
     "",
     c.lead,
     ...(c.rows?.length ? ["", ...c.rows.map(([label, value]) => `${label}: ${value}`)] : []),
+    ...(c.code ? ["", c.code] : []),
     ...(c.note ? ["", c.note] : []),
     ...(c.action ? ["", `${c.action.cta}: ${c.action.url}`] : []),
     ...(c.validity ? [c.validity] : []),

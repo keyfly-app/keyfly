@@ -4,7 +4,7 @@ import { createHash, randomInt } from "node:crypto";
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { securityEmail } from "@/features/invitations/emails";
+import { securityEmail, signInCodeEmail } from "@/features/invitations/emails";
 import { appUrl, sendEmail } from "@/features/invitations/send";
 import { isLocale } from "@/i18n/config";
 import { requestOrigin } from "@/lib/request-origin";
@@ -183,6 +183,63 @@ export async function useBackupCode(_: ChallengeState, form: FormData): Promise<
   await notify(supabase, "recoveryUsed");
   const { host } = await requestOrigin();
   redirect(hrefFor("portal", "/settings/security?recovered=1", host));
+}
+
+// ---------- Sign-in code by email (canvas v2.4 "Kétlépcsős azonosítás – kód e-mailben") ------------------------
+
+export type EmailCodeState =
+  | { status: "idle" }
+  | { status: "sent"; at: number }
+  | { status: "error"; error: "tooSoon" | "limit" | "off" | "send" | "format" | "code" | "expired" | "generic"; at?: number };
+
+/** Emails a 6-digit sign-in code (valid 5 minutes; a new one after 60 seconds; at most 10 a day). */
+export async function sendSignInEmailCode(): Promise<EmailCodeState> {
+  const supabase = await createClient();
+  const { data: auth } = await supabase.auth.getClaims();
+  const email = typeof auth?.claims.email === "string" ? auth.claims.email : null;
+  if (!auth?.claims || !email) return { status: "error", error: "generic" };
+  const code = String(randomInt(0, 1_000_000)).padStart(6, "0");
+  const { error } = await supabase.rpc("start_two_step_email", { p_code_hash: hashCode(code) });
+  if (error) {
+    if (error.message === "too_soon") return { status: "error", error: "tooSoon" };
+    if (error.message === "too_many_codes") return { status: "error", error: "limit" };
+    if (error.message === "not_allowed") return { status: "error", error: "off" };
+    console.error("two-step email start failed", error.code);
+    return { status: "error", error: "generic" };
+  }
+  const { data: profile } = await supabase.from("profiles").select("locale").eq("id", String(auth.claims.sub)).maybeSingle();
+  const sent = await sendEmail(email, signInCodeEmail({ locale: isLocale(profile?.locale) ? profile.locale : "hu", code }), "security_sign_in_code");
+  if (!sent) {
+    await supabase.rpc("undo_two_step_email");
+    return { status: "error", error: "send" };
+  }
+  return { status: "sent", at: Date.now() };
+}
+
+/** The emailed code: a correct one lets this sign-in through (not "aal2": the app's code is still needed for new backup codes). */
+export async function verifySignInEmailCode(prev: EmailCodeState, form: FormData): Promise<EmailCodeState> {
+  const at = prev.status === "sent" ? prev.at : prev.status === "error" ? prev.at : undefined;
+  const code = String(form.get("code") ?? "").replace(/\s/g, "");
+  if (!CODE_RE.test(code)) return { status: "error", error: "format", at };
+  const supabase = await createClient();
+  const { data, error } = await supabase.rpc("confirm_two_step_email", { p_code_hash: hashCode(code) });
+  if (error) {
+    console.error("two-step email confirm failed", error.code);
+    return { status: "error", error: "generic", at };
+  }
+  if (data === "wrong") return { status: "error", error: "code", at };
+  if (data !== "ok") return { status: "error", error: "expired", at };
+  const { host } = await requestOrigin();
+  redirect(hrefFor("portal", safeNext(form.get("next")), host));
+}
+
+/** Settings: may this person ask for a sign-in code by email? */
+export async function setTwoStepEmail(on: boolean): Promise<boolean> {
+  const supabase = await createClient();
+  const { error } = await supabase.rpc("set_two_step_email", { p_on: on });
+  if (error) console.error("two-step email setting failed", error.code);
+  revalidatePath("/", "layout");
+  return !error;
 }
 
 // ---------- Trusted devices (canvas "Biztonságos eszközök") ------------------------------

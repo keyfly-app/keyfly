@@ -17,7 +17,7 @@ export function ResendConfirmationForm() {
       {state.status === "sent" && <Notice kind="success">{t("verify.resent")}</Notice>}
       {state.status === "error" && <Notice kind="error">{t(`errors.${state.error === "rateLimit" ? "rateLimit" : "generic"}`)}</Notice>}
       <Button variant="secondary" pending={pending}>
-        {pending ? t("emailLink.sending") : t("verify.resend")}
+        {pending ? t("sending") : t("verify.resend")}
       </Button>
     </form>
   );
@@ -50,7 +50,7 @@ export function ForgotPasswordForm({ site = "portal" }: { site?: AppSite }) {
         error={error === "email" ? t("errors.email") : undefined}
       />
       {error === "rateLimit" && <Notice kind="error">{t("errors.rateLimit")}</Notice>}
-      <Button pending={pending}>{pending ? t("emailLink.sending") : t("forgot.submit")}</Button>
+      <Button pending={pending}>{pending ? t("sending") : t("forgot.submit")}</Button>
     </form>
   );
 }

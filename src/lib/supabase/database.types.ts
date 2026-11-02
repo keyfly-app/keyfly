@@ -992,6 +992,7 @@ export type Database = {
           phone: string | null
           phone_verified_at: string | null
           start_view: Database["public"]["Enums"]["start_view"] | null
+          two_step_email: boolean
           updated_at: string
         }
         Insert: {
@@ -1009,6 +1010,7 @@ export type Database = {
           phone?: string | null
           phone_verified_at?: string | null
           start_view?: Database["public"]["Enums"]["start_view"] | null
+          two_step_email?: boolean
           updated_at?: string
         }
         Update: {
@@ -1026,6 +1028,7 @@ export type Database = {
           phone?: string | null
           phone_verified_at?: string | null
           start_view?: Database["public"]["Enums"]["start_view"] | null
+          two_step_email?: boolean
           updated_at?: string
         }
         Relationships: []
@@ -1318,6 +1321,12 @@ export type Database = {
       start_phone_check: { Args: { p_phone: string }; Returns: number }
       pending_phone: { Args: never; Returns: string }
       undo_phone_check: { Args: never; Returns: undefined }
+      add_email_identity: { Args: { p_user: string }; Returns: boolean }
+      set_two_step_email: { Args: { p_on: boolean }; Returns: undefined }
+      start_two_step_email: { Args: { p_code_hash: string }; Returns: undefined }
+      undo_two_step_email: { Args: never; Returns: undefined }
+      confirm_two_step_email: { Args: { p_code_hash: string }; Returns: string }
+      two_step_pass_ok: { Args: never; Returns: boolean }
       set_confirmed_phone: { Args: { p_user: string; p_phone: string }; Returns: boolean }
       remove_phone: { Args: never; Returns: undefined }
       trust_device: { Args: { p_token_hash: string; p_label: string }; Returns: string }

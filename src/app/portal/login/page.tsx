@@ -24,6 +24,8 @@ export default async function Login({ searchParams }: { searchParams: Promise<{ 
     <AuthLayout>
       <PageTitle sub={t("signIn.sub")}>{t("signIn.title")}</PageTitle>
       {error === "link" && <Notice kind="warning">{t("linkExpired")}</Notice>}
+      {error === "google" && <Notice kind="error">{t("google.failed")}</Notice>}
+      {error === "googleNoAccount" && <Notice kind="warning">{t("google.noAccount")}</Notice>}
       <SignInForm next={next} forgotHref={forgotHref} />
       {SIGN_UP_OPEN && (
         <p className="border-t border-line pt-5 text-center text-[13px] text-muted">

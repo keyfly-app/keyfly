@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { Notice } from "@/components/ui/form";
 import { TrustedDevices, type TrustedRow } from "@/features/security/TrustedDevices";
 import { currentTrustedId } from "@/features/security/trusted";
+import { LinkedAccounts } from "@/features/security/LinkedAccounts";
 import { TwoStepCard } from "@/features/security/TwoStepCard";
 import { currentUser } from "@/features/settings/current-user";
 import { ProfileDetails } from "@/features/settings/ProfileDetails";
@@ -22,12 +23,12 @@ export async function generateMetadata(): Promise<Metadata> {
   return { title: t("security.title"), robots: { index: false } };
 }
 
-/** Bejelentkezés és biztonság: email and password, two-step verification, trusted devices, the active sign-ins. */
-export default async function SecuritySettings({ searchParams }: { searchParams: Promise<{ recovered?: string }> }) {
-  const [{ recovered }, t, raw, user, supabase] = await Promise.all([searchParams, getTranslations("settings"), getLocale(), currentUser(), createClient()]);
+/** Bejelentkezés és biztonság: email and password, linked Google account, two-step verification, trusted devices, the active sign-ins. */
+export default async function SecuritySettings({ searchParams }: { searchParams: Promise<{ recovered?: string; google?: string }> }) {
+  const [{ recovered, google: googleParam }, t, raw, user, supabase] = await Promise.all([searchParams, getTranslations("settings"), getLocale(), currentUser(), createClient()]);
   if (!user) notFound();
   const locale = isLocale(raw) ? raw : "hu";
-  const [{ data: sessions }, { data: factors }, { data: codesLeft }, { data: trustedRows }, { data: level }, currentTrusted, setupHref] = await Promise.all([
+  const [{ data: sessions }, { data: factors }, { data: codesLeft }, { data: trustedRows }, { data: level }, currentTrusted, setupHref, { data: ids }] = await Promise.all([
     supabase.rpc("my_sessions"),
     supabase.auth.mfa.listFactors(),
     supabase.rpc("recovery_codes_left"),
@@ -35,7 +36,12 @@ export default async function SecuritySettings({ searchParams }: { searchParams:
     supabase.auth.mfa.getAuthenticatorAssuranceLevel(),
     currentTrustedId(),
     siteHref("portal", "/security/two-step"),
+    supabase.auth.getUserIdentities(),
   ]);
+  const googleIdentity = ids?.identities.find((i) => i.provider === "google");
+  const hasPassword = Boolean(ids?.identities.some((i) => i.provider === "email"));
+  const googleEmail = typeof googleIdentity?.identity_data?.email === "string" ? googleIdentity.identity_data.email : null;
+  const notice = googleParam === "linked" || googleParam === "taken" || googleParam === "error" ? googleParam : null;
   const factor = factors?.totp[0];
   const nbsp = (s: string) => s.replace(/ /g, "\u00a0");
   const trusted: TrustedRow[] = factor
@@ -71,6 +77,12 @@ export default async function SecuritySettings({ searchParams }: { searchParams:
         phone={user.phone}
         phoneVerified={Boolean(user.phoneVerifiedAt)}
         passwordChanged={user.passwordChangedAt ? date(user.passwordChangedAt, locale).replace(/ /g, "\u00a0") : null}
+        hasPassword={hasPassword}
+      />
+      <LinkedAccounts
+        google={googleIdentity ? { email: googleEmail ?? user.email, since: nbsp(date(googleIdentity.created_at ?? new Date().toISOString(), locale)) } : null}
+        hasPassword={hasPassword}
+        notice={notice}
       />
       <TwoStepCard
         enabled={Boolean(factor)}
@@ -78,6 +90,8 @@ export default async function SecuritySettings({ searchParams }: { searchParams:
         codesLeft={codesLeft ?? 0}
         setupHref={setupHref}
         needsCode={level?.currentLevel !== "aal2"}
+        email={user.email}
+        emailOn={user.twoStepEmail}
       />
       <TrustedDevices devices={trusted} />
       <SessionList sessions={rows} />

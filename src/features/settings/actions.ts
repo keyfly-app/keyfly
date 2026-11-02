@@ -10,6 +10,7 @@ import { isCountry } from "@/config/countries";
 import { publicHref } from "@/i18n/config";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { isValidPassword } from "@/features/auth/password";
+import { hasPassword, setFirstPassword } from "@/features/auth/first-password";
 import { forgetTrustedDevices } from "@/features/security/trusted";
 import { requestOrigin } from "@/lib/request-origin";
 import { parseSmsPhone } from "@/lib/phone-check";
@@ -126,6 +127,7 @@ export async function changeEmail(_: SettingsState, form: FormData): Promise<Set
   const { supabase, id, email } = await signedIn();
   if (!id || !email) return { status: "error", error: "generic" };
   if (next === email.toLowerCase()) return { status: "error", error: "sameEmail", field: "email" };
+  if (!(await hasPassword(supabase))) return { status: "error", error: "noPassword" };
   const check = await passwordMatches(email, password);
   if (check !== "ok") return { status: "error", error: check === "rate" ? "rate" : "wrongPassword", field: check === "rate" ? undefined : "password" };
 
@@ -145,6 +147,14 @@ export async function changeEmail(_: SettingsState, form: FormData): Promise<Set
 export async function changePassword(_: SettingsState, form: FormData): Promise<SettingsState> {
   const current = String(form.get("currentPassword") ?? "");
   const password = String(form.get("password") ?? "");
+  if (form.get("first") === "1") {
+    const { supabase, id } = await signedIn();
+    if (!id) return { status: "error", error: "generic" };
+    if (await hasPassword(supabase)) return { status: "error", error: "generic" };
+    const failed = await setFirstPassword(supabase, id, password);
+    if (failed) return { status: "error", error: failed, field: failed === "weakPassword" ? "password" : undefined };
+    return done("passwordSet");
+  }
   if (!isValidPassword(password)) return { status: "error", error: "weakPassword", field: "password" };
   if (password === current) return { status: "error", error: "samePassword", field: "password" };
   const { supabase, id, email } = await signedIn();
@@ -217,7 +227,7 @@ export async function endSession(_: SettingsState, form: FormData): Promise<Sett
   return done("session");
 }
 
-export type DeleteState = { status: "idle" } | { status: "error"; error: "password" | "code" | "blocked" | "rate" | "setup" | "generic" };
+export type DeleteState = { status: "idle" } | { status: "error"; error: "password" | "noPassword" | "code" | "blocked" | "rate" | "setup" | "generic" };
 
 /**
  * Adataid → Fiók törlése: the password (and the two-step code, when on) once more; nothing may block it
@@ -227,6 +237,7 @@ export type DeleteState = { status: "idle" } | { status: "error"; error: "passwo
 export async function deleteAccount(_: DeleteState, form: FormData): Promise<DeleteState> {
   const { supabase, id, email } = await signedIn();
   if (!id || !email) return { status: "error", error: "generic" };
+  if (!(await hasPassword(supabase))) return { status: "error", error: "noPassword" };
   const check = await passwordMatches(email, String(form.get("password") ?? ""));
   if (check !== "ok") return { status: "error", error: check === "rate" ? "rate" : "password" };
 

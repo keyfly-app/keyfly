@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Icon, type IconName } from "@/components/Icon";
 import { Avatar } from "@/components/ui/Avatar";
 import { signOut } from "@/features/auth/actions";
+import { ProgressRing } from "@/features/settings/ProgressRing";
 import type { AppSite } from "@/lib/sites";
 
 type Item = { href: string; label: string; icon: IconName; external?: boolean };
@@ -23,6 +24,7 @@ export function UserMenu({
   more = [],
   openLabel,
   signOutLabel,
+  setup,
 }: {
   site: AppSite;
   name: string | null;
@@ -34,6 +36,8 @@ export function UserMenu({
   more?: Item[];
   openLabel: string;
   signOutLabel: string;
+  /** "Fiókod beállítása 2/4" while setup steps are left (canvas v2.4 "Felhasználói menü"). */
+  setup?: { href: string; label: string; done: number; total: number; progressLabel: string };
 }) {
   const [open, setOpen] = useState(false);
   const id = useId();
@@ -99,6 +103,18 @@ export function UserMenu({
               <span className="truncate text-[12.5px] text-muted">{email}</span>
             </div>
           </div>
+          {setup && (
+            <Link
+              role="menuitem"
+              href={setup.href}
+              onClick={() => setOpen(false)}
+              className="mx-1 mb-1.5 flex min-h-11 items-center gap-2.5 rounded-[10px] border border-line px-2.5 py-1.5 hover:bg-paper focus-visible:bg-paper"
+            >
+              <ProgressRing done={setup.done} total={setup.total} label={setup.progressLabel} size={30} />
+              <span className="flex-1 text-[13.5px] font-medium">{setup.label}</span>
+              <Icon name="chevronRight" size={15} className="text-muted" />
+            </Link>
+          )}
           <div className="mx-1 mb-1 h-px bg-line" />
           {[items, more].map((group, g) =>
             group.length === 0 ? null : (

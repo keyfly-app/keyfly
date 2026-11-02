@@ -23,13 +23,22 @@ export default async function TwoStep({ searchParams }: { searchParams: Promise<
   if (!auth?.claims) redirect(await siteHref("portal", "/login"));
   const { data: level } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
   if (level?.nextLevel !== "aal2" || level.currentLevel === "aal2") redirect(await siteHref("portal", next));
+  const { data: passed } = await supabase.rpc("two_step_pass_ok");
+  if (passed) redirect(await siteHref("portal", next));
 
-  const [t, common] = await Promise.all([getTranslations("security.challenge"), getTranslations("common")]);
+  const [t, common, { data: profile }] = await Promise.all([
+    getTranslations("security.challenge"),
+    getTranslations("common"),
+    supabase.from("profiles").select("two_step_email").eq("id", String(auth.claims.sub)).maybeSingle(),
+  ]);
+  const email = String(auth.claims.email ?? "");
+  // "k•••@gmail.com": enough to recognise the mailbox, not the whole address.
+  const emailTo = profile?.two_step_email && email.includes("@") ? `${email[0]}•••@${email.split("@")[1]}` : null;
   return (
     <AuthLayout>
-      <ChallengeForm next={next} />
+      <ChallengeForm next={next} emailTo={emailTo} />
       <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 border-t border-line pt-4 text-[12.5px] text-muted">
-        <span className="min-w-0 [overflow-wrap:anywhere]">{t("signedInAs", { email: String(auth.claims.email ?? "") })}</span>
+        <span className="min-w-0 [overflow-wrap:anywhere]">{t("signedInAs", { email })}</span>
         <form action={signOut}>
           <input type="hidden" name="site" value="portal" />
           <button type="submit" className="inline-flex min-h-11 items-center font-medium text-ink underline-offset-3 hover:underline sm:min-h-6">

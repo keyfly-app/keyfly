@@ -178,6 +178,11 @@ async function refreshSession(request: NextRequest, response: NextResponse, site
       const { data: ok } = await supabase.rpc("trusted_device_ok", { p_token_hash: await sha256Hex(trusted.token) });
       needsTwoStep = !ok;
     }
+    // This sign-in passed with a code sent by email (canvas v2.4 "Kétlépcsős azonosítás – kód e-mailben").
+    if (site === "portal" && needsTwoStep) {
+      const { data: passed } = await supabase.rpc("two_step_pass_ok");
+      needsTwoStep = !passed;
+    }
   }
   return { signedIn: Boolean(data?.claims), aal, needsTwoStep };
 }

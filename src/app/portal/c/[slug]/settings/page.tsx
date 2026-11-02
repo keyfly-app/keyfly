@@ -1,20 +1,8 @@
-import { notFound } from "next/navigation";
-import { getTranslations } from "next-intl/server";
-import { accountInitials, companyBySlug } from "@/features/companies/accounts";
-import { companySettingsLinks, personalSettingsLinks } from "@/features/settings/links";
-import { SettingsNav } from "@/features/settings/SettingsNav";
+import { redirect } from "next/navigation";
+import { siteHref } from "@/lib/site-href";
 
-/** On phones the settings list itself; on desktop the sidebar does this job. */
+/** A company's settings open on its first tab, Cégadatok. */
 export default async function CompanySettingsIndex({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const account = await companyBySlug(slug);
-  if (!account) notFound();
-  const [t, inv, personal, company] = await Promise.all([getTranslations("settings"), getTranslations("invite"), personalSettingsLinks(), companySettingsLinks(slug)]);
-  return (
-    <>
-      <h1 className="font-display text-[22px] leading-7 font-semibold">{t("title")}</h1>
-      <SettingsNav variant="list" heading={account.name} label={account.name} links={company} company={{ initials: accountInitials(account.name), role: inv(`roles.${account.role}`) }} />
-      <SettingsNav variant="list" heading={t("nav.personal")} label={t("nav.label")} links={personal} />
-    </>
-  );
+  redirect(await siteHref("portal", `/c/${slug}/settings/company`));
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useId, useState } from "react";
+import { useActionState, useId, useState, useTransition } from "react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { Icon } from "@/components/Icon";
@@ -10,23 +10,58 @@ import { Dialog, DialogActions } from "@/components/ui/Dialog";
 import { Button, Notice } from "@/components/ui/form";
 import { MenuPopover } from "@/components/ui/MenuPopover";
 import { Tag } from "@/components/ui/Tag";
-import { renewBackupCodes, turnOffTwoStep, type OffState, type RenewState } from "./actions";
+import { renewBackupCodes, setTwoStepEmail, turnOffTwoStep, type OffState, type RenewState } from "./actions";
 
 const SECONDARY = "inline-flex h-11 items-center justify-center gap-2 rounded-lg border border-field bg-surface px-3.5 text-[13px] font-medium hover:border-ink sm:h-9";
 
-function Row({ icon, label, value, sub, action }: { icon: "phone" | "key"; label: string; value: string; sub?: string; action: React.ReactNode }) {
+function Row({ icon, label, value, sub, action, labelId }: { icon: "phone" | "key" | "mail"; label: string; value: string; sub?: string; action: React.ReactNode; labelId?: string }) {
   return (
     <li className="flex items-center gap-3 border-t border-line px-5 py-3.5 sm:px-6">
       <span aria-hidden="true" className="flex size-9 flex-none items-center justify-center rounded-[10px] bg-mist text-brand">
         <Icon name={icon} size={18} />
       </span>
       <div className="flex min-w-0 flex-1 flex-col">
-        <span className="text-[12.5px] text-muted">{label}</span>
-        <span className="text-sm font-medium">{value}</span>
+        <span id={labelId} className="text-[12.5px] text-muted">
+          {label}
+        </span>
+        <span className="truncate text-sm font-medium">{value}</span>
         {sub && <span className="text-[12.5px] text-muted">{sub}</span>}
       </div>
       {action}
     </li>
+  );
+}
+
+/** "Kód e-mailben" switch: changes at once, says so in a toast, flips back if saving fails. */
+function EmailSwitch({ initial, labelledBy }: { initial: boolean; labelledBy: string }) {
+  const t = useTranslations("security.card");
+  const [on, setOn] = useState(initial);
+  const [pending, start] = useTransition();
+  const flip = () => {
+    const next = !on;
+    setOn(next);
+    start(async () => {
+      if (await setTwoStepEmail(next)) toast(next ? t("emailOn") : t("emailOff"));
+      else {
+        setOn(!next);
+        toast(t("error"), "error");
+      }
+    });
+  };
+  return (
+    <button
+      type="button"
+      role="switch"
+      aria-checked={on}
+      aria-labelledby={labelledBy}
+      aria-busy={pending || undefined}
+      onClick={flip}
+      className="group flex size-11 flex-none items-center justify-center rounded-lg sm:h-9 sm:w-12"
+    >
+      <span className={`flex h-6 w-10 items-center rounded-full p-0.5 transition-colors motion-reduce:transition-none ${on ? "bg-ink" : "bg-field"} group-focus-visible:outline-3 group-focus-visible:outline-offset-2 group-focus-visible:outline-brand`}>
+        <span className={`size-5 rounded-full bg-white shadow-[0_1px_2px_rgb(12_31_25/0.25)] transition-transform motion-reduce:transition-none ${on ? "translate-x-4" : ""}`} />
+      </span>
+    </button>
   );
 }
 
@@ -40,6 +75,8 @@ export function TwoStepCard({
   codesLeft,
   setupHref,
   needsCode,
+  email,
+  emailOn,
 }: {
   enabled: boolean;
   since: string | null;
@@ -47,6 +84,9 @@ export function TwoStepCard({
   setupHref: string;
   /** Signed in on a trusted device without the code: making new backup codes asks for one. */
   needsCode: boolean;
+  /** Where a sign-in code by email goes, and whether that option is on (canvas v2.4). */
+  email: string;
+  emailOn: boolean;
 }) {
   const t = useTranslations("security.card");
   const c = useTranslations("companies");
@@ -136,6 +176,7 @@ export function TwoStepCard({
               </MenuPopover>
             }
           />
+          <Row icon="mail" labelId={`${id}-mail`} label={t("email")} value={email} sub={t("emailText")} action={<EmailSwitch initial={emailOn} labelledBy={`${id}-mail`} />} />
           <Row
             icon="key"
             label={t("codes")}

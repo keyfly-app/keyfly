@@ -284,6 +284,23 @@ export function holderChangedEmail(i: { locale: Locale; url: string; account: st
 }
 
 /** Security notices (always sent, whatever the email preferences): two-step on / off, a backup code was used. */
+/** Two-step verification by email: the 6-digit sign-in code (canvas v2.4 "Levél – belépési kód"). */
+export function signInCodeEmail(i: { locale: Locale; code: string }): Email {
+  const t = translator(i.locale);
+  const code = `${i.code.slice(0, 3)} ${i.code.slice(3)}`;
+  return render({
+    locale: i.locale,
+    tag: { tone: "info", label: t("security.tag") },
+    subject: t("signInCode.subject", { code }),
+    preheader: t("signInCode.preheader"),
+    title: t("signInCode.title"),
+    lead: t("signInCode.lead"),
+    code,
+    note: t("signInCode.note"),
+    why: t("security.why"),
+  });
+}
+
 export function securityEmail(i: { locale: Locale; url: string; kind: "twoStepOn" | "twoStepOff" | "recoveryUsed" }): Email {
   const t = translator(i.locale);
   const k = `security.${i.kind}` as const;

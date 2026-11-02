@@ -28,6 +28,7 @@ export function ProfileDetails({
   phone,
   phoneVerified = false,
   passwordChanged,
+  hasPassword = true,
   extra,
 }: {
   /** A last row of the card that is not edited in a dialog (the language on the profile). */
@@ -42,6 +43,8 @@ export function ProfileDetails({
   phone: string | null;
   phoneVerified?: boolean;
   passwordChanged: string | null;
+  /** False for an account made with Google: the password row offers "Beállítás" (canvas v2.4). */
+  hasPassword?: boolean;
 }) {
   const t = useTranslations("settings");
   const headingId = useId();
@@ -72,12 +75,18 @@ export function ProfileDetails({
         </>
       ),
     },
-    { key: "password", icon: "lock", label: t("profile.password"), value: <span className="tracking-[0.2em]">••••••••••</span> },
+    {
+      key: "password",
+      icon: "lock",
+      label: t("profile.password"),
+      value: hasPassword ? <span className="tracking-[0.2em]">••••••••••</span> : t("profile.passwordNone"),
+      empty: !hasPassword,
+    },
     { key: "phone", icon: "phone", label: t("profile.phone"), value: phone ? formatPhone(phone) : t("profile.phoneEmpty"), empty: !phone },
   ];
   const rows = items.map((key) => all.find((r) => r.key === key)!);
   const actionLabel = (row: (typeof all)[number]) =>
-    row.empty ? t("profile.add") : row.key === "phone" && !phoneVerified ? t("phone.verify") : t("profile.edit");
+    row.key === "password" && row.empty ? t("profile.set") : row.empty ? t("profile.add") : row.key === "phone" && !phoneVerified ? t("phone.verify") : t("profile.edit");
 
   return (
     <section aria-labelledby={`${headingId}-title`} className="rounded-xl border border-line bg-surface">
@@ -124,7 +133,7 @@ export function ProfileDetails({
       {/* Mounted only while open, so every edit starts clean. */}
       {editing === "name" && <NameDialog open onClose={close} onSaved={onSaved} current={name ?? ""} />}
       {editing === "email" && <EmailDialog open onClose={close} onSaved={onSaved} />}
-      {editing === "password" && <PasswordDialog open onClose={close} onSaved={onSaved} />}
+      {editing === "password" && <PasswordDialog open onClose={close} onSaved={onSaved} first={!hasPassword} />}
       {editing === "phone" && <PhoneDialog open onClose={close} onSaved={onSaved} current={phone} />}
     </section>
   );
@@ -344,14 +353,18 @@ function EmailDialog({ open, onClose, onSaved }: DialogProps) {
   );
 }
 
-function PasswordDialog({ open, onClose, onSaved }: DialogProps) {
+function PasswordDialog({ open, onClose, onSaved, first }: DialogProps & { first: boolean }) {
   const t = useTranslations("settings.dialogs");
   const id = useId();
   const { run, pending, fieldError, formError } = useSettingsAction(changePassword, onSaved);
   return (
-    <Dialog open={open} onClose={onClose} title={t("passwordTitle")} description={t("passwordLead")} closeLabel={t("close")}>
+    <Dialog open={open} onClose={onClose} title={first ? t("passwordFirstTitle") : t("passwordTitle")} description={first ? t("passwordFirstLead") : t("passwordLead")} closeLabel={t("close")}>
       <form action={run} className="flex flex-col gap-4">
-        <PasswordField id={`${id}-cur`} name="currentPassword" label={t("currentPassword")} autoComplete="current-password" error={fieldError("currentPassword")} />
+        {first ? (
+          <input type="hidden" name="first" value="1" />
+        ) : (
+          <PasswordField id={`${id}-cur`} name="currentPassword" label={t("currentPassword")} autoComplete="current-password" error={fieldError("currentPassword")} />
+        )}
         <PasswordField id={`${id}-new`} label={t("passwordNew")} autoComplete="new-password" rules error={fieldError("password")} />
         {formError && <Notice kind="error">{formError}</Notice>}
         <DialogActions>

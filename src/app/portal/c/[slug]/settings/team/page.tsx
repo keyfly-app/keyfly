@@ -4,7 +4,6 @@ import { notFound } from "next/navigation";
 import { canManage, companyBySlug } from "@/features/companies/accounts";
 import { TeamView } from "@/features/companies/TeamView";
 import { isLocale } from "@/i18n/config";
-import { siteHref } from "@/lib/site-href";
 import { createClient } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
@@ -21,7 +20,7 @@ export default async function CompanyTeam({ params }: { params: Promise<{ slug: 
   if (!account) notFound();
   const manage = canManage(account);
   const supabase = await createClient();
-  const [raw, { data: auth }, { data: members }, requests, invitations, backHref] = await Promise.all([
+  const [raw, { data: auth }, { data: members }, requests, invitations] = await Promise.all([
     getLocale(),
     supabase.auth.getClaims(),
     supabase.rpc("account_members_list", { p_account_id: account.id }),
@@ -39,7 +38,6 @@ export default async function CompanyTeam({ params }: { params: Promise<{ slug: 
           .order("created_at", { ascending: false })
           .then((r) => r.data ?? [])
       : Promise.resolve([]),
-    siteHref("portal", `/c/${slug}/settings`),
   ]);
   return (
     <TeamView
@@ -49,7 +47,6 @@ export default async function CompanyTeam({ params }: { params: Promise<{ slug: 
       enterprise={account.plan === "enterprise"}
       me={auth?.claims.sub}
       locale={isLocale(raw) ? raw : "hu"}
-      backHref={backHref}
       members={members ?? []}
       requests={requests}
       invitations={invitations}

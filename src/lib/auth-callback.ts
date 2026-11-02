@@ -1,10 +1,12 @@
 import { NextResponse, type NextRequest } from "next/server";
 import type { EmailOtpType } from "@supabase/supabase-js";
+import { SIGN_UP_OPEN } from "@/config/auth";
+import { hasAcceptedTerms, isFreshGoogleAccount, removeUnfinishedAccount } from "@/features/auth/google";
 import { safeNext } from "@/lib/safe-next";
 import { hrefFor, type AppSite } from "@/lib/sites";
 import { createClient } from "@/lib/supabase/server";
 
-const EMAIL_LINK_TYPES: EmailOtpType[] = ["signup", "magiclink", "recovery", "email_change", "email"];
+const EMAIL_LINK_TYPES: EmailOtpType[] = ["signup", "recovery", "email_change", "email"];
 
 function respond(request: NextRequest, site: AppSite, path: string) {
   const host = request.headers.get("host");
@@ -13,7 +15,7 @@ function respond(request: NextRequest, site: AppSite, path: string) {
 }
 
 /**
- * Email links (sign-up confirmation, email sign-in, password reset). The email templates point here
+ * Email links (sign-up confirmation, password reset, email change). The email templates point here
  * with a token hash, so the link works in any browser – not only the one that asked for it.
  */
 export async function handleEmailLink(request: NextRequest, site: AppSite) {
@@ -32,16 +34,40 @@ export async function handleEmailLink(request: NextRequest, site: AppSite) {
 }
 
 /**
- * Code exchange (PKCE) – for OAuth providers such as Google, and for email links
- * opened in the same browser that requested them.
+ * Code exchange (PKCE) – for Google sign-in, sign-up and linking (canvas v2.4), and for email links opened in the
+ * same browser that requested them. A Google account that is new to Keyfly goes on to accept the terms first; while
+ * sign-up is closed it is removed again. Linking errors go back to the security page.
  */
 export async function handleAuthCallback(request: NextRequest, site: AppSite) {
-  const code = request.nextUrl.searchParams.get("code");
-  const next = safeNext(request.nextUrl.searchParams.get("next"));
+  const { searchParams } = request.nextUrl;
+  const code = searchParams.get("code");
+  const next = safeNext(searchParams.get("next"));
+  const linking = next.startsWith("/settings/security");
+  const failed = searchParams.get("error_code") ?? searchParams.get("error");
+  if (failed) {
+    console.error("oauth callback error", failed);
+    if (linking) return respond(request, site, `/settings/security?google=${failed === "identity_already_exists" ? "taken" : "error"}`);
+    return respond(request, site, failed === "access_denied" ? "/login" : "/login?error=google");
+  }
   if (code) {
     const supabase = await createClient();
     const { error } = await supabase.auth.exchangeCodeForSession(code);
-    if (!error) return respond(request, site, next);
+    if (!error) {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      const googleOnly = Boolean(user) && !(user?.identities ?? []).some((i) => i.provider === "email");
+      if (site === "portal" && user && googleOnly && !linking && !(await hasAcceptedTerms(supabase, user.id))) {
+        if (!SIGN_UP_OPEN && isFreshGoogleAccount(user)) {
+          await removeUnfinishedAccount(user.id);
+          await supabase.auth.signOut({ scope: "local" });
+          return respond(request, site, "/login?error=googleNoAccount");
+        }
+        return respond(request, site, `/register/google${next === "/" ? "" : `?next=${encodeURIComponent(next)}`}`);
+      }
+      return respond(request, site, next);
+    }
+    console.error("code exchange failed", error.code);
   }
-  return respond(request, site, "/login?error=link");
+  return respond(request, site, linking ? "/settings/security?google=error" : "/login?error=link");
 }

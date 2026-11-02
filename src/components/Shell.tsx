@@ -1,4 +1,5 @@
 import { Suspense } from "react";
+import { redirect } from "next/navigation";
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import { AppFooter } from "@/components/AppFooter";
@@ -7,10 +8,13 @@ import { LogoFull, LogoMark } from "@/components/Logo";
 import { UserMenu } from "@/components/UserMenu";
 import { AccountSwitcher, type SwitcherAccount } from "@/components/AccountSwitcher";
 import { accountInitials, myAccounts, type AccountSummary } from "@/features/companies/accounts";
+import { hasAcceptedTerms } from "@/features/auth/google";
 import { LanguageMenu } from "@/features/language/LanguageMenu";
 import { currentUser } from "@/features/settings/current-user";
+import { settingsSummary } from "@/features/settings/summary";
 import { ViewMenu } from "@/features/view/ViewMenu";
 import { siteHref } from "@/lib/site-href";
+import { createClient } from "@/lib/supabase/server";
 import type { AppSite } from "@/lib/sites";
 
 /**
@@ -21,8 +25,11 @@ import type { AppSite } from "@/lib/sites";
 export async function Shell({ site, account, children }: { site: AppSite; account?: AccountSummary; children: React.ReactNode }) {
   const [t, a, inv, user, accounts] = await Promise.all([getTranslations("settings"), getTranslations("accounts"), getTranslations("invite"), currentUser(), myAccounts()]);
   const common = await getTranslations("common");
-  const [home, profile, security, notifications, bank, companies, data, addCompany] = await Promise.all([
+  // Signed up with Google but the terms are not accepted yet (canvas v2.4 "Regisztráció Google-lel – még egy lépés").
+  if (site === "portal" && user && !user.providers.includes("email") && !(await hasAcceptedTerms(await createClient(), user.id))) redirect(await siteHref("portal", "/register/google"));
+  const [home, summaryHref, profile, security, notifications, bank, companies, data, addCompany, summary] = await Promise.all([
     siteHref(site, "/"),
+    siteHref(site, "/settings"),
     siteHref(site, "/settings/profile"),
     siteHref(site, "/settings/security"),
     siteHref(site, "/settings/notifications"),
@@ -30,7 +37,13 @@ export async function Shell({ site, account, children }: { site: AppSite; accoun
     siteHref(site, "/settings/companies"),
     siteHref(site, "/settings/data"),
     siteHref(site, "/companies/new"),
+    site === "portal" ? settingsSummary() : Promise.resolve(null),
   ]);
+  const stepsDone = summary?.steps.filter((s) => s.done).length ?? 0;
+  const setup =
+    summary && stepsDone < summary.steps.length
+      ? { href: summaryHref, label: t("summary.guide.title"), done: stepsDone, total: summary.steps.length, progressLabel: t("summary.guide.progress", { done: stepsDone, total: summary.steps.length }) }
+      : undefined;
   // Companies show your role in them and their plan ("Fiókgazda · Alap"); the personal account just "Magánfiók".
   const sub = (acc: AccountSummary) => (acc.kind === "person" ? a("personal") : `${inv(`roles.${acc.role}`)} · ${a(`plans.${acc.plan}`)}`);
   const switcher: SwitcherAccount[] = await Promise.all(
@@ -93,18 +106,24 @@ export async function Shell({ site, account, children }: { site: AppSite; accoun
                 avatarUrl={user.avatarUrl}
                 openLabel={t("userMenu.open")}
                 signOutLabel={common("signOut")}
-                items={[
-                  { href: profile, label: t("nav.profile"), icon: "user" },
-                  { href: security, label: t("nav.security"), icon: "lock" },
-                  { href: notifications, label: t("nav.notifications"), icon: "bell" },
-                  ...(site === "portal"
+                setup={setup}
+                items={
+                  site === "portal"
                     ? [
-                        { href: bank, label: t("nav.bank"), icon: "bank" as const },
-                        { href: companies, label: t("nav.companies"), icon: "list" as const },
+                        { href: summaryHref, label: t("nav.summary"), icon: "layout" },
+                        { href: profile, label: t("nav.profile"), icon: "user" },
+                        { href: security, label: t("nav.security"), icon: "lock" },
+                        { href: bank, label: t("nav.bank"), icon: "bank" },
+                        { href: notifications, label: t("nav.notifications"), icon: "bell" },
+                        { href: data, label: t("nav.data"), icon: "shield" },
                       ]
-                    : []),
-                  { href: data, label: t("nav.data"), icon: "shield" },
-                ]}
+                    : [
+                        { href: profile, label: t("nav.profile"), icon: "user" },
+                        { href: security, label: t("nav.security"), icon: "lock" },
+                        { href: notifications, label: t("nav.notifications"), icon: "bell" },
+                        { href: data, label: t("nav.data"), icon: "shield" },
+                      ]
+                }
                 more={site === "portal" ? [{ href: addCompany, label: a("add"), icon: "building" }] : []}
               />
             )}

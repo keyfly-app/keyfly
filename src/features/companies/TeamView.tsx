@@ -28,7 +28,6 @@ export async function TeamView({
   enterprise,
   me,
   locale,
-  backHref,
   members,
   requests,
   invitations,
@@ -39,7 +38,6 @@ export async function TeamView({
   enterprise: boolean;
   me: string | undefined;
   locale: Locale;
-  backHref: string;
   members: TeamMember[];
   requests: AccessRequest[];
   invitations: PendingInvitation[];
@@ -52,7 +50,7 @@ export async function TeamView({
       <SettingsHeader
         title={t("title")}
         lead={t("lead")}
-        backHref={backHref}
+        tab
         action={manage ? <InviteMember accountId={accountId} enterprise={enterprise} /> : undefined}
       />
 

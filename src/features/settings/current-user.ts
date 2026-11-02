@@ -17,6 +17,10 @@ export type CurrentUser = {
   avatarUrl: string | null;
   avatarPath: string | null;
   passwordChangedAt: string | null;
+  /** Sign-in methods ("email" = password, "google"). */
+  providers: string[];
+  /** Two-step verification: may ask for a sign-in code by email. */
+  twoStepEmail: boolean;
   /** What Overview shows ("Nézet"); null until the first-use question is answered. */
   startView: Enums<"start_view"> | null;
 };
@@ -41,7 +45,7 @@ export const currentUser = cache(async (): Promise<CurrentUser | null> => {
   if (!user?.email) return null;
   const { data: profile } = await supabase
     .from("profiles")
-    .select("full_name, phone, phone_verified_at, avatar_path, password_changed_at, start_view")
+    .select("full_name, phone, phone_verified_at, avatar_path, password_changed_at, start_view, two_step_email")
     .eq("id", user.id)
     .maybeSingle();
   const avatarPath = profile?.avatar_path ?? null;
@@ -57,6 +61,8 @@ export const currentUser = cache(async (): Promise<CurrentUser | null> => {
     avatarUrl: signed?.signedUrl ?? null,
     avatarPath,
     passwordChangedAt: profile?.password_changed_at ?? null,
+    providers: (user.identities ?? []).map((i) => i.provider),
+    twoStepEmail: profile?.two_step_email ?? true,
     startView: profile?.start_view ?? null,
   };
 });

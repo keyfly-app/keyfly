@@ -1,7 +1,6 @@
 "use client";
 
 import { useActionState, useEffect, useId, useRef, useState, useTransition } from "react";
-import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { Icon } from "@/components/Icon";
 import { toast } from "@/components/Toaster";
@@ -91,10 +90,9 @@ function Card({ id, title, extra, children }: { id: string; title: string; extra
  * registered office, mailing address, contact. "Frissítés a NAV-ból" fills the form with NAV's current data; Save stores
  * it. Only the last three digits of the tax number can change. Unsaved changes keep a save bar on screen.
  */
-export function CompanyDetailsForm({ accountId, company, manage, backHref }: { accountId: string; company: CompanyDetails; manage: boolean; backHref: string }) {
+export function CompanyDetailsForm({ accountId, company, manage }: { accountId: string; company: CompanyDetails; manage: boolean }) {
   const t = useTranslations("companies.details");
   const c = useTranslations("companies");
-  const s = useTranslations("settings");
   const id = useId();
   const [saved, setSaved] = useState(() => toValues(company));
   const [values, setValues] = useState(saved);
@@ -186,12 +184,8 @@ export function CompanyDetailsForm({ accountId, company, manage, backHref }: { a
   return (
     <>
       <div className="flex flex-col gap-3">
-        <Link href={backHref} className="-ml-1 inline-flex min-h-11 items-center gap-1 self-start px-1 text-[13px] font-medium text-ink lg:hidden">
-          <Icon name="back" size={16} />
-          {s("back")}
-        </Link>
         <div className="flex items-center justify-between gap-4">
-          <h1 className="font-display text-[22px] leading-7 font-semibold">{t("title")}</h1>
+          <h2 className="text-[17px] leading-6 font-semibold">{t("title")}</h2>
           {manage && (
             <button
               type="button"

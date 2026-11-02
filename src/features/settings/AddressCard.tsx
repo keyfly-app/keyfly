@@ -43,7 +43,7 @@ export function AddressCard({ home, mailing }: { home: PersonalAddress | null; m
   ];
 
   return (
-    <section aria-labelledby={headingId} className="rounded-xl border border-line bg-surface">
+    <section id="addresses" aria-labelledby={headingId} className="scroll-mt-6 rounded-xl border border-line bg-surface">
       <h2 id={headingId} className="px-5 pt-5 pb-3 text-[15px] font-semibold sm:px-6">
         {t("title")}
       </h2>

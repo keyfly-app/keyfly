@@ -345,12 +345,6 @@
       "noAccount": "New to Keyfly? <link>Create an account</link>",
       "sub": "Welcome back to Keyfly."
     },
-    "emailLink": {
-      "submit": "Email me a sign-in link",
-      "sending": "Sending…",
-      "sentTitle": "We’ve sent your sign-in link.",
-      "sentText": "Check your inbox, including spam. The link is valid for 24 hours."
-    },
     "register": {
       "title": "Create your account",
       "back": "Sign in",
@@ -371,7 +365,7 @@
     "verify": {
       "title": "Confirm your email",
       "sentTo": "We sent a confirmation link to <b>{email}</b>",
-      "validity": "The link is valid for {hours} hours.",
+      "validity": "The link is valid for {hours, plural, one {# hour} other {# hours}}.",
       "resend": "Resend email",
       "resent": "We’ve sent the email again.",
       "otherEmail": "Use a different email"
@@ -381,7 +375,7 @@
       "text": "Enter the email linked to your account. We’ll send you a secure link to set a new password.",
       "submit": "Send reset link",
       "sentTitle": "Check your inbox",
-      "sentText": "If an account exists for this address, we’ve sent the link. It’s valid for 24 hours; check your spam folder too."
+      "sentText": "If an account exists for this address, we’ve sent the link. It’s valid for 1 hour; check your spam folder too."
     },
     "reset": {
       "title": "Set a new password",
@@ -418,6 +412,16 @@
       "samePassword": "The new password must be different from the old one.",
       "rateLimit": "Too many attempts. Try again in a few minutes.",
       "generic": "A temporary error occurred. Try again."
+    },
+    "sending": "Sending…",
+    "google": {
+      "signIn": "Continue with Google",
+      "signUp": "Sign up with Google",
+      "title": "One more step",
+      "lead": "You’re creating your Keyfly account with Google.",
+      "other": "Choose another account",
+      "failed": "Signing in with Google didn’t work. Try again, or sign in with your password.",
+      "noAccount": "There’s no Keyfly account for this Google account yet. Sign in with the email address you registered with."
     }
   },
   "invite": {
@@ -987,6 +991,13 @@
         "title": "You signed in with a backup code",
         "lead": "You signed in with a backup code, so we turned off two-step verification and the old codes. Set it up again with your authenticator app."
       }
+    },
+    "signInCode": {
+      "subject": "Your sign-in code: {code}",
+      "preheader": "It’s valid for 5 minutes.",
+      "title": "Sign-in code",
+      "lead": "Use this code to sign in to Keyfly. It’s valid for 5 minutes.",
+      "note": "If it wasn’t you trying to sign in, change your password under Sign-in and security."
     }
   },
   "portal": {
@@ -1201,7 +1212,7 @@
     }
   },
   "authEmails": {
-    "validity": "The link is valid for 24 hours and works once.",
+    "validity": "The link is valid for 1 hour and works once.",
     "security": "Keyfly will never ask for your password or codes by email.",
     "confirmation": {
       "tag": "Sign-up",
@@ -1224,7 +1235,7 @@
     "recovery": {
       "tag": "Security",
       "subject": "Reset your password",
-      "preheader": "The link is valid for 24 hours.",
+      "preheader": "The link is valid for 1 hour.",
       "title": "Reset your password",
       "lead": "You asked to reset the password for your Keyfly account. Set a new one with the link below.",
       "cta": "Set a new password",
@@ -1260,18 +1271,10 @@
       "notifications": "Notifications",
       "data": "Your data",
       "companies": "My companies",
-      "bank": "Bank accounts"
+      "bank": "Bank accounts",
+      "summary": "Summary"
     },
     "back": "Settings",
-    "index": {
-      "lead": "Your profile and sign-in are the same in every account.",
-      "profileText": "Photo, name, phone, language.",
-      "securityText": "Email, password, two-step verification, sign-ins.",
-      "notificationsText": "Which emails you get.",
-      "dataText": "Download your data, delete your account.",
-      "companiesText": "Your company accounts and your role in them.",
-      "bankText": "For claim payouts and refunds."
-    },
     "userMenu": {
       "open": "Open account menu"
     },
@@ -1295,7 +1298,9 @@
       "passwordNever": "Set",
       "pending": "Waiting for confirmation: {email}. We sent the link to that address.",
       "language": "Language",
-      "languageText": "The language of the app and our emails."
+      "languageText": "The language of the app and our emails.",
+      "passwordNone": "Not set",
+      "set": "Set"
     },
     "dialogs": {
       "cancel": "Cancel",
@@ -1317,7 +1322,9 @@
       "cropLead": "Drag the photo into place and set its size.",
       "zoom": "Zoom",
       "cropSave": "Save photo",
-      "cropAlt": "Preview of the uploaded photo"
+      "cropAlt": "Preview of the uploaded photo",
+      "passwordFirstTitle": "Set a password",
+      "passwordFirstLead": "Then you can also sign in with your email address and this password, besides Google."
     },
     "saved": {
       "name": "Your name is saved.",
@@ -1326,7 +1333,8 @@
       "photo": "Your profile photo is saved.",
       "photoRemoved": "Your profile photo is removed.",
       "session": "That device is signed out.",
-      "sessions": "You’re signed out on all other devices."
+      "sessions": "You’re signed out on all other devices.",
+      "passwordSet": "Your password is set."
     },
     "errors": {
       "name": "Enter a name of 2–200 characters.",
@@ -1339,7 +1347,8 @@
       "rate": "Too many attempts. Try again in a few minutes.",
       "photoType": "We can’t open this image. Try a JPG or PNG.",
       "photoSize": "The image can be up to 10 MB.",
-      "generic": "Couldn’t save. Please try again."
+      "generic": "Couldn’t save. Please try again.",
+      "noPassword": "Set a password under Sign-in and security first."
     },
     "devices": {
       "title": "Active sign-ins",
@@ -1429,7 +1438,8 @@
         "blocked": "First sort out what’s shown above.",
         "rate": "Too many tries. Wait a few minutes.",
         "setup": "Deleting accounts isn’t available right now. Write to us: support@keyfly.app.",
-        "generic": "Something went wrong. Try again."
+        "generic": "Something went wrong. Try again.",
+        "noPassword": "Set a password under Sign-in and security first."
       },
       "blockedRecords": "Properties or leases belong to your account, so customer support deletes it for you: {email}."
     },
@@ -1556,6 +1566,51 @@
         "email": "First confirm your email address.",
         "generic": "Something went wrong. Try again."
       }
+    },
+    "companyTabs": "{name} settings",
+    "summary": {
+      "title": "Settings",
+      "lead": "Your personal and company details in one place.",
+      "personalSub": "Personal details",
+      "companySub": "Company details · {role}",
+      "add": "Add",
+      "addCompany": "Add a company",
+      "name": "Name",
+      "phone": "Phone",
+      "confirmed": "Confirmed",
+      "home": "Home address",
+      "mailing": "Mailing address",
+      "mailingSame": "Same as home address",
+      "bank": "Bank account",
+      "twoStep": "Two-step verification",
+      "on": "On",
+      "off": "Off",
+      "details": "Company details",
+      "navChecked": "Checked with NAV",
+      "office": "Registered office",
+      "contactEmail": "Contact email",
+      "contactPhone": "Contact phone",
+      "team": "Team",
+      "members": "{count, plural, one {# member} other {# members}}",
+      "guide": {
+        "title": "Set up your account",
+        "hide": "Hide",
+        "done": "done",
+        "progress": "{done} of {total} steps done",
+        "personal": "Personal",
+        "steps": {
+          "phone": "Confirm your phone number",
+          "twoStep": "Turn on two-step verification",
+          "nav": "Check company details",
+          "bank": "Add a bank account"
+        },
+        "actions": {
+          "phone": "Confirm",
+          "twoStep": "Turn on",
+          "nav": "Check",
+          "bank": "Add"
+        }
+      }
     }
   },
   "header": {
@@ -1617,10 +1672,7 @@
     "menu": {
       "company": "Company details",
       "team": "Team",
-      "companyText": "Name, tax number, registered office, contact.",
-      "teamText": "Members, invitations, access requests.",
-      "bank": "Bank accounts",
-      "bankText": "For claim payouts and refunds."
+      "bank": "Bank accounts"
     },
     "displayName": "Display name",
     "displayNameHint": "How your tenants and team see it.",
@@ -1844,7 +1896,24 @@
         "locked": "Too many wrong backup codes. Try again in an hour, or write to us: support@keyfly.app.",
         "setup": "Backup codes can’t be used right now. Write to us: support@keyfly.app."
       },
-      "remember": "Don’t ask for a code on this device for 30 days"
+      "remember": "Don’t ask for a code on this device for 30 days",
+      "noPhone": "Phone not with you?",
+      "byEmail": "Email me a code",
+      "emailTitle": "Check your email",
+      "emailLead": "We sent a 6-digit code to {email}. It’s valid for 5 minutes.",
+      "resendIn": "You can ask for a new code in {time}",
+      "resend": "Send a new code",
+      "useAppInstead": "Use the authenticator app instead",
+      "emailErrors": {
+        "format": "Enter the 6 digits.",
+        "code": "That code isn’t right. Check our latest email.",
+        "expired": "This code has expired or was tried too often. Ask for a new one.",
+        "tooSoon": "We’ve just sent a code. You can ask for a new one in a minute.",
+        "limit": "You’ve asked for many codes today. Use the authenticator app or a backup code.",
+        "off": "Codes by email are turned off for this account.",
+        "send": "We couldn’t send the email. Try again in a minute.",
+        "generic": "Something went wrong. Try again."
+      }
     },
     "setup": {
       "title": "Two-step verification",
@@ -1916,7 +1985,11 @@
         "rate": "Too many tries. Wait a few minutes.",
         "generic": "Something went wrong. Try again."
       },
-      "renewCode": "Enter the code from your authenticator app."
+      "renewCode": "Enter the code from your authenticator app.",
+      "email": "Code by email",
+      "emailText": "If your phone isn’t with you, you can get a code by email.",
+      "emailOn": "Code by email turned on.",
+      "emailOff": "Code by email turned off."
     },
     "trusted": {
       "title": "Trusted devices",
@@ -1929,6 +2002,27 @@
       "removedAll": "We’ll ask for the code on every device again.",
       "unknown": "Unknown device",
       "error": "Something went wrong. Try again."
+    },
+    "google": {
+      "title": "Linked accounts",
+      "off": "Not linked",
+      "offText": "Sign in with one click using your Google account.",
+      "since": "Linked: {date}",
+      "link": "Link",
+      "unlink": "Unlink",
+      "unlinkTitle": "Unlink your Google account?",
+      "unlinkText": "You’ll then sign in with your email and password. You can link it again any time, even a different Google account.",
+      "passwordTitle": "Set a password before unlinking",
+      "passwordText": "Right now you can only sign in with Google. After this, you’ll sign in with your email address and this password.",
+      "newPassword": "New password",
+      "passwordUnlink": "Save password and unlink",
+      "weakPassword": "Use at least 8 characters with lower- and upper-case letters and a number.",
+      "single": "Set a password first.",
+      "failed": "Unlinking didn’t work. Try again.",
+      "linked": "Your Google account is linked.",
+      "unlinked": "Your Google account is unlinked.",
+      "taken": "This Google account already belongs to another Keyfly account. Choose another one.",
+      "error": "Linking didn’t work. Try again."
     }
   },
   "phoneInput": {
