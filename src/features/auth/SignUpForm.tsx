@@ -19,9 +19,11 @@ import { PasswordField } from "./PasswordField";
 /** "Regisztráció Google-fiókkal", or name, email, password (with live rules) and the terms – no box is ticked in advance. */
 export function SignUpForm({
   next,
+  termsHref,
   privacyHref,
 }: {
   next: string;
+  termsHref: string;
   privacyHref: string;
 }) {
   const t = useTranslations("auth");
@@ -71,7 +73,17 @@ export function SignUpForm({
           error={error === "terms" ? t("errors.terms") : undefined}
         >
           {t.rich("register.terms", {
-            terms: (chunks) => <span className="font-semibold">{chunks}</span>,
+            terms: (chunks) => (
+              <Link
+                href={termsHref}
+                target="_blank"
+                rel="noopener"
+                className="font-semibold text-brand underline underline-offset-3"
+              >
+                {chunks}
+                <span className="sr-only"> ({t("newTab")})</span>
+              </Link>
+            ),
             privacy: (chunks) => (
               <Link
                 href={privacyHref}

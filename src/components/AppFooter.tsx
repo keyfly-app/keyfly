@@ -5,8 +5,8 @@ import { isLocale, publicHref } from "@/i18n/config";
 const LINK = "inline-flex min-h-11 items-center text-muted hover:text-ink sm:min-h-6";
 
 /**
- * Quiet footer of every app and admin screen (App v2.2): company, privacy, support.
- * The language switch lives in the header. The terms link joins once the app's terms are published.
+ * Quiet footer of every app and admin screen (App v2.2): company, terms, app privacy notice, support.
+ * The language switch lives in the header.
  */
 export async function AppFooter() {
   const raw = await getLocale();
@@ -16,8 +16,11 @@ export async function AppFooter() {
   return (
     <footer className="px-5 pt-2 pb-5 sm:px-8 sm:pb-6">
       <div className="flex flex-col items-center gap-x-5 text-[12.5px] text-muted sm:flex-row sm:flex-wrap sm:justify-center">
-        <nav aria-label={t("navLabel")} className="order-1 flex gap-5 sm:order-2">
-          <a href={`${BRAND.url}${publicHref("privacy", locale)}`} className={LINK}>
+        <nav aria-label={t("navLabel")} className="order-1 flex flex-wrap justify-center gap-x-5 sm:order-2">
+          <a href={`${BRAND.url}${publicHref("terms", locale)}`} className={LINK}>
+            {c("terms")}
+          </a>
+          <a href={`${BRAND.url}${publicHref("appPrivacy", locale)}`} className={LINK}>
             {c("privacyShort")}
           </a>
           <a href={`mailto:${CONTACT.support}`} className={LINK}>

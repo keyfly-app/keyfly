@@ -176,7 +176,8 @@ async function refreshSession(request: NextRequest, response: NextResponse, site
   // Read from the session itself (no network): does this person have a verified authenticator still to use?
   let needsTwoStep = false;
   if (data?.claims && aal !== "aal2") {
-    const { data: level } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
+    // Auth calls stay on the auth client: it has just verified the session (no "insecure getSession" warning).
+    const { data: level } = await refresher.auth.mfa.getAuthenticatorAssuranceLevel();
     needsTwoStep = level?.nextLevel === "aal2";
     // A browser the person marked as trusted skips the code for 30 days (customer app only; staff always need it).
     const trusted = site === "portal" && needsTwoStep ? parseTrusted(request.cookies.get(TRUSTED_COOKIE)?.value) : null;

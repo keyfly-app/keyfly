@@ -13,12 +13,14 @@ export function GoogleSignUpForm({
   googleName,
   googleEmail,
   defaultName,
+  termsHref,
   privacyHref,
 }: {
   next: string;
   googleName: string | null;
   googleEmail: string;
   defaultName: string;
+  termsHref: string;
   privacyHref: string;
 }) {
   const t = useTranslations("auth");
@@ -55,7 +57,12 @@ export function GoogleSignUpForm({
         />
         <Checkbox id={`${id}-terms`} name="terms" error={error === "terms" ? t("errors.terms") : undefined}>
           {t.rich("register.terms", {
-            terms: (chunks) => <span className="font-semibold">{chunks}</span>,
+            terms: (chunks) => (
+              <Link href={termsHref} target="_blank" rel="noopener" className="font-semibold text-brand underline underline-offset-3">
+                {chunks}
+                <span className="sr-only"> ({t("newTab")})</span>
+              </Link>
+            ),
             privacy: (chunks) => (
               <Link href={privacyHref} target="_blank" rel="noopener" className="font-semibold text-brand underline underline-offset-3">
                 {chunks}

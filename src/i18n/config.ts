@@ -16,6 +16,8 @@ export const PUBLIC_PAGES = {
   home: { hu: "/", en: "/" },
   privacy: { hu: "/adatvedelem", en: "/privacy" },
   imprint: { hu: "/impresszum", en: "/imprint" },
+  terms: { hu: "/aszf", en: "/terms" },
+  appPrivacy: { hu: "/adatvedelem/app", en: "/privacy/app" },
   pro: { hu: "/pro", en: "/pro" },
 } as const;
 export type PublicPage = keyof typeof PUBLIC_PAGES;

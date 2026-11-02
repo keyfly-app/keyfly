@@ -18,7 +18,9 @@
       "todo": "Következik",
       "err": "Megszakadt"
     },
-    "homeLink": "Keyfly – főoldal"
+    "homeLink": "Keyfly – főoldal",
+    "terms": "ÁSZF",
+    "appPrivacyNotice": "Adatkezelés – app"
   },
   "meta": {
     "title": "Albérlet kaució nélkül – Keyfly",
@@ -1065,7 +1067,10 @@
     "bindingNote": "A tájékoztató magyar nyelvű változata az irányadó.",
     "updated": "Hatályos: {date}",
     "imprintTitle": "Impresszum",
-    "privacyTitle": "Adatkezelési tájékoztató – várólista és hírlevél"
+    "privacyTitle": "Adatkezelési tájékoztató – várólista és hírlevél",
+    "termsTitle": "Általános Szerződési Feltételek (ÁSZF)",
+    "termsBindingNote": "Az ÁSZF magyar nyelvű változata az irányadó.",
+    "appPrivacyTitle": "Adatkezelési tájékoztató – Keyfly app"
   },
   "emails": {
     "waitlistConfirmation": {

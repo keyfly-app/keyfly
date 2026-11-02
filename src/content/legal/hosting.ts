@@ -12,12 +12,16 @@ export const HOSTING_PROVIDER = {
 export const LEGAL_EFFECTIVE = {
   privacy: "2026-10-31",
   imprint: "2026-10-31",
+  terms: "2026-11-02",
+  appPrivacy: "2026-11-02",
 } as const;
 
 /** Hungarian data protection authority – for the "right to complain" section. */
 export const DPA = {
   name: { hu: "Nemzeti Adatvédelmi és Információszabadság Hatóság (NAIH)", en: "Hungarian National Authority for Data Protection and Freedom of Information (NAIH)" },
   address: "1055 Budapest, Falk Miksa utca 9–11.",
+  postalAddress: "1363 Budapest, Pf. 9.",
+  phone: "+36 1 391 1400",
   email: "ugyfelszolgalat@naih.hu",
   web: "https://naih.hu",
 } as const;

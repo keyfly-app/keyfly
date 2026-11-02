@@ -6,7 +6,8 @@ import { CompactWaitlistForm } from "@/features/waitlist/WaitlistForm";
 import { publicHref, type Locale } from "@/i18n/config";
 
 /**
- * Public-site footer: waitlist call to action (optional), logo, company name and legal links.
+ * Public-site footer: waitlist call to action (optional), logo, company name and legal links (terms, the waitlist and
+ * app privacy notices, imprint).
  * `signupFor="landlords"` (Pro page) preselects the landlord segment and tags the sign-up source.
  */
 export async function SiteFooter({
@@ -55,8 +56,14 @@ export async function SiteFooter({
             </p>
           </div>
           <nav aria-label={c("legalNav")} className="flex flex-wrap gap-x-6 text-sm">
+            <Link href={publicHref("terms", locale)} className={link}>
+              {c("terms")}
+            </Link>
             <Link href={publicHref("privacy", locale)} className={link}>
               {c("privacyNotice")}
+            </Link>
+            <Link href={publicHref("appPrivacy", locale)} className={link}>
+              {c("appPrivacyNotice")}
             </Link>
             <Link href={publicHref("imprint", locale)} className={link}>
               {c("imprint")}

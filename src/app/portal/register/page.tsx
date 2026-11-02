@@ -22,14 +22,16 @@ export default async function Register({ searchParams }: { searchParams: Promise
   const raw = await getLocale();
   const locale = isLocale(raw) ? raw : "hu";
   const { origin, host } = await requestOrigin();
-  const privacyHref = marketingOrigin(host, origin.split(":")[0]) + publicHref("privacy", locale);
+  const marketing = marketingOrigin(host, origin.split(":")[0]);
+  const termsHref = marketing + publicHref("terms", locale);
+  const privacyHref = marketing + publicHref("appPrivacy", locale);
   const loginHref = await siteHref("portal", next === "/" ? "/login" : `/login?next=${encodeURIComponent(next)}`);
   if (!SIGN_UP_OPEN) redirect(loginHref);
 
   return (
     <AuthLayout back={{ href: loginHref, label: t("register.back") }}>
       <PageTitle sub={t("register.sub")}>{t("register.title")}</PageTitle>
-      <SignUpForm next={next} privacyHref={privacyHref} />
+      <SignUpForm next={next} termsHref={termsHref} privacyHref={privacyHref} />
     </AuthLayout>
   );
 }

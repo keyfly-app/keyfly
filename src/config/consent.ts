@@ -10,9 +10,9 @@ export const CONSENT_VERSIONS = {
   /** Keyfly Pro / Business interest checkbox for landlords and agencies (messages: waitlist.proInterest). */
   proInterest: "pro-interest-2026-10-31",
   /**
-   * Customer app sign-up (messages: register.terms). Drafts on staging: the general terms (ÁSZF) and the
-   * app privacy notice must be published, and these versions set to them, before production.
+   * Customer app sign-up (messages: register.terms): the general terms (ÁSZF, /aszf) and the app privacy notice
+   * (/adatvedelem/app), published on keyfly.app from src/content/legal; lawyer review pending. Bump on every change.
    */
-  accountTerms: "terms-draft-2026-11-02",
-  accountPrivacy: "account-privacy-draft-2026-11-02",
+  accountTerms: "terms-2026-11-02",
+  accountPrivacy: "account-privacy-2026-11-02",
 } as const;

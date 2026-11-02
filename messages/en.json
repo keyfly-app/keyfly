@@ -18,7 +18,9 @@
       "todo": "Up next",
       "err": "Stopped"
     },
-    "homeLink": "Keyfly – home"
+    "homeLink": "Keyfly – home",
+    "terms": "Terms",
+    "appPrivacyNotice": "App privacy notice"
   },
   "meta": {
     "title": "Rent without a deposit in Hungary – Keyfly",
@@ -1065,7 +1067,10 @@
     "bindingNote": "This is an informative translation. The Hungarian version is legally binding.",
     "updated": "Effective: {date}",
     "imprintTitle": "Imprint",
-    "privacyTitle": "Privacy notice – waitlist and newsletter"
+    "privacyTitle": "Privacy notice – waitlist and newsletter",
+    "termsTitle": "General Terms",
+    "termsBindingNote": "This is an informative translation. The Hungarian version is legally binding.",
+    "appPrivacyTitle": "Privacy notice – Keyfly app"
   },
   "emails": {
     "waitlistConfirmation": {

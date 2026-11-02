@@ -36,6 +36,7 @@ export default async function GoogleSignUp({ searchParams }: { searchParams: Pro
     requestOrigin(),
   ]);
   const locale = isLocale(raw) ? raw : "hu";
+  const marketing = marketingOrigin(host, origin.split(":")[0]);
   const google = user.identities?.find((i) => i.provider === "google")?.identity_data ?? {};
   const googleName = typeof google.full_name === "string" ? google.full_name : typeof google.name === "string" ? google.name : null;
   return (
@@ -46,7 +47,8 @@ export default async function GoogleSignUp({ searchParams }: { searchParams: Pro
         googleName={googleName}
         googleEmail={user.email ?? ""}
         defaultName={profile?.full_name ?? googleName ?? ""}
-        privacyHref={marketingOrigin(host, origin.split(":")[0]) + publicHref("privacy", locale)}
+        termsHref={marketing + publicHref("terms", locale)}
+        privacyHref={marketing + publicHref("appPrivacy", locale)}
       />
     </AuthLayout>
   );

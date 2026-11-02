@@ -47,7 +47,19 @@ export function AdminSignInForm({ next, forgotHref }: { next: string; forgotHref
 }
 
 /** Staff account from an invitation: the address is fixed by the invitation; name, password and the terms. */
-export function StaffSignUpForm({ token, email, privacyHref, signInHref }: { token: string; email: string; privacyHref: string; signInHref: string }) {
+export function StaffSignUpForm({
+  token,
+  email,
+  termsHref,
+  privacyHref,
+  signInHref,
+}: {
+  token: string;
+  email: string;
+  termsHref: string;
+  privacyHref: string;
+  signInHref: string;
+}) {
   const t = useTranslations("adminAuth");
   const auth = useTranslations("auth");
   const id = useId();
@@ -78,7 +90,12 @@ export function StaffSignUpForm({ token, email, privacyHref, signInHref }: { tok
       <PasswordField id={`${id}-password`} label={auth("password")} autoComplete="new-password" rules error={error === "password" ? t("errors.newPassword") : undefined} />
       <Checkbox id={`${id}-terms`} name="terms" error={error === "terms" ? t("errors.terms") : undefined}>
         {auth.rich("register.terms", {
-          terms: (chunks) => <span className="font-semibold">{chunks}</span>,
+          terms: (chunks) => (
+            <Link href={termsHref} target="_blank" rel="noopener" className="font-semibold text-brand underline underline-offset-3">
+              {chunks}
+              <span className="sr-only"> ({auth("newTab")})</span>
+            </Link>
+          ),
           privacy: (chunks) => (
             <Link href={privacyHref} target="_blank" rel="noopener" className="font-semibold text-brand underline underline-offset-3">
               {chunks}

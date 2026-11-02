@@ -48,7 +48,8 @@ export default async function StaffInvite({ params }: { params: Promise<{ token:
   if (!email) {
     const raw = await getLocale();
     const { origin, host } = await requestOrigin();
-    const privacyHref = marketingOrigin(host, origin.split(":")[0]) + publicHref("privacy", isLocale(raw) ? raw : "hu");
+    const locale = isLocale(raw) ? raw : "hu";
+    const marketing = marketingOrigin(host, origin.split(":")[0]);
     return (
       <AuthLayout badge="ADMIN">
         <PageTitle eyebrow={t("label")}>{t("title")}</PageTitle>
@@ -56,7 +57,8 @@ export default async function StaffInvite({ params }: { params: Promise<{ token:
         <StaffSignUpForm
           token={token}
           email={inv.email}
-          privacyHref={privacyHref}
+          termsHref={marketing + publicHref("terms", locale)}
+          privacyHref={marketing + publicHref("appPrivacy", locale)}
           signInHref={await siteHref("admin", `/login?next=${encodeURIComponent(path)}`)}
         />
       </AuthLayout>
