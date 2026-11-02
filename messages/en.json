@@ -522,15 +522,15 @@
       "home": "Keyfly – home"
     },
     "steps": {
-      "home": "Home",
+      "home": "Property",
       "lease": "Terms",
       "landlord": "Landlord",
       "review": "Review"
     },
     "address": {
-      "title": "Which home is it?",
+      "title": "Which property do you rent?",
       "lead": "Start typing the address and pick it from the list.",
-      "unitTitle": "Add the flat details",
+      "unitTitle": "Add the unit details",
       "unitLead": "Leave empty what isn’t part of the address.",
       "postalCode": "Postcode",
       "city": "City",
@@ -706,7 +706,7 @@
       "todoEmptyText": "When you need to decide, you’ll see it here first.",
       "emptyTitle": "Invite your landlord",
       "emptyText": "Record your lease together on Keyfly. About 2 minutes.",
-      "empty1": "Add the home and the terms",
+      "empty1": "Add the property and the terms",
       "empty1Text": "As they are in your contract.",
       "empty2": "Your landlord approves",
       "empty2Text": "Free, with an email invitation.",

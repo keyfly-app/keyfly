@@ -31,7 +31,7 @@
     "homeLabel": "Keyfly – kezdőlap",
     "titleStart": "Költözz be",
     "titleHighlight": "kaució nélkül.",
-    "lead": "A Keyfly kiváltja a lakásbérlési kauciót. Egyszeri, több százezer forintos letét helyett kis havi díjat fizetsz, a bérbeadód pedig biztosítói fedezetet kap.",
+    "lead": "A Keyfly kiváltja a bérleti kauciót. Egyszeri, több százezer forintos letét helyett kis havi díjat fizetsz, a bérbeadód pedig biztosítói fedezetet kap.",
     "example": {
       "label": "SZÁMPÉLDA",
       "rent": "Bérleti díj",
@@ -522,15 +522,15 @@
       "home": "Keyfly – főoldal"
     },
     "steps": {
-      "home": "Lakás",
+      "home": "Ingatlan",
       "lease": "Feltételek",
       "landlord": "Bérbeadó",
       "review": "Ellenőrzés"
     },
     "address": {
-      "title": "Melyik lakásról van szó?",
+      "title": "Melyik ingatlant béreled?",
       "lead": "Kezdd el beírni a címet, és válaszd ki a listából.",
-      "unitTitle": "Pontosítsd a lakást",
+      "unitTitle": "Pontosítsd a címet",
       "unitLead": "Ami nincs a címben, maradjon üresen.",
       "postalCode": "Irányítószám",
       "city": "Település",
@@ -706,7 +706,7 @@
       "todoEmptyText": "Ha döntésed kell, itt látod elsőként.",
       "emptyTitle": "Hívd meg a bérbeadódat",
       "emptyText": "Rögzítsétek együtt a bérleti szerződést a Keyflyon. Kb. 2 perc.",
-      "empty1": "Megadod a lakást és a feltételeket",
+      "empty1": "Megadod az ingatlant és a feltételeket",
       "empty1Text": "Ahogy a szerződésben szerepel.",
       "empty2": "A bérbeadó jóváhagyja",
       "empty2Text": "Díjmentesen, e-mailes meghívóval.",
