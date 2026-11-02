@@ -8,10 +8,10 @@ export const AUTH_METHODS = {
 } as const;
 
 /**
- * Self-service sign-up. Closed in production until the general terms (ÁSZF) and the app privacy notice are
- * published (see src/config/consent.ts); signing in and password reset keep working for existing accounts.
+ * Self-service sign-up. Open everywhere since 2026-11-02 (Tibi's decision; the ÁSZF is under legal review, see
+ * src/config/consent.ts). Set to `process.env.NEXT_PUBLIC_APP_ENV !== "production"` to close it in production again.
  */
-export const SIGN_UP_OPEN = process.env.NEXT_PUBLIC_APP_ENV !== "production";
+export const SIGN_UP_OPEN: boolean = true;
 
 /** Password rules – keep in sync with Supabase Auth → Password requirements. */
 export const PASSWORD_MIN_LENGTH = 8;
