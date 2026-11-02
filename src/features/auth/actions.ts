@@ -1,5 +1,6 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { getLocale } from "next-intl/server";
@@ -180,6 +181,21 @@ export async function signOut(form: FormData) {
 }
 
 const START_VIEWS: Enums<"start_view">[] = ["tenant", "landlord", "manager"];
+
+export type ViewState = { status: "idle" } | { status: "saved"; view: Enums<"start_view"> } | { status: "error" };
+
+/** Header "Nézet" menu: what Overview shows. Stays on the page; the toast confirms. */
+export async function switchView(_prev: ViewState, form: FormData): Promise<ViewState> {
+  const view = String(form.get("view") ?? "") as Enums<"start_view">;
+  if (!START_VIEWS.includes(view)) return { status: "error" };
+  const supabase = await createClient();
+  const { data } = await supabase.auth.getClaims();
+  if (!data?.claims) return { status: "error" };
+  const { error } = await supabase.from("profiles").update({ start_view: view }).eq("id", data.claims.sub);
+  if (error) return { status: "error" };
+  revalidatePath("/", "layout");
+  return { status: "saved", view };
+}
 
 /** "How will you use Keyfly?" – only picks the start screen. */
 export async function setStartView(form: FormData) {

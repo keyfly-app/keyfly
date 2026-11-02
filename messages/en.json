@@ -389,7 +389,7 @@
     },
     "welcome": {
       "title": "How will you use Keyfly?",
-      "tip": "This only sets your start screen. You can change it any time.",
+      "tip": "This only sets what you see first. You can switch any time from the View icon in the header.",
       "tenant": {
         "title": "Tenant",
         "text": "Keyfly Guarantee instead of a deposit"
@@ -482,7 +482,20 @@
       "forAnotherEmail": "This invitation is for a different email address.",
       "notAllowedForAccount": "You can't accept with this account. Choose an account you own or administer.",
       "generic": "Something went wrong. Please try again."
-    }
+    },
+    "landlord": {
+      "title": "{name} invited you as landlord",
+      "lead": "Review the lease details and approve them. Keyfly is free for landlords.",
+      "property": "Property",
+      "termsLocked": "You’ll see the terms after signing in.",
+      "valid": "The invitation is valid {until}.",
+      "signInTitle": "Sign in to continue",
+      "signInText": "The invitation belongs to this address:",
+      "createAccount": "Create account",
+      "haveAccount": "I have an account – sign in",
+      "notYou": "Don’t know the sender? Ignore this: the invitation expires on its own."
+    },
+    "help": "Need help?"
   },
   "leaseRequest": {
     "homeTitle": "Leases",
@@ -699,39 +712,52 @@
       "noLeases": "Your recorded leases will show up here."
     },
     "landlordSide": {
-      "title": "Take over the lease",
-      "intro": "{name} invited you as landlord.",
+      "title": "Approve the lease",
+      "steps": {
+        "account": "Account and property",
+        "terms": "Terms"
+      },
+      "s1Title": "Where should the lease go?",
+      "s1Lead": "Pick the account that manages it, and whether it’s a new or an existing property.",
       "account": "Account",
       "accountTip": "This account manages the lease. You can choose any account where you’re an owner, admin or manager.",
-      "accountHint": "{plan} · {count, plural, one {# property} other {# properties}}",
+      "accountHint": "{kind, select, company {Company} other {Individual}} · {plan} · {count, plural, one {# property} other {# properties}}",
       "plans": {
         "basic": "Basic",
         "pro": "Pro",
         "business": "Business"
       },
       "property": "Property",
-      "newProperty": "New property",
-      "newPropertyHint": "Using the address the tenant entered",
-      "existingProperty": "Existing property",
-      "existingPropertyHint": "Choose from this account’s properties",
-      "propertySelect": "Which property?",
+      "newProperty": "Add as a new property",
+      "newPropertyHint": "Your tenant entered the address.",
+      "existingProperty": "Link to an existing property",
+      "existingPropertyHint": "Pick one of the account’s properties.",
       "noProperties": "This account has no properties yet.",
-      "toReview": "Continue to review",
-      "decline": "Decline",
-      "reviewTitle": "Check the terms",
-      "reviewLead": "Correct anything that isn’t accurate. If you change something, the tenant approves it too.",
-      "changedNote": "Changed · the tenant entered {value}",
-      "addedNote": "New term · the tenant approves it too",
+      "propertySelect": "Which property?",
+      "propertyPick": "Choose a property",
+      "decline": "Decline the invitation",
+      "declineTitle": "Decline the invitation?",
+      "declineText": "We won’t record the lease, and {name} will be told. This can’t be undone.",
+      "declineConfirm": "Decline",
+      "s2Title": "Check the terms",
+      "s2Lead": "If everything is right, we record the lease at once. If you change anything, {name} has to approve it too.",
+      "tenantSaid": "Tenant: {value}",
+      "changedNote": "Changed · Tenant: {value}",
+      "addedNote": "New term",
+      "changeSum": "{count, plural, one {# change} other {# changes}} · {name} needs to approve",
       "deposit": "Deposit",
-      "paymentDay": "Rent due",
-      "paymentDayNone": "Not specified",
-      "submit": "Approve and send",
+      "paymentDay": "Payment day",
+      "paymentDayNone": "Not set",
+      "approve": "Approve and record",
+      "sendBack": "Send for approval",
       "submitting": "Sending…",
-      "doneTitle": "The lease is set up",
-      "doneText": "{name} is on the lease as tenant.",
-      "sentTitle": "Sent to the tenant",
-      "sentText": "The lease is created once {name} approves it.",
-      "continue": "Go to Keyfly"
+      "railTitle": "Your tenant entered",
+      "railFree": "Free for landlords.",
+      "doneTitle": "The lease is recorded",
+      "doneText": "{name} is on it as the tenant and will be told.",
+      "sentTitle": "Sent for approval",
+      "sentText": "Once {name} accepts the updated terms, we record the lease and let you know.",
+      "continue": "Go to Overview"
     },
     "errors": {
       "required": "Fill in this field.",
@@ -879,14 +905,11 @@
     }
   },
   "portal": {
-    "title": "Home",
-    "greeting": "Hi{name, select, none {} other { {name}}}!",
+    "title": "Overview",
     "intro": {
-      "tenant": "Your leases and to-dos in one place.",
       "landlord": "Soon you'll manage your properties and leases here.",
       "manager": "Soon you'll manage your portfolio and team here."
     },
-    "changeView": "Change start screen",
     "applications": "My quote requests",
     "addressLater": "Address to follow",
     "applicationLine": "{rent} / month · deposit {deposit} · {date}",
@@ -894,7 +917,8 @@
     "coverage": "Coverage: {amount}",
     "perMonth": "month",
     "perYear": "year",
-    "account": "Account"
+    "account": "Account",
+    "summary": "{todos, plural, =0 {Nothing to do} one {# to-do} other {# to-dos}} · {open, plural, =0 {no invitations in progress} one {# invitation in progress} other {# invitations in progress}}"
   },
   "admin": {
     "noAccessTitle": "No access",
@@ -1133,9 +1157,7 @@
     }
   },
   "appFooter": {
-    "navLabel": "Legal information and language",
-    "switchTo": "Switch language:",
-    "otherLanguage": "Magyar"
+    "navLabel": "Legal and contact"
   },
   "emailLayout": {
     "fallback": "Button not working? Paste this link into your browser:",
@@ -1246,5 +1268,32 @@
       "unknown": "Unknown device",
       "on": "{browser} · {os}"
     }
+  },
+  "header": {
+    "view": "View",
+    "viewLead": "What should Overview show?",
+    "viewNote": "This only sets what you see first. Your account and data stay the same.",
+    "viewSaved": "Switched to the {view, select, tenant {tenant} landlord {landlord} other {property manager}} view.",
+    "viewError": "Couldn’t switch. Please try again.",
+    "views": {
+      "tenant": {
+        "title": "Tenant",
+        "text": "Your leases, invitations and to-dos"
+      },
+      "landlord": {
+        "title": "Landlord",
+        "text": "Your properties, tenants and leases"
+      },
+      "manager": {
+        "title": "Property manager",
+        "text": "Portfolio and team"
+      }
+    },
+    "language": "Language",
+    "languageNames": {
+      "hu": "Magyar",
+      "en": "English"
+    },
+    "close": "Close"
   }
 }

@@ -389,7 +389,7 @@
     },
     "welcome": {
       "title": "Hogyan használod a Keyflyt?",
-      "tip": "Ez csak a kezdőképernyőt állítja be, később bármikor módosíthatod.",
+      "tip": "Ez csak azt állítja be, mit látsz elsőként. Később a fejlécben, a Nézet ikonnál bármikor válthatsz.",
       "tenant": {
         "title": "Bérlő",
         "text": "Keyfly-garancia kaució helyett"
@@ -482,7 +482,20 @@
       "forAnotherEmail": "Ez a meghívó egy másik e-mail-címre szól.",
       "notAllowedForAccount": "Ezzel a fiókkal nem fogadhatod el. Olyan fiókot válassz, amelynek tulajdonosa vagy adminja vagy.",
       "generic": "Valami nem sikerült. Próbáld újra."
-    }
+    },
+    "landlord": {
+      "title": "{name} meghívott bérbeadóként",
+      "lead": "Nézd át a bérleti szerződés adatait, és hagyd jóvá. A Keyfly a bérbeadóknak díjmentes.",
+      "property": "Ingatlan",
+      "termsLocked": "A feltételeket belépés után látod.",
+      "valid": "A meghívó {until} érvényes.",
+      "signInTitle": "Folytatáshoz lépj be",
+      "signInText": "A meghívó ehhez a címhez tartozik:",
+      "createAccount": "Fiók létrehozása",
+      "haveAccount": "Már van fiókom – belépés",
+      "notYou": "Nem tudod, ki küldte? Hagyd figyelmen kívül: a meghívó magától lejár."
+    },
+    "help": "Segítség kell?"
   },
   "leaseRequest": {
     "homeTitle": "Bérleti szerződések",
@@ -699,39 +712,52 @@
       "noLeases": "Itt látod majd a rögzített bérleti szerződéseidet."
     },
     "landlordSide": {
-      "title": "Bérleti szerződés jóváhagyása",
-      "intro": "{name} meghívott bérbeadóként.",
+      "title": "Szerződés jóváhagyása",
+      "steps": {
+        "account": "Fiók és ingatlan",
+        "terms": "Feltételek"
+      },
+      "s1Title": "Hová kerüljön a szerződés?",
+      "s1Lead": "Válaszd ki a fiókot, amelyik kezeli, és hogy új vagy meglévő ingatlanról van-e szó.",
       "account": "Fiók",
       "accountTip": "Ez a fiók kezeli a szerződést. Olyan fiókot választhatsz, amelyben tulajdonos, admin vagy kezelő vagy.",
-      "accountHint": "{plan} · {count} ingatlan",
+      "accountHint": "{kind, select, company {Cég} other {Magánszemély}} · {plan} · {count} ingatlan",
       "plans": {
         "basic": "Alap",
         "pro": "Pro",
         "business": "Business"
       },
       "property": "Ingatlan",
-      "newProperty": "Új ingatlan",
-      "newPropertyHint": "A bérlő által megadott címmel",
-      "existingProperty": "Meglévő ingatlan",
-      "existingPropertyHint": "Válassz a fiók ingatlanjai közül",
-      "propertySelect": "Melyik ingatlan?",
+      "newProperty": "Új ingatlanként veszem fel",
+      "newPropertyHint": "A címet a bérlő adta meg.",
+      "existingProperty": "Meglévő ingatlanhoz kapcsolom",
+      "existingPropertyHint": "Válassz a fiók ingatlanjai közül.",
       "noProperties": "Ebben a fiókban még nincs ingatlan.",
-      "toReview": "Tovább az ellenőrzéshez",
-      "decline": "Elutasítás",
-      "reviewTitle": "Feltételek ellenőrzése",
-      "reviewLead": "Javítsd, ami nem pontos. Ha módosítasz, a bérlő is jóváhagyja.",
-      "changedNote": "Módosítva · a bérlő ezt adta meg: {value}",
-      "addedNote": "Új feltétel · a bérlő is jóváhagyja",
+      "propertySelect": "Melyik ingatlan?",
+      "propertyPick": "Válassz ingatlant",
+      "decline": "Elutasítom a meghívót",
+      "declineTitle": "Elutasítod a meghívót?",
+      "declineText": "A szerződést nem rögzítjük, és {name} értesítést kap. Ezt nem lehet visszavonni.",
+      "declineConfirm": "Elutasítás",
+      "s2Title": "Ellenőrizd a feltételeket",
+      "s2Lead": "Ha minden stimmel, azonnal rögzítjük. Ha módosítasz valamit, {name} jóváhagyása is kell.",
+      "tenantSaid": "Bérlő: {value}",
+      "changedNote": "Módosítva · Bérlő: {value}",
+      "addedNote": "Új feltétel",
+      "changeSum": "{count} módosítás · {name} jóváhagyása szükséges",
       "deposit": "Kaució",
-      "paymentDay": "Fizetési határidő",
+      "paymentDay": "Fizetési nap",
       "paymentDayNone": "Nincs megadva",
-      "submit": "Jóváhagyás és küldés",
+      "approve": "Jóváhagyás és rögzítés",
+      "sendBack": "Elküldés jóváhagyásra",
       "submitting": "Küldés…",
+      "railTitle": "A bérlő ezt adta meg",
+      "railFree": "A bérbeadóknak díjmentes.",
       "doneTitle": "Rögzítettük a szerződést",
-      "doneText": "{name} bérlőként szerepel a szerződésben.",
-      "sentTitle": "Elküldtük a bérlőnek",
-      "sentText": "A szerződést {name} jóváhagyása után rögzítjük.",
-      "continue": "Tovább a Keyflyba"
+      "doneText": "{name} bérlőként szerepel benne, és értesítést kap.",
+      "sentTitle": "Elküldtük jóváhagyásra",
+      "sentText": "Ha {name} elfogadja a módosított feltételeket, rögzítjük a szerződést, és értesítünk.",
+      "continue": "Tovább a kezdőlapra"
     },
     "errors": {
       "required": "Töltsd ki ezt a mezőt.",
@@ -879,14 +905,11 @@
     }
   },
   "portal": {
-    "title": "Kezdőlap",
-    "greeting": "Szia{name, select, none {} other {, {name}}}!",
+    "title": "Áttekintés",
     "intro": {
-      "tenant": "Szerződéseid és teendőid egy helyen.",
       "landlord": "Hamarosan itt kezelheted az ingatlanjaidat és a bérleti szerződéseidet.",
       "manager": "Hamarosan itt kezelheted a portfóliót és a csapatot."
     },
-    "changeView": "Kezdőképernyő módosítása",
     "applications": "Ajánlatkéréseim",
     "addressLater": "Cím később",
     "applicationLine": "{rent} / hó · kaució {deposit} · {date}",
@@ -894,7 +917,8 @@
     "coverage": "Fedezet: {amount}",
     "perMonth": "hó",
     "perYear": "év",
-    "account": "Fiók"
+    "account": "Fiók",
+    "summary": "{todos, plural, =0 {Nincs teendőd} other {# teendő}} · {open, plural, =0 {nincs folyamatban lévő meghívó} other {# meghívó folyamatban}}"
   },
   "admin": {
     "noAccessTitle": "Nincs hozzáférésed",
@@ -1133,9 +1157,7 @@
     }
   },
   "appFooter": {
-    "navLabel": "Jogi információk és nyelv",
-    "switchTo": "Nyelv váltása:",
-    "otherLanguage": "English"
+    "navLabel": "Jogi információk és kapcsolat"
   },
   "emailLayout": {
     "fallback": "Nem működik a gomb? Másold be ezt a linket a böngésződbe:",
@@ -1246,5 +1268,32 @@
       "unknown": "Ismeretlen eszköz",
       "on": "{browser} · {os}"
     }
+  },
+  "header": {
+    "view": "Nézet",
+    "viewLead": "Mit mutasson az Áttekintés?",
+    "viewNote": "Csak azt állítja be, mit látsz elsőként. A fiókod és az adataid nem változnak.",
+    "viewSaved": "{view, select, tenant {Bérlői} landlord {Bérbeadói} other {Ingatlankezelői}} nézetre váltottál.",
+    "viewError": "Nem sikerült váltani. Próbáld újra.",
+    "views": {
+      "tenant": {
+        "title": "Bérlő",
+        "text": "Szerződéseid, meghívóid és teendőid"
+      },
+      "landlord": {
+        "title": "Bérbeadó",
+        "text": "Ingatlanjaid, bérlőid és szerződéseid"
+      },
+      "manager": {
+        "title": "Ingatlankezelő",
+        "text": "Portfólió és csapat"
+      }
+    },
+    "language": "Nyelv",
+    "languageNames": {
+      "hu": "Magyar",
+      "en": "English"
+    },
+    "close": "Bezárás"
   }
 }

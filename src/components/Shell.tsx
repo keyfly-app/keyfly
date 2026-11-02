@@ -1,14 +1,14 @@
 import { Suspense } from "react";
 import Link from "next/link";
-import { getLocale, getTranslations } from "next-intl/server";
+import { getTranslations } from "next-intl/server";
 import { AppFooter } from "@/components/AppFooter";
 import { LogoFull } from "@/components/Logo";
 import { UserMenu } from "@/components/UserMenu";
 import { Avatar } from "@/components/ui/Avatar";
 import { CONTACT } from "@/config/company";
-import { LanguageToggle } from "@/features/language/LanguageToggle";
+import { LanguageMenu } from "@/features/language/LanguageMenu";
 import { currentUser } from "@/features/settings/current-user";
-import { isLocale } from "@/i18n/config";
+import { ViewMenu } from "@/features/view/ViewMenu";
 import { siteHref } from "@/lib/site-href";
 import type { AppSite } from "@/lib/sites";
 
@@ -18,9 +18,8 @@ import type { AppSite } from "@/lib/sites";
  * The account is the personal one until company accounts arrive; then this label becomes the switcher.
  */
 export async function Shell({ site, children }: { site: AppSite; children: React.ReactNode }) {
-  const [t, user, raw] = await Promise.all([getTranslations("settings"), currentUser(), getLocale()]);
+  const [t, user] = await Promise.all([getTranslations("settings"), currentUser()]);
   const common = await getTranslations("common");
-  const locale = isLocale(raw) ? raw : "hu";
   const [home, profile, devices] = await Promise.all([siteHref(site, "/"), siteHref(site, "/settings/profile"), siteHref(site, "/settings/devices")]);
   return (
     <div className="flex min-h-dvh flex-col bg-paper">
@@ -43,10 +42,12 @@ export async function Shell({ site, children }: { site: AppSite; children: React
               </>
             )}
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1">
+            {user && site === "portal" && user.startView && <ViewMenu current={user.startView} />}
             <Suspense>
-              <LanguageToggle to={locale === "hu" ? "en" : "hu"} />
+              <LanguageMenu />
             </Suspense>
+            {user && <span aria-hidden="true" className="mx-1 h-6 w-px bg-line sm:mx-2" />}
             {user && (
               <UserMenu
                 site={site}

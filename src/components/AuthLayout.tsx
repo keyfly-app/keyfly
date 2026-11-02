@@ -1,11 +1,10 @@
 import { Suspense } from "react";
 import Link from "next/link";
-import { getLocale, getTranslations } from "next-intl/server";
+import { getTranslations } from "next-intl/server";
 import { AppFooter } from "@/components/AppFooter";
 import { Icon } from "@/components/Icon";
 import { LogoFull } from "@/components/Logo";
-import { LanguageToggle } from "@/features/language/LanguageToggle";
-import { isLocale } from "@/i18n/config";
+import { LanguageMenu } from "@/features/language/LanguageMenu";
 
 /** Phone: plain white page. From 640 px: the App v2.2 card (same look as CARD_CLASS). */
 const AUTH_CARD =
@@ -34,8 +33,6 @@ export async function AuthLayout({
 }) {
   const t = await getTranslations("common");
   const admin = await getTranslations("adminAuth");
-  const raw = await getLocale();
-  const locale = isLocale(raw) ? raw : "hu";
   return (
     <div className="flex min-h-dvh flex-col bg-surface sm:bg-paper">
       <header className="flex h-14 items-center justify-between gap-4 px-4 sm:h-16 sm:px-8">
@@ -59,7 +56,7 @@ export async function AuthLayout({
             </span>
           )}
           <Suspense>
-            <LanguageToggle to={locale === "hu" ? "en" : "hu"} />
+            <LanguageMenu />
           </Suspense>
         </div>
       </header>

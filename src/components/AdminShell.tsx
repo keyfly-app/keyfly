@@ -1,13 +1,12 @@
 import { Suspense } from "react";
 import Link from "next/link";
-import { getLocale, getTranslations } from "next-intl/server";
+import { getTranslations } from "next-intl/server";
 import { AdminBadge } from "@/components/AuthLayout";
 import { AppFooter } from "@/components/AppFooter";
 import { Icon, type IconName } from "@/components/Icon";
 import { LogoFull } from "@/components/Logo";
 import { signOut } from "@/features/auth/actions";
-import { LanguageToggle } from "@/features/language/LanguageToggle";
-import { isLocale } from "@/i18n/config";
+import { LanguageMenu } from "@/features/language/LanguageMenu";
 import { siteHref } from "@/lib/site-href";
 
 type NavKey = "overview" | "staff";
@@ -36,8 +35,6 @@ export async function AdminShell({
   const auth = await getTranslations("adminAuth");
   const staff = await getTranslations("adminStaff");
   const common = await getTranslations("common");
-  const raw = await getLocale();
-  const locale = isLocale(raw) ? raw : "hu";
   const items: { key: NavKey; icon: IconName; label: string; href: string }[] = [
     { key: "overview", icon: "home", label: t("overview"), href: await siteHref("admin", "/") },
     ...(superadmin ? [{ key: "staff" as const, icon: "users" as const, label: staff("nav"), href: await siteHref("admin", "/staff") }] : []),
@@ -100,7 +97,7 @@ export async function AdminShell({
           <div className="flex items-center gap-2.5">
             {actions}
             <Suspense>
-              <LanguageToggle to={locale === "hu" ? "en" : "hu"} />
+              <LanguageMenu />
             </Suspense>
             <form action={signOut} className="md:hidden">
               <input type="hidden" name="site" value="admin" />

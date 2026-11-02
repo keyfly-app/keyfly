@@ -1,5 +1,6 @@
 import "server-only";
 import { cache } from "react";
+import type { Enums } from "@/lib/supabase/database.types";
 import { createClient } from "@/lib/supabase/server";
 
 export type CurrentUser = {
@@ -14,6 +15,8 @@ export type CurrentUser = {
   avatarUrl: string | null;
   avatarPath: string | null;
   passwordChangedAt: string | null;
+  /** What Overview shows ("Nézet"); null until the first-use question is answered. */
+  startView: Enums<"start_view"> | null;
 };
 
 /** "Kovács Anna" → "KA"; falls back to the email's first letters. */
@@ -36,7 +39,7 @@ export const currentUser = cache(async (): Promise<CurrentUser | null> => {
   if (!user?.email) return null;
   const { data: profile } = await supabase
     .from("profiles")
-    .select("full_name, phone, avatar_path, password_changed_at")
+    .select("full_name, phone, avatar_path, password_changed_at, start_view")
     .eq("id", user.id)
     .maybeSingle();
   const avatarPath = profile?.avatar_path ?? null;
@@ -51,5 +54,6 @@ export const currentUser = cache(async (): Promise<CurrentUser | null> => {
     avatarUrl: signed?.signedUrl ?? null,
     avatarPath,
     passwordChangedAt: profile?.password_changed_at ?? null,
+    startView: profile?.start_view ?? null,
   };
 });

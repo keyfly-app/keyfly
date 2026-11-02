@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import { getLocale, getTranslations } from "next-intl/server";
 import { Shell } from "@/components/Shell";
 import { Icon } from "@/components/Icon";
-import { ButtonLink, TextLink } from "@/components/ui/form";
+import { ButtonLink } from "@/components/ui/form";
 import { Tag } from "@/components/ui/Tag";
 import { TenantHome, type HomeCard } from "@/features/lease-requests/TenantHome";
 import { isLocale } from "@/i18n/config";
@@ -24,7 +24,7 @@ export default async function PortalHome() {
   const supabase = await createClient();
   const { data: claims } = await supabase.auth.getClaims();
   if (!claims) redirect(await siteHref("portal", "/login"));
-  const { data: profile } = await supabase.from("profiles").select("full_name, email, start_view").eq("id", claims.claims.sub).single();
+  const { data: profile } = await supabase.from("profiles").select("start_view").eq("id", claims.claims.sub).single();
   // First visit: ask how they use Keyfly (sets the start screen only).
   if (!profile?.start_view) redirect(await siteHref("portal", "/welcome"));
   const view = profile.start_view;
@@ -49,7 +49,7 @@ export default async function PortalHome() {
       : Promise.resolve({ data: null }),
   ]);
   const lr = await getTranslations("leaseRequest");
-  const [newRequestHref, changeViewHref] = await Promise.all([siteHref("portal", "/lease-requests/new"), siteHref("portal", "/welcome")]);
+  const newRequestHref = await siteHref("portal", "/lease-requests/new");
   const now = new Date();
   const cards: HomeCard[] = await Promise.all(
     (requests ?? []).map(async (r) => {
@@ -74,20 +74,19 @@ export default async function PortalHome() {
       };
     }),
   );
-  // Hungarian names are "Family Given": greet with the last word; English with the first.
-  const parts = profile.full_name?.trim().split(/\s+/) ?? [];
-  const name = (locale === "hu" ? parts.at(-1) : parts[0]) ?? "none";
   const tenant = view === "tenant";
   const empty = tenant && cards.length === 0;
+  // Live summary under the title (canvas "Fejléc ikonok"): to-dos and invitations still open.
+  const todos = cards.filter((c) => c.status === "pending_tenant" || (c.status === "expired" && c.canResend)).length;
+  const open = cards.filter((c) => c.status === "pending_landlord" || c.status === "expired" || c.status === "pending_tenant").length;
 
   return (
     <Shell site="portal">
       <div className="flex flex-col gap-6">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div className="flex flex-col gap-1">
-            <h1 className="font-display text-[22px] leading-7 font-semibold sm:text-[26px] sm:leading-8">{t("greeting", { name })}</h1>
-            <p className="text-sm text-muted">{t(`intro.${view}`)}</p>
-            <TextLink href={changeViewHref}>{t("changeView")}</TextLink>
+            <h1 className="font-display text-[22px] leading-7 font-semibold sm:text-[26px] sm:leading-8">{t("title")}</h1>
+            <p className="text-sm text-muted">{tenant ? t("summary", { todos, open }) : t(`intro.${view}`)}</p>
           </div>
           {tenant && !empty && (
             <ButtonLink href={newRequestHref} fit>

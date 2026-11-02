@@ -1341,6 +1341,20 @@ export type Database = {
       }
       decline_invitation: { Args: { p_token: string }; Returns: undefined }
       end_my_session: { Args: { p_session_id: string }; Returns: boolean }
+      invitation_teaser: {
+        Args: { p_token: string }
+        Returns: {
+          city: string
+          expires_at: string
+          house_number: string
+          inviter_name: string
+          is_open: boolean
+          kind: Database["public"]["Enums"]["invitation_kind"]
+          masked_email: string
+          postal_code: string
+          street: string
+        }[]
+      }
       invitation_preview: {
         Args: { p_token: string }
         Returns: {

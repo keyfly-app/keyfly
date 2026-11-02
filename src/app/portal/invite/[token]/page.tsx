@@ -1,13 +1,16 @@
 import type { Metadata } from "next";
 import { getLocale, getTranslations } from "next-intl/server";
 import { AuthLayout } from "@/components/AuthLayout";
+import { Icon } from "@/components/Icon";
+import { CONTACT } from "@/config/company";
 import { SIGN_UP_OPEN } from "@/config/auth";
 import { Button, ButtonLink, Notice, PageTitle } from "@/components/ui/form";
 import { signOut } from "@/features/auth/actions";
 import { AnswerForm, type CompanyAccount } from "@/features/invitations/AnswerForm";
+import { LandlordInviteLanding } from "@/features/invitations/LandlordInviteLanding";
 import { LandlordTakeOver, type LandlordAccount, type LandlordProperty } from "@/features/lease-requests/LandlordTakeOver";
 import { isLocale } from "@/i18n/config";
-import { ADDRESS_COLUMNS, addressFromRow, streetLine } from "@/lib/address";
+import { ADDRESS_COLUMNS, addressFromRow, cityLine, streetLine } from "@/lib/address";
 import { date, dateBeforeSuffix, money, sentence } from "@/lib/format";
 import { siteHref } from "@/lib/site-href";
 import { createClient } from "@/lib/supabase/server";
@@ -30,10 +33,17 @@ export default async function Invite({ params }: { params: Promise<{ token: stri
   const { data: auth } = await supabase.auth.getClaims();
 
   if (!auth?.claims) {
-    const [loginHref, registerHref] = await Promise.all([
+    const [loginHref, registerHref, { data: teasers }] = await Promise.all([
       siteHref("portal", `/login?next=${encodeURIComponent(path)}`),
       siteHref("portal", `/register?next=${encodeURIComponent(path)}`),
+      supabase.rpc("invitation_teaser", { p_token: token }),
     ]);
+    const teaser = teasers?.[0];
+    if (teaser && !teaser.is_open) return <ClosedInvitation homeHref={await siteHref("portal", "/")} />;
+    // A landlord invitation shows who invited and which home before sign-in (canvas "Bérbeadó – meghívó").
+    if (teaser?.kind === "lease_landlord" && teaser.inviter_name && teaser.street) {
+      return <LandlordInviteLanding teaser={teaser} loginHref={loginHref} registerHref={registerHref} />;
+    }
     return (
       <AuthLayout>
         <PageTitle eyebrow={t("label")} sub={t("signedOut.text")}>{t("signedOut.title")}</PageTitle>
@@ -54,14 +64,7 @@ export default async function Invite({ params }: { params: Promise<{ token: stri
   const homeHref = await siteHref("portal", "/");
 
   if (!inv || !inv.is_open) {
-    return (
-      <AuthLayout>
-        <PageTitle eyebrow={t("label")} sub={t("closed.text")}>{t("closed.title")}</PageTitle>
-        <div className="pt-1">
-          <ButtonLink href={homeHref}>{t("declined.continue")}</ButtonLink>
-        </div>
-      </AuthLayout>
-    );
+    return <ClosedInvitation homeHref={homeHref} />;
   }
 
   if (!inv.is_for_me) {
@@ -86,44 +89,36 @@ export default async function Invite({ params }: { params: Promise<{ token: stri
       supabase.rpc("lease_request_preview", { p_token: token }),
       supabase
         .from("account_members")
-        .select(`role, property_scope, accounts!inner(id, name, plan, archived_at, properties(id, archived_at, ${ADDRESS_COLUMNS}))`)
+        .select(`role, property_scope, accounts!inner(id, name, kind, plan, archived_at, properties(id, archived_at, ${ADDRESS_COLUMNS}))`)
         .eq("user_id", auth.claims.sub)
         .in("role", ["owner", "admin", "manager"])
         .is("accounts.archived_at", null),
     ]);
     const request = details?.[0];
     if (!request) {
-      return (
-        <AuthLayout>
-          <PageTitle eyebrow={t("label")} sub={t("closed.text")}>{t("closed.title")}</PageTitle>
-          <div className="pt-1">
-            <ButtonLink href={homeHref}>{t("declined.continue")}</ButtonLink>
-          </div>
-        </AuthLayout>
-      );
+      return <ClosedInvitation homeHref={homeHref} />;
     }
     // Properties come back through RLS: a manager with a selected scope only sees (and may only link) those.
     const accounts: LandlordAccount[] = [];
     const properties: LandlordProperty[] = [];
     for (const m of memberships ?? []) {
       const live = m.accounts.properties.filter((p) => !p.archived_at);
-      accounts.push({ id: m.accounts.id, name: m.accounts.name, plan: m.accounts.plan, propertyCount: live.length });
+      accounts.push({ id: m.accounts.id, name: m.accounts.name, kind: m.accounts.kind, plan: m.accounts.plan, propertyCount: live.length });
       for (const p of live) properties.push({ id: p.id, accountId: m.accounts.id, label: streetLine(addressFromRow(p)) });
     }
+    const place = addressFromRow(request);
     return (
-      <AuthLayout>
-        <LandlordTakeOver
-          token={token}
-          requestId={request.request_id}
-          tenantName={request.tenant_name}
-          address={streetLine(addressFromRow(request))}
-          proposed={{ startDate: request.start_date, endDate: request.end_date, monthlyRent: request.monthly_rent, deposit: request.deposit_amount }}
-          accounts={accounts}
-          properties={properties}
-          validUntil={dateBeforeSuffix(inv.expires_at, locale)}
-          homeHref={homeHref}
-        />
-      </AuthLayout>
+      <LandlordTakeOver
+        token={token}
+        requestId={request.request_id}
+        tenantName={request.tenant_name}
+        street={streetLine(place)}
+        city={cityLine(place)}
+        proposed={{ startDate: request.start_date, endDate: request.end_date, monthlyRent: request.monthly_rent, deposit: request.deposit_amount }}
+        accounts={accounts}
+        properties={properties}
+        homeHref={homeHref}
+      />
     );
   }
 
@@ -169,6 +164,28 @@ export default async function Invite({ params }: { params: Promise<{ token: stri
         </dl>
       )}
       <AnswerForm token={token} companies={companies} validUntil={dateBeforeSuffix(inv.expires_at, locale)} homeHref={homeHref} />
+    </AuthLayout>
+  );
+}
+
+/** Expired, withdrawn or already used (canvas "Meghívó érvénytelen"). */
+async function ClosedInvitation({ homeHref }: { homeHref: string }) {
+  const t = await getTranslations("invite");
+  return (
+    <AuthLayout>
+      <span aria-hidden="true" className="flex size-12 items-center justify-center rounded-full bg-paper text-muted">
+        <Icon name="clock" size={22} strokeWidth={2} />
+      </span>
+      <PageTitle sub={t("closed.text")}>{t("closed.title")}</PageTitle>
+      <ButtonLink href={homeHref} variant="secondary">
+        {t("declined.continue")}
+      </ButtonLink>
+      <p className="text-[13px] text-muted">
+        {t("help")}{" "}
+        <a href={`mailto:${CONTACT.support}`} className="font-semibold text-brand hover:underline">
+          {CONTACT.support}
+        </a>
+      </p>
     </AuthLayout>
   );
 }

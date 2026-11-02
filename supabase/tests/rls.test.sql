@@ -385,6 +385,13 @@ select tests.throws($$select public.revoke_invitation((select id from public.inv
 select tests.throws($$insert into public.lease_requests (tenant_account_id, postal_code, city, street_name, street_type, house_number, start_date, monthly_rent, landlord_email) values ((select id from fx where name = 'acc_gabor'), '1068', 'Budapest', 'X', 'utca', '1.', current_date, 1, 'x@example.com')$$, 'requests are created only through the function');
 select tests.throws($$update public.lease_requests set monthly_rent = 1$$, 'the tenant cannot edit a sent request');
 
+grant select on req to anon;
+select tests.act_as(null);
+select tests.ok((select is_open and kind = 'lease_landlord' and inviter_name = 'gabor' and street = 'Dózsa György út' and house_number = '30.' and postal_code = '1068'
+                 from public.invitation_teaser((select token from req))), 'the signed-out landing shows who invited and which home');
+select tests.ok((select masked_email = 'p•••@example.com' from public.invitation_teaser((select token from req))), 'the teaser masks the address');
+select tests.ok((select count(*) from public.invitation_teaser('not-a-token')) = 0, 'an unknown link shows nothing');
+
 select tests.act_as('00000000-0000-0000-0000-0000000000a1');
 select tests.ok((select count(*) from public.lease_requests) = 0, 'others cannot see the request');
 select tests.ok((select not is_for_me and property_address is null and monthly_rent is null from public.invitation_preview((select token from req))), 'the preview shows others no details');
@@ -411,6 +418,8 @@ select tests.ok((select count(*) from public.properties p join public.leases l o
                    and p.account_id = (select id from fx where name = 'acc_peter')) = 1, 'the property is created from the tenant''s address');
 select tests.ok((select count(*) from public.lease_parties where lease_id = (select lease_id from took)) = 2, 'both parties are recorded');
 select tests.throws($$select public.accept_landlord_invitation((select token from req), (select id from fx where name = 'acc_peter'), current_date + 30, 280000)$$, 'the link works once');
+select tests.act_as(null);
+select tests.ok((select not is_open and inviter_name is null and street is null from public.invitation_teaser((select token from req))), 'a used link shows no details');
 
 select tests.act_as('00000000-0000-0000-0000-0000000000f3');
 select tests.ok((select status from public.lease_requests) = 'confirmed', 'the tenant sees the request confirmed');
