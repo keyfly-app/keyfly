@@ -73,6 +73,7 @@ export function NewPasswordForm({ site = "portal" }: { site?: AppSite }) {
         error={error === "password" ? t("errors.password") : undefined}
       />
       {(error === "samePassword" || error === "generic") && <Notice kind="error">{t(`errors.${error}`)}</Notice>}
+      {error === "resetExpired" && <Notice kind="warning">{t("linkExpired")}</Notice>}
       <Button pending={pending}>{pending ? t("reset.submitting") : t("reset.submit")}</Button>
     </form>
   );

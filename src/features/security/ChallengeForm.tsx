@@ -26,9 +26,10 @@ const LINK = "inline-flex min-h-11 items-center gap-1.5 text-sm font-semibold un
 /**
  * Sign-in, step 2 (canvas "Belépés – kétlépcsős kód", v2.4 "Kétlépcsős azonosítás – app vagy e-mail"): the code from
  * the authenticator app, centred; without the phone a code by email (5 minutes) or a backup code. A full code signs
- * in by itself. "Ezen az eszközön 30 napig ne kérjen kódot" (unticked) is offered with the app's code only.
+ * in by itself. "Ezen az eszközön 30 napig ne kérjen kódot" (unticked) is offered with the app's code only. During a
+ * password reset (`reset`) the lead says so and no code goes by email.
  */
-export function ChallengeForm({ next, emailTo }: { next: string; emailTo: string | null }) {
+export function ChallengeForm({ next, emailTo, reset = false }: { next: string; emailTo: string | null; reset?: boolean }) {
   const t = useTranslations("security.challenge");
   const id = useId();
   const form = useRef<HTMLFormElement>(null);
@@ -59,7 +60,7 @@ export function ChallengeForm({ next, emailTo }: { next: string; emailTo: string
   const codeError = mailError === "format" || mailError === "code" || mailError === "expired" ? t(`emailErrors.${mailError}`) : undefined;
   const otherError = mailError && !codeError ? t(`emailErrors.${mailError}`) : null;
 
-  const lead = mode === "app" ? t("lead") : mode === "backup" ? t("backupLead") : t("emailLead", { email: emailTo ?? "" });
+  const lead = mode === "app" ? t(reset ? "resetLead" : "lead") : mode === "backup" ? t("backupLead") : t("emailLead", { email: emailTo ?? "" });
   return (
     <div className="flex flex-col items-center gap-5 text-center">
       <span aria-hidden="true" className="flex size-[52px] items-center justify-center rounded-2xl bg-mist text-brand">

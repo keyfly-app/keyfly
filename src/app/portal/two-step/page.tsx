@@ -4,6 +4,7 @@ import { getTranslations } from "next-intl/server";
 import { AuthLayout } from "@/components/AuthLayout";
 import { signOut } from "@/features/auth/actions";
 import { ChallengeForm } from "@/features/security/ChallengeForm";
+import { hasResetPass } from "@/lib/reset-pass";
 import { safeNext } from "@/lib/safe-next";
 import { siteHref } from "@/lib/site-href";
 import { createClient } from "@/lib/supabase/server";
@@ -17,7 +18,9 @@ export async function generateMetadata(): Promise<Metadata> {
 
 /** Sign-in, step 2 for people who turned on two-step verification (the proxy sends them here until it is done). */
 export default async function TwoStep({ searchParams }: { searchParams: Promise<{ next?: string }> }) {
-  const next = safeNext((await searchParams).next);
+  // Right after a password-reset link the code leads on to the new password, whatever page was asked for.
+  const reset = await hasResetPass();
+  const next = reset ? "/reset-password" : safeNext((await searchParams).next);
   const supabase = await createClient();
   const { data: auth } = await supabase.auth.getClaims();
   if (!auth?.claims) redirect(await siteHref("portal", "/login"));
@@ -33,10 +36,11 @@ export default async function TwoStep({ searchParams }: { searchParams: Promise<
   ]);
   const email = String(auth.claims.email ?? "");
   // "k•••@gmail.com": enough to recognise the mailbox, not the whole address.
-  const emailTo = profile?.two_step_email && email.includes("@") ? `${email[0]}•••@${email.split("@")[1]}` : null;
+  // Not during a password reset: the link came by email, so a code by email would not be a second factor.
+  const emailTo = !reset && profile?.two_step_email && email.includes("@") ? `${email[0]}•••@${email.split("@")[1]}` : null;
   return (
     <AuthLayout>
-      <ChallengeForm next={next} emailTo={emailTo} />
+      <ChallengeForm next={next} emailTo={emailTo} reset={reset} />
       <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 border-t border-line pt-4 text-[12.5px] text-muted">
         <span className="min-w-0 [overflow-wrap:anywhere]">{t("signedInAs", { email })}</span>
         <form action={signOut}>

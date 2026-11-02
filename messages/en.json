@@ -383,7 +383,8 @@
       "title": "Set a new password",
       "password": "New password",
       "submit": "Save password",
-      "submitting": "Saving…"
+      "submitting": "Saving…",
+      "again": "Request a new link"
     },
     "welcome": {
       "title": "How will you use Keyfly?",
@@ -1938,7 +1939,8 @@
         "off": "Codes by email are turned off for this account.",
         "send": "We couldn’t send the email. Try again in a minute.",
         "generic": "Something went wrong. Try again."
-      }
+      },
+      "resetLead": "To continue resetting your password, enter the 6-digit code from your authenticator app."
     },
     "setup": {
       "title": "Two-step verification",

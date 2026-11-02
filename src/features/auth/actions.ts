@@ -8,6 +8,7 @@ import { SIGN_UP_OPEN } from "@/config/auth";
 import { CONSENT_VERSIONS } from "@/config/consent";
 import { isLocale } from "@/i18n/config";
 import { requestOrigin } from "@/lib/request-origin";
+import { clearResetPass, hasResetPass } from "@/lib/reset-pass";
 import { safeNext } from "@/lib/safe-next";
 import { isHuman } from "@/lib/turnstile";
 import { hrefFor, type AppSite } from "@/lib/sites";
@@ -22,7 +23,7 @@ import { PENDING_EMAIL_COOKIE, pendingEmail } from "./pending-email";
 
 const EMAIL_RE = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
 
-export type FormError = "email" | "password" | "name" | "terms" | "credentials" | "unconfirmed" | "noAccount" | "samePassword" | "rateLimit" | "captcha" | "generic";
+export type FormError = "email" | "password" | "name" | "terms" | "credentials" | "unconfirmed" | "noAccount" | "samePassword" | "rateLimit" | "captcha" | "resetExpired" | "generic";
 export type FormState = { status: "idle" } | { status: "sent" } | { status: "error"; error: FormError; email?: string };
 
 const site = (form: FormData): AppSite => (form.get("site") === "admin" ? "admin" : "portal");
@@ -207,6 +208,8 @@ export async function requestPasswordReset(_prev: FormState, form: FormData): Pr
 export async function updatePassword(_prev: FormState, form: FormData): Promise<FormState> {
   const password = String(form.get("password") ?? "");
   if (!isValidPassword(password)) return { status: "error", error: "password" };
+  // Only right after a verified reset link; elsewhere the password changes with the current one (Settings).
+  if (!(await hasResetPass())) return { status: "error", error: "resetExpired" };
   const { error } = await (await createAuthClient()).auth.updateUser({ password });
   if (error) {
     if (error.code === "same_password") return { status: "error", error: "samePassword" };
@@ -214,6 +217,7 @@ export async function updatePassword(_prev: FormState, form: FormData): Promise<
     console.error("password update failed", error.code);
     return { status: "error", error: "generic" };
   }
+  await clearResetPass();
   await forgetTrustedDevices(await createClient());
   return goTo(site(form), "/");
 }

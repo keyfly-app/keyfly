@@ -120,7 +120,7 @@ export function TermsContent({ locale }: { locale: Locale }) {
         </p>
         <p>3.4. A Fiókban végzett műveleteket – ellenkező bizonyításig – a Fiók tulajdonosának tulajdonítjuk.</p>
         <p>
-          3.5. A Keyfly munkatársai kizárólag kétlépcsős azonosítással (2FA), a szolgáltatás nyújtásához, ügyfélszolgálathoz, panasz- vagy
+          3.5. A Keyfly munkatársai kizárólag kétlépcsős azonosítással, a szolgáltatás nyújtásához, ügyfélszolgálathoz, panasz- vagy
           kárügyintézéshez, illetve jogszabályi kötelezettség teljesítéséhez szükséges mértékben férhetnek hozzá a Fiókod adataihoz. Ezeket a
           hozzáféréseket a Napló rögzíti.
         </p>
@@ -664,7 +664,7 @@ export function TermsContent({ locale }: { locale: Locale }) {
       </p>
       <p>3.4. Actions taken in an Account are attributed to the Account holder unless proven otherwise.</p>
       <p>
-        3.5. Keyfly staff access your Account data only with two-factor authentication (2FA) and only as needed to provide the service, for support,
+        3.5. Keyfly staff access your Account data only with two-step verification and only as needed to provide the service, for support,
         complaint or claims handling, or to meet legal obligations. Such access is recorded in the Audit log.
       </p>
       <p>

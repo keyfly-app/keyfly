@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import type { EmailOtpType } from "@supabase/supabase-js";
 import { SIGN_UP_OPEN } from "@/config/auth";
 import { hasAcceptedTerms, isFreshGoogleAccount, removeUnfinishedAccount } from "@/features/auth/google";
+import { RESET_COOKIE, RESET_VALID_SECONDS } from "@/lib/reset-pass";
 import { safeNext } from "@/lib/safe-next";
 import { hrefFor, type AppSite } from "@/lib/sites";
 import { createAuthClient, createClient } from "@/lib/supabase/server";
@@ -26,7 +27,12 @@ export async function handleEmailLink(request: NextRequest, site: AppSite) {
 
   if (tokenHash && type && EMAIL_LINK_TYPES.includes(type)) {
     const { error } = await (await createAuthClient()).auth.verifyOtp({ type, token_hash: tokenHash });
-    if (!error) return respond(request, site, type === "recovery" ? "/reset-password" : next);
+    if (!error && type === "recovery") {
+      const response = respond(request, site, "/reset-password");
+      response.cookies.set(RESET_COOKIE, "1", { httpOnly: true, secure: true, sameSite: "lax", path: "/", maxAge: RESET_VALID_SECONDS });
+      return response;
+    }
+    if (!error) return respond(request, site, next);
     console.error("email link failed", error.code);
   }
   return respond(request, site, "/login?error=link");

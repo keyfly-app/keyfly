@@ -680,7 +680,7 @@ export function AppPrivacyContent({ locale }: { locale: Locale }) {
             meghívó hivatkozások (meghívó: 7 nap, munkatársi meghívó: 48 óra);
           </li>
           <li>szerepkör-alapú hozzáférés (Fiókgazda/Admin/Kezelő/Megtekintő), a bérleti adatokhoz csak az érintett felek férnek hozzá;</li>
-          <li>munkatársi hozzáférés csak kétlépcsős azonosítással (2FA) és a szükséges mértékben;</li>
+          <li>munkatársi hozzáférés csak kétlépcsős azonosítással és a szükséges mértékben;</li>
           <li>
             a Felhasználók számára választható kétlépcsős azonosítás hitelesítő alkalmazással vagy e-mailben küldött kóddal (a kódot csak hash
             formában tároljuk, 5 percig érvényes, 5 hibás próbálkozás után érvényét veszti); a tartalék kódokat kizárólag SHA-256 hash formában
@@ -1472,7 +1472,7 @@ export function AppPrivacyContent({ locale }: { locale: Locale }) {
           (invitations: 7 days, staff invitations: 48 hours);
         </li>
         <li>role-based access (Account holder/Admin/Manager/Viewer); lease data accessible only to the parties concerned;</li>
-        <li>staff access only with two-factor authentication (2FA) and only as needed;</li>
+        <li>staff access only with two-step verification and only as needed;</li>
         <li>
           optional two-step verification for Users with an authenticator app or a code sent by email (the code is stored only as a hash, valid for 5
           minutes and stops working after 5 wrong tries); backup codes are stored only as SHA-256 hashes, backup-code attempts are limited to 10 an

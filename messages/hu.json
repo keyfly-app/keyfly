@@ -383,7 +383,8 @@
       "title": "Új jelszó beállítása",
       "password": "Új jelszó",
       "submit": "Jelszó mentése",
-      "submitting": "Mentés…"
+      "submitting": "Mentés…",
+      "again": "Új link kérése"
     },
     "welcome": {
       "title": "Hogyan használod a Keyflyt?",
@@ -1938,7 +1939,8 @@
         "off": "A kód e-mailben ki van kapcsolva ennél a fióknál.",
         "send": "Nem sikerült elküldeni a levelet. Próbáld újra egy perc múlva.",
         "generic": "Valami nem sikerült. Próbáld újra."
-      }
+      },
+      "resetLead": "A jelszó-visszaállítás folytatásához írd be a hitelesítő alkalmazásod 6 jegyű kódját."
     },
     "setup": {
       "title": "Kétlépcsős azonosítás",

@@ -66,7 +66,7 @@ const PUBLIC_APP_PATHS: Record<AppSite, string[]> = {
   admin: ["/login", "/forgot-password", "/auth/", "/invite/"],
 };
 /** Pages that make no sense once signed in. */
-const SIGNED_OUT_ONLY = ["/login", "/register", "/verify-email", "/forgot-password"];
+const SIGNED_OUT_ONLY = ["/login", "/register", "/verify-email"];
 /** Admin pages a signed-in user may open before the second factor: the code itself, email links, the staff invitation. */
 const BEFORE_SECOND_FACTOR = ["/mfa", "/auth/", "/invite/"];
 /** App pages open before the two-step code: the code screen itself and email links. */
