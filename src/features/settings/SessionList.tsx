@@ -47,7 +47,7 @@ export function SessionList({ sessions }: { sessions: SessionRow[] }) {
               <span className="text-[12.5px] text-muted">{s.detail}</span>
             </div>
             {!s.current && (
-              <form action={action}>
+              <form action={action} className="flex-none">
                 <input type="hidden" name="session" value={s.id} />
                 <button type="submit" disabled={pending} className="inline-flex h-11 items-center rounded-lg px-3 text-[13px] font-medium text-ink hover:bg-paper disabled:opacity-60 sm:h-9">
                   {t("devices.signOut")}

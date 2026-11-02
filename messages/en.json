@@ -959,6 +959,30 @@
       "lead": "{to} is now the account holder: {account}. You stay in the team as an admin.",
       "cta": "Open team",
       "why": "You get this because you were the account holder of this company account: {account}."
+    },
+    "security": {
+      "tag": "Security",
+      "note": "If this wasn’t you, change your password straight away and write to us: support@keyfly.app.",
+      "cta": "Security settings",
+      "why": "We send this email about every security change; it can’t be switched off.",
+      "twoStepOn": {
+        "subject": "You turned on two-step verification",
+        "preheader": "From now on we ask for your authenticator code as well as your password.",
+        "title": "You turned on two-step verification",
+        "lead": "From now on, when you sign in we ask for the code from your authenticator app as well as your password. Keep your backup codes somewhere safe."
+      },
+      "twoStepOff": {
+        "subject": "You turned off two-step verification",
+        "preheader": "From now on you sign in with your password only.",
+        "title": "You turned off two-step verification",
+        "lead": "From now on you sign in with your password only. We recommend turning it back on, so your password alone isn’t enough to sign in."
+      },
+      "recoveryUsed": {
+        "subject": "You signed in with a backup code",
+        "preheader": "We turned off two-step verification – set it up again.",
+        "title": "You signed in with a backup code",
+        "lead": "You signed in with a backup code, so we turned off two-step verification and the old codes. Set it up again with your authenticator app."
+      }
     }
   },
   "portal": {
@@ -1227,22 +1251,25 @@
     "nav": {
       "label": "Settings menu",
       "personal": "Personal",
-      "profile": "Profile and sign-in",
-      "devices": "Devices"
+      "profile": "Profile",
+      "security": "Sign-in and security",
+      "notifications": "Notifications",
+      "data": "Your data"
     },
     "back": "Settings",
     "index": {
       "lead": "Your profile and sign-in are the same in every account.",
-      "profileText": "Name, email, password, phone, profile photo.",
-      "devicesText": "Where you’re signed in."
+      "profileText": "Photo, name, phone, language.",
+      "securityText": "Email, password, two-step verification, sign-ins.",
+      "notificationsText": "Which emails you get.",
+      "dataText": "Download your data, delete your account."
     },
     "userMenu": {
-      "open": "Open account menu",
-      "help": "Help and contact"
+      "open": "Open account menu"
     },
     "profile": {
-      "title": "Profile and sign-in",
-      "lead": "How your teammates and the other parties see you. You sign in with your email and password.",
+      "title": "Profile",
+      "lead": "How your team, tenants and landlords see you.",
       "photo": "Profile photo",
       "photoHint": "JPG, PNG or HEIC, up to 10 MB. You can crop it after uploading.",
       "upload": "Upload photo",
@@ -1258,7 +1285,9 @@
       "add": "Add",
       "passwordChanged": "Last changed: {date}",
       "passwordNever": "Set",
-      "pending": "Waiting for confirmation: {email}. We sent the link to that address."
+      "pending": "Waiting for confirmation: {email}. We sent the link to that address.",
+      "language": "Language",
+      "languageText": "The language of the app and our emails."
     },
     "dialogs": {
       "cancel": "Cancel",
@@ -1312,16 +1341,95 @@
       "generic": "Couldn’t save. Please try again."
     },
     "devices": {
-      "title": "Devices",
-      "lead": "Where you’re signed in right now. If you don’t recognise one, sign it out and change your password.",
+      "title": "Active sign-ins",
       "current": "This device",
       "lastActive": "Last active: {date}",
-      "signedIn": "Signed in: {date}",
       "signOut": "Sign out",
-      "signOutOthers": "Sign out of all other devices",
+      "signOutOthers": "Sign out everywhere else",
       "only": "You’re only signed in on this device.",
       "unknown": "Unknown device",
-      "on": "{browser} · {os}"
+      "on": "{browser} · {os}",
+      "activeNow": "Active now"
+    },
+    "security": {
+      "title": "Sign-in and security",
+      "lead": "Your email, your password and the devices where you’re signed in.",
+      "credentials": "Sign-in details",
+      "recovered": "You signed in with a backup code, so we turned off two-step verification. Turn it back on."
+    },
+    "notifications": {
+      "title": "Notifications",
+      "lead": "Choose which emails you want.",
+      "groups": {
+        "leases": "Leases",
+        "accounts": "Accounts",
+        "keyfly": "Keyfly",
+        "security": "Security"
+      },
+      "topics": {
+        "lease_changes": {
+          "label": "Changes",
+          "text": "When the other party changes or approves something."
+        },
+        "lease_expiry": {
+          "label": "Before the end",
+          "text": "60 and 30 days before a lease ends."
+        },
+        "team": {
+          "label": "Team",
+          "text": "Access requests, account holder changes."
+        },
+        "invoices": {
+          "label": "Invoices",
+          "text": "New invoice and failed payment."
+        },
+        "news": {
+          "label": "Product news",
+          "text": "At most one email a month."
+        }
+      },
+      "always": {
+        "invites": {
+          "label": "Invitations",
+          "text": "When you’re invited or we need your decision."
+        },
+        "security": {
+          "label": "Security notifications",
+          "text": "Two-step verification, password and email changes."
+        }
+      },
+      "alwaysOn": "Always",
+      "turnedOn": "{name}: on.",
+      "turnedOff": "{name}: off.",
+      "error": "Couldn’t save. Try again."
+    },
+    "data": {
+      "title": "Your data",
+      "lead": "The personal data Keyfly keeps about you.",
+      "exportTitle": "Download your data",
+      "exportText": "Your profile, accounts, leases and settings in one file.",
+      "export": "Download",
+      "deleteTitle": "Delete account",
+      "deleteText": "Your profile and sign-in are deleted for good. We keep the data of closed leases until the legal retention period ends.",
+      "delete": "Delete account…",
+      "confirmTitle": "Delete your account for good?",
+      "confirmText": "Your sign-in ends and your profile is deleted. This can’t be undone.",
+      "password": "Password",
+      "code": "Two-step code",
+      "cancel": "Cancel",
+      "confirm": "Delete account for good",
+      "close": "Close",
+      "blockedHolder": "First hand over the account holder role in these company accounts: {companies}. You can do it on the company’s Team page.",
+      "blockedInsurance": "You have an insurance policy or claim, so support deletes your account: {email}.",
+      "blockedStaff": "As Keyfly staff, admins delete your account.",
+      "errors": {
+        "password": "That password isn’t right.",
+        "code": "That code isn’t right or has expired. Enter the code your app shows now.",
+        "blocked": "First sort out what’s shown above.",
+        "rate": "Too many tries. Wait a few minutes.",
+        "setup": "Deleting accounts isn’t available right now. Write to us: support@keyfly.app.",
+        "generic": "Something went wrong. Try again."
+      }
     }
   },
   "header": {
@@ -1563,5 +1671,100 @@
     "back": "Back",
     "edit": "Edit",
     "optional": "(optional)"
+  },
+  "security": {
+    "challenge": {
+      "title": "Two-step verification",
+      "lead": "Enter the 6-digit code from your authenticator app.",
+      "backupLead": "Enter one of your backup codes.",
+      "codeLabel": "6-digit code",
+      "submit": "Sign in",
+      "useBackup": "Use a backup code",
+      "useApp": "Code from the app",
+      "backupLabel": "Backup code",
+      "backupNote": "Signing in with a backup code turns off two-step verification; set it up again afterwards.",
+      "signedInAs": "Signed in as {email}",
+      "errors": {
+        "format": "Enter the 6 digits.",
+        "code": "That code isn’t right or has expired. Enter the code your app shows now.",
+        "expired": "This setup is no longer valid. Sign in again.",
+        "rate": "Too many tries. Wait a few minutes.",
+        "generic": "Something went wrong. Try again.",
+        "backup": "That backup code isn’t right or has been used.",
+        "locked": "Too many wrong backup codes. Try again in an hour, or write to us: support@keyfly.app.",
+        "setup": "Backup codes can’t be used right now. Write to us: support@keyfly.app."
+      }
+    },
+    "setup": {
+      "title": "Two-step verification",
+      "steps": {
+        "app": "App",
+        "codes": "Backup codes"
+      },
+      "title1": "Connect your authenticator app",
+      "lead1": "You need an authenticator app on your phone, for example Google or Microsoft Authenticator.",
+      "title2": "Save your backup codes",
+      "lead2": "If you don’t have your phone with you, you can sign in with these. Each works once.",
+      "scan": "Scan the QR code",
+      "type": "Enter the 6-digit code",
+      "keyLabel": "Or enter this key by hand:",
+      "copy": "Copy",
+      "keyCopied": "Key copied.",
+      "codesCopied": "Codes copied.",
+      "copyFailed": "Couldn’t copy. Select and copy by hand.",
+      "openApp": "Open in authenticator app",
+      "qrAlt": "QR code for your authenticator app",
+      "verify": "Verify and continue",
+      "back": "Back",
+      "download": "Download",
+      "saved": "I’ve saved the codes somewhere safe.",
+      "savedError": "Tick this once you’ve saved the codes.",
+      "finish": "Done",
+      "done": "You turned on two-step verification.",
+      "fileTitle": "Keyfly – backup codes for two-step verification. Each works once.",
+      "errors": {
+        "format": "Enter the 6 digits.",
+        "code": "That code isn’t right or has expired. Enter the code your app shows now.",
+        "expired": "The QR code expired. Start the setup again.",
+        "rate": "Too many tries. Wait a few minutes.",
+        "generic": "Something went wrong. Reload the page and try again."
+      }
+    },
+    "card": {
+      "title": "Two-step verification",
+      "on": "On",
+      "off": "Off",
+      "lead": "When you sign in, we ask for a code from your authenticator app as well as your password.",
+      "turnOn": "Turn on",
+      "app": "Authenticator app",
+      "appValue": "Code on your phone",
+      "since": "Set up: {date}",
+      "more": "Authenticator app – actions",
+      "codes": "Backup codes",
+      "codesLeft": "{count, plural, =0 {No codes left} other {# of 10 left}}",
+      "newCodes": "New codes",
+      "turnOff": "Turn off",
+      "turnedOff": "You turned off two-step verification.",
+      "offTitle": "Turn off two-step verification?",
+      "offText": "You’ll sign in with your password only. Enter the code from your authenticator app.",
+      "codeLabel": "6-digit code",
+      "renewTitle": "Make new backup codes?",
+      "renewText": "The old codes stop working at once.",
+      "renew": "Make new codes",
+      "codesTitle": "Your new backup codes",
+      "codesText": "Each works once. Save them somewhere safe.",
+      "codesOnce": "We show these codes only now.",
+      "copy": "Copy",
+      "copied": "Codes copied.",
+      "done": "Done",
+      "error": "Something went wrong. Try again.",
+      "errors": {
+        "format": "Enter the 6 digits.",
+        "code": "That code isn’t right or has expired. Enter the code your app shows now.",
+        "expired": "This setup is no longer valid. Reload the page.",
+        "rate": "Too many tries. Wait a few minutes.",
+        "generic": "Something went wrong. Try again."
+      }
+    }
   }
 }

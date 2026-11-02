@@ -16,12 +16,21 @@ const IDLE: SettingsState = { status: "idle" };
  * each edit opens its own small dialog, so a half-finished change never mixes with the others.
  */
 export function ProfileDetails({
+  title,
+  items,
   name,
   email,
   pendingEmail,
   phone,
   passwordChanged,
+  extra,
 }: {
+  /** A last row of the card that is not edited in a dialog (the language on the profile). */
+  extra?: React.ReactNode;
+  /** Card heading: "Személyes adatok" (profile) or "Belépési adatok" (sign-in and security). */
+  title: string;
+  /** Which rows this card shows, in order. */
+  items: Exclude<Editing, null>[];
   name: string | null;
   email: string;
   pendingEmail: string | null;
@@ -29,6 +38,7 @@ export function ProfileDetails({
   passwordChanged: string | null;
 }) {
   const t = useTranslations("settings");
+  const headingId = useId();
   const [editing, setEditing] = useState<Editing>(null);
   const [notice, setNotice] = useState<string | null>(null);
   // Focus goes back to the Edit button that opened the dialog.
@@ -42,17 +52,29 @@ export function ProfileDetails({
     close();
   };
 
-  const rows: { key: Exclude<Editing, null>; icon: IconName; label: string; value: React.ReactNode; empty?: boolean }[] = [
+  const all: { key: Exclude<Editing, null>; icon: IconName; label: string; value: React.ReactNode; empty?: boolean }[] = [
     { key: "name", icon: "user", label: t("profile.name"), value: name ?? "–" },
-    { key: "email", icon: "mail", label: t("profile.email"), value: email },
+    {
+      key: "email",
+      icon: "mail",
+      label: t("profile.email"),
+      // A long address may wrap after the @, never in the middle of a word.
+      value: (
+        <>
+          {email.split("@")[0]}@<wbr />
+          {email.split("@").slice(1).join("@")}
+        </>
+      ),
+    },
     { key: "password", icon: "lock", label: t("profile.password"), value: <span className="tracking-[0.2em]">••••••••••</span> },
     { key: "phone", icon: "phone", label: t("profile.phone"), value: phone ?? t("profile.phoneEmpty"), empty: !phone },
   ];
+  const rows = items.map((key) => all.find((r) => r.key === key)!);
 
   return (
-    <section aria-labelledby="personal-title" className="rounded-xl border border-line bg-surface">
-      <h2 id="personal-title" className="px-5 pt-5 pb-2 text-[15px] font-semibold sm:px-6">
-        {t("profile.personal")}
+    <section aria-labelledby={`${headingId}-title`} className="rounded-xl border border-line bg-surface">
+      <h2 id={`${headingId}-title`} className="px-5 pt-5 pb-3 text-[15px] font-semibold sm:px-6">
+        {title}
       </h2>
       {notice && (
         <div className="px-5 pb-2 sm:px-6">
@@ -67,7 +89,7 @@ export function ProfileDetails({
             </span>
             <div className="flex min-w-0 flex-1 flex-col">
               <span className="text-[12.5px] text-muted">{row.label}</span>
-              <span className={`text-sm font-medium [overflow-wrap:anywhere] ${row.empty ? "text-muted" : ""}`}>{row.value}</span>
+              <span className={`text-sm font-medium [overflow-wrap:break-word] ${row.empty ? "text-muted" : ""}`}>{row.value}</span>
               {row.key === "email" && pendingEmail && <span className="mt-1 text-[12.5px] font-medium text-info-ink">{t("profile.pending", { email: pendingEmail })}</span>}
               {row.key === "password" && passwordChanged && <span className="text-[12.5px] text-muted">{t("profile.passwordChanged", { date: passwordChanged })}</span>}
             </div>
@@ -85,6 +107,7 @@ export function ProfileDetails({
             </button>
           </li>
         ))}
+        {extra}
       </ul>
 
       {/* Mounted only while open, so every edit starts clean. */}

@@ -282,3 +282,20 @@ export function holderChangedEmail(i: { locale: Locale; url: string; account: st
     why: t(`${k}.why`, { account: i.account }),
   });
 }
+
+/** Security notices (always sent, whatever the email preferences): two-step on / off, a backup code was used. */
+export function securityEmail(i: { locale: Locale; url: string; kind: "twoStepOn" | "twoStepOff" | "recoveryUsed" }): Email {
+  const t = translator(i.locale);
+  const k = `security.${i.kind}` as const;
+  return render({
+    locale: i.locale,
+    tag: { tone: i.kind === "twoStepOn" ? "ok" : "warning", label: t("security.tag") },
+    subject: t(`${k}.subject`),
+    preheader: t(`${k}.preheader`),
+    title: t(`${k}.title`),
+    lead: t(`${k}.lead`),
+    note: t("security.note"),
+    action: { cta: t("security.cta"), url: i.url },
+    why: t("security.why"),
+  });
+}

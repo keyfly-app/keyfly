@@ -845,6 +845,12 @@ export type Database = {
           },
         ]
       }
+      mfa_recovery_codes: {
+        Row: { code_hash: string; created_at: string; id: string; used_at: string | null; user_id: string }
+        Insert: { code_hash: string; created_at?: string; id?: string; used_at?: string | null; user_id: string }
+        Update: { code_hash?: string; created_at?: string; id?: string; used_at?: string | null; user_id?: string }
+        Relationships: []
+      }
       policies: {
         Row: {
           application_id: string
@@ -946,6 +952,7 @@ export type Database = {
           birth_date: string | null
           created_at: string
           email: string | null
+          email_prefs: Json
           full_name: string | null
           id: string
           locale: Database["public"]["Enums"]["locale"]
@@ -959,6 +966,7 @@ export type Database = {
           birth_date?: string | null
           created_at?: string
           email?: string | null
+          email_prefs?: Json
           full_name?: string | null
           id: string
           locale?: Database["public"]["Enums"]["locale"]
@@ -972,6 +980,7 @@ export type Database = {
           birth_date?: string | null
           created_at?: string
           email?: string | null
+          email_prefs?: Json
           full_name?: string | null
           id?: string
           locale?: Database["public"]["Enums"]["locale"]
@@ -1261,6 +1270,11 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      account_deletion_blockers: { Args: never; Returns: { kind: string; name: string | null }[] }
+      consume_recovery_code: { Args: { p_hash: string }; Returns: boolean }
+      delete_recovery_codes: { Args: never; Returns: undefined }
+      recovery_codes_left: { Args: never; Returns: number }
+      set_recovery_codes: { Args: { p_hashes: string[] }; Returns: undefined }
       account_access_requests_list: {
         Args: { p_account_id: string }
         Returns: { created_at: string; email: string; full_name: string | null; id: string; message: string | null; user_id: string }[]

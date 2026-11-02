@@ -6,7 +6,6 @@ import { Toaster } from "@/components/Toaster";
 import { LogoFull, LogoMark } from "@/components/Logo";
 import { UserMenu } from "@/components/UserMenu";
 import { AccountSwitcher, type SwitcherAccount } from "@/components/AccountSwitcher";
-import { CONTACT } from "@/config/company";
 import { accountInitials, myAccounts, type AccountSummary } from "@/features/companies/accounts";
 import { LanguageMenu } from "@/features/language/LanguageMenu";
 import { currentUser } from "@/features/settings/current-user";
@@ -22,10 +21,12 @@ import type { AppSite } from "@/lib/sites";
 export async function Shell({ site, account, children }: { site: AppSite; account?: AccountSummary; children: React.ReactNode }) {
   const [t, a, user, accounts] = await Promise.all([getTranslations("settings"), getTranslations("accounts"), currentUser(), myAccounts()]);
   const common = await getTranslations("common");
-  const [home, profile, devices, addCompany] = await Promise.all([
+  const [home, profile, security, notifications, data, addCompany] = await Promise.all([
     siteHref(site, "/"),
     siteHref(site, "/settings/profile"),
-    siteHref(site, "/settings/devices"),
+    siteHref(site, "/settings/security"),
+    siteHref(site, "/settings/notifications"),
+    siteHref(site, "/settings/data"),
     siteHref(site, "/companies/new"),
   ]);
   const switcher: SwitcherAccount[] = await Promise.all(
@@ -92,10 +93,11 @@ export async function Shell({ site, account, children }: { site: AppSite; accoun
                 signOutLabel={common("signOut")}
                 items={[
                   { href: profile, label: t("nav.profile"), icon: "user" },
-                  { href: devices, label: t("nav.devices"), icon: "laptop" },
-                  ...(site === "portal" ? [{ href: addCompany, label: a("add"), icon: "building" as const }] : []),
-                  { href: `mailto:${CONTACT.support}`, label: t("userMenu.help"), icon: "help", external: true },
+                  { href: security, label: t("nav.security"), icon: "lock" },
+                  { href: notifications, label: t("nav.notifications"), icon: "bell" },
+                  { href: data, label: t("nav.data"), icon: "shield" },
                 ]}
+                more={site === "portal" ? [{ href: addCompany, label: a("add"), icon: "building" }] : []}
               />
             )}
           </div>

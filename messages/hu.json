@@ -959,6 +959,30 @@
       "lead": "{to} lett a fiókgazda: {account}. Te adminként maradsz a csapatban.",
       "cta": "Csapat megnyitása",
       "why": "Azért kaptad, mert ennek a cégfióknak voltál a fiókgazdája: {account}."
+    },
+    "security": {
+      "tag": "Biztonság",
+      "note": "Ha nem te voltál, azonnal változtasd meg a jelszavad, és írj nekünk: support@keyfly.app.",
+      "cta": "Biztonsági beállítások",
+      "why": "Ezt a levelet minden biztonsági változásról elküldjük, nem lehet kikapcsolni.",
+      "twoStepOn": {
+        "subject": "Bekapcsoltad a kétlépcsős azonosítást",
+        "preheader": "Mostantól a jelszó mellett a hitelesítő alkalmazás kódját is kérjük.",
+        "title": "Bekapcsoltad a kétlépcsős azonosítást",
+        "lead": "Mostantól belépéskor a jelszavad mellett a hitelesítő alkalmazásod kódját is kérjük. A tartalék kódokat tartsd biztonságos helyen."
+      },
+      "twoStepOff": {
+        "subject": "Kikapcsoltad a kétlépcsős azonosítást",
+        "preheader": "Mostantól csak a jelszavaddal lépsz be.",
+        "title": "Kikapcsoltad a kétlépcsős azonosítást",
+        "lead": "Mostantól csak a jelszavaddal lépsz be. Javasoljuk, hogy kapcsold vissza: így a jelszavad önmagában nem elég a belépéshez."
+      },
+      "recoveryUsed": {
+        "subject": "Tartalék kóddal léptél be",
+        "preheader": "A kétlépcsős azonosítást kikapcsoltuk, állítsd be újra.",
+        "title": "Tartalék kóddal léptél be",
+        "lead": "Egy tartalék kóddal léptél be, ezért kikapcsoltuk a kétlépcsős azonosítást és a régi kódokat. Állítsd be újra a hitelesítő alkalmazásoddal."
+      }
     }
   },
   "portal": {
@@ -1227,22 +1251,25 @@
     "nav": {
       "label": "Beállítások menü",
       "personal": "Személyes",
-      "profile": "Profil és belépés",
-      "devices": "Eszközök"
+      "profile": "Profil",
+      "security": "Bejelentkezés és biztonság",
+      "notifications": "Értesítések",
+      "data": "Adataid"
     },
     "back": "Beállítások",
     "index": {
       "lead": "A profilod és a belépésed minden fiókodban ugyanaz.",
-      "profileText": "Név, e-mail-cím, jelszó, telefonszám, profilkép.",
-      "devicesText": "Ahol be vagy jelentkezve."
+      "profileText": "Profilkép, név, telefonszám, nyelv.",
+      "securityText": "E-mail-cím, jelszó, kétlépcsős azonosítás, belépések.",
+      "notificationsText": "Miről kérsz e-mailt.",
+      "dataText": "Az adataid letöltése, a fiók törlése."
     },
     "userMenu": {
-      "open": "Fiókmenü megnyitása",
-      "help": "Súgó és kapcsolat"
+      "open": "Fiókmenü megnyitása"
     },
     "profile": {
-      "title": "Profil és belépés",
-      "lead": "Így látnak a csapattársaid és a szerződő feleid. Az e-mail-címeddel és a jelszavaddal lépsz be.",
+      "title": "Profil",
+      "lead": "Így látnak a csapattársaid, a bérlőid és a bérbeadóid.",
       "photo": "Profilkép",
       "photoHint": "JPG, PNG vagy HEIC, legfeljebb 10 MB. Feltöltés után kivághatod.",
       "upload": "Kép feltöltése",
@@ -1258,7 +1285,9 @@
       "add": "Megadás",
       "passwordChanged": "Utoljára módosítva: {date}",
       "passwordNever": "Beállítva",
-      "pending": "Megerősítésre vár: {email}. A linket elküldtük erre a címre."
+      "pending": "Megerősítésre vár: {email}. A linket elküldtük erre a címre.",
+      "language": "Nyelv",
+      "languageText": "A felület és a leveleink nyelve."
     },
     "dialogs": {
       "cancel": "Mégse",
@@ -1312,16 +1341,95 @@
       "generic": "Nem sikerült menteni. Próbáld újra."
     },
     "devices": {
-      "title": "Eszközök",
-      "lead": "Ahol most be vagy jelentkezve. Ha valamelyiket nem ismered, jelentkeztesd ki, és változtass jelszót.",
+      "title": "Aktív belépések",
       "current": "Ez az eszköz",
       "lastActive": "Utoljára aktív: {date}",
-      "signedIn": "Belépés: {date}",
       "signOut": "Kijelentkeztetés",
-      "signOutOthers": "Kijelentkezés minden más eszközről",
+      "signOutOthers": "Kijelentkezés mindenhol máshol",
       "only": "Csak ezen az eszközön vagy bejelentkezve.",
       "unknown": "Ismeretlen eszköz",
-      "on": "{browser} · {os}"
+      "on": "{browser} · {os}",
+      "activeNow": "Most aktív"
+    },
+    "security": {
+      "title": "Bejelentkezés és biztonság",
+      "lead": "Az e-mail-címed, a jelszavad és az eszközeid, ahol be vagy jelentkezve.",
+      "credentials": "Belépési adatok",
+      "recovered": "Tartalék kóddal léptél be, ezért kikapcsoltuk a kétlépcsős azonosítást. Kapcsold be újra."
+    },
+    "notifications": {
+      "title": "Értesítések",
+      "lead": "Válaszd ki, miről kérsz e-mailt.",
+      "groups": {
+        "leases": "Szerződések",
+        "accounts": "Fiókok",
+        "keyfly": "Keyfly",
+        "security": "Biztonság"
+      },
+      "topics": {
+        "lease_changes": {
+          "label": "Változások",
+          "text": "Ha a másik fél módosít vagy jóváhagy valamit."
+        },
+        "lease_expiry": {
+          "label": "Lejárat előtt",
+          "text": "60 és 30 nappal a szerződés vége előtt."
+        },
+        "team": {
+          "label": "Csapat",
+          "text": "Hozzáférési kérések, fiókgazda-váltás."
+        },
+        "invoices": {
+          "label": "Számlák",
+          "text": "Új számla és sikertelen fizetés."
+        },
+        "news": {
+          "label": "Újdonságok",
+          "text": "Havonta legfeljebb egy levél."
+        }
+      },
+      "always": {
+        "invites": {
+          "label": "Meghívók",
+          "text": "Ha meghívtak, vagy a döntésedre várunk."
+        },
+        "security": {
+          "label": "Biztonsági értesítések",
+          "text": "Kétlépcsős azonosítás, jelszó- és e-mail-változás."
+        }
+      },
+      "alwaysOn": "Mindig",
+      "turnedOn": "{name}: bekapcsolva.",
+      "turnedOff": "{name}: kikapcsolva.",
+      "error": "Nem sikerült menteni. Próbáld újra."
+    },
+    "data": {
+      "title": "Adataid",
+      "lead": "A Keyflyban tárolt személyes adataid.",
+      "exportTitle": "Adatok letöltése",
+      "exportText": "A profilod, a fiókjaid, a szerződéseid és a beállításaid egy fájlban.",
+      "export": "Letöltés",
+      "deleteTitle": "Fiók törlése",
+      "deleteText": "A profilod és a belépésed véglegesen törlődik. A lezárt szerződések adatait a törvényi megőrzési idő végéig megőrizzük.",
+      "delete": "Fiók törlése…",
+      "confirmTitle": "Véglegesen törlöd a fiókodat?",
+      "confirmText": "A belépésed megszűnik, a profilod törlődik. Ezt nem lehet visszavonni.",
+      "password": "Jelszó",
+      "code": "Kétlépcsős kód",
+      "cancel": "Mégse",
+      "confirm": "Fiók végleges törlése",
+      "close": "Bezárás",
+      "blockedHolder": "Előbb add át a fiókgazdai szerepet ezekben a cégfiókokban: {companies}. A cég Csapat oldalán teheted meg.",
+      "blockedInsurance": "Biztosítási kötvényed vagy kárügyed van, ezért a fiókod törlését az ügyfélszolgálat intézi: {email}.",
+      "blockedStaff": "Keyfly-munkatársként a fiókodat az adminok törlik.",
+      "errors": {
+        "password": "A jelszó nem jó.",
+        "code": "A kód nem jó, vagy lejárt. Írd be az alkalmazásban most látható kódot.",
+        "blocked": "Előbb rendezd a fent jelzett teendőket.",
+        "rate": "Túl sok próbálkozás. Várj pár percet.",
+        "setup": "A fiók törlése most nem érhető el. Írj nekünk: support@keyfly.app.",
+        "generic": "Valami nem sikerült. Próbáld újra."
+      }
     }
   },
   "header": {
@@ -1563,5 +1671,100 @@
     "back": "Vissza",
     "edit": "Módosítás",
     "optional": "(nem kötelező)"
+  },
+  "security": {
+    "challenge": {
+      "title": "Kétlépcsős azonosítás",
+      "lead": "Írd be a hitelesítő alkalmazásod 6 jegyű kódját.",
+      "backupLead": "Írd be az egyik tartalék kódodat.",
+      "codeLabel": "6 jegyű kód",
+      "submit": "Belépés",
+      "useBackup": "Tartalék kódot használok",
+      "useApp": "Kód az alkalmazásból",
+      "backupLabel": "Tartalék kód",
+      "backupNote": "Tartalék kóddal belépve kikapcsoljuk a kétlépcsős azonosítást; utána állítsd be újra.",
+      "signedInAs": "Belépve: {email}",
+      "errors": {
+        "format": "Írd be a 6 számjegyet.",
+        "code": "A kód nem jó, vagy lejárt. Írd be az alkalmazásban most látható kódot.",
+        "expired": "Ez a beállítás már nem érvényes. Lépj be újra.",
+        "rate": "Túl sok próbálkozás. Várj pár percet.",
+        "generic": "Valami nem sikerült. Próbáld újra.",
+        "backup": "Ez a tartalék kód nem jó, vagy már felhasználtad.",
+        "locked": "Túl sok rossz tartalék kód. Egy óra múlva próbáld újra, vagy írj nekünk: support@keyfly.app.",
+        "setup": "A tartalék kód most nem használható. Írj nekünk: support@keyfly.app."
+      }
+    },
+    "setup": {
+      "title": "Kétlépcsős azonosítás",
+      "steps": {
+        "app": "Alkalmazás",
+        "codes": "Tartalék kódok"
+      },
+      "title1": "Kapcsold össze a hitelesítő alkalmazásoddal",
+      "lead1": "Ehhez egy hitelesítő alkalmazás kell a telefonodon, például a Google vagy a Microsoft Authenticator.",
+      "title2": "Mentsd el a tartalék kódokat",
+      "lead2": "Ha nincs nálad a telefonod, ezekkel is beléphetsz. Mindegyik egyszer használható.",
+      "scan": "Olvasd be a QR-kódot",
+      "type": "Írd be a 6 jegyű kódot",
+      "keyLabel": "Vagy add meg kézzel ezt a kulcsot:",
+      "copy": "Másolás",
+      "keyCopied": "Kimásoltuk a kulcsot.",
+      "codesCopied": "Kimásoltuk a kódokat.",
+      "copyFailed": "Nem sikerült a másolás. Jelöld ki, és másold kézzel.",
+      "openApp": "Megnyitás a hitelesítő alkalmazásban",
+      "qrAlt": "QR-kód a hitelesítő alkalmazáshoz",
+      "verify": "Ellenőrzés és tovább",
+      "back": "Vissza",
+      "download": "Letöltés",
+      "saved": "Elmentettem a kódokat biztonságos helyre.",
+      "savedError": "Jelöld be, ha elmentetted a kódokat.",
+      "finish": "Kész",
+      "done": "Bekapcsoltad a kétlépcsős azonosítást.",
+      "fileTitle": "Keyfly – tartalék kódok a kétlépcsős azonosításhoz. Mindegyik egyszer használható.",
+      "errors": {
+        "format": "Írd be a 6 számjegyet.",
+        "code": "A kód nem jó, vagy lejárt. Írd be az alkalmazásban most látható kódot.",
+        "expired": "A QR-kód lejárt. Kezdd újra a beállítást.",
+        "rate": "Túl sok próbálkozás. Várj pár percet.",
+        "generic": "Valami nem sikerült. Frissítsd az oldalt, és próbáld újra."
+      }
+    },
+    "card": {
+      "title": "Kétlépcsős azonosítás",
+      "on": "Bekapcsolva",
+      "off": "Kikapcsolva",
+      "lead": "Belépéskor a jelszó mellett a hitelesítő alkalmazásod kódját is kérjük.",
+      "turnOn": "Bekapcsolás",
+      "app": "Hitelesítő alkalmazás",
+      "appValue": "Kód a telefonodon",
+      "since": "Beállítva: {date}",
+      "more": "Hitelesítő alkalmazás – műveletek",
+      "codes": "Tartalék kódok",
+      "codesLeft": "{count, plural, =0 {Nincs felhasználható kód} other {# felhasználható a 10-ből}}",
+      "newCodes": "Új kódok",
+      "turnOff": "Kikapcsolás",
+      "turnedOff": "Kikapcsoltad a kétlépcsős azonosítást.",
+      "offTitle": "Kikapcsolod a kétlépcsős azonosítást?",
+      "offText": "Ezután csak a jelszavaddal lépsz be. Írd be a hitelesítő alkalmazásod kódját.",
+      "codeLabel": "6 jegyű kód",
+      "renewTitle": "Új tartalék kódokat készítesz?",
+      "renewText": "A régi kódok azonnal érvényüket vesztik.",
+      "renew": "Új kódok készítése",
+      "codesTitle": "Az új tartalék kódjaid",
+      "codesText": "Mindegyik egyszer használható. Mentsd el őket biztonságos helyre.",
+      "codesOnce": "Ezeket a kódokat csak most mutatjuk meg.",
+      "copy": "Másolás",
+      "copied": "Kimásoltuk a kódokat.",
+      "done": "Kész",
+      "error": "Valami nem sikerült. Próbáld újra.",
+      "errors": {
+        "format": "Írd be a 6 számjegyet.",
+        "code": "A kód nem jó, vagy lejárt. Írd be az alkalmazásban most látható kódot.",
+        "expired": "Ez a beállítás már nem érvényes. Frissítsd az oldalt.",
+        "rate": "Túl sok próbálkozás. Várj pár percet.",
+        "generic": "Valami nem sikerült. Próbáld újra."
+      }
+    }
   }
 }

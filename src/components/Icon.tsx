@@ -202,6 +202,12 @@ const PATHS = {
       <circle cx="19" cy="12" r="1.3" fill="currentColor" stroke="none" />
     </>
   ),
+  download: (
+    <>
+      <path d="M12 4v11M7 10l5 5 5-5" />
+      <path d="M5 20h14" />
+    </>
+  ),
   trash: <path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13" />,
   settings: (
     <>

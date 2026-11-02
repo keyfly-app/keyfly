@@ -20,6 +20,7 @@ export function UserMenu({
   initials,
   avatarUrl,
   items,
+  more = [],
   openLabel,
   signOutLabel,
 }: {
@@ -29,6 +30,8 @@ export function UserMenu({
   initials: string;
   avatarUrl: string | null;
   items: Item[];
+  /** A second group after a divider (e.g. "Cég hozzáadása"). */
+  more?: Item[];
   openLabel: string;
   signOutLabel: string;
 }) {
@@ -97,17 +100,24 @@ export function UserMenu({
             </div>
           </div>
           <div className="mx-1 mb-1 h-px bg-line" />
-          {items.map((item) =>
-            item.external ? (
-              <a key={item.href} role="menuitem" href={item.href} className={itemClass}>
-                <Icon name={item.icon} size={16} className="text-muted" />
-                {item.label}
-              </a>
-            ) : (
-              <Link key={item.href} role="menuitem" href={item.href} onClick={() => setOpen(false)} className={itemClass}>
-                <Icon name={item.icon} size={16} className="text-muted" />
-                {item.label}
-              </Link>
+          {[items, more].map((group, g) =>
+            group.length === 0 ? null : (
+              <div key={g} className="flex flex-col">
+                {g > 0 && <div className="mx-1 my-1 h-px bg-line" />}
+                {group.map((item) =>
+                  item.external ? (
+                    <a key={item.href} role="menuitem" href={item.href} className={itemClass}>
+                      <Icon name={item.icon} size={16} className="text-muted" />
+                      {item.label}
+                    </a>
+                  ) : (
+                    <Link key={item.href} role="menuitem" href={item.href} onClick={() => setOpen(false)} className={itemClass}>
+                      <Icon name={item.icon} size={16} className="text-muted" />
+                      {item.label}
+                    </Link>
+                  ),
+                )}
+              </div>
             ),
           )}
           <div className="mx-1 my-1 h-px bg-line" />

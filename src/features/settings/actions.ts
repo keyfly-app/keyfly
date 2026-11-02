@@ -3,6 +3,11 @@
 import { randomBytes } from "node:crypto";
 import { createClient as createPlainClient } from "@supabase/supabase-js";
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
+import { getLocale } from "next-intl/server";
+import { BRAND } from "@/config/company";
+import { publicHref } from "@/i18n/config";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { isValidPassword } from "@/features/auth/password";
 import { requestOrigin } from "@/lib/request-origin";
 import { hrefFor } from "@/lib/sites";
@@ -163,4 +168,52 @@ export async function endSession(_: SettingsState, form: FormData): Promise<Sett
   const { error } = await supabase.rpc("end_my_session", { p_session_id: session });
   if (error) return { status: "error", error: "generic" };
   return done("session");
+}
+
+export type DeleteState = { status: "idle" } | { status: "error"; error: "password" | "code" | "blocked" | "rate" | "setup" | "generic" };
+
+/**
+ * Adataid → Fiók törlése: the password (and the two-step code, when on) once more; nothing may block it
+ * (account holder of a team, insurance records, staff). Companies only this person works in go with the account;
+ * then the sign-in itself – the profile, personal account and backup codes follow by cascade.
+ */
+export async function deleteAccount(_: DeleteState, form: FormData): Promise<DeleteState> {
+  const { supabase, id, email } = await signedIn();
+  if (!id || !email) return { status: "error", error: "generic" };
+  const check = await passwordMatches(email, String(form.get("password") ?? ""));
+  if (check !== "ok") return { status: "error", error: check === "rate" ? "rate" : "password" };
+
+  const { data: factors } = await supabase.auth.mfa.listFactors();
+  const factor = factors?.totp[0];
+  if (factor) {
+    const code = String(form.get("code") ?? "").replace(/\s/g, "");
+    if (!/^\d{6}$/.test(code)) return { status: "error", error: "code" };
+    const { error } = await supabase.auth.mfa.challengeAndVerify({ factorId: factor.id, code });
+    if (error) return { status: "error", error: "code" };
+  }
+  const { data: blockers } = await supabase.rpc("account_deletion_blockers");
+  if (blockers?.length) return { status: "error", error: "blocked" };
+
+  const admin = createAdminClient();
+  if (!admin) return { status: "error", error: "setup" };
+  const { data: mine } = await admin.from("account_members").select("account_id, accounts!inner(kind)").eq("user_id", id).eq("accounts.kind", "company");
+  for (const m of mine ?? []) {
+    const { count } = await admin.from("account_members").select("user_id", { count: "exact", head: true }).eq("account_id", m.account_id);
+    if (count === 1) {
+      const { error } = await admin.from("accounts").delete().eq("id", m.account_id);
+      if (error) {
+        console.error("account delete: company", error.code);
+        return { status: "error", error: "generic" };
+      }
+    }
+  }
+  const { data: profile } = await admin.from("profiles").select("avatar_path").eq("id", id).maybeSingle();
+  if (profile?.avatar_path) await admin.storage.from("avatars").remove([profile.avatar_path]);
+  const { error } = await admin.auth.admin.deleteUser(id);
+  if (error) {
+    console.error("account delete failed", error.code);
+    return { status: "error", error: "generic" };
+  }
+  await supabase.auth.signOut({ scope: "local" });
+  redirect(`${BRAND.url}${publicHref("home", (await getLocale()) === "en" ? "en" : "hu")}`);
 }

@@ -14,6 +14,7 @@ import { authCookieOptions, REMEMBER_COOKIE, wantsRemember } from "@/lib/supabas
  *  3. refreshes the Supabase session on surfaces that need sign-in, and sends signed-out
  *     visitors to the sign-in page (signed-in visitors skip the sign-in and sign-up pages)
  *  4. admin: every page needs the second factor (aal2); until then staff are sent to /mfa
+ *  5. app: someone who turned on two-step verification and signed in with the password only is sent to /two-step
  */
 export async function proxy(request: NextRequest) {
   const host = request.headers.get("host");
@@ -66,6 +67,8 @@ const PUBLIC_APP_PATHS: Record<AppSite, string[]> = {
 const SIGNED_OUT_ONLY = ["/login", "/register", "/verify-email", "/forgot-password"];
 /** Admin pages a signed-in user may open before the second factor: the code itself, email links, the staff invitation. */
 const BEFORE_SECOND_FACTOR = ["/mfa", "/auth/", "/invite/"];
+/** App pages open before the two-step code: the code screen itself and email links. */
+const BEFORE_TWO_STEP = ["/two-step", "/auth/"];
 
 function matches(path: string, list: string[]) {
   return list.some((p) => (p.endsWith("/") ? path.startsWith(p) : path === p));
@@ -81,7 +84,7 @@ function appLocation(site: ReturnType<typeof resolveSite>, pathname: string): { 
   return null;
 }
 
-type Session = { signedIn: boolean; aal: string | null };
+type Session = { signedIn: boolean; aal: string | null; needsTwoStep: boolean };
 
 function authRedirect(site: AppSite, path: string, session: Session, next: string | null): string | null {
   if (!session.signedIn && !matches(path, PUBLIC_APP_PATHS[site])) {
@@ -90,6 +93,9 @@ function authRedirect(site: AppSite, path: string, session: Session, next: strin
   if (session.signedIn && matches(path, SIGNED_OUT_ONLY)) return safeNext(next);
   if (site === "admin" && session.signedIn && session.aal !== "aal2" && !matches(path, BEFORE_SECOND_FACTOR)) {
     return path === "/" ? "/mfa" : `/mfa?next=${encodeURIComponent(path)}`;
+  }
+  if (site === "portal" && session.needsTwoStep && !matches(path, BEFORE_TWO_STEP)) {
+    return path === "/" ? "/two-step" : `/two-step?next=${encodeURIComponent(path)}`;
   }
   return null;
 }
@@ -143,7 +149,7 @@ function setLocaleCookie(response: NextResponse, locale: Locale, host: string | 
 async function refreshSession(request: NextRequest, response: NextResponse): Promise<Session> {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const key = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
-  if (!url || !key) return { signedIn: false, aal: null };
+  if (!url || !key) return { signedIn: false, aal: null, needsTwoStep: false };
   const remember = wantsRemember(request.cookies.get(REMEMBER_COOKIE)?.value);
 
   const supabase = createServerClient(url, key, {
@@ -159,7 +165,14 @@ async function refreshSession(request: NextRequest, response: NextResponse): Pro
   });
   // Refreshes an expired token; pages and RLS do the actual authorization.
   const { data } = await supabase.auth.getClaims();
-  return { signedIn: Boolean(data?.claims), aal: typeof data?.claims.aal === "string" ? data.claims.aal : null };
+  const aal = typeof data?.claims.aal === "string" ? data.claims.aal : null;
+  // Read from the session itself (no network): does this person have a verified authenticator still to use?
+  let needsTwoStep = false;
+  if (data?.claims && aal !== "aal2") {
+    const { data: level } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
+    needsTwoStep = level?.nextLevel === "aal2";
+  }
+  return { signedIn: Boolean(data?.claims), aal, needsTwoStep };
 }
 
 export const config = {

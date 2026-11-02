@@ -7,14 +7,30 @@ import { requestOrigin } from "@/lib/request-origin";
 import { resendFetch } from "@/lib/resend";
 import { hrefFor, type AppSite } from "@/lib/sites";
 import type { Enums } from "@/lib/supabase/database.types";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
+import { topicOf, topicOn } from "@/features/notifications/prefs";
 import { leaseTenantEmail, occupantEmail, staffEmail, teamMemberEmail, type Email } from "./emails";
 
 /** Staff invitations are valid for 48 hours (create_staff_invitation). */
 const STAFF_INVITATION_VALID_HOURS = 48;
 
-/** Sends one transactional email through Resend. Never throws; returns whether it was handed over. */
+/** Whether a Keyfly user with this address switched the email's topic off (Értesítések). Unknown addresses get everything. */
+async function switchedOff(to: string, category: string): Promise<boolean> {
+  const topic = topicOf(category);
+  if (!topic) return false;
+  const admin = createAdminClient();
+  if (!admin) return false;
+  const { data } = await admin.from("profiles").select("email_prefs").ilike("email", to.replace(/[\\%_]/g, "\\$&")).maybeSingle();
+  return data ? !topicOn(data.email_prefs, topic) : false;
+}
+
+/**
+ * Sends one transactional email through Resend. Never throws; returns whether it was handed over.
+ * A topic the recipient switched off counts as handled (true): nothing to resend.
+ */
 export async function sendEmail(to: string, email: Email, category: string): Promise<boolean> {
+  if (await switchedOff(to, category)) return true;
   try {
     const response = await resendFetch("/emails", {
       method: "POST",
