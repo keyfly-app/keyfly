@@ -11,5 +11,10 @@ import { supabaseEnv } from "./env";
 export function createAdminClient() {
   const secret = process.env.SUPABASE_SECRET_KEY;
   if (!secret) return null;
+  // A publishable (public) key here would run as an anonymous user and every call would be refused.
+  if (!secret.startsWith("sb_secret_")) {
+    console.error("SUPABASE_SECRET_KEY is not a secret key (expected sb_secret_…)");
+    return null;
+  }
   return createClient<Database>(supabaseEnv().url, secret, { auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false } });
 }
