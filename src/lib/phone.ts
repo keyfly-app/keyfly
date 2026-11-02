@@ -1,10 +1,10 @@
 /**
  * Phone numbers for the SMS check (canvas "Telefonszám megerősítése"). Stored in E.164 ("+36301234567").
- * Countries match the SMS geographic permissions set in Twilio: EU and EEA, Switzerland, the United Kingdom, Ukraine,
- * Serbia. (+1 needs a Twilio phone number, not a sender name, so it is not offered yet.)
+ * Countries match the geographic permissions set in Twilio: EU and EEA, Switzerland, the United Kingdom, Ukraine,
+ * Serbia, the United States and Canada (Twilio Verify picks a sender that works in each).
  */
 const CALLING_CODES = [
-  "30", "31", "32", "33", "34", "351", "352", "353", "354", "356", "357", "358", "359", "36", "370", "371", "372",
+  "1", "30", "31", "32", "33", "34", "351", "352", "353", "354", "356", "357", "358", "359", "36", "370", "371", "372",
   "380", "381", "385", "386", "39", "40", "41", "420", "421", "423", "43", "44", "45", "46", "47", "48", "49",
 ];
 

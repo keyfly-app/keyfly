@@ -52,26 +52,38 @@ insert into public.bank_accounts (account_id, currency, iban, holder_name, creat
 select tests.act_as('00000000-0000-0000-0000-0000000ff001');
 select tests.ok(not exists (select 1 from public.bank_accounts where currency = 'EUR'), 'nobody else sees a personal bank account');
 
--- ---------- Phone check ----------
-select tests.throws($$update public.profiles set phone = '+36301234567' where id = '00000000-0000-0000-0000-0000000ff001'$$, 'the phone is not written directly');
-select public.start_phone_check('+36301234567', encode(sha256('123456'::bytea), 'hex'));
-select tests.ok(public.confirm_phone_code(encode(sha256('000000'::bytea), 'hex')) = 'wrong', 'a wrong code');
-select tests.ok(public.confirm_phone_code(encode(sha256('123456'::bytea), 'hex')) = 'ok', 'the right code');
-select tests.ok((select phone = '+36301234567' and phone_verified_at is not null from public.profiles where id = '00000000-0000-0000-0000-0000000ff001'), 'the number is confirmed');
-select tests.throws($$select public.confirm_phone_code(encode(sha256('123456'::bytea), 'hex'))$$, 'a code works once');
+-- ---------- Audit log: no full account number, no holder name ----------
+reset role;
+select tests.ok(not exists (select 1 from audit.events where table_name = 'bank_accounts' and (changes::text like '%HU08117730%' or changes ? 'holder_name')),
+  'the audit log keeps neither the full account number nor the holder');
+select tests.ok(exists (select 1 from audit.events where table_name = 'bank_accounts' and changes ->> 'iban' = '…0000'), '… only its last four characters');
 
-select public.start_phone_check('+36301234568', encode(sha256('111111'::bytea), 'hex'));
-select public.confirm_phone_code(encode(sha256('000000'::bytea), 'hex')) from generate_series(1, 5);
-select tests.throws($$select public.confirm_phone_code(encode(sha256('111111'::bytea), 'hex'))$$, 'five wrong tries end the code');
-select public.start_phone_check('+36301234569', encode(sha256('222222'::bytea), 'hex'));
-select tests.throws($$select public.start_phone_check('+36301234569', encode(sha256('1'::bytea), 'hex'))$$, 'at most three codes an hour');
+-- ---------- Phone check (Twilio Verify checks the code; the server confirms) ----------
+select tests.act_as('00000000-0000-0000-0000-0000000ff001');
+select tests.throws($$update public.profiles set phone = '+36301234567' where id = '00000000-0000-0000-0000-0000000ff001'$$, 'the phone is not written directly');
+select public.start_phone_check('+36301234567');
+select tests.ok(public.pending_phone() = '+36301234567', 'the number waiting for its code');
+select tests.throws($$select public.set_confirmed_phone('00000000-0000-0000-0000-0000000ff001', '+36301234567')$$, 'a person cannot confirm the number');
+reset role;
+set local role service_role;
+select tests.ok(not public.set_confirmed_phone('00000000-0000-0000-0000-0000000ff001', '+36309999999'), 'only the number the code went to');
+select tests.ok(public.set_confirmed_phone('00000000-0000-0000-0000-0000000ff001', '+36301234567'), 'the server confirms it');
+select tests.ok(not public.set_confirmed_phone('00000000-0000-0000-0000-0000000ff001', '+36301234567'), '… once');
+reset role;
+select tests.ok((select phone = '+36301234567' and phone_verified_at is not null from public.profiles where id = '00000000-0000-0000-0000-0000000ff001'), 'the number is confirmed');
+
+select tests.act_as('00000000-0000-0000-0000-0000000ff001');
+select public.start_phone_check('+36301234568');
+select public.start_phone_check('+36301234569');
+select tests.throws($$select public.start_phone_check('+36301234569')$$, 'at most three codes an hour');
 
 select public.remove_phone();
 select tests.ok((select phone is null and phone_verified_at is null from public.profiles where id = '00000000-0000-0000-0000-0000000ff001'), 'one can remove the number');
+select tests.ok(public.pending_phone() is null, '… and the pending check goes too');
 
 select tests.act_as('00000000-0000-0000-0000-0000000ff003');
-select tests.throws($$select public.start_phone_check('+36301234567', encode(sha256('1'::bytea), 'hex'))$$, 'only with a confirmed email');
-select tests.throws($$select * from public.phone_verifications$$, 'codes are not readable');
+select tests.throws($$select public.start_phone_check('+36301234567')$$, 'only with a confirmed email');
+select tests.throws($$select * from public.phone_verifications$$, 'pending numbers are not readable');
 
 rollback;
 \echo '=== BANK AND PHONE TESTS PASSED ==='

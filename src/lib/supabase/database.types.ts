@@ -1312,8 +1312,9 @@ export type Database = {
       recovery_codes_left: { Args: never; Returns: number }
       set_recovery_codes: { Args: { p_hashes: string[] }; Returns: undefined }
       my_access_requests: { Args: never; Returns: { account_id: string; created_at: string; id: string; name: string; tax_number: string | null }[] }
-      start_phone_check: { Args: { p_phone: string; p_code_hash: string }; Returns: number }
-      confirm_phone_code: { Args: { p_code_hash: string }; Returns: string }
+      start_phone_check: { Args: { p_phone: string }; Returns: number }
+      pending_phone: { Args: never; Returns: string }
+      set_confirmed_phone: { Args: { p_user: string; p_phone: string }; Returns: boolean }
       remove_phone: { Args: never; Returns: undefined }
       trust_device: { Args: { p_token_hash: string; p_label: string }; Returns: string }
       trusted_device_ok: { Args: { p_token_hash: string }; Returns: boolean }

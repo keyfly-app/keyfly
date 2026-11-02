@@ -1540,7 +1540,6 @@
       "remove": "Remove phone number",
       "saved": "Your phone number is confirmed.",
       "removed": "Phone number removed.",
-      "sms": "Your Keyfly code: {code}. Don’t share it with anyone.",
       "errors": {
         "format": "Enter a mobile number with its country code, for example +36 30 123 4567.",
         "country": "We can’t text this country yet. Write to us: support@keyfly.app.",

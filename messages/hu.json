@@ -1540,7 +1540,6 @@
       "remove": "Telefonszám törlése",
       "saved": "Megerősítettük a telefonszámod.",
       "removed": "Töröltük a telefonszámod.",
-      "sms": "A Keyfly kódod: {code}. Ne add meg senkinek.",
       "errors": {
         "format": "Adj meg egy mobilszámot országkóddal, például +36 30 123 4567.",
         "country": "Erre az országra még nem tudunk SMS-t küldeni. Írj nekünk: support@keyfly.app.",

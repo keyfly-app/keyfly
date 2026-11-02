@@ -1,10 +1,10 @@
 "use server";
 
-import { createHash, randomBytes, randomInt } from "node:crypto";
+import { randomBytes } from "node:crypto";
 import { createClient as createPlainClient } from "@supabase/supabase-js";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { getLocale, getTranslations } from "next-intl/server";
+import { getLocale } from "next-intl/server";
 import { BRAND } from "@/config/company";
 import { isCountry } from "@/config/countries";
 import { publicHref } from "@/i18n/config";
@@ -14,7 +14,7 @@ import { forgetTrustedDevices } from "@/features/security/trusted";
 import { requestOrigin } from "@/lib/request-origin";
 import { parsePhone } from "@/lib/phone";
 import { hrefFor } from "@/lib/sites";
-import { sendSms } from "@/lib/sms";
+import { checkVerification, startVerification } from "@/lib/sms";
 import type { Database } from "@/lib/supabase/database.types";
 import { supabaseEnv } from "@/lib/supabase/env";
 import { createClient } from "@/lib/supabase/server";
@@ -70,14 +70,12 @@ export type PhoneError = "format" | "country" | "mobile" | "limit" | "sms" | "co
 /** number → code (after the SMS went out; `at` starts the resend countdown) → done. */
 export type PhoneState = { step: "number" | "code" | "done"; phone?: string; at?: number; error?: PhoneError; /** What was typed, kept after an error. */ input?: string };
 
-const hashCode = (code: string) => createHash("sha256").update(code).digest("hex");
-
-/** One action for both steps of the dialog: intent "send" texts a code, intent "confirm" checks it. */
+/** One action for both steps of the dialog: intent "send" asks Twilio Verify to text a code, intent "confirm" checks it. */
 export async function phoneStep(prev: PhoneState, form: FormData): Promise<PhoneState> {
   return form.get("intent") === "confirm" ? confirmPhoneCode(prev, form) : sendPhoneCode(prev, form);
 }
 
-/** Step 1: checks the number, stores a hashed 6-digit code (3 an hour, 10 a day) and texts it. */
+/** Step 1: checks the number and our limits (3 an hour, 10 a day), then Twilio texts the code. */
 async function sendPhoneCode(prev: PhoneState, form: FormData): Promise<PhoneState> {
   const input = String(form.get("phone") ?? prev.phone ?? "").slice(0, 24);
   const fail = (error: PhoneError): PhoneState => ({ ...prev, step: prev.step === "code" ? "code" : "number", error, input });
@@ -85,28 +83,29 @@ async function sendPhoneCode(prev: PhoneState, form: FormData): Promise<PhoneSta
   if (!parsed.ok) return fail(parsed.error);
   const { supabase, id } = await signedIn();
   if (!id) return fail("generic");
-  const code = String(randomInt(0, 1_000_000)).padStart(6, "0");
-  const { error } = await supabase.rpc("start_phone_check", { p_phone: parsed.e164, p_code_hash: hashCode(code) });
+  const { error } = await supabase.rpc("start_phone_check", { p_phone: parsed.e164 });
   if (error) return fail(error.message === "too_many_codes" ? "limit" : error.message === "email_not_confirmed" ? "email" : "generic");
-  const [t, { host }] = await Promise.all([getTranslations("settings.phone"), requestOrigin()]);
-  // The last line lets phones offer the code from the SMS automatically (WebOTP / iOS one-time codes).
-  const sent = await sendSms(parsed.e164, `${t("sms", { code })}\n\n@${host.split(":")[0]} #${code}`);
-  if (!sent) return fail("sms");
+  const sent = await startVerification(parsed.e164, (await getLocale()) === "en" ? "en" : "hu");
+  if (sent !== "sent") return fail(sent === "invalid" ? "mobile" : sent === "limit" ? "limit" : sent === "blocked" ? "country" : "sms");
   return { step: "code", phone: parsed.e164, at: Date.now() };
 }
 
-/** Step 2: the code from the SMS; the number becomes the profile's confirmed phone. */
+/** Step 2: Twilio checks the code for the number it went to; then the server (not the person) confirms the number. */
 async function confirmPhoneCode(prev: PhoneState, form: FormData): Promise<PhoneState> {
   const fail = (error: PhoneError): PhoneState => ({ ...prev, step: "code", error });
   const code = String(form.get("code") ?? "").replace(/\D/g, "");
   if (code.length !== 6) return fail("code");
   const { supabase, id } = await signedIn();
   if (!id) return fail("generic");
-  const { data, error } = await supabase.rpc("confirm_phone_code", { p_code_hash: hashCode(code) });
-  if (error) return fail(error.message === "code_expired" ? "expired" : "generic");
-  if (data !== "ok") return fail("code");
+  const { data: phone } = await supabase.rpc("pending_phone");
+  if (!phone) return fail("expired");
+  const result = await checkVerification(phone, code);
+  if (result !== "approved") return fail(result === "wrong" ? "code" : result === "expired" ? "expired" : "generic");
+  const admin = createAdminClient();
+  const { data: confirmed } = admin ? await admin.rpc("set_confirmed_phone", { p_user: id, p_phone: phone }) : { data: false };
+  if (!confirmed) return fail("generic");
   revalidatePath("/", "layout");
-  return { step: "done", phone: prev.phone };
+  return { step: "done", phone };
 }
 
 export async function removePhone(): Promise<{ ok: boolean }> {
