@@ -666,6 +666,7 @@ export type Database = {
           lease_id: string | null
           monthly_rent: number
           postal_code: string
+          property_kind: Database["public"]["Enums"]["property_kind"]
           reminder_count: number
           staircase: string | null
           start_date: string
@@ -697,6 +698,7 @@ export type Database = {
           lease_id?: string | null
           monthly_rent: number
           postal_code: string
+          property_kind?: Database["public"]["Enums"]["property_kind"]
           reminder_count?: number
           staircase?: string | null
           start_date: string
@@ -728,6 +730,7 @@ export type Database = {
           lease_id?: string | null
           monthly_rent?: number
           postal_code?: string
+          property_kind?: Database["public"]["Enums"]["property_kind"]
           reminder_count?: number
           staircase?: string | null
           start_date?: string
@@ -1442,6 +1445,7 @@ export type Database = {
           p_landlord_name?: string
           p_monthly_rent: number
           p_postal_code: string
+          p_property_kind?: Database["public"]["Enums"]["property_kind"]
           p_staircase?: string
           p_start_date: string
           p_street_name: string
@@ -1651,7 +1655,7 @@ export type Database = {
         | "cancelled"
         | "ended"
         | "claimed"
-      property_kind: "flat" | "room" | "house"
+      property_kind: "flat" | "room" | "house" | "office" | "retail" | "hospitality" | "industrial" | "parking" | "other"
       property_scope: "all" | "selected"
       staff_role: "superadmin" | "admin" | "insurance" | "support" | "finance"
       start_view: "tenant" | "landlord" | "manager"
@@ -1863,7 +1867,7 @@ export const Constants = {
         "ended",
         "claimed",
       ],
-      property_kind: ["flat", "room", "house"],
+      property_kind: ["flat", "room", "house", "office", "retail", "hospitality", "industrial", "parking", "other"],
       property_scope: ["all", "selected"],
       staff_role: ["superadmin", "admin", "insurance", "support", "finance"],
       start_view: ["tenant", "landlord", "manager"],

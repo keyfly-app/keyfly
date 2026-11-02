@@ -529,7 +529,7 @@
     },
     "address": {
       "title": "Which property do you rent?",
-      "lead": "Start typing the address and pick it from the list.",
+      "lead": "Choose its type, then start typing the address.",
       "unitTitle": "Add the unit details",
       "unitLead": "Leave empty what isn’t part of the address.",
       "postalCode": "Postcode",
@@ -541,7 +541,6 @@
       "staircase": "Staircase",
       "floor": "Floor",
       "door": "Door",
-      "floorNone": "–",
       "floorNumbered": "Floor {number}",
       "floors": {
         "basement": "Basement",
@@ -549,7 +548,11 @@
         "raised_ground": "Raised ground floor",
         "mezzanine": "Mezzanine",
         "attic": "Attic"
-      }
+      },
+      "type": "Property type",
+      "typePlaceholder": "Choose a type",
+      "floorPlaceholder": "e.g. 3 or ground",
+      "floorOptions": "Floors"
     },
     "terms": {
       "title": "Lease terms",
@@ -779,7 +782,8 @@
       "property": "This property doesn’t belong to this account.",
       "account": "You can’t take over the lease with this account. Choose one where you’re the account holder, an admin or a manager.",
       "ownAccount": "You can’t be the landlord with the tenant’s account.",
-      "generic": "Something went wrong. Please try again."
+      "generic": "Something went wrong. Please try again.",
+      "kind": "Choose the property type."
     },
     "addressSearch": {
       "label": "Address",
@@ -1933,5 +1937,20 @@
     "none": "No matching country.",
     "back": "Back",
     "codeOf": "Country code: {country}, {code}"
+  },
+  "propertyKinds": {
+    "flat": "Flat",
+    "house": "House",
+    "room": "Room",
+    "office": "Office",
+    "retail": "Retail unit",
+    "hospitality": "Hospitality venue",
+    "industrial": "Warehouse, industrial",
+    "parking": "Garage, parking space",
+    "other": "Other",
+    "groups": {
+      "residential": "Residential",
+      "commercial": "Commercial"
+    }
   }
 }

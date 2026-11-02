@@ -6,15 +6,17 @@ import { useLocale, useTranslations } from "next-intl";
 import { FlowHeader } from "@/components/flow/FlowHeader";
 import { Icon } from "@/components/Icon";
 import { Dialog, DialogActions } from "@/components/ui/Dialog";
-import { Button, INPUT_CLASS, Label, Notice, TextField } from "@/components/ui/form";
+import { Button, FieldError, INPUT_CLASS, Label, Notice, TextField } from "@/components/ui/form";
 import { Timeline } from "@/components/ui/Timeline";
 import { isLocale } from "@/i18n/config";
 import { AddressSearch } from "@/features/address-search/AddressSearch";
 import type { FoundAddress } from "@/features/address-search/places";
-import { FLOOR_NUMBERS, STREET_TYPES, cityLine, fullAddress, streetLine, withDot, type AddressParts } from "@/lib/address";
+import { PROPERTY_KIND_GROUPS } from "@/config/property-kinds";
+import { STREET_TYPES, cityLine, fullAddress, streetLine, withDot, type AddressParts } from "@/lib/address";
 import { date, money, number } from "@/lib/format";
 import type { Enums } from "@/lib/supabase/database.types";
 import { createLeaseRequest, type RequestState } from "./actions";
+import { FloorInput } from "./FloorInput";
 import { KeyValues, LATEST_DATE, MoneyField, Segmented, TrustLines } from "./ui";
 import {
   ADDRESS_FIELDS,
@@ -33,8 +35,8 @@ import {
 
 const STEPS = ["home", "lease", "landlord", "review"] as const;
 const REVIEW = STEPS.length - 1;
-const LOW_FLOORS: Enums<"floor_type">[] = ["basement", "ground", "raised_ground", "mezzanine"];
 const EMPTY: Values = {
+  propertyKind: "",
   postalCode: "",
   city: "",
   streetName: "",
@@ -52,7 +54,7 @@ const EMPTY: Values = {
   landlordEmail: "",
   landlordName: "",
 };
-const FIELDS_OF_STEP: readonly (readonly string[])[] = [ADDRESS_FIELDS, TERM_FIELDS, LANDLORD_FIELDS];
+const FIELDS_OF_STEP: readonly (readonly string[])[] = [["propertyKind", ...ADDRESS_FIELDS], TERM_FIELDS, LANDLORD_FIELDS];
 
 /** The step a server-side error belongs to, so the form opens there. */
 function stepOf(errors: Errors): number {
@@ -75,6 +77,7 @@ function endAfter(start: string, years: number): string {
 export function RequestWizard({ myEmail, homeHref }: { myEmail: string; homeHref: string }) {
   const t = useTranslations("leaseRequest");
   const s = useTranslations("leaseRequest.addressSearch");
+  const k = useTranslations("propertyKinds");
   const raw = useLocale();
   const locale = isLocale(raw) ? raw : "hu";
   const router = useRouter();
@@ -94,7 +97,7 @@ export function RequestWizard({ myEmail, homeHref }: { myEmail: string; homeHref
         setErrors(next.fields);
         const at = stepOf(next.fields);
         setStep(at);
-        if (at === 0) setAddressMode("manual"); // show the fields the server objected to
+        if (at === 0 && hasErrors(clearError(next.fields, "propertyKind"))) setAddressMode("manual"); // show the fields the server objected to
       }
       return next;
     },
@@ -115,7 +118,7 @@ export function RequestWizard({ myEmail, homeHref }: { myEmail: string; homeHref
     setValues((v) => ({ ...v, ...picked }));
     setErrors((e) => Object.keys(picked).reduce(clearError, e));
     // Anything Google left out (e.g. a street without a house number) is completed by hand.
-    setAddressMode(hasErrors(validateAddress({ ...values, ...picked })) ? "manual" : "picked");
+    setAddressMode(hasErrors(clearError(validateAddress({ ...values, ...picked }), "propertyKind")) ? "manual" : "picked");
   };
   const err = (key: string) => (errors[key] ? t(`errors.${errors[key]}`) : undefined);
   const formatAmount = (key: string) => () => {
@@ -134,7 +137,7 @@ export function RequestWizard({ myEmail, homeHref }: { myEmail: string; homeHref
   const next = () => {
     const found = check(step);
     setErrors(found);
-    if (step === 0 && addressMode === "picked" && hasErrors(found)) setAddressMode("manual");
+    if (step === 0 && addressMode === "picked" && hasErrors(clearError(found, "propertyKind"))) setAddressMode("manual");
     if (hasErrors(found)) return focusFirstError();
     go(step + 1);
   };
@@ -249,6 +252,39 @@ export function RequestWizard({ myEmail, homeHref }: { myEmail: string; homeHref
 
               {step === 0 && (
                 <>
+                  <div className="flex flex-col gap-1.5">
+                    <Label htmlFor={`${id}-kind`}>{t("address.type")}</Label>
+                    <select
+                      id={`${id}-kind`}
+                      value={values.propertyKind}
+                      onChange={(e) => set("propertyKind")(e.target.value)}
+                      aria-invalid={errors.propertyKind ? true : undefined}
+                      aria-describedby={errors.propertyKind ? `${id}-kind-error` : undefined}
+                      className={`${INPUT_CLASS} appearance-auto ${values.propertyKind ? "" : "text-muted"}`}
+                    >
+                      <option value="" disabled>
+                        {t("address.typePlaceholder")}
+                      </option>
+                      {PROPERTY_KIND_GROUPS.map(({ group, kinds }) =>
+                        group ? (
+                          <optgroup key={group} label={k(`groups.${group}`)}>
+                            {kinds.map((kind) => (
+                              <option key={kind} value={kind} className="text-ink">
+                                {k(kind)}
+                              </option>
+                            ))}
+                          </optgroup>
+                        ) : (
+                          kinds.map((kind) => (
+                            <option key={kind} value={kind} className="text-ink">
+                              {k(kind)}
+                            </option>
+                          ))
+                        ),
+                      )}
+                    </select>
+                    {errors.propertyKind && <FieldError id={`${id}-kind-error`} message={t(`errors.${errors.propertyKind}`)} />}
+                  </div>
                   {addressMode === "search" && (
                     <AddressSearch
                       onPick={pickFound}
@@ -312,23 +348,7 @@ export function RequestWizard({ myEmail, homeHref }: { myEmail: string; homeHref
                       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
                         <TextField id={`${id}-bld`} label={t("address.building")} value={values.building} onChange={(e) => set("building")(e.target.value)} maxLength={20} />
                         <TextField id={`${id}-stair`} label={t("address.staircase")} value={values.staircase} onChange={(e) => set("staircase")(e.target.value)} maxLength={20} />
-                        <div className="flex flex-col gap-1.5">
-                          <Label htmlFor={`${id}-floor`}>{t("address.floor")}</Label>
-                          <select id={`${id}-floor`} value={values.floor} onChange={(e) => set("floor")(e.target.value)} className={`${INPUT_CLASS} appearance-auto`}>
-                            <option value="">{t("address.floorNone")}</option>
-                            {LOW_FLOORS.map((f) => (
-                              <option key={f} value={f}>
-                                {t(`address.floors.${f}`)}
-                              </option>
-                            ))}
-                            {FLOOR_NUMBERS.map((n) => (
-                              <option key={n} value={`numbered:${n}`}>
-                                {t("address.floorNumbered", { number: n })}
-                              </option>
-                            ))}
-                            <option value="attic">{t("address.floors.attic")}</option>
-                          </select>
-                        </div>
+                        <FloorInput id={`${id}-floor`} value={values.floor} onChange={set("floor")} />
                         <TextField id={`${id}-door`} label={t("address.door")} value={values.door} onChange={(e) => set("door")(e.target.value)} maxLength={20} />
                       </div>
                     </section>
@@ -404,6 +424,7 @@ export function RequestWizard({ myEmail, homeHref }: { myEmail: string; homeHref
                   <div className="flex flex-col">
                     <ReviewSection title={t("steps.home")} edit={t("change")} editLabel={t("review.editSection", { section: t("steps.home") })} onEdit={() => go(0)}>
                       <p className="flex flex-col text-sm">
+                        <span className="text-muted">{k(values.propertyKind)}</span>
                         <span className="font-semibold [overflow-wrap:anywhere]">{streetLine(parts)}</span>
                         <span className="text-muted">{cityLine(parts)}</span>
                       </p>
@@ -457,7 +478,7 @@ export function RequestWizard({ myEmail, homeHref }: { myEmail: string; homeHref
               <section className="flex flex-col gap-1.5 rounded-xl border border-line bg-surface p-5">
                 <h2 className="text-xs font-semibold tracking-[0.05em] text-muted uppercase">{t("rail.title")}</h2>
                 <ul className="flex flex-col">
-                  <RailItem name={t("steps.home")} value={step > 0 ? fullAddress(parts) : null} empty={t("rail.empty")} />
+                  <RailItem name={t("steps.home")} value={step > 0 ? `${k(values.propertyKind)} · ${fullAddress(parts)}` : null} empty={t("rail.empty")} />
                   <RailItem
                     name={t("steps.lease")}
                     value={step > 1 ? t("rail.termsLine", { rent: money(amount("monthlyRent"), locale), period }) : null}

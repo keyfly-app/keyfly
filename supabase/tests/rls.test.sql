@@ -381,8 +381,9 @@ begin;
 select tests.act_as('00000000-0000-0000-0000-0000000000f3');
 create temp table req as select * from public.create_lease_request('1068', 'Budapest', 'Dózsa György', 'út', '30.', current_date + 30, 280000,
   'Peter@Example.com', p_building => 'B', p_staircase => '2.', p_floor_type => 'numbered', p_floor_number => 1::smallint, p_door => '3.',
-  p_end_date => current_date + 395, p_landlord_name => 'Péter Szabó');
+  p_end_date => current_date + 395, p_landlord_name => 'Péter Szabó', p_property_kind => 'office');
 select tests.ok(length((select token from req)) = 64, 'a tenant invites the landlord');
+select tests.ok((select property_kind from public.lease_requests) = 'office', 'the request keeps the property type');
 select tests.ok((select count(*) from public.lease_requests) = 1 and (select status from public.lease_requests) = 'pending_landlord', 'the tenant sees the request, waiting for the landlord');
 select tests.ok((select landlord_email from public.lease_requests) = 'peter@example.com', 'the landlord''s email is stored in lower case');
 select tests.ok((select count(*) from public.invitations where kind = 'lease_landlord') = 1, 'the tenant sees the open landlord invitation');
@@ -423,7 +424,7 @@ select tests.ok((select not needs_tenant_approval from took), 'unchanged terms n
 select tests.ok((select tenant_email = 'gabor@example.com' and tenant_locale = 'hu' from took), 'the landlord''s side learns where to notify the tenant');
 select tests.ok((select status from public.leases where id = (select lease_id from took)) = 'confirmed', 'the lease is confirmed at once');
 select tests.ok((select count(*) from public.properties p join public.leases l on l.property_id = p.id
-                 where l.id = (select lease_id from took) and p.street_name = 'Dózsa György' and p.floor_number = 1 and p.building = 'B'
+                 where l.id = (select lease_id from took) and p.street_name = 'Dózsa György' and p.floor_number = 1 and p.building = 'B' and p.kind = 'office'
                    and p.account_id = (select id from fx where name = 'acc_peter')) = 1, 'the property is created from the tenant''s address');
 select tests.ok((select count(*) from public.lease_parties where lease_id = (select lease_id from took)) = 2, 'both parties are recorded');
 select tests.throws($$select public.accept_landlord_invitation((select token from req), (select id from fx where name = 'acc_peter'), current_date + 30, 280000)$$, 'the link works once');

@@ -529,7 +529,7 @@
     },
     "address": {
       "title": "Melyik ingatlant béreled?",
-      "lead": "Kezdd el beírni a címet, és válaszd ki a listából.",
+      "lead": "Válaszd ki a típusát, majd kezdd el beírni a címet.",
       "unitTitle": "Pontosítsd a címet",
       "unitLead": "Ami nincs a címben, maradjon üresen.",
       "postalCode": "Irányítószám",
@@ -541,7 +541,6 @@
       "staircase": "Lépcsőház",
       "floor": "Emelet",
       "door": "Ajtó",
-      "floorNone": "–",
       "floorNumbered": "{number}. emelet",
       "floors": {
         "basement": "Pince, alagsor",
@@ -549,7 +548,11 @@
         "raised_ground": "Magasföldszint",
         "mezzanine": "Félemelet",
         "attic": "Tetőtér"
-      }
+      },
+      "type": "Ingatlan típusa",
+      "typePlaceholder": "Válassz típust",
+      "floorPlaceholder": "pl. 3 vagy földszint",
+      "floorOptions": "Emeletek"
     },
     "terms": {
       "title": "A szerződés feltételei",
@@ -779,7 +782,8 @@
       "property": "Ez az ingatlan nem ehhez a fiókhoz tartozik.",
       "account": "Ezzel a fiókkal nem hagyhatod jóvá a szerződést. Olyat válassz, amelyben fiókgazda, admin vagy kezelő vagy.",
       "ownAccount": "A bérlő fiókjával nem lehetsz bérbeadó.",
-      "generic": "Valami nem sikerült. Próbáld újra."
+      "generic": "Valami nem sikerült. Próbáld újra.",
+      "kind": "Válaszd ki az ingatlan típusát."
     },
     "addressSearch": {
       "label": "Cím",
@@ -1933,5 +1937,20 @@
     "none": "Nincs ilyen ország.",
     "back": "Vissza",
     "codeOf": "Országkód: {country}, {code}"
+  },
+  "propertyKinds": {
+    "flat": "Lakás",
+    "house": "Ház",
+    "room": "Szoba",
+    "office": "Iroda",
+    "retail": "Üzlethelyiség",
+    "hospitality": "Vendéglátóhely",
+    "industrial": "Raktár, ipari ingatlan",
+    "parking": "Garázs, parkolóhely",
+    "other": "Egyéb",
+    "groups": {
+      "residential": "Lakóingatlan",
+      "commercial": "Üzleti ingatlan"
+    }
   }
 }

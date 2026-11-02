@@ -112,6 +112,7 @@ export async function createLeaseRequest(_prev: RequestState, form: FormData): P
     p_deposit_amount: parseAmount(v.deposit) ?? undefined,
     p_landlord_email: v.landlordEmail.trim().toLowerCase(),
     p_landlord_name: optional(v.landlordName),
+    p_property_kind: v.propertyKind as Enums<"property_kind">,
   });
   const created = data?.[0];
   if (error || !created) {

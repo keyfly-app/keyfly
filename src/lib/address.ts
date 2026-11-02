@@ -52,9 +52,6 @@ export function addressFromRow(r: AddressRow): AddressParts {
 /** Suggestions for the street type field (any value is accepted). */
 export const STREET_TYPES = ["utca", "út", "útja", "tér", "körút", "sor", "köz", "fasor", "sétány", "rakpart", "park", "lakótelep", "liget", "dűlő", "lejtő", "udvar"] as const;
 
-/** Floors offered in the floor select: special floors and 1–20. */
-export const FLOOR_NUMBERS = Array.from({ length: 20 }, (_, i) => i + 1);
-
 const FLOOR_SHORT: Record<Exclude<Enums<"floor_type">, "numbered">, string> = {
   basement: "pince",
   ground: "fszt.",

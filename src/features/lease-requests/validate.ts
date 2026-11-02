@@ -2,7 +2,9 @@
  * Field rules for the tenant's lease request and the landlord's review – shared by the forms (instant feedback)
  * and the server actions (authoritative, together with the database checks).
  */
-export type FieldError = "required" | "postalCode" | "amount" | "date" | "endBeforeStart" | "ended" | "email" | "self";
+import { isPropertyKind } from "@/config/property-kinds";
+
+export type FieldError = "required" | "kind" | "postalCode" | "amount" | "date" | "endBeforeStart" | "ended" | "email" | "self";
 export type Values = Record<string, string>;
 export type Errors = Partial<Record<string, FieldError>>;
 
@@ -21,10 +23,18 @@ export function parseAmount(value: string | undefined): number | null {
   return /^\d+$/.test(v) ? Number(v) : Number.NaN;
 }
 
-/** Floor select value: "" (none), a floor type, or "numbered:3". */
+/** Named floors in the order the floor field offers them (canvas "Meghívás 1 – emelet"). */
+export const NAMED_FLOORS = ["ground", "raised_ground", "mezzanine", "basement", "attic"] as const;
+export const MAX_FLOOR = 99;
+
+/** Floor value: "" (none), a named floor, or "numbered:28". */
 export function parseFloor(value: string | undefined): { floorType: string | null; floorNumber: number | null } {
   const v = value ?? "";
-  if (v.startsWith("numbered:")) return { floorType: "numbered", floorNumber: Number(v.slice(9)) };
+  if (v.startsWith("numbered:")) {
+    const n = Number(v.slice(9));
+    return Number.isInteger(n) && n >= 1 && n <= MAX_FLOOR ? { floorType: "numbered", floorNumber: n } : { floorType: null, floorNumber: null };
+  }
+  if (!(NAMED_FLOORS as readonly string[]).includes(v)) return { floorType: null, floorNumber: null };
   return { floorType: v || null, floorNumber: null };
 }
 
@@ -37,6 +47,7 @@ const filled = (v: Values, key: string) => (v[key] ?? "").trim() !== "";
 
 export function validateAddress(v: Values): Errors {
   const e: Errors = {};
+  if (!isPropertyKind(v.propertyKind)) e.propertyKind = "kind";
   for (const key of ["postalCode", "city", "streetName", "streetType", "houseNumber"]) if (!filled(v, key)) e[key] = "required";
   if (!e.postalCode && !/^\d{4}$/.test(v.postalCode.trim())) e.postalCode = "postalCode";
   return e;
