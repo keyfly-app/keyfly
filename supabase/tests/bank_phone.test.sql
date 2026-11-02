@@ -74,6 +74,12 @@ select tests.ok((select phone = '+36301234567' and phone_verified_at is not null
 
 select tests.act_as('00000000-0000-0000-0000-0000000ff001');
 select public.start_phone_check('+36301234568');
+select public.undo_phone_check();
+select tests.ok(public.pending_phone() is null, 'a send Twilio refused leaves nothing pending');
+reset role;
+select tests.ok((select count(*) from public.sms_sends where user_id = '00000000-0000-0000-0000-0000000ff001') = 1, '… and does not count towards the limit');
+select tests.act_as('00000000-0000-0000-0000-0000000ff001');
+select public.start_phone_check('+36301234568');
 select public.start_phone_check('+36301234569');
 select tests.throws($$select public.start_phone_check('+36301234569')$$, 'at most three codes an hour');
 

@@ -86,6 +86,8 @@ async function sendPhoneCode(prev: PhoneState, form: FormData): Promise<PhoneSta
   const { error } = await supabase.rpc("start_phone_check", { p_phone: parsed.e164 });
   if (error) return fail(error.message === "too_many_codes" ? "limit" : error.message === "email_not_confirmed" ? "email" : "generic");
   const sent = await startVerification(parsed.e164, (await getLocale()) === "en" ? "en" : "hu");
+  // Not sent: it does not count towards the limits.
+  if (sent !== "sent") await supabase.rpc("undo_phone_check");
   if (sent !== "sent") return fail(sent === "invalid" ? "mobile" : sent === "limit" ? "limit" : sent === "blocked" ? "country" : "sms");
   return { step: "code", phone: parsed.e164, at: Date.now() };
 }

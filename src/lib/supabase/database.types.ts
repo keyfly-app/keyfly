@@ -1314,6 +1314,7 @@ export type Database = {
       my_access_requests: { Args: never; Returns: { account_id: string; created_at: string; id: string; name: string; tax_number: string | null }[] }
       start_phone_check: { Args: { p_phone: string }; Returns: number }
       pending_phone: { Args: never; Returns: string }
+      undo_phone_check: { Args: never; Returns: undefined }
       set_confirmed_phone: { Args: { p_user: string; p_phone: string }; Returns: boolean }
       remove_phone: { Args: never; Returns: undefined }
       trust_device: { Args: { p_token_hash: string; p_label: string }; Returns: string }
