@@ -1363,7 +1363,7 @@
     },
     "security": {
       "title": "Sign-in and security",
-      "lead": "Your email, your password and the devices where you’re signed in.",
+      "lead": "Your email, your password and the ways you sign in.",
       "credentials": "Sign-in details",
       "recovered": "You signed in with a backup code, so we turned off two-step verification. Turn it back on."
     },

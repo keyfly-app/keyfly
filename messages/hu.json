@@ -1363,7 +1363,7 @@
     },
     "security": {
       "title": "Bejelentkezés és biztonság",
-      "lead": "Az e-mail-címed, a jelszavad és az eszközeid, ahol be vagy jelentkezve.",
+      "lead": "Az e-mail-címed, a jelszavad és a belépési módjaid.",
       "credentials": "Belépési adatok",
       "recovered": "Tartalék kóddal léptél be, ezért kikapcsoltuk a kétlépcsős azonosítást. Kapcsold be újra."
     },

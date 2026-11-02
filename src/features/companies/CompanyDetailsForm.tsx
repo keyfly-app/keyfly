@@ -184,8 +184,8 @@ export function CompanyDetailsForm({ accountId, company, manage }: { accountId: 
   return (
     <>
       <div className="flex flex-col gap-3">
-        <div className="flex items-center justify-between gap-4">
-          <h2 className="text-[17px] leading-6 font-semibold">{t("title")}</h2>
+        <div className="flex items-center justify-end gap-4">
+          <h2 className="sr-only">{t("title")}</h2>
           {manage && (
             <button
               type="button"
