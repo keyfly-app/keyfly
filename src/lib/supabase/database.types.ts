@@ -1518,6 +1518,10 @@ export type Database = {
           user_id: string
         }[]
       }
+      set_member_role: {
+        Args: { p_account_id: string; p_role: Database["public"]["Enums"]["account_role"]; p_user_id: string }
+        Returns: undefined
+      }
       transfer_account_ownership: {
         Args: { p_account_id: string; p_new_owner: string }
         Returns: undefined

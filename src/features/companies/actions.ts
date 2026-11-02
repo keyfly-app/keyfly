@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { accessApprovedEmail, accessDeclinedEmail, accessRequestEmail } from "@/features/invitations/emails";
+import { accessApprovedEmail, accessDeclinedEmail, accessRequestEmail, holderChangedEmail } from "@/features/invitations/emails";
 import { appUrl, inviteTeamMember, myDisplayName, sendEmail } from "@/features/invitations/send";
 import { isLocale } from "@/i18n/config";
 import { requestOrigin } from "@/lib/request-origin";
@@ -134,6 +134,7 @@ const teamError = (message: string | undefined): TeamState => {
   if (message === "already_member") return { status: "error", error: "alreadyMember" };
   if (message === "not_allowed") return { status: "error", error: "notAllowed" };
   if (message === "request_closed") return { status: "error", error: "closed" };
+  if (message === "own_role" || message === "holder_role_fixed" || message === "new_owner_must_be_a_member") return { status: "error", error: "notAllowed" };
   return { status: "error", error: "generic" };
 };
 
@@ -196,6 +197,47 @@ export async function removeMember(_: TeamState, form: FormData): Promise<TeamSt
   if (error || !count) return { status: "error", error: "notAllowed" };
   revalidatePath("/", "layout");
   return { status: "done", message: "removed" };
+}
+
+/** Change a member's role in their row (canvas "Csapat – szerepkör választása a sorban"). Saved at once. */
+export async function setMemberRole(input: { accountId: string; userId: string; role: Enums<"account_role"> }): Promise<TeamState> {
+  if (!ROLES.includes(input.role)) return { status: "error", error: "generic" };
+  const supabase = await createClient();
+  const { error } = await supabase.rpc("set_member_role", { p_account_id: input.accountId, p_user_id: input.userId, p_role: input.role });
+  if (error) return teamError(error.message);
+  revalidatePath("/", "layout");
+  return { status: "done", message: "roleChanged" };
+}
+
+/** Hand the account over to another member; the previous account holder becomes an admin. Both get an email. */
+export async function transferHolder(_: TeamState, form: FormData): Promise<TeamState> {
+  const accountId = String(form.get("accountId") ?? "");
+  const to = String(form.get("userId") ?? "");
+  if (!to) return { status: "error", error: "generic" };
+  const supabase = await createClient();
+  const [{ data: before }, { data: account }] = await Promise.all([
+    supabase.rpc("account_members_list", { p_account_id: accountId }),
+    supabase.from("accounts").select("name, slug").eq("id", accountId).single(),
+  ]);
+  const { error } = await supabase.rpc("transfer_account_ownership", { p_account_id: accountId, p_new_owner: to });
+  if (error) return teamError(error.message);
+  const prev = before?.find((m) => m.role === "owner");
+  const next = before?.find((m) => m.user_id === to);
+  if (account && prev && next) {
+    const admin = createAdminClient();
+    const { data: locales } = admin ? await admin.from("profiles").select("id, locale").in("id", [prev.user_id, next.user_id]) : { data: null };
+    const loc = (id: string) => {
+      const l = locales?.find((p) => p.id === id)?.locale;
+      return isLocale(l) ? l : "hu";
+    };
+    const url = await appUrl("portal", `/c/${account.slug}/settings/team`);
+    await Promise.all([
+      sendEmail(next.email, holderChangedEmail({ locale: loc(next.user_id), url, account: account.name, other: prev.full_name ?? prev.email, side: "new" }), "company_holder_new"),
+      sendEmail(prev.email, holderChangedEmail({ locale: loc(prev.user_id), url, account: account.name, other: next.full_name ?? next.email, side: "previous" }), "company_holder_previous"),
+    ]);
+  }
+  revalidatePath("/", "layout");
+  return { status: "done", message: "transferred", value: next?.full_name ?? next?.email ?? "" };
 }
 
 /** Leave a company account yourself (not the owner: ownership is handed over first). Then back to your own account. */

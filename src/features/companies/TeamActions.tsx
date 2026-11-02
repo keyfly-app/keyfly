@@ -1,13 +1,14 @@
 "use client";
 
-import { useActionState, useId, useState } from "react";
+import { useActionState, useId, useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
 import { Icon } from "@/components/Icon";
 import { toast } from "@/components/Toaster";
 import { Dialog, DialogActions } from "@/components/ui/Dialog";
 import { Button, Notice, TextField } from "@/components/ui/form";
 import type { Enums } from "@/lib/supabase/database.types";
-import { decideRequest, inviteMember, leaveCompany, manageInvitation, removeMember, type TeamState } from "./actions";
+import { MenuPopover } from "@/components/ui/MenuPopover";
+import { decideRequest, inviteMember, leaveCompany, manageInvitation, removeMember, setMemberRole, transferHolder, type TeamState } from "./actions";
 
 const idle: TeamState = { status: "idle" };
 type Role = "manager" | "viewer" | "admin";
@@ -77,7 +78,11 @@ export function InviteMember({ accountId, enterprise }: { accountId: string; ent
   }, idle);
   return (
     <>
-      <button type="button" onClick={() => setOpen(true)} className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-lg bg-ink px-4 text-sm font-medium text-white shadow-[0_1px_2px_rgb(12_31_25/0.16)] hover:bg-ink-soft sm:h-10 sm:w-auto">
+      <button
+        type="button"
+        onClick={() => setOpen(true)}
+        className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-lg bg-ink px-4 text-sm font-medium text-white shadow-[0_1px_2px_rgb(12_31_25/0.16)] hover:bg-ink-soft sm:h-10 sm:w-auto"
+      >
         <Icon name="plus" size={16} strokeWidth={2} />
         {t("invite")}
       </button>
@@ -85,8 +90,16 @@ export function InviteMember({ accountId, enterprise }: { accountId: string; ent
         <Dialog open onClose={() => setOpen(false)} title={t("inviteTitle")} description={t("inviteLead")} closeLabel={c("close")} wide>
           <form action={action} className="flex flex-col gap-4">
             <input type="hidden" name="accountId" value={accountId} />
-            <TextField id={`${id}-email`} name="email" type="email" inputMode="email" autoComplete="off" label={t("email")} maxLength={254}
-              error={state.status === "error" && state.error === "email" ? t("errors.email") : undefined} />
+            <TextField
+              id={`${id}-email`}
+              name="email"
+              type="email"
+              inputMode="email"
+              autoComplete="off"
+              label={t("email")}
+              maxLength={254}
+              error={state.status === "error" && state.error === "email" ? t("errors.email") : undefined}
+            />
             <RoleAndAccess enterprise={enterprise} />
             <Notice kind="info" icon="info">
               {t("unlimited")}
@@ -190,11 +203,19 @@ export function InvitationActions({ invitationId, email }: { invitationId: strin
       <form action={action}>
         <input type="hidden" name="invitationId" value={invitationId} />
         <input type="hidden" name="intent" value="resend" />
-        <button type="submit" aria-disabled={pending || undefined} className="inline-flex h-11 items-center rounded-lg px-3 text-sm font-medium hover:bg-paper aria-disabled:opacity-60 sm:h-9">
+        <button
+          type="submit"
+          aria-disabled={pending || undefined}
+          className="inline-flex h-11 items-center rounded-lg px-3 text-sm font-medium hover:bg-paper aria-disabled:opacity-60 sm:h-9"
+        >
           {t("resend")}
         </button>
       </form>
-      <button type="button" onClick={() => setConfirm(true)} className="inline-flex h-11 items-center rounded-lg px-3 text-sm font-medium text-danger-ink hover:bg-danger-soft sm:h-9">
+      <button
+        type="button"
+        onClick={() => setConfirm(true)}
+        className="inline-flex h-11 items-center rounded-lg px-3 text-sm font-medium text-danger-ink hover:bg-danger-soft sm:h-9"
+      >
         {t("withdraw")}
       </button>
       {confirm && (
@@ -218,81 +239,225 @@ export function InvitationActions({ invitationId, email }: { invitationId: strin
   );
 }
 
-export function RemoveMember({ accountId, userId, name }: { accountId: string; userId: string; name: string }) {
+const PICKABLE: Role[] = ["admin", "manager", "viewer"];
+
+/**
+ * The role of a member as a select in their row (canvas "Csapat – szerepkör választása a sorban"): each choice
+ * carries its one-line meaning, the change is saved at once and confirmed with a toast; on failure it reverts.
+ */
+export function MemberRoleSelect({ accountId, userId, name, role }: { accountId: string; userId: string; name: string; role: Role }) {
+  const t = useTranslations("companies.team");
+  const roles = useTranslations("invite.roles");
+  const c = useTranslations("companies");
+  const [value, setValue] = useState<Role>(role);
+  const [pending, start] = useTransition();
+  const pick = (next: Role) => {
+    if (next === value) return;
+    const before = value;
+    setValue(next);
+    start(async () => {
+      const result = await setMemberRole({ accountId, userId, role: next });
+      if (result.status === "done") toast(t("roleChanged", { name, role: roles(next) }));
+      else {
+        setValue(before);
+        toast(t(`errors.${result.status === "error" ? result.error : "generic"}`), "error");
+      }
+    });
+  };
+  return (
+    <MenuPopover
+      title={t("roleFor", { name })}
+      closeLabel={c("close")}
+      width={320}
+      trigger={({ ref, open, toggle, menuId }) => (
+        <button
+          ref={ref}
+          type="button"
+          onClick={toggle}
+          aria-haspopup="menu"
+          aria-expanded={open}
+          aria-controls={menuId}
+          aria-label={`${t("roleFor", { name })}: ${roles(value)}`}
+          aria-busy={pending || undefined}
+          className={`flex h-11 w-full items-center justify-between gap-2 rounded-lg border bg-surface pr-2.5 pl-3 text-left text-base sm:h-9 sm:max-w-44 sm:text-sm ${open ? "border-ink shadow-[0_0_0_3px_rgb(14_90_67/0.12)]" : "border-field hover:border-ink"}`}
+        >
+          <span className="truncate">{roles(value)}</span>
+          <Icon name="chevronDown" size={16} className="flex-none text-muted" />
+        </button>
+      )}
+    >
+      {PICKABLE.map((r) => (
+        <button
+          key={r}
+          type="button"
+          role="menuitemradio"
+          aria-checked={r === value}
+          onClick={() => pick(r)}
+          className={`flex min-h-11 w-full items-start gap-3 rounded-lg px-3 py-2.5 text-left hover:bg-paper focus-visible:bg-paper sm:px-2.5 sm:py-2 ${r === value ? "bg-paper" : ""}`}
+        >
+          <span className="flex min-w-0 flex-1 flex-col">
+            <span className="text-sm font-semibold">{roles(r)}</span>
+            <span className="text-[12.5px] leading-[17px] text-muted">{t(`roleDesc.${r}`)}</span>
+          </span>
+          {r === value && <Icon name="check" size={16} strokeWidth={2.25} className="mt-0.5 flex-none" />}
+        </button>
+      ))}
+    </MenuPopover>
+  );
+}
+
+type Candidate = { userId: string; name: string; email: string; role: Role };
+
+/**
+ * "⋯" at the end of a member's row: remove (others), leave (yourself) or hand over (the account holder's own row).
+ * Each action is confirmed in a dialog.
+ */
+export function MemberMenu({
+  accountId,
+  userId,
+  name,
+  company,
+  kind,
+  candidates = [],
+}: {
+  accountId: string;
+  userId: string;
+  name: string;
+  company: string;
+  kind: "remove" | "leave" | "transfer";
+  candidates?: Candidate[];
+}) {
   const t = useTranslations("companies.team");
   const c = useTranslations("companies");
-  const [open, setOpen] = useState(false);
+  const roles = useTranslations("invite.roles");
+  const [dialog, setDialog] = useState(false);
+  const [to, setTo] = useState(candidates[0]?.userId ?? "");
+  const actionFor = {
+    remove: removeMember,
+    leave: leaveCompany,
+    transfer: transferHolder,
+  }[kind];
   const [state, action, pending] = useActionState<TeamState, FormData>(async (prev, form) => {
-    const next = await removeMember(prev, form);
-    if (next.status === "done") setOpen(false);
+    const next = await actionFor(prev, form);
+    if (next.status === "done") {
+      setDialog(false);
+      if (kind === "transfer") toast(t("transferred", { name: next.value ?? "" }));
+    }
     return next;
   }, idle);
+  const item = {
+    remove: {
+      label: t("removeFromTeam"),
+      icon: "trash" as const,
+      danger: true,
+    },
+    leave: { label: t("leaveAccount"), icon: "logout" as const, danger: true },
+    transfer: { label: t("transfer"), icon: "users" as const, danger: false },
+  }[kind];
+
   return (
     <>
-      <button
-        type="button"
-        onClick={() => setOpen(true)}
-        aria-label={t("memberActions", { name })}
-        title={t("remove")}
-        className="flex size-11 items-center justify-center rounded-lg text-muted hover:bg-danger-soft hover:text-danger-ink sm:size-9"
+      <MenuPopover
+        title={name}
+        closeLabel={c("close")}
+        align="end"
+        width={248}
+        trigger={({ ref, open, toggle, menuId }) => (
+          <button
+            ref={ref}
+            type="button"
+            onClick={toggle}
+            aria-haspopup="menu"
+            aria-expanded={open}
+            aria-controls={menuId}
+            aria-label={t("more", { name })}
+            className={`flex size-11 items-center justify-center rounded-lg border text-ink-soft sm:size-9 ${open ? "border-line bg-paper" : "border-transparent hover:bg-paper"}`}
+          >
+            <Icon name="more" size={18} strokeWidth={2} />
+          </button>
+        )}
       >
-        <Icon name="x" size={16} strokeWidth={2} />
-      </button>
-      {open && (
-        <Dialog open onClose={() => setOpen(false)} title={t("removeTitle")} description={t("removeText", { name })} closeLabel={c("close")}>
+        <button
+          type="button"
+          role="menuitem"
+          onClick={() => setDialog(true)}
+          className={`flex min-h-11 w-full items-center gap-2.5 rounded-lg px-3 text-left text-sm font-medium hover:bg-paper focus-visible:bg-paper sm:min-h-9 sm:px-2.5 ${item.danger ? "text-danger-ink" : "text-ink"}`}
+        >
+          <Icon name={item.icon} size={16} />
+          {item.label}
+        </button>
+      </MenuPopover>
+
+      {dialog && kind === "transfer" && (
+        <Dialog open onClose={() => setDialog(false)} title={t("transferTitle")} description={t("transferLead")} closeLabel={c("close")} wide>
+          <form action={action} className="flex flex-col gap-4">
+            <input type="hidden" name="accountId" value={accountId} />
+            {candidates.length === 0 ? (
+              <Notice kind="info" icon="info">
+                {t("transferEmpty")}
+              </Notice>
+            ) : (
+              <fieldset className="flex flex-col gap-2">
+                <legend className="mb-1.5 text-[13px] font-medium">{t("transferWho")}</legend>
+                {candidates.map((m) => (
+                  <label
+                    key={m.userId}
+                    className={`flex cursor-pointer items-center gap-3 rounded-[10px] border px-3.5 py-2.5 has-focus-visible:outline-3 has-focus-visible:outline-offset-2 has-focus-visible:outline-brand ${to === m.userId ? "border-[1.5px] border-ink bg-paper" : "border-line"}`}
+                  >
+                    <input type="radio" name="userId" value={m.userId} checked={to === m.userId} onChange={() => setTo(m.userId)} className="size-[18px] flex-none accent-ink" />
+                    <span className="flex min-w-0 flex-1 flex-col">
+                      <span className="truncate text-sm font-semibold">{m.name}</span>
+                      <span className="truncate text-[13px] text-muted">{m.email}</span>
+                    </span>
+                    <span className="flex-none text-[13px] font-medium text-ink-soft">{roles(m.role)}</span>
+                  </label>
+                ))}
+              </fieldset>
+            )}
+            {candidates.length > 0 && (
+              <Notice kind="warning" icon="alert">
+                {t("transferWarn")}
+              </Notice>
+            )}
+            {state.status === "error" && <Notice kind="error">{errorText(t, state)}</Notice>}
+            <DialogActions>
+              <button type="button" data-autofocus onClick={() => setDialog(false)} className={SECONDARY}>
+                {c("cancel")}
+              </button>
+              {candidates.length > 0 && (
+                <Button pending={pending} fit>
+                  {t("transferOk")}
+                </Button>
+              )}
+            </DialogActions>
+          </form>
+        </Dialog>
+      )}
+
+      {dialog && kind !== "transfer" && (
+        <Dialog
+          open
+          onClose={() => setDialog(false)}
+          title={kind === "leave" ? t("leaveTitle", { company }) : t("removeTitle")}
+          description={kind === "leave" ? t("leaveText") : t("removeText", { name })}
+          closeLabel={c("close")}
+        >
           <form action={action} className="flex flex-col gap-4">
             <input type="hidden" name="accountId" value={accountId} />
             <input type="hidden" name="userId" value={userId} />
             {state.status === "error" && <Notice kind="error">{errorText(t, state)}</Notice>}
             <DialogActions>
-              <button type="button" data-autofocus onClick={() => setOpen(false)} className={SECONDARY}>
+              <button type="button" data-autofocus onClick={() => setDialog(false)} className={SECONDARY}>
                 {c("cancel")}
               </button>
               <Button variant="danger" pending={pending} fit>
-                {t("removeConfirm")}
+                {kind === "leave" ? t("leaveAccount") : t("removeConfirm")}
               </Button>
             </DialogActions>
           </form>
         </Dialog>
       )}
     </>
-  );
-}
-
-/** "Leave this company": the last card of the Team page for members who are not the owner. */
-export function LeaveCompany({ accountId, company }: { accountId: string; company: string }) {
-  const t = useTranslations("companies.team");
-  const c = useTranslations("companies");
-  const [open, setOpen] = useState(false);
-  const [state, action, pending] = useActionState<TeamState, FormData>(leaveCompany, idle);
-  return (
-    <section aria-labelledby="team-leave" className="flex flex-col gap-3 rounded-xl border border-line bg-surface px-5 py-5 sm:flex-row sm:items-center sm:justify-between sm:px-6">
-      <div className="flex flex-col gap-0.5">
-        <h2 id="team-leave" className="text-[15px] font-semibold">
-          {t("leaveTitle")}
-        </h2>
-        <p className="text-[13px] text-muted">{t("leaveText")}</p>
-      </div>
-      <button type="button" onClick={() => setOpen(true)} className="inline-flex h-11 flex-none items-center justify-center rounded-lg border border-field px-4 text-sm font-medium text-danger-ink hover:border-danger-ink sm:h-10">
-        {t("leave")}
-      </button>
-      {open && (
-        <Dialog open onClose={() => setOpen(false)} title={t("leaveConfirmTitle", { company })} description={t("leaveConfirmText")} closeLabel={c("close")}>
-          <form action={action} className="flex flex-col gap-4">
-            <input type="hidden" name="accountId" value={accountId} />
-            {state.status === "error" && <Notice kind="error">{errorText(t, state)}</Notice>}
-            <DialogActions>
-              <button type="button" data-autofocus onClick={() => setOpen(false)} className={SECONDARY}>
-                {c("cancel")}
-              </button>
-              <Button variant="danger" pending={pending} fit>
-                {t("leave")}
-              </Button>
-            </DialogActions>
-          </form>
-        </Dialog>
-      )}
-    </section>
   );
 }
 

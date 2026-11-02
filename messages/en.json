@@ -429,7 +429,7 @@
     "openEnded": "Open-ended",
     "role": "Role",
     "roles": {
-      "owner": "Owner",
+      "owner": "Account holder",
       "admin": "Admin",
       "manager": "Manager",
       "viewer": "Viewer"
@@ -633,7 +633,7 @@
       "sent": "Invitation sent to {name}.",
       "reminded": "Reminder sent. Your landlord got a new link.",
       "newInvite": "Start a new invitation",
-      "readOnly": "The account’s owners and admins manage this lease."
+      "readOnly": "The account holder and admins manage this lease."
     },
     "timeline": {
       "sent": "Invitation sent",
@@ -723,7 +723,7 @@
       "s1Title": "Where should the lease go?",
       "s1Lead": "Pick the account that manages it, and whether it’s a new or an existing property.",
       "account": "Account",
-      "accountTip": "This account manages the lease. You can choose any account where you’re an owner, admin or manager.",
+      "accountTip": "This account manages the lease. You can choose any account where you’re the account holder, an admin or a manager.",
       "accountHint": "{kind, select, company {Company} other {Individual}} · {plan} · {count, plural, one {# property} other {# properties}}",
       "plans": {
         "basic": "Basic",
@@ -777,7 +777,7 @@
       "closed": "This request is already closed.",
       "overlaps": "This property already has a lease for this period.",
       "property": "This property doesn’t belong to this account.",
-      "account": "You can’t take over the lease with this account. Choose one where you’re an owner, admin or manager.",
+      "account": "You can’t take over the lease with this account. Choose one where you’re the account holder, an admin or a manager.",
       "ownAccount": "You can’t be the landlord with the tenant’s account.",
       "generic": "Something went wrong. Please try again."
     },
@@ -918,8 +918,8 @@
         "message": "Message"
       },
       "cta": "Open request",
-      "note": "If you don’t know them, decline. Only the owner or an admin can grant access.",
-      "why": "You get this because you’re an owner or admin of this company account: {account}."
+      "note": "If you don’t know them, decline. Only the account holder or an admin can grant access.",
+      "why": "You get this because you’re the account holder or an admin of this company account: {account}."
     },
     "accessApproved": {
       "tag": "Approved",
@@ -937,10 +937,28 @@
     "accessDeclined": {
       "tag": "Declined",
       "subject": "Access not granted: {account}",
-      "preheader": "The account owner declined your request.",
+      "preheader": "The account holder declined your request.",
       "title": "Access not granted",
-      "lead": "The owner of this company account declined your request: {account}. If you have questions, contact them directly.",
+      "lead": "The holder of this company account declined your request: {account}. If you have questions, contact them directly.",
       "why": "You asked for access to this company account: {account}."
+    },
+    "holderNew": {
+      "tag": "Account holder",
+      "subject": "You’re now the account holder: {account}",
+      "preheader": "You now manage the plan, the team and the company details.",
+      "title": "You’re now the account holder",
+      "lead": "{from} handed over the account to you: {account}. You now manage the plan, the team and the company details.",
+      "cta": "Open team",
+      "why": "You get this because you’re a member of this company account: {account}."
+    },
+    "holderPrev": {
+      "tag": "Handed over",
+      "subject": "You handed over the account: {account}",
+      "preheader": "You stay in the team as an admin.",
+      "title": "You handed over the account",
+      "lead": "{to} is now the account holder: {account}. You stay in the team as an admin.",
+      "cta": "Open team",
+      "why": "You get this because you were the account holder of this company account: {account}."
     }
   },
   "portal": {
@@ -1375,7 +1393,7 @@
     },
     "displayName": "Display name",
     "displayNameHint": "How your tenants and team see it.",
-    "ownerNote": "You’ll be the owner of the account. You can hand it over later.",
+    "ownerNote": "You’ll be the account holder. You can hand it over later.",
     "declaration": "I confirm that I’m authorised to represent the company or act on its behalf.",
     "states": {
       "format": "Enter 8 digits, or the full tax number (12345678-2-41).",
@@ -1390,16 +1408,16 @@
       "title": "This company is already on Keyfly",
       "lead": "This tax number already has a company account.",
       "tag": "On Keyfly",
-      "text": "A company can have one account. Ask for access: the account’s owner and admins get your request by email.",
-      "message": "Message to the owner",
+      "text": "A company can have one account. Ask for access: the account holder and admins get your request by email.",
+      "message": "Message to the account holder",
       "messagePh": "E.g. I work in finance and would manage the leases.",
-      "privacy": "With the request, the account’s owner and admins see your name and email.",
+      "privacy": "With the request, the account holder and admins see your name and email.",
       "request": "Request access",
       "sending": "Sending…"
     },
     "sent": {
       "title": "Request sent",
-      "text": "The company account’s owner and admins get your request. Once approved, the company shows up among your accounts.",
+      "text": "The account holder and admins get your request. Once approved, the company shows up among your accounts.",
       "toHome": "Go to Overview"
     },
     "review": {
@@ -1407,7 +1425,7 @@
       "lead": "The company account is created with these details. NAV data can’t be edited by hand.",
       "company": "Company",
       "you": "You",
-      "youValue": "{name} · owner",
+      "youValue": "{name} · account holder",
       "plan": "Plan",
       "create": "Create company account",
       "creating": "Creating…"
@@ -1419,7 +1437,7 @@
       "one": "A company can have one account on Keyfly. If yours is already here, you can ask for access.",
       "nextTitle": "What happens next?",
       "next1": "The company account is created",
-      "next1Text": "You’re its owner.",
+      "next1Text": "You’re its account holder.",
       "next2": "We switch to it",
       "next2Text": "Go back to your personal account any time from the account switcher.",
       "next3": "Invite your team",
@@ -1455,11 +1473,11 @@
       "verified": "Verified with NAV",
       "save": "Save",
       "saved": "Saved.",
-      "owner": "Owner",
-      "readOnly": "The owner and admins can change the company details.",
+      "owner": "Account holder",
+      "readOnly": "The account holder and admins can change the company details.",
       "navNote": "We checked the NAV data when the company account was created ({date}). If anything changed, write to support@keyfly.app.",
       "navNoteManual": "NAV data can only be changed through Keyfly support: support@keyfly.app.",
-      "ownerText": "The owner manages the team and the plan. Ownership can be handed over later."
+      "ownerText": "The account holder manages the plan, the team and the company details. They can hand it over on the Team page."
     },
     "team": {
       "title": "Team",
@@ -1473,9 +1491,7 @@
       "colJoined": "Joined",
       "accessAll": "All properties",
       "accessSelected": "Selected properties",
-      "you": "you",
-      "memberActions": "{name} – actions",
-      "remove": "Remove from the team",
+      "you": "You",
       "removeTitle": "Remove from the team?",
       "removeText": "{name} will no longer have access to the company account. You can invite them again later.",
       "removeConfirm": "Remove",
@@ -1506,12 +1522,7 @@
       "send": "Send invitation",
       "invited": "Invitation sent: {email}",
       "invitedNoEmail": "The invitation is ready, but the email didn’t go out. Try resending it.",
-      "readOnly": "The owner and admins manage the team.",
-      "leaveTitle": "Leave this company account",
-      "leaveText": "Your own account and your other companies stay. To come back you need a new invitation or an approved request.",
-      "leave": "Leave",
-      "leaveConfirmTitle": "Leave {company}?",
-      "leaveConfirmText": "You will no longer see the company’s properties, leases or team. The owner and admins can invite you again later.",
+      "readOnly": "The account holder and admins manage the team.",
       "roleText": {
         "admin": "Manages everything, the team too.",
         "manager": "Manages properties, leases, insurance and tenants.",
@@ -1523,6 +1534,27 @@
         "notAllowed": "You don’t have permission for this.",
         "closed": "This request is already closed.",
         "generic": "Something went wrong. Please try again."
+      },
+      "holder": "Account holder",
+      "more": "{name} – more actions",
+      "removeFromTeam": "Remove from team",
+      "leaveAccount": "Leave this account",
+      "transfer": "Hand over account",
+      "roleFor": "Role of {name}",
+      "roleChanged": "{name} is now {role}.",
+      "transferTitle": "Hand over the account",
+      "transferLead": "The new account holder manages the plan, the team and the company details. You become an admin.",
+      "transferWho": "New account holder",
+      "transferWarn": "Only the new account holder can hand it back. You both get an email about it.",
+      "transferOk": "Hand over",
+      "transferred": "{name} is now the account holder.",
+      "transferEmpty": "Invite someone first: you can only hand over to a team member.",
+      "leaveTitle": "Leave {company}?",
+      "leaveText": "You will no longer see the company’s properties, leases or team. To come back you need a new invitation.",
+      "roleDesc": {
+        "admin": "Manages everything, the team too.",
+        "manager": "Properties, leases, insurance, tenants.",
+        "viewer": "Sees everything, changes nothing."
       }
     },
     "close": "Close",

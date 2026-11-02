@@ -429,7 +429,7 @@
     "openEnded": "Határozatlan",
     "role": "Szerepkör",
     "roles": {
-      "owner": "Tulajdonos",
+      "owner": "Fiókgazda",
       "admin": "Admin",
       "manager": "Kezelő",
       "viewer": "Megtekintő"
@@ -482,7 +482,7 @@
     "errors": {
       "closed": "Ez a meghívó már nem érvényes.",
       "forAnotherEmail": "Ez a meghívó egy másik e-mail-címre szól.",
-      "notAllowedForAccount": "Ezzel a fiókkal nem fogadhatod el. Olyan fiókot válassz, amelynek tulajdonosa vagy adminja vagy.",
+      "notAllowedForAccount": "Ezzel a fiókkal nem fogadhatod el. Olyan fiókot válassz, amelynek fiókgazdája vagy adminja vagy.",
       "generic": "Valami nem sikerült. Próbáld újra."
     },
     "landlord": {
@@ -633,7 +633,7 @@
       "sent": "Elküldtük a meghívót {name} részére.",
       "reminded": "Elküldtük az emlékeztetőt. A bérbeadó új linket kapott.",
       "newInvite": "Új meghívás indítása",
-      "readOnly": "A szerződés kezelése a fiók tulajdonosánál és adminjainál van."
+      "readOnly": "A szerződés kezelése a fiókgazdánál és az adminoknál van."
     },
     "timeline": {
       "sent": "Meghívó elküldve",
@@ -723,7 +723,7 @@
       "s1Title": "Hová kerüljön a szerződés?",
       "s1Lead": "Válaszd ki a fiókot, amelyik kezeli, és hogy új vagy meglévő ingatlanról van-e szó.",
       "account": "Fiók",
-      "accountTip": "Ez a fiók kezeli a szerződést. Olyan fiókot választhatsz, amelyben tulajdonos, admin vagy kezelő vagy.",
+      "accountTip": "Ez a fiók kezeli a szerződést. Olyan fiókot választhatsz, amelyben fiókgazda, admin vagy kezelő vagy.",
       "accountHint": "{kind, select, company {Cég} other {Magánszemély}} · {plan} · {count} ingatlan",
       "plans": {
         "basic": "Alap",
@@ -777,7 +777,7 @@
       "closed": "Ez a kérés már lezárult.",
       "overlaps": "Erre az ingatlanra ebben az időszakban már van rögzített szerződés.",
       "property": "Ez az ingatlan nem ehhez a fiókhoz tartozik.",
-      "account": "Ezzel a fiókkal nem hagyhatod jóvá a szerződést. Olyat válassz, amelyben tulajdonos, admin vagy kezelő vagy.",
+      "account": "Ezzel a fiókkal nem hagyhatod jóvá a szerződést. Olyat válassz, amelyben fiókgazda, admin vagy kezelő vagy.",
       "ownAccount": "A bérlő fiókjával nem lehetsz bérbeadó.",
       "generic": "Valami nem sikerült. Próbáld újra."
     },
@@ -918,8 +918,8 @@
         "message": "Üzenet"
       },
       "cta": "Kérés megnyitása",
-      "note": "Ha nem ismered, utasítsd el. Hozzáférést csak a tulajdonos vagy egy admin adhat.",
-      "why": "Azért kaptad, mert tulajdonos vagy admin vagy ebben a cégfiókban: {account}."
+      "note": "Ha nem ismered, utasítsd el. Hozzáférést csak a fiókgazda vagy egy admin adhat.",
+      "why": "Azért kaptad, mert fiókgazda vagy admin vagy ebben a cégfiókban: {account}."
     },
     "accessApproved": {
       "tag": "Jóváhagyva",
@@ -937,10 +937,28 @@
     "accessDeclined": {
       "tag": "Elutasítva",
       "subject": "Nem kaptál hozzáférést: {account}",
-      "preheader": "A cégfiók tulajdonosa elutasította a kérésed.",
+      "preheader": "A cégfiók fiókgazdája elutasította a kérésed.",
       "title": "Nem kaptál hozzáférést",
-      "lead": "A cégfiók tulajdonosa elutasította a kérésed: {account}. Ha kérdésed van, keresd közvetlenül.",
+      "lead": "A cégfiók fiókgazdája elutasította a kérésed: {account}. Ha kérdésed van, keresd közvetlenül.",
       "why": "Hozzáférést kértél ehhez a cégfiókhoz: {account}."
+    },
+    "holderNew": {
+      "tag": "Fiókgazda",
+      "subject": "Te lettél a fiókgazda: {account}",
+      "preheader": "Mostantól te kezeled a csomagot, a csapatot és a cégadatokat.",
+      "title": "Te lettél a fiókgazda",
+      "lead": "{from} átadta neked a fiókgazdai szerepet: {account}. Mostantól te kezeled a csomagot, a csapatot és a cégadatokat.",
+      "cta": "Csapat megnyitása",
+      "why": "Azért kaptad, mert tagja vagy ennek a cégfióknak: {account}."
+    },
+    "holderPrev": {
+      "tag": "Átadva",
+      "subject": "Átadtad a fiókgazdai szerepet: {account}",
+      "preheader": "Adminként maradsz a csapatban.",
+      "title": "Átadtad a fiókgazdai szerepet",
+      "lead": "{to} lett a fiókgazda: {account}. Te adminként maradsz a csapatban.",
+      "cta": "Csapat megnyitása",
+      "why": "Azért kaptad, mert ennek a cégfióknak voltál a fiókgazdája: {account}."
     }
   },
   "portal": {
@@ -1375,7 +1393,7 @@
     },
     "displayName": "Megjelenő név",
     "displayNameHint": "Így látják a bérlőid és a csapatod.",
-    "ownerNote": "A fiók tulajdonosa te leszel. Később átadhatod.",
+    "ownerNote": "Te leszel a fiókgazda. Később átadhatod.",
     "declaration": "Kijelentem, hogy jogosult vagyok a cég képviseletére, vagy a cég megbízásából járok el.",
     "states": {
       "format": "Adj meg 8 számjegyet, vagy a teljes adószámot (12345678-2-41).",
@@ -1390,16 +1408,16 @@
       "title": "Ez a cég már szerepel a Keyflyon",
       "lead": "Ehhez az adószámhoz már tartozik cégfiók.",
       "tag": "Már a Keyflyon",
-      "text": "Egy cégnek egy fiókja lehet. Kérj hozzáférést: a kérést a fiók tulajdonosa és adminjai kapják meg e-mailben.",
-      "message": "Üzenet a tulajdonosnak",
+      "text": "Egy cégnek egy fiókja lehet. Kérj hozzáférést: a kérést a fiókgazda és az adminok kapják meg e-mailben.",
+      "message": "Üzenet a fiókgazdának",
       "messagePh": "Pl. a pénzügyön dolgozom, a bérleti szerződéseket kezelném.",
-      "privacy": "A kéréssel a neved és az e-mail-címed látja a fiók tulajdonosa és adminjai.",
+      "privacy": "A kéréssel a neved és az e-mail-címed látja a fiókgazda és az adminok.",
       "request": "Hozzáférés kérése",
       "sending": "Küldés…"
     },
     "sent": {
       "title": "Elküldtük a kérésed",
-      "text": "A kérést a cégfiók tulajdonosa és adminjai kapják meg. Ha jóváhagyják, a cég megjelenik a fiókjaid között.",
+      "text": "A kérést a cégfiók fiókgazdája és adminjai kapják meg. Ha jóváhagyják, a cég megjelenik a fiókjaid között.",
       "toHome": "Tovább az Áttekintésre"
     },
     "review": {
@@ -1407,7 +1425,7 @@
       "lead": "Ezekkel az adatokkal jön létre a cégfiók. A NAV-adatokat nem lehet kézzel módosítani.",
       "company": "Cég",
       "you": "Te",
-      "youValue": "{name} · tulajdonos",
+      "youValue": "{name} · fiókgazda",
       "plan": "Csomag",
       "create": "Cégfiók létrehozása",
       "creating": "Létrehozás…"
@@ -1419,7 +1437,7 @@
       "one": "Egy cégnek egy fiókja lehet a Keyflyon. Ha a céged már itt van, hozzáférést kérhetsz.",
       "nextTitle": "Mi történik ezután?",
       "next1": "Létrejön a cégfiók",
-      "next1Text": "Te leszel a tulajdonosa.",
+      "next1Text": "Te leszel a fiókgazdája.",
       "next2": "Átváltunk rá",
       "next2Text": "A fiókváltóban bármikor visszaléphetsz a magánfiókodba.",
       "next3": "Meghívhatod a csapatod",
@@ -1455,11 +1473,11 @@
       "verified": "Ellenőrizve a NAV-nál",
       "save": "Mentés",
       "saved": "Elmentettük.",
-      "owner": "Tulajdonos",
-      "readOnly": "A cégadatokat a tulajdonos és az adminok módosíthatják.",
+      "owner": "Fiókgazda",
+      "readOnly": "A cégadatokat a fiókgazda és az adminok módosíthatják.",
       "navNote": "A NAV-adatokat a cégfiók létrehozásakor ellenőriztük ({date}). Ha változtak, írj a support@keyfly.app címre.",
       "navNoteManual": "A NAV-adatok csak a Keyfly ügyfélszolgálatán keresztül módosíthatók: support@keyfly.app.",
-      "ownerText": "A tulajdonos kezeli a csapatot és a csomagot. A tulajdonjogot később át lehet adni."
+      "ownerText": "A fiókgazda kezeli a csomagot, a csapatot és a cégadatokat. A Csapat oldalon átadhatja."
     },
     "team": {
       "title": "Csapat",
@@ -1473,9 +1491,7 @@
       "colJoined": "Csatlakozott",
       "accessAll": "Minden ingatlan",
       "accessSelected": "Kiválasztott ingatlanok",
-      "you": "te",
-      "memberActions": "{name} – műveletek",
-      "remove": "Eltávolítás a csapatból",
+      "you": "Te",
       "removeTitle": "Eltávolítod a csapatból?",
       "removeText": "{name} nem fér hozzá többé a cégfiókhoz. Később újra meghívhatod.",
       "removeConfirm": "Eltávolítás",
@@ -1506,12 +1522,7 @@
       "send": "Meghívó küldése",
       "invited": "Elküldtük a meghívót: {email}",
       "invitedNoEmail": "A meghívó elkészült, de a levelet nem sikerült elküldeni. Próbáld újraküldeni.",
-      "readOnly": "A csapatot a tulajdonos és az adminok kezelik.",
-      "leaveTitle": "Kilépés a cégfiókból",
-      "leaveText": "A saját fiókod és a többi céged megmarad. Később csak új meghívóval vagy jóváhagyott kéréssel léphetsz vissza.",
-      "leave": "Kilépés",
-      "leaveConfirmTitle": "Kilépsz innen: {company}?",
-      "leaveConfirmText": "Nem látod többé a cég ingatlanjait, szerződéseit és a csapatot. A tulajdonos és az adminok később újra meghívhatnak.",
+      "readOnly": "A csapatot a fiókgazda és az adminok kezelik.",
       "roleText": {
         "admin": "Mindent kezel, a csapatot is.",
         "manager": "Ingatlanokat, szerződéseket, biztosításokat és bérlőket kezel.",
@@ -1523,6 +1534,27 @@
         "notAllowed": "Ehhez nincs jogosultságod.",
         "closed": "Ez a kérés már lezárult.",
         "generic": "Valami nem sikerült. Próbáld újra."
+      },
+      "holder": "Fiókgazda",
+      "more": "{name} – további műveletek",
+      "removeFromTeam": "Eltávolítás a csapatból",
+      "leaveAccount": "Elhagyom a fiókot",
+      "transfer": "Fiókgazda átadása",
+      "roleFor": "{name} szerepköre",
+      "roleChanged": "{name} mostantól {role}.",
+      "transferTitle": "Fiókgazda átadása",
+      "transferLead": "Az új fiókgazda kezeli a csomagot, a csapatot és a cégadatokat. Te admin leszel.",
+      "transferWho": "Új fiókgazda",
+      "transferWarn": "Visszaadni csak az új fiókgazda tudja. Mindketten e-mailt kaptok róla.",
+      "transferOk": "Átadom",
+      "transferred": "{name} lett a fiókgazda.",
+      "transferEmpty": "Előbb hívj meg valakit: csak csapattagnak adhatod át.",
+      "leaveTitle": "Elhagyod a(z) {company} fiókját?",
+      "leaveText": "Nem látod többé a cég ingatlanjait, szerződéseit és a csapatot. Később csak új meghívóval léphetsz vissza.",
+      "roleDesc": {
+        "admin": "Mindent kezel, a csapatot is.",
+        "manager": "Ingatlanok, szerződések, biztosítások, bérlők.",
+        "viewer": "Mindent lát, de nem módosít."
       }
     },
     "close": "Bezárás",

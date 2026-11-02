@@ -51,12 +51,21 @@ select tests.ok((select role from public.account_members where account_id = (sel
 select tests.throws($$select public.decide_access_request((select id from req), false)$$, 'a decided request is closed');
 select tests.ok((select count(*) from public.account_members_list((select id from co))) = 2, 'the team list shows both');
 
+-- Roles change in the row: only through set_member_role, never one's own, never the account holder's, never to owner.
+select public.set_member_role((select id from co), '00000000-0000-0000-0000-00000000cc02', 'viewer');
+select tests.ok((select role from public.account_members where account_id = (select id from co) and user_id = '00000000-0000-0000-0000-00000000cc02') = 'viewer', 'the account holder changes a role');
+select tests.throws($$select public.set_member_role((select id from co), '00000000-0000-0000-0000-00000000cc02', 'owner')$$, 'nobody is made owner by a role change');
+select tests.throws($$select public.set_member_role((select id from co), '00000000-0000-0000-0000-00000000cc01', 'admin')$$, 'nobody changes their own role');
+select tests.throws($$update public.account_members set role = 'owner' where account_id = (select id from co)$$, 'direct role updates are closed');
+select public.set_member_role((select id from co), '00000000-0000-0000-0000-00000000cc02', 'manager');
+
 -- Eszter now sees the company and its URL.
 select tests.act_as('00000000-0000-0000-0000-00000000cc02');
 select tests.ok((select i_am_member and slug = 'duna-lakaskezelo' from public.company_lookup('34567812')), 'a member gets the URL');
 select tests.ok((select count(*) from public.account_members_list((select id from co))) = 2, 'members see their team');
 select tests.ok((select count(*) from public.account_access_requests_list((select id from co))) = 0, 'a manager does not see access requests');
 select tests.throws($$select public.request_company_access((select id from co))$$, 'members do not request again');
+select tests.throws($$select public.set_member_role((select id from co), '00000000-0000-0000-0000-00000000cc01', 'viewer')$$, 'a manager cannot change roles');
 
 -- Enterprise accounts are invitation-only.
 reset role;

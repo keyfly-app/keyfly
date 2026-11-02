@@ -266,3 +266,19 @@ export function accessDeclinedEmail(i: { locale: Locale; account: string }): Ema
     why: t("accessDeclined.why", { account: i.account }),
   });
 }
+
+/** Account hand-over: the new account holder and the previous one each get one. */
+export function holderChangedEmail(i: { locale: Locale; url: string; account: string; other: string; side: "new" | "previous" }): Email {
+  const t = translator(i.locale);
+  const k = i.side === "new" ? "holderNew" : "holderPrev";
+  return render({
+    locale: i.locale,
+    tag: { tone: i.side === "new" ? "ok" : "neutral", label: t(`${k}.tag`) },
+    subject: t(`${k}.subject`, { account: i.account }),
+    preheader: t(`${k}.preheader`),
+    title: t(`${k}.title`),
+    lead: i.side === "new" ? t("holderNew.lead", { from: i.other, account: i.account }) : t("holderPrev.lead", { to: i.other, account: i.account }),
+    action: { cta: t(`${k}.cta`), url: i.url },
+    why: t(`${k}.why`, { account: i.account }),
+  });
+}
