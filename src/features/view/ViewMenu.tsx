@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useEffect, useState } from "react";
+import { useActionState, useEffect, useOptimistic, useState } from "react";
 import { useTranslations } from "next-intl";
 import { HeaderMenu } from "@/components/HeaderMenu";
 import { Icon, type IconName } from "@/components/Icon";
@@ -21,6 +21,12 @@ export function ViewMenu({ current, accountId, context }: { current: View; accou
   const t = useTranslations("header");
   const [state, action] = useActionState<ViewState, FormData>(switchView, { status: "idle" });
   const [toast, setToast] = useState<string | null>(null);
+  // The pill names the new View at once; the server confirms (toast) or it falls back.
+  const [shown, show] = useOptimistic<string>(state.status === "saved" ? state.view : current);
+  const choose = (form: FormData) => {
+    show(String(form.get("view") ?? ""));
+    action(form);
+  };
 
   useEffect(() => {
     if (state.status === "idle") return;
@@ -39,10 +45,10 @@ export function ViewMenu({ current, accountId, context }: { current: View; accou
         context={context}
         pill
         hidden={accountId ? { account: accountId } : undefined}
-        current={state.status === "saved" ? state.view : current}
+        current={shown}
         name="view"
         choices={VIEWS.map(({ view, icon }) => ({ value: view, icon, label: t(`views.${view}.title`), text: t(`views.${view}.text`) }))}
-        action={action}
+        action={choose}
         closeLabel={t("close")}
       />
       <div role="status" aria-live="polite" className="pointer-events-none fixed inset-x-4 bottom-6 z-50 flex justify-center sm:inset-x-auto sm:right-6 sm:bottom-6">
