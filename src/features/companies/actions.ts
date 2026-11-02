@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { accessApprovedEmail, accessDeclinedEmail, accessRequestEmail, holderChangedEmail } from "@/features/invitations/emails";
 import { appUrl, inviteTeamMember, myDisplayName, sendEmail } from "@/features/invitations/send";
 import { isLocale } from "@/i18n/config";
+import { isCountryCode, toE164 } from "@/lib/phone";
 import { requestOrigin } from "@/lib/request-origin";
 import { hrefFor } from "@/lib/sites";
 import type { Enums } from "@/lib/supabase/database.types";
@@ -297,8 +298,11 @@ export async function updateCompanyDetails(_: DetailsState, form: FormData): Pro
   const mailing = form.get("sameAsOffice") === "on" ? null : address("mail");
   const email = clean(form.get("email"));
   if (email && (!EMAIL_RE.test(email) || email.length > 254)) fields.email = "format";
-  const phone = clean(form.get("phone"));
-  if (phone && !/^\+?[0-9 ()/-]{6,30}$/.test(phone)) fields.phone = "format";
+  // Contact phone: country code + number → E.164 (any line type).
+  const phoneText = clean(form.get("phone"));
+  const phoneCountry = form.get("phoneCountry");
+  const phone = phoneText ? (isCountryCode(phoneCountry) ? toE164(phoneCountry, phoneText) : null) : null;
+  if (phoneText && !phone) fields.phone = "format";
   if (Object.keys(fields).length) return { status: "invalid", fields };
 
   const supabase = await createClient();
@@ -316,7 +320,7 @@ export async function updateCompanyDetails(_: DetailsState, form: FormData): Pro
         office_address: office,
         mailing_address: mailing,
         contact_email: email || null,
-        contact_phone: phone || null,
+        contact_phone: phone,
       },
       { count: "exact" },
     )

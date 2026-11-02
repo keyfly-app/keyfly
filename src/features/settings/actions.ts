@@ -12,7 +12,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { isValidPassword } from "@/features/auth/password";
 import { forgetTrustedDevices } from "@/features/security/trusted";
 import { requestOrigin } from "@/lib/request-origin";
-import { parsePhone } from "@/lib/phone";
+import { parseSmsPhone } from "@/lib/phone-check";
 import { hrefFor } from "@/lib/sites";
 import { checkVerification, startVerification } from "@/lib/sms";
 import type { Database } from "@/lib/supabase/database.types";
@@ -68,7 +68,7 @@ export async function updateName(_: SettingsState, form: FormData): Promise<Sett
 
 export type PhoneError = "format" | "country" | "mobile" | "limit" | "sms" | "code" | "expired" | "email" | "generic";
 /** number → code (after the SMS went out; `at` starts the resend countdown) → done. */
-export type PhoneState = { step: "number" | "code" | "done"; phone?: string; at?: number; error?: PhoneError; /** What was typed, kept after an error. */ input?: string };
+export type PhoneState = { step: "number" | "code" | "done"; phone?: string; at?: number; error?: PhoneError };
 
 /** One action for both steps of the dialog: intent "send" asks Twilio Verify to text a code, intent "confirm" checks it. */
 export async function phoneStep(prev: PhoneState, form: FormData): Promise<PhoneState> {
@@ -77,9 +77,9 @@ export async function phoneStep(prev: PhoneState, form: FormData): Promise<Phone
 
 /** Step 1: checks the number and our limits (3 an hour, 10 a day), then Twilio texts the code. */
 async function sendPhoneCode(prev: PhoneState, form: FormData): Promise<PhoneState> {
-  const input = String(form.get("phone") ?? prev.phone ?? "").slice(0, 24);
-  const fail = (error: PhoneError): PhoneState => ({ ...prev, step: prev.step === "code" ? "code" : "number", error, input });
-  const parsed = parsePhone(input);
+  const fail = (error: PhoneError): PhoneState => ({ ...prev, step: prev.step === "code" ? "code" : "number", error });
+  // Number step: country + number as typed; resend from the code step: the E.164 number the code went to.
+  const parsed = parseSmsPhone(form.get("phoneCountry"), String(form.get("phone") ?? prev.phone ?? "").slice(0, 24));
   if (!parsed.ok) return fail(parsed.error);
   const { supabase, id } = await signedIn();
   if (!id) return fail("generic");

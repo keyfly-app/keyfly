@@ -18,12 +18,12 @@ async function signedIn(): Promise<boolean> {
   return Boolean(data?.claims);
 }
 
-export async function suggestAddresses(input: string, sessionToken: string): Promise<SuggestResult> {
+export async function suggestAddresses(input: string, sessionToken: string, region = "HU"): Promise<SuggestResult> {
   const text = input.trim().slice(0, 120);
-  if (text.length < 3 || !TOKEN_RE.test(sessionToken)) return { status: "ok", suggestions: [] };
+  if (text.length < 3 || !TOKEN_RE.test(sessionToken) || !/^[A-Z]{2}$/.test(region)) return { status: "ok", suggestions: [] };
   if (!(await signedIn())) return { status: "unavailable" };
   const raw = await getLocale();
-  const suggestions = await autocomplete(text, sessionToken, isLocale(raw) ? raw : "hu");
+  const suggestions = await autocomplete(text, sessionToken, isLocale(raw) ? raw : "hu", region);
   return suggestions ? { status: "ok", suggestions } : { status: "unavailable" };
 }
 

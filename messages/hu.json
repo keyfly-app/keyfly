@@ -1473,7 +1473,8 @@
         "required": "Töltsd ki ezt a mezőt.",
         "postalCode": "A magyar irányítószám 4 számjegy.",
         "generic": "Valami nem sikerült. Próbáld újra."
-      }
+      },
+      "search": "Cím keresése"
     },
     "bank": {
       "title": "Bankszámlák",
@@ -1729,7 +1730,8 @@
         "phone": "Ellenőrizd a telefonszámot.",
         "notAllowed": "A cégadatokat a fiókgazda és az adminok módosíthatják.",
         "generic": "Valami nem sikerült. Próbáld újra."
-      }
+      },
+      "search": "Cím keresése"
     },
     "team": {
       "title": "Csapat",
@@ -1924,5 +1926,12 @@
       "unknown": "Ismeretlen eszköz",
       "error": "Valami nem sikerült. Próbáld újra."
     }
+  },
+  "phoneInput": {
+    "title": "Országkód",
+    "search": "Ország keresése",
+    "none": "Nincs ilyen ország.",
+    "back": "Vissza",
+    "codeOf": "Országkód: {country}, {code}"
   }
 }

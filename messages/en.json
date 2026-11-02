@@ -1473,7 +1473,8 @@
         "required": "Fill in this field.",
         "postalCode": "A Hungarian postal code has 4 digits.",
         "generic": "Something went wrong. Try again."
-      }
+      },
+      "search": "Search address"
     },
     "bank": {
       "title": "Bank accounts",
@@ -1729,7 +1730,8 @@
         "phone": "Check the phone number.",
         "notAllowed": "The account holder and admins can change the company details.",
         "generic": "Something went wrong. Try again."
-      }
+      },
+      "search": "Search address"
     },
     "team": {
       "title": "Team",
@@ -1924,5 +1926,12 @@
       "unknown": "Unknown device",
       "error": "Something went wrong. Try again."
     }
+  },
+  "phoneInput": {
+    "title": "Country code",
+    "search": "Search country",
+    "none": "No matching country.",
+    "back": "Back",
+    "codeOf": "Country code: {country}, {code}"
   }
 }

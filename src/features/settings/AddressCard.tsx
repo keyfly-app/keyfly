@@ -7,6 +7,9 @@ import { toast } from "@/components/Toaster";
 import { Dialog, DialogActions } from "@/components/ui/Dialog";
 import { Button, FieldError, INPUT_CLASS, Label, Notice, Optional } from "@/components/ui/form";
 import { COUNTRIES } from "@/config/countries";
+import { AddressSearch } from "@/features/address-search/AddressSearch";
+import type { FoundAddress } from "@/features/address-search/places";
+import { pickedStreet } from "@/features/address-search/street";
 import { saveAddress, type AddressState, type PersonalAddress } from "./actions";
 
 type Kind = "home" | "mailing";
@@ -78,6 +81,18 @@ function AddressDialog({ kind, current, hasHome, onClose, country }: { kind: Kin
   const id = useId();
   const [same, setSame] = useState(kind === "mailing" && hasHome && !current);
   const [code, setCode] = useState(current?.country ?? "HU");
+  // Canvas "Lakcím – keresés": the Google search fills the parts, which stay editable; a saved address shows them at once.
+  const [parts, setParts] = useState({ postal_code: current?.postal_code ?? "", city: current?.city ?? "", street: current?.street ?? "", unit: current?.unit ?? "" });
+  const [showParts, setShowParts] = useState(Boolean(current));
+  const refs = useRef<Partial<Record<keyof typeof parts, HTMLInputElement | null>>>({});
+  const reveal = (focus: keyof typeof parts) => {
+    setShowParts(true);
+    requestAnimationFrame(() => refs.current[focus]?.focus());
+  };
+  const onPick = (a: FoundAddress) => {
+    setParts((p) => ({ ...p, postal_code: a.postalCode, city: a.city, street: pickedStreet(a, code) }));
+    reveal(a.postalCode && a.city && a.houseNumber ? "unit" : a.postalCode ? "street" : "postal_code");
+  };
   const [state, action, pending] = useActionState<AddressState, FormData>(async (prev, form) => {
     const next = await saveAddress(prev, form);
     if (next.status === "saved") {
@@ -103,9 +118,13 @@ function AddressDialog({ kind, current, hasHome, onClose, country }: { kind: Kin
           {name === "unit" && <Optional>{t("optional")}</Optional>}
         </Label>
         <input
+          ref={(el) => {
+            refs.current[name] = el;
+          }}
           id={`${id}-${name}`}
           name={name}
-          defaultValue={current?.[name] ?? ""}
+          value={parts[name]}
+          onChange={(ev) => setParts((p) => ({ ...p, [name]: ev.target.value }))}
           autoComplete={`section-${kind} ${auto}`}
           aria-invalid={e ? true : undefined}
           aria-describedby={e ? `${id}-${name}-error` : undefined}
@@ -139,12 +158,17 @@ function AddressDialog({ kind, current, hasHome, onClose, country }: { kind: Kin
                 ))}
               </select>
             </div>
-            <div className="grid grid-cols-[7.5rem_minmax(0,1fr)] gap-3">
-              {input("postal_code", t("postalCode"), "postal-code", { inputMode: code === "HU" ? "numeric" : "text", maxLength: code === "HU" ? 4 : 10 })}
-              {input("city", t("city"), "address-level2", { maxLength: 100 })}
-            </div>
-            {input("street", t("street"), "address-line1", { maxLength: 200 })}
-            {input("unit", t("unit"), "address-line2", { maxLength: 50 })}
+            <AddressSearch key={code} country={code} label={t("search")} keepPicked onPick={onPick} onManual={() => reveal("postal_code")} onUnavailable={() => setShowParts(true)} />
+            {(showParts || state.status === "error") && (
+              <>
+                <div className="grid grid-cols-[7.5rem_minmax(0,1fr)] gap-3">
+                  {input("postal_code", t("postalCode"), "postal-code", { inputMode: code === "HU" ? "numeric" : "text", maxLength: code === "HU" ? 4 : 10 })}
+                  {input("city", t("city"), "address-level2", { maxLength: 100 })}
+                </div>
+                {input("street", t("street"), "address-line1", { maxLength: 200 })}
+                {input("unit", t("unit"), "address-line2", { maxLength: 50 })}
+              </>
+            )}
           </>
         )}
         {state.status === "error" && !state.fields && <Notice kind="error">{t("errors.generic")}</Notice>}

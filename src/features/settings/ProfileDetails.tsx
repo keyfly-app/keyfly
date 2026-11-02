@@ -8,7 +8,8 @@ import { Dialog, DialogActions } from "@/components/ui/Dialog";
 import { Button, Notice, TextField } from "@/components/ui/form";
 import { Tag } from "@/components/ui/Tag";
 import { PasswordField } from "@/features/auth/PasswordField";
-import { formatPhone } from "@/lib/phone";
+import { PhoneInput } from "@/components/ui/PhoneInput";
+import { formatPhone, SMS_COUNTRIES, splitPhone } from "@/lib/phone";
 import { changeEmail, changePassword, phoneStep, removePhone, updateName, type PhoneState, type SettingsState } from "./actions";
 
 type Editing = "name" | "email" | "password" | "phone" | null;
@@ -224,6 +225,11 @@ function PhoneSteps({
   const closeLabel = d("close");
   const cancelLabel = d("cancel");
   const [state, run, pending] = useActionState<PhoneState, FormData>(phoneStep, { step: "number" });
+  // The number stays as typed after an error; a stored number outside the SMS countries starts from Hungary.
+  const [number, setNumber] = useState(() => {
+    const split = splitPhone(current);
+    return (SMS_COUNTRIES as readonly string[]).includes(split.country) ? split : { country: "HU" as const, national: "" };
+  });
   const [, startResend] = useTransition();
   // Every answer from the server clears the boxes, so a wrong code can be typed again straight away.
   const [seen, setSeen] = useState(state);
@@ -257,16 +263,14 @@ function PhoneSteps({
       <Dialog open={open} onClose={onClose} title={t("title")} description={t("lead")} closeLabel={closeLabel}>
         <form action={run} className="flex flex-col gap-4">
           <input type="hidden" name="intent" value="send" />
-          <TextField
+          <PhoneInput
             id={`${id}-phone`}
             name="phone"
-            type="tel"
-            inputMode="tel"
             label={t("label")}
-            defaultValue={state.input ?? (current ? formatPhone(current) : "")}
-            placeholder="+36 30 123 4567"
-            autoComplete="tel"
-            maxLength={24}
+            countries={SMS_COUNTRIES}
+            country={number.country}
+            value={number.national}
+            onChange={(country, national) => setNumber({ country, national })}
             required
             error={error}
           />

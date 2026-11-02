@@ -7,6 +7,11 @@ import { Icon } from "@/components/Icon";
 import { toast } from "@/components/Toaster";
 import { Tag } from "@/components/ui/Tag";
 import { Button, FieldError, INPUT_CLASS, Label, Optional } from "@/components/ui/form";
+import { PhoneInput } from "@/components/ui/PhoneInput";
+import { AddressSearch } from "@/features/address-search/AddressSearch";
+import type { FoundAddress } from "@/features/address-search/places";
+import { pickedStreet } from "@/features/address-search/street";
+import { ALL_COUNTRIES, splitPhone, type CountryCode } from "@/lib/phone";
 import { refreshFromNav, updateCompanyDetails, type DetailsField, type DetailsState, type Office } from "./actions";
 
 export type CompanyDetails = {
@@ -37,6 +42,7 @@ type Values = {
   mailStreet: string;
   email: string;
   phone: string;
+  phoneCountry: CountryCode;
 };
 
 const toValues = (c: CompanyDetails): Values => ({
@@ -53,7 +59,7 @@ const toValues = (c: CompanyDetails): Values => ({
   mailCity: c.mailing?.city ?? "",
   mailStreet: c.mailing?.street ?? "",
   email: c.contact_email ?? "",
-  phone: c.contact_phone ?? "",
+  ...(({ country, national }) => ({ phoneCountry: country, phone: national }))(splitPhone(c.contact_phone)),
 });
 
 const FORMAT_KEY: Partial<Record<DetailsField, string>> = {
@@ -159,8 +165,13 @@ export function CompanyDetailsForm({ accountId, company, manage, backHref }: { a
     );
   };
 
+  // Canvas "Cégadatok – székhely keresése": the Google search fills the fields, which stay editable.
+  const pick = (prefix: "office" | "mail") => (a: FoundAddress) =>
+    setValues((v) => ({ ...v, [`${prefix}Postal`]: a.postalCode, [`${prefix}City`]: a.city, [`${prefix}Street`]: pickedStreet(a) }));
+  const focusFirst = (prefix: "office" | "mail") => () => document.getElementById(`${id}-${prefix}Postal`)?.focus();
   const address = (prefix: "office" | "mail", group: string) => (
     <>
+      {manage && <AddressSearch label={t("search")} keepPicked onPick={pick(prefix)} onManual={focusFirst(prefix)} onUnavailable={() => undefined} />}
       <div className="grid grid-cols-[6.5rem_minmax(0,1fr)] gap-3 sm:grid-cols-[8.75rem_minmax(0,1fr)] sm:gap-4">
         {field(`${prefix}Postal`, t("postalCode"), { autoComplete: `section-${group} postal-code`, inputMode: "numeric", maxLength: 4 })}
         {field(`${prefix}City`, t("city"), { autoComplete: `section-${group} address-level2`, maxLength: 100 })}
@@ -264,7 +275,18 @@ export function CompanyDetailsForm({ accountId, company, manage, backHref }: { a
         <Card id={`${id}-contact`} title={t("contact")}>
           <div className="grid gap-4 sm:grid-cols-2">
             {field("email", t("email"), { optional: true, type: "email", inputMode: "email", autoComplete: "email", maxLength: 254 })}
-            {field("phone", t("phone"), { optional: true, type: "tel", inputMode: "tel", autoComplete: "tel", maxLength: 30 })}
+            <PhoneInput
+              id={`${id}-phone`}
+              name="phone"
+              label={t("phone")}
+              optional={c("optional")}
+              countries={ALL_COUNTRIES}
+              country={values.phoneCountry}
+              value={values.phone}
+              onChange={(phoneCountry, phone) => setValues((v) => ({ ...v, phoneCountry, phone }))}
+              readOnly={!manage}
+              error={errorOf("phone")}
+            />
           </div>
         </Card>
 

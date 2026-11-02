@@ -16,8 +16,8 @@ function apiKey(): string | null {
   return process.env.GOOGLE_PLACES_API_KEY || null;
 }
 
-/** Up to five Hungarian address suggestions for the typed text. Null: search unavailable. */
-export async function autocomplete(input: string, sessionToken: string, locale: Locale): Promise<Suggestion[] | null> {
+/** Up to five address suggestions in `region` (ISO code, Hungary by default) for the typed text. Null: unavailable. */
+export async function autocomplete(input: string, sessionToken: string, locale: Locale, region = "HU"): Promise<Suggestion[] | null> {
   const key = apiKey();
   if (!key) return null;
   try {
@@ -32,7 +32,7 @@ export async function autocomplete(input: string, sessionToken: string, locale: 
         input,
         sessionToken,
         languageCode: locale,
-        includedRegionCodes: ["hu"],
+        includedRegionCodes: [region.toLowerCase()],
         includedPrimaryTypes: ["street_address", "premise", "subpremise", "route"],
       }),
       signal: AbortSignal.timeout(TIMEOUT_MS),
@@ -51,8 +51,8 @@ export async function autocomplete(input: string, sessionToken: string, locale: 
       .map((p) => ({
         placeId: p.placeId,
         main: p.structuredFormat?.mainText?.text ?? "",
-        // "Budapest, Magyarország" → "Budapest": the country is always Hungary here.
-        secondary: (p.structuredFormat?.secondaryText?.text ?? "").replace(/,\s*(Magyarország|Hungary)$/, ""),
+        // "Budapest, Magyarország" → "Budapest": the country is the one searched in.
+        secondary: (p.structuredFormat?.secondaryText?.text ?? "").replace(/,\s*[^,]+$/, ""),
       }));
   } catch (error) {
     console.error("places autocomplete failed", error instanceof Error ? error.name : "unknown");

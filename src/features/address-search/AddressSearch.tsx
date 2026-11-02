@@ -22,11 +22,20 @@ export function AddressSearch({
   onManual,
   onUnavailable,
   error,
+  country = "HU",
+  label,
+  keepPicked = false,
 }: {
   onPick: (address: FoundAddress) => void;
   onManual: () => void;
   onUnavailable: () => void;
   error?: string;
+  /** ISO code of the country to search in. */
+  country?: string;
+  /** Field label when it is not the lease flow's "Cím" (settings: "Cím keresése"). */
+  label?: string;
+  /** The picked address stays in the field (settings forms, where the parts show below it). */
+  keepPicked?: boolean;
 }) {
   const t = useTranslations("leaseRequest.addressSearch");
   const id = useId();
@@ -39,14 +48,16 @@ export function AddressSearch({
   const [busy, setBusy] = useState(false);
   const session = useRef<string>("");
   const latest = useRef(0);
+  // The picked address written back into the field is not searched again.
+  const shown = useRef("");
 
   useEffect(() => {
     const text = query.trim();
-    if (text.length < 3) return;
+    if (text.length < 3 || text === shown.current) return;
     const run = ++latest.current;
     const timer = setTimeout(async () => {
       session.current ||= crypto.randomUUID();
-      const result = await suggestAddresses(text, session.current);
+      const result = await suggestAddresses(text, session.current, country);
       if (run !== latest.current) return; // a newer keystroke won
       if (result.status === "unavailable") return onUnavailable();
       setItems(result.suggestions);
@@ -55,7 +66,7 @@ export function AddressSearch({
       setOpen(true);
     }, DEBOUNCE_MS);
     return () => clearTimeout(timer);
-  }, [query, onUnavailable]);
+  }, [query, onUnavailable, country]);
 
   const choose = async (item: Suggestion) => {
     setBusy(true);
@@ -64,6 +75,11 @@ export function AddressSearch({
     setBusy(false);
     setOpen(false);
     if (result.status === "unavailable") return onUnavailable();
+    if (keepPicked) {
+      shown.current = `${item.main}, ${item.secondary}`;
+      setQuery(shown.current);
+      setItems([]);
+    }
     onPick(result.address);
   };
 
@@ -86,7 +102,7 @@ export function AddressSearch({
   const showList = open && query.trim().length >= 3;
   return (
     <div className="flex flex-col gap-1.5">
-      <Label htmlFor={`${id}-input`}>{t("label")}</Label>
+      <Label htmlFor={`${id}-input`}>{label ?? t("label")}</Label>
       <div className="relative">
         <Icon name="search" size={18} strokeWidth={1.75} className="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-muted" />
         <input
