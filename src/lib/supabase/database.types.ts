@@ -87,6 +87,7 @@ export type Database = {
           created_at: string
           invited_by: string | null
           property_scope: Database["public"]["Enums"]["property_scope"]
+          view: Database["public"]["Enums"]["start_view"] | null
           role: Database["public"]["Enums"]["account_role"]
           user_id: string
         }
@@ -95,6 +96,7 @@ export type Database = {
           created_at?: string
           invited_by?: string | null
           property_scope?: Database["public"]["Enums"]["property_scope"]
+          view?: Database["public"]["Enums"]["start_view"] | null
           role: Database["public"]["Enums"]["account_role"]
           user_id: string
         }
@@ -103,6 +105,7 @@ export type Database = {
           created_at?: string
           invited_by?: string | null
           property_scope?: Database["public"]["Enums"]["property_scope"]
+          view?: Database["public"]["Enums"]["start_view"] | null
           role?: Database["public"]["Enums"]["account_role"]
           user_id?: string
         }
@@ -145,6 +148,7 @@ export type Database = {
           is_referral_partner: boolean
           kind: Database["public"]["Enums"]["account_kind"]
           legal_name: string | null
+          logo_path: string | null
           name: string
           nav_verified_at: string | null
           personal_user_id: string | null
@@ -168,6 +172,7 @@ export type Database = {
           is_referral_partner?: boolean
           kind: Database["public"]["Enums"]["account_kind"]
           legal_name?: string | null
+          logo_path?: string | null
           name: string
           nav_verified_at?: string | null
           personal_user_id?: string | null
@@ -191,6 +196,7 @@ export type Database = {
           is_referral_partner?: boolean
           kind?: Database["public"]["Enums"]["account_kind"]
           legal_name?: string | null
+          logo_path?: string | null
           name?: string
           nav_verified_at?: string | null
           personal_user_id?: string | null
@@ -1590,6 +1596,13 @@ export type Database = {
           role: Database["public"]["Enums"]["staff_role"]
           user_id: string
         }[]
+      }
+      set_account_view: {
+        Args: {
+          p_account_id: string
+          p_view: Database["public"]["Enums"]["start_view"]
+        }
+        Returns: undefined
       }
       set_member_role: {
         Args: { p_account_id: string; p_role: Database["public"]["Enums"]["account_role"]; p_user_id: string }

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import { Icon } from "@/components/Icon";
+import { CompanyMark } from "@/components/ui/CompanyMark";
 import { Tag } from "@/components/ui/Tag";
 import { accountInitials, type AccountSummary } from "./accounts";
 import { CancelRequest, CompanyRowMenu } from "./MyCompaniesActions";
@@ -9,7 +10,8 @@ import { SettingsHeader } from "@/features/settings/SettingsHeader";
 export type MyCompanyRow = AccountSummary & { tax: string; open: string; detailsHref: string; teamHref: string };
 export type MyRequestRow = { id: string; name: string; tax_number: string | null; requested: string };
 
-function Mark({ initials, muted = false }: { initials: string; muted?: boolean }) {
+function Mark({ initials, logoUrl, muted = false }: { initials: string; logoUrl?: string | null; muted?: boolean }) {
+  if (logoUrl) return <CompanyMark logoUrl={logoUrl} initials={initials} size={36} />;
   return (
     <span aria-hidden="true" className={`flex size-9 flex-none items-center justify-center rounded-full text-xs font-semibold ${muted ? "bg-paper text-ink-soft" : "bg-brand-deep text-lime"}`}>
       {initials}
@@ -58,7 +60,7 @@ export async function MyCompaniesView({ rows, requests, addHref }: { rows: MyCom
                   className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 gap-y-1 border-b border-line px-5 py-3.5 last:border-b-0 md:grid-cols-[minmax(0,1fr)_148px_96px_148px] md:gap-y-0 md:px-6"
                 >
                   <Link href={r.open} className="group flex min-h-11 min-w-0 items-center gap-3 rounded-lg">
-                    <Mark initials={accountInitials(r.name)} />
+                    <Mark initials={accountInitials(r.name)} logoUrl={r.logoUrl} />
                     <div className="flex min-w-0 flex-col">
                       <span className="truncate text-sm font-semibold group-hover:underline">{r.name}</span>
                       <span className="truncate text-[13px] text-muted tabular-nums">

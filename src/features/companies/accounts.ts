@@ -10,7 +10,15 @@ export type AccountSummary = {
   slug: string | null;
   plan: Enums<"account_plan">;
   role: Enums<"account_role">;
+  /** The View this person last picked here (landlord until they switch); null in the personal account, which keeps profiles.start_view. */
+  view: AccountView | null;
+  /** Signed link to the company logo (1 hour); null: the monogram shows. */
+  logoUrl: string | null;
 };
+
+export type AccountView = "tenant" | "landlord";
+export const LOGO_BUCKET = "company-logos";
+const LOGO_LINK_SECONDS = 60 * 60;
 
 /** Every account the signed-in user works in: the personal one first, then companies by name. Once per request. */
 export const myAccounts = cache(async (): Promise<AccountSummary[]> => {
@@ -19,11 +27,25 @@ export const myAccounts = cache(async (): Promise<AccountSummary[]> => {
   if (!auth?.claims) return [];
   const { data } = await supabase
     .from("account_members")
-    .select("role, accounts!inner(id, kind, name, slug, plan, archived_at)")
+    .select("role, view, accounts!inner(id, kind, name, slug, plan, logo_path, archived_at)")
     .eq("user_id", auth.claims.sub)
     .is("accounts.archived_at", null);
+  const paths = (data ?? []).map((m) => m.accounts.logo_path).filter((p): p is string => Boolean(p));
+  const { data: links } = paths.length ? await supabase.storage.from(LOGO_BUCKET).createSignedUrls(paths, LOGO_LINK_SECONDS) : { data: [] };
+  const logo = new Map((links ?? []).filter((l) => l.signedUrl && l.path).map((l) => [l.path!, l.signedUrl]));
   return (data ?? [])
-    .map((m) => ({ id: m.accounts.id, kind: m.accounts.kind, name: m.accounts.name, slug: m.accounts.slug, plan: m.accounts.plan, role: m.role }))
+    .map(
+      (m): AccountSummary => ({
+        id: m.accounts.id,
+        kind: m.accounts.kind,
+        name: m.accounts.name,
+        slug: m.accounts.slug,
+        plan: m.accounts.plan,
+        role: m.role,
+        view: m.accounts.kind === "company" ? (m.view === "tenant" ? "tenant" : "landlord") : null,
+        logoUrl: m.accounts.logo_path ? (logo.get(m.accounts.logo_path) ?? null) : null,
+      }),
+    )
     .sort((a, b) => (a.kind === b.kind ? a.name.localeCompare(b.name, "hu") : a.kind === "person" ? -1 : 1));
 });
 

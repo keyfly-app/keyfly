@@ -13,8 +13,11 @@ const VIEWS: { view: View; icon: IconName }[] = [
 ];
 const TOAST_MS = 4000;
 
-/** Header "Nézet" (canvas "Fejléc ikonok"): tenant or landlord Overview. Company work happens in a company account. */
-export function ViewMenu({ current }: { current: View }) {
+/**
+ * Header "Nézet" (canvas v2.5 "Nézet a cégben"): as tenant or as landlord, in every account – a person or a company can
+ * be both. Remembered per account; the pill names the current View from 640 px, phones show the icon.
+ */
+export function ViewMenu({ current, accountId, context }: { current: View; accountId?: string; context: React.ReactNode }) {
   const t = useTranslations("header");
   const [state, action] = useActionState<ViewState, FormData>(switchView, { status: "idle" });
   const [toast, setToast] = useState<string | null>(null);
@@ -33,8 +36,9 @@ export function ViewMenu({ current }: { current: View }) {
         icon="layout"
         label={t("view")}
         title={t("view")}
-        lead={t("viewLead")}
-        note={t("viewNote")}
+        context={context}
+        pill
+        hidden={accountId ? { account: accountId } : undefined}
         current={state.status === "saved" ? state.view : current}
         name="view"
         choices={VIEWS.map(({ view, icon }) => ({ value: view, icon, label: t(`views.${view}.title`), text: t(`views.${view}.text`) }))}

@@ -4,21 +4,14 @@ import { useEffect, useId, useRef, useState } from "react";
 import Link from "next/link";
 import { Icon } from "@/components/Icon";
 import { Avatar } from "@/components/ui/Avatar";
+import { CompanyMark } from "@/components/ui/CompanyMark";
 
-export type SwitcherAccount = { id: string; name: string; sub: string; href: string; company: boolean; initials: string; avatarUrl?: string | null };
+export type SwitcherAccount = { id: string; name: string; sub: string; href: string; company: boolean; initials: string; avatarUrl?: string | null; logoUrl?: string | null };
 
-/** Account mark: a person's photo or initials on mist; a company's initials in lime on deep green. */
-export function AccountMark({ account, size }: { account: Pick<SwitcherAccount, "company" | "initials" | "avatarUrl">; size: number }) {
+/** Account mark: a person's photo or initials on mist; a company's logo, or its initials in lime on deep green. */
+export function AccountMark({ account, size }: { account: Pick<SwitcherAccount, "company" | "initials" | "avatarUrl" | "logoUrl">; size: number }) {
   if (!account.company) return <Avatar src={account.avatarUrl ?? null} initials={account.initials} size={size} />;
-  return (
-    <span
-      aria-hidden="true"
-      style={{ width: size, height: size }}
-      className="flex flex-none items-center justify-center rounded-full bg-brand-deep text-[11px] font-semibold text-lime"
-    >
-      {account.initials}
-    </span>
-  );
+  return <CompanyMark logoUrl={account.logoUrl} initials={account.initials} size={size} />;
 }
 
 /**

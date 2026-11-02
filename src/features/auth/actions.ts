@@ -229,14 +229,20 @@ const START_VIEWS: Enums<"start_view">[] = ["tenant", "landlord", "manager"];
 
 export type ViewState = { status: "idle" } | { status: "saved"; view: Enums<"start_view"> } | { status: "error" };
 
-/** Header "Nézet" menu: what Overview shows. Stays on the page; the toast confirms. */
+/**
+ * Header "Nézet" menu: what the account's Overview shows. A company keeps each member's View (`account`); the personal
+ * account keeps it on the profile. Stays on the page; the toast confirms.
+ */
 export async function switchView(_prev: ViewState, form: FormData): Promise<ViewState> {
   const view = String(form.get("view") ?? "") as Enums<"start_view">;
   if (view !== "tenant" && view !== "landlord") return { status: "error" };
+  const account = String(form.get("account") ?? "");
   const supabase = await createClient();
   const { data } = await supabase.auth.getClaims();
   if (!data?.claims) return { status: "error" };
-  const { error } = await supabase.from("profiles").update({ start_view: view }).eq("id", data.claims.sub);
+  const { error } = account
+    ? await supabase.rpc("set_account_view", { p_account_id: account, p_view: view })
+    : await supabase.from("profiles").update({ start_view: view }).eq("id", data.claims.sub);
   if (error) return { status: "error" };
   revalidatePath("/", "layout");
   return { status: "saved", view };

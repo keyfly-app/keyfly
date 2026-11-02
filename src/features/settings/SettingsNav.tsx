@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Icon, type IconName } from "@/components/Icon";
+import { CompanyMark } from "@/components/ui/CompanyMark";
 
 export type SettingsLink = {
   href: string;
@@ -10,6 +11,7 @@ export type SettingsLink = {
   icon?: IconName;
   /** A company's mark instead of an icon. */
   initials?: string;
+  logoUrl?: string | null;
   /** Active on every page under this path (a company's tabs). */
   prefix?: string;
 };
@@ -40,7 +42,7 @@ export function SettingsNav({ label, groups, add }: { label: string; groups: Set
               >
                 <span aria-hidden="true" className="flex w-5 flex-none justify-center">
                   {l.initials ? (
-                    <span className="flex size-5 items-center justify-center rounded-full bg-brand-deep text-[8.5px] font-semibold text-lime">{l.initials}</span>
+                    <CompanyMark logoUrl={l.logoUrl} initials={l.initials} size={20} />
                   ) : (
                     l.icon && <Icon name={l.icon} size={16} className={on ? "text-ink" : "text-muted"} />
                   )}

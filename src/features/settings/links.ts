@@ -37,6 +37,7 @@ export async function settingsMenu(): Promise<{ label: string; groups: SettingsG
         prefix: await siteHref("portal", `/c/${acc.slug}/settings`),
         label: acc.name,
         initials: accountInitials(acc.name),
+        logoUrl: acc.logoUrl,
       })),
   );
   return {

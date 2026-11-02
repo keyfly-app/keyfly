@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { Icon } from "@/components/Icon";
+import { CompanyMark } from "@/components/ui/CompanyMark";
 import { accountInitials, companyBySlug } from "@/features/companies/accounts";
 import { CompanyTabs } from "@/features/settings/CompanyTabs";
 import { companySettingsLinks } from "@/features/settings/links";
@@ -28,9 +29,7 @@ export default async function CompanySettingsLayout({ params, children }: { para
           {t("back")}
         </Link>
         <div className="flex items-center gap-3.5">
-          <span aria-hidden="true" className="flex size-11 flex-none items-center justify-center rounded-full bg-brand-deep text-sm font-semibold text-lime">
-            {accountInitials(account.name)}
-          </span>
+          <CompanyMark logoUrl={account.logoUrl} initials={accountInitials(account.name)} size={44} />
           <div className="flex min-w-0 flex-col gap-0.5">
             <h1 className="truncate font-display text-[22px] leading-7 font-semibold">{account.name}</h1>
             <p className="text-sm text-muted">

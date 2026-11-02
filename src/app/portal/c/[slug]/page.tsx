@@ -15,17 +15,21 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   return { title: account?.name ?? "Keyfly", robots: { index: false } };
 }
 
-/** Company overview (canvas "Cégfiók – első lépések"). Properties and leases in the company's name come later. */
+/**
+ * Company overview (canvas "Cégfiók – első lépések", v2.5 "Nézet a cégben"): follows the member's View – a company can
+ * let and rent at once. Properties and leases in the company's name come later.
+ */
 export default async function CompanyOverview({ params, searchParams }: { params: Promise<{ slug: string }>; searchParams: Promise<{ created?: string }> }) {
   const [{ slug }, { created }] = await Promise.all([params, searchParams]);
   const account = await companyBySlug(slug);
   if (!account) notFound();
-  const [t, a, n] = await Promise.all([getTranslations("companies.overview"), getTranslations("accounts"), getTranslations("companies.menu")]);
+  const [t, h, n] = await Promise.all([getTranslations("companies.overview"), getTranslations("header"), getTranslations("companies.menu")]);
+  const view = account.view ?? "landlord";
   const [details, team] = await Promise.all([siteHref("portal", `/c/${slug}/settings/company`), siteHref("portal", `/c/${slug}/settings/team`)]);
   const steps: { icon: IconName; title: string; text: string; href?: string; cta?: string }[] = [
     { icon: "building", title: t("details"), text: t("detailsText"), href: details, cta: n("company") },
     { icon: "users", title: t("team"), text: t("teamText"), href: team, cta: n("team") },
-    { icon: "home", title: t("property"), text: t("propertyText") },
+    view === "tenant" ? { icon: "key", title: t("tenantProperty"), text: t("tenantPropertyText") } : { icon: "home", title: t("property"), text: t("propertyText") },
   ];
   return (
     <div className="flex flex-col gap-6">
@@ -33,7 +37,7 @@ export default async function CompanyOverview({ params, searchParams }: { params
       <div className="flex flex-col gap-1">
         <h1 className="font-display text-[22px] leading-7 font-semibold sm:text-[26px] sm:leading-8">{t("title")}</h1>
         <p className="text-sm text-muted">
-          {account.name} · {a(`plans.${account.plan}`)}
+          {account.name} · {h(`views.${view}.title`)}
         </p>
       </div>
       <section aria-labelledby="first-steps" className="flex flex-col gap-2.5">

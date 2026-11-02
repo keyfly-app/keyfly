@@ -4,6 +4,7 @@ import { getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { Icon, type IconName } from "@/components/Icon";
 import { Avatar } from "@/components/ui/Avatar";
+import { CompanyMark } from "@/components/ui/CompanyMark";
 import { signOut } from "@/features/auth/actions";
 import { accountInitials } from "@/features/companies/accounts";
 import { currentUser } from "@/features/settings/current-user";
@@ -77,11 +78,7 @@ function OwnerHead({ mark, name, sub }: { mark: React.ReactNode; name: string; s
   );
 }
 
-const CompanyMark = ({ name }: { name: string }) => (
-  <span aria-hidden="true" className="flex size-10 flex-none items-center justify-center rounded-full bg-brand-deep text-sm font-semibold text-lime">
-    {accountInitials(name)}
-  </span>
-);
+const Mark = ({ company }: { company: CompanySummary }) => <CompanyMark logoUrl={company.logoUrl} initials={accountInitials(company.name)} size={40} />;
 
 const complete = (c: CompanySummary) => Boolean(c.tax && c.office && c.contactEmail && c.contactPhone && c.bank);
 
@@ -183,7 +180,7 @@ export default async function SettingsSummary() {
             {companyCards.map(({ c, rows, details }) =>
               complete(c) ? (
                 <Link key={c.id} href={details} className="flex items-center gap-3.5 rounded-xl border border-line bg-surface px-4 py-4 hover:bg-paper sm:px-5">
-                  <CompanyMark name={c.name} />
+                  <Mark company={c} />
                   <span className="flex min-w-0 flex-1 flex-col">
                     <span className="truncate text-[15px] font-semibold">{c.name}</span>
                     <span className="truncate text-[13px] text-muted">{t("companySub", { role: roles(c.role) })}</span>
@@ -192,7 +189,7 @@ export default async function SettingsSummary() {
                 </Link>
               ) : (
                 <div key={c.id} className="overflow-hidden rounded-xl border border-line bg-surface">
-                  <OwnerHead mark={<CompanyMark name={c.name} />} name={c.name} sub={t("companySub", { role: roles(c.role) })} />
+                  <OwnerHead mark={<Mark company={c} />} name={c.name} sub={t("companySub", { role: roles(c.role) })} />
                   <ul>
                     {rows.map((r) => (
                       <SummaryRow key={r.label} row={r} add={t("add")} />

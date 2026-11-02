@@ -1617,18 +1617,16 @@
   },
   "header": {
     "view": "View",
-    "viewLead": "What should Overview show?",
-    "viewNote": "This only sets what you see first. For company work, switch to a company account top left.",
     "viewSaved": "Switched to the {view, select, tenant {tenant} other {landlord}} view.",
     "viewError": "Couldn’t switch. Please try again.",
     "views": {
       "tenant": {
-        "title": "Tenant",
-        "text": "Your leases, invitations and to-dos"
+        "title": "As tenant",
+        "text": "Rented properties and leases"
       },
       "landlord": {
-        "title": "Landlord",
-        "text": "Your properties, tenants and leases"
+        "title": "As landlord",
+        "text": "Let properties and tenants"
       }
     },
     "language": "Language",
@@ -1749,7 +1747,9 @@
       "teamText": "Colleagues with their own sign-in, on every plan.",
       "property": "Add your first property",
       "propertyText": "Coming soon: properties and leases in the company’s name.",
-      "soon": "Coming soon"
+      "soon": "Coming soon",
+      "tenantProperty": "Record a rented property",
+      "tenantPropertyText": "Coming soon: the company’s leases in one place."
     },
     "details": {
       "title": "Company details",
@@ -1874,7 +1874,25 @@
     "next": "Continue",
     "back": "Back",
     "edit": "Edit",
-    "optional": "(optional)"
+    "optional": "(optional)",
+    "logo": {
+      "title": "Logo",
+      "upload": "Upload logo",
+      "replace": "Replace",
+      "remove": "Remove",
+      "hint": "PNG, JPG or WebP, at least 256 × 256 pixels, up to 5 MB.",
+      "cropTitle": "Fit the logo",
+      "cropLead": "Drag and zoom so the logo fits the square.",
+      "cropAlt": "Preview of the uploaded logo",
+      "saved": "Logo saved. It now shows everywhere instead of the monogram.",
+      "removed": "Logo removed. The monogram shows again.",
+      "errors": {
+        "type": "We can’t open this file. Upload a PNG, JPG or WebP image.",
+        "size": "The image is too large. Choose one under 5 MB.",
+        "small": "The image is too small. Upload one of at least 256 pixels.",
+        "generic": "We couldn’t save it. Try again."
+      }
+    }
   },
   "security": {
     "challenge": {

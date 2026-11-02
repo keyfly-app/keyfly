@@ -6,7 +6,7 @@ import { AppFooter } from "@/components/AppFooter";
 import { Toaster } from "@/components/Toaster";
 import { LogoFull, LogoMark } from "@/components/Logo";
 import { UserMenu } from "@/components/UserMenu";
-import { AccountSwitcher, type SwitcherAccount } from "@/components/AccountSwitcher";
+import { AccountMark, AccountSwitcher, type SwitcherAccount } from "@/components/AccountSwitcher";
 import { accountInitials, myAccounts, type AccountSummary } from "@/features/companies/accounts";
 import { hasAcceptedTerms } from "@/features/auth/google";
 import { LanguageMenu } from "@/features/language/LanguageMenu";
@@ -55,6 +55,7 @@ export async function Shell({ site, account, children }: { site: AppSite; accoun
       href: acc.kind === "person" ? home : await siteHref(site, `/c/${acc.slug}`),
       initials: acc.kind === "person" ? (user?.initials ?? "") : accountInitials(acc.name),
       avatarUrl: acc.kind === "person" ? (user?.avatarUrl ?? null) : null,
+      logoUrl: acc.logoUrl,
     })),
   );
   const personal = switcher.find((s) => !s.company);
@@ -92,7 +93,18 @@ export async function Shell({ site, account, children }: { site: AppSite; accoun
             )}
           </div>
           <div className="flex items-center gap-1">
-            {user && site === "portal" && !account && user.startView && <ViewMenu current={user.startView === "tenant" ? "tenant" : "landlord"} />}
+            {user && site === "portal" && active && (account || user.startView) && (
+              <ViewMenu
+                current={account ? (account.view ?? "landlord") : user.startView === "tenant" ? "tenant" : "landlord"}
+                accountId={account?.id}
+                context={
+                  <span className="flex min-w-0 items-center gap-1.5 text-[13px] leading-[18px] text-muted">
+                    <AccountMark account={active} size={16} />
+                    <span className="truncate">{active.name}</span>
+                  </span>
+                }
+              />
+            )}
             <Suspense>
               <LanguageMenu />
             </Suspense>

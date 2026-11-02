@@ -1617,18 +1617,16 @@
   },
   "header": {
     "view": "Nézet",
-    "viewLead": "Mit mutasson az Áttekintés?",
-    "viewNote": "Csak azt állítja be, mit látsz elsőként. Céges munkához válts cégfiókra a bal felső fiókváltóban.",
     "viewSaved": "{view, select, tenant {Bérlői} other {Bérbeadói}} nézetre váltottál.",
     "viewError": "Nem sikerült váltani. Próbáld újra.",
     "views": {
       "tenant": {
-        "title": "Bérlő",
-        "text": "Szerződéseid, meghívóid és teendőid"
+        "title": "Bérlőként",
+        "text": "Bérelt ingatlanok és szerződések"
       },
       "landlord": {
-        "title": "Bérbeadó",
-        "text": "Ingatlanjaid, bérlőid és szerződéseid"
+        "title": "Bérbeadóként",
+        "text": "Kiadott ingatlanok és bérlők"
       }
     },
     "language": "Nyelv",
@@ -1749,7 +1747,9 @@
       "teamText": "Kollégák saját belépéssel, minden csomagban.",
       "property": "Vedd fel az első ingatlant",
       "propertyText": "Hamarosan: ingatlanok és szerződések a cég nevén.",
-      "soon": "Hamarosan"
+      "soon": "Hamarosan",
+      "tenantProperty": "Rögzítsd a bérelt ingatlant",
+      "tenantPropertyText": "Hamarosan: a cég bérleti szerződései egy helyen."
     },
     "details": {
       "title": "Cégadatok",
@@ -1874,7 +1874,25 @@
     "next": "Tovább",
     "back": "Vissza",
     "edit": "Módosítás",
-    "optional": "(nem kötelező)"
+    "optional": "(nem kötelező)",
+    "logo": {
+      "title": "Logó",
+      "upload": "Logó feltöltése",
+      "replace": "Csere",
+      "remove": "Eltávolítás",
+      "hint": "PNG, JPG vagy WebP, legalább 256 × 256 pixel, legfeljebb 5 MB.",
+      "cropTitle": "Logó igazítása",
+      "cropLead": "Húzd és nagyítsd úgy, hogy a logó elférjen a négyzetben.",
+      "cropAlt": "A feltöltött logó előnézete",
+      "saved": "Elmentettük a logót. Mostantól mindenhol ez látszik a monogram helyett.",
+      "removed": "Eltávolítottuk a logót. Újra a monogram látszik.",
+      "errors": {
+        "type": "Ezt a fájlt nem tudjuk megnyitni. Tölts fel PNG-, JPG- vagy WebP-képet.",
+        "size": "A kép túl nagy. Válassz 5 MB-nál kisebbet.",
+        "small": "A kép túl kicsi. Tölts fel legalább 256 pixeles képet.",
+        "generic": "Nem sikerült menteni. Próbáld újra."
+      }
+    }
   },
   "security": {
     "challenge": {

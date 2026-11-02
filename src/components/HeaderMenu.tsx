@@ -24,6 +24,8 @@ export function HeaderMenu({
   hidden,
   closeLabel,
   heading = "title",
+  pill = false,
+  context,
 }: {
   icon: IconName;
   /** Short name in the tooltip ("Nézet"); `current` is added for screen readers ("Nézet: Bérlő"). */
@@ -40,6 +42,10 @@ export function HeaderMenu({
   closeLabel: string;
   /** "title": a heading with an optional lead line; "eyebrow": a small caps label (a plain list such as languages). */
   heading?: "title" | "eyebrow";
+  /** From 640 px the button also names the current choice ("Bérbeadóként"), as a bordered pill; phones keep the icon. */
+  pill?: boolean;
+  /** Under the title instead of `lead`: what the choice applies to (e.g. the account, with its mark). */
+  context?: React.ReactNode;
 }) {
   const [open, setOpen] = useState(false);
   const id = useId();
@@ -87,14 +93,20 @@ export function HeaderMenu({
         aria-controls={`${id}-menu`}
         aria-label={currentChoice ? `${label}: ${currentChoice.label}` : label}
         onClick={() => setOpen((v) => !v)}
-        className={`flex size-11 items-center justify-center rounded-lg border text-ink transition-colors motion-reduce:transition-none sm:size-9 ${open ? "border-ink bg-paper" : "border-transparent hover:bg-paper"}`}
+        className={`flex size-11 items-center justify-center rounded-lg border text-ink transition-colors motion-reduce:transition-none sm:size-9 ${pill ? "sm:w-auto sm:gap-2 sm:px-2.5" : ""} ${open ? "border-ink bg-paper" : pill ? "border-transparent hover:bg-paper sm:border-line sm:bg-surface sm:hover:border-field sm:hover:bg-surface" : "border-transparent hover:bg-paper"}`}
       >
-        <Icon name={icon} size={19} strokeWidth={1.75} />
+        <Icon name={icon} size={pill ? 18 : 19} strokeWidth={1.75} />
+        {pill && currentChoice && (
+          <>
+            <span className="hidden text-[13.5px] font-semibold whitespace-nowrap sm:inline">{currentChoice.label}</span>
+            <Icon name="chevronDown" size={14} strokeWidth={2} className="hidden text-muted sm:block" />
+          </>
+        )}
       </button>
       {!open && (
         <span
           aria-hidden="true"
-          className="pointer-events-none absolute top-full left-1/2 z-40 mt-1.5 hidden -translate-x-1/2 rounded-md bg-ink px-2 py-1 text-xs font-medium whitespace-nowrap text-white opacity-0 transition-opacity group-hover:opacity-100 group-has-[:focus-visible]:opacity-100 motion-reduce:transition-none [@media(hover:hover)]:block"
+          className={`pointer-events-none absolute top-full left-1/2 z-40 mt-1.5 hidden -translate-x-1/2 rounded-md bg-ink px-2 py-1 text-xs font-medium whitespace-nowrap text-white opacity-0 transition-opacity group-hover:opacity-100 group-has-[:focus-visible]:opacity-100 motion-reduce:transition-none [@media(hover:hover)]:block ${pill ? "sm:!hidden" : ""}`}
         >
           {label}
         </span>
@@ -118,7 +130,7 @@ export function HeaderMenu({
               ) : (
                 <div className="flex flex-col gap-0.5">
                   <p className="text-[15px] leading-5 font-semibold">{title}</p>
-                  {lead && <p className="text-[13px] leading-[18px] text-muted">{lead}</p>}
+                  {context ?? (lead && <p className="text-[13px] leading-[18px] text-muted">{lead}</p>)}
                 </div>
               )}
               <button type="button" onClick={() => setOpen(false)} aria-label={closeLabel} className="-mt-1.5 -mr-2 flex size-11 flex-none items-center justify-center rounded-lg text-muted hover:text-ink sm:hidden">
