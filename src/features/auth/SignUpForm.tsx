@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/form";
 import { AUTH_METHODS } from "@/config/auth";
 import { signUp, type FormState } from "./actions";
+import { Turnstile } from "@/features/bot-check/Turnstile";
 import { GoogleButton } from "./GoogleButton";
 import { PasswordField } from "./PasswordField";
 
@@ -84,9 +85,8 @@ export function SignUpForm({
             ),
           })}
         </Checkbox>
-        {(error === "rateLimit" || error === "generic") && (
-          <Notice kind="error">{t(`errors.${error}`)}</Notice>
-        )}
+        {(error === "rateLimit" || error === "captcha" || error === "generic") && <Notice kind="error">{t(`errors.${error}`)}</Notice>}
+        <Turnstile resetKey={state} />
         <Button pending={pending}>
           {pending ? t("register.submitting") : t("register.submit")}
         </Button>

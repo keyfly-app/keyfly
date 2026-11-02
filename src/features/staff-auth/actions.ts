@@ -10,8 +10,9 @@ import { inviteStaff } from "@/features/invitations/send";
 import { isLocale } from "@/i18n/config";
 import { requestOrigin } from "@/lib/request-origin";
 import { safeNext } from "@/lib/safe-next";
+import { isHuman } from "@/lib/turnstile";
 import { hrefFor } from "@/lib/sites";
-import { createClient } from "@/lib/supabase/server";
+import { createAuthClient, createClient } from "@/lib/supabase/server";
 import { REMEMBER_COOKIE } from "@/lib/supabase/session-cookies";
 
 const EMAIL_RE = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
@@ -19,7 +20,7 @@ const CODE_RE = /^\d{6}$/;
 /** An authenticator setup nobody confirmed within this time is treated as abandoned. */
 const STALE_SETUP_MS = 15 * 60 * 1000;
 
-export type StaffFormError = "email" | "password" | "name" | "terms" | "credentials" | "unconfirmed" | "code" | "codeFormat" | "expired" | "rateLimit" | "generic";
+export type StaffFormError = "email" | "password" | "name" | "terms" | "credentials" | "unconfirmed" | "code" | "codeFormat" | "expired" | "rateLimit" | "captcha" | "generic";
 export type StaffFormState = { status: "idle" } | { status: "sent"; email: string } | { status: "error"; error: StaffFormError; email?: string };
 /** A freshly created authenticator (QR code and manual key) waiting for its first code. */
 export type TotpSetupState = { status: "ready"; factorId: string; qrCode: string; secret: string } | { status: "error" };
@@ -56,9 +57,10 @@ export async function adminSignIn(_prev: StaffFormState, form: FormData): Promis
   const password = String(form.get("password") ?? "");
   if (!EMAIL_RE.test(email)) return { status: "error", error: "email", email };
   if (!password) return { status: "error", error: "password", email };
+  if (!(await isHuman(form))) return { status: "error", error: "captcha", email };
 
   await forgetSessionOnClose();
-  const supabase = await createClient({ remember: false });
+  const supabase = await createAuthClient({ remember: false });
   const { error } = await supabase.auth.signInWithPassword({ email, password });
   if (error) {
     if (error.code === "invalid_credentials") return { status: "error", error: "credentials", email };
@@ -91,7 +93,7 @@ export async function staffSignUp(_prev: StaffFormState, form: FormData): Promis
   const locale = await getLocale();
   const { origin, host } = await requestOrigin();
   const invitePath = `/invite/${encodeURIComponent(token)}`;
-  const { error } = await supabase.auth.signUp({
+  const { error } = await (await createAuthClient({ remember: false })).auth.signUp({
     email: invitation.email,
     password,
     options: {
@@ -118,7 +120,7 @@ export async function verifyTotp(_prev: StaffFormState, form: FormData): Promise
   const code = String(form.get("code") ?? "").replace(/\s/g, "");
   if (!CODE_RE.test(code)) return { status: "error", error: "codeFormat" };
 
-  const supabase = await createClient({ remember: false });
+  const supabase = await createAuthClient({ remember: false });
   const { error } = await supabase.auth.mfa.challengeAndVerify({ factorId, code });
   if (error) {
     if (error.code === "mfa_verification_failed" || error.code === "mfa_challenge_expired") return { status: "error", error: "code" };

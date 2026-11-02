@@ -411,7 +411,8 @@
       "noAccount": "There's no account for this email address.",
       "samePassword": "The new password must be different from the old one.",
       "rateLimit": "Too many attempts. Try again in a few minutes.",
-      "generic": "A temporary error occurred. Try again."
+      "generic": "A temporary error occurred. Try again.",
+      "captcha": "We couldn’t check that you’re not a robot. Refresh the page and try again."
     },
     "sending": "Sending…",
     "google": {
@@ -1141,7 +1142,8 @@
       "codeFormat": "The code has 6 digits.",
       "expired": "This QR code has expired. Request a new one and scan it.",
       "rateLimit": "Too many failed attempts. Try again in a few minutes.",
-      "generic": "A temporary error occurred. Try again."
+      "generic": "A temporary error occurred. Try again.",
+      "captcha": "We couldn’t check that you’re not a robot. Refresh the page and try again."
     },
     "signedInAs": "Signed in as <b>{email}</b>",
     "badge": "Admin",

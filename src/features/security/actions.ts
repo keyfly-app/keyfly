@@ -11,7 +11,7 @@ import { requestOrigin } from "@/lib/request-origin";
 import { safeNext } from "@/lib/safe-next";
 import { hrefFor } from "@/lib/sites";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { createClient } from "@/lib/supabase/server";
+import { createAuthClient, createClient } from "@/lib/supabase/server";
 import { TRUSTED_COOKIE } from "@/lib/trusted-device";
 import { currentTrustedId, forgetTrustedDevices, trustThisDevice } from "./trusted";
 
@@ -49,6 +49,11 @@ async function notify(supabase: Awaited<ReturnType<typeof createClient>>, kind: 
   await sendEmail(email, securityEmail({ locale, url: await appUrl("portal", "/settings/security"), kind }), `security_${kind}`);
 }
 
+/** The authenticator's code, through the auth client (the visitor's IP counts for the MFA rate limit). */
+async function verifyCode(factorId: string, code: string) {
+  return (await createAuthClient()).auth.mfa.challengeAndVerify({ factorId, code });
+}
+
 type MfaError = "code" | "expired" | "rate" | "generic";
 function mfaError(code: string | undefined): MfaError {
   if (code === "mfa_verification_failed" || code === "mfa_challenge_expired") return "code";
@@ -83,9 +88,10 @@ export type ConfirmState = { status: "idle" } | { status: "error"; error: MfaErr
 export async function confirmTwoStep(_: ConfirmState, form: FormData): Promise<ConfirmState> {
   const code = String(form.get("code") ?? "").replace(/\s/g, "");
   if (!CODE_RE.test(code)) return { status: "error", error: "format" };
-  const supabase = await createClient();
-  const { error } = await supabase.auth.mfa.challengeAndVerify({ factorId: String(form.get("factorId") ?? ""), code });
+  const { error } = await verifyCode(String(form.get("factorId") ?? ""), code);
   if (error) return { status: "error", error: mfaError(error.code) };
+  // A new client: it reads the session the code just raised to the second factor.
+  const supabase = await createClient();
   const codes = await saveCodes(supabase);
   if (!codes) return { status: "error", error: "generic" };
   await notify(supabase, "twoStepOn");
@@ -100,17 +106,16 @@ export type RenewState = { status: "idle" } | { status: "codes"; codes: string[]
  * device sends a current code with the request.
  */
 export async function renewBackupCodes(_: RenewState, form: FormData): Promise<RenewState> {
-  const supabase = await createClient();
   const code = String(form.get("code") ?? "").replace(/\s/g, "");
   if (code) {
     if (!CODE_RE.test(code)) return { status: "error", error: "format" };
-    const { data: factors } = await supabase.auth.mfa.listFactors();
+    const { data: factors } = await (await createClient()).auth.mfa.listFactors();
     const factor = factors?.totp[0];
     if (!factor) return { status: "error", error: "generic" };
-    const { error } = await supabase.auth.mfa.challengeAndVerify({ factorId: factor.id, code });
+    const { error } = await verifyCode(factor.id, code);
     if (error) return { status: "error", error: mfaError(error.code) };
   }
-  const codes = await saveCodes(supabase);
+  const codes = await saveCodes(await createClient());
   revalidatePath("/", "layout");
   return codes ? { status: "codes", codes } : { status: "error", error: "generic" };
 }
@@ -121,12 +126,12 @@ export type OffState = { status: "idle" } | { status: "error"; error: MfaError |
 export async function turnOffTwoStep(_: OffState, form: FormData): Promise<OffState> {
   const code = String(form.get("code") ?? "").replace(/\s/g, "");
   if (!CODE_RE.test(code)) return { status: "error", error: "format" };
-  const supabase = await createClient();
-  const { data: factors } = await supabase.auth.mfa.listFactors();
+  const { data: factors } = await (await createClient()).auth.mfa.listFactors();
   const factor = factors?.totp[0];
   if (!factor) return { status: "error", error: "generic" };
-  const { error } = await supabase.auth.mfa.challengeAndVerify({ factorId: factor.id, code });
+  const { error } = await verifyCode(factor.id, code);
   if (error) return { status: "error", error: mfaError(error.code) };
+  const supabase = await createClient();
   await supabase.rpc("delete_recovery_codes");
   await forgetTrustedDevices(supabase);
   for (const f of factors?.all ?? []) {
@@ -146,13 +151,12 @@ export type ChallengeState = { status: "idle" } | { status: "error"; error: MfaE
 export async function verifySignInCode(_: ChallengeState, form: FormData): Promise<ChallengeState> {
   const code = String(form.get("code") ?? "").replace(/\s/g, "");
   if (!CODE_RE.test(code)) return { status: "error", error: "format" };
-  const supabase = await createClient();
-  const { data: factors } = await supabase.auth.mfa.listFactors();
+  const { data: factors } = await (await createClient()).auth.mfa.listFactors();
   const factor = factors?.totp[0];
   if (!factor) return { status: "error", error: "generic" };
-  const { error } = await supabase.auth.mfa.challengeAndVerify({ factorId: factor.id, code });
+  const { error } = await verifyCode(factor.id, code);
   if (error) return { status: "error", error: mfaError(error.code) };
-  if (form.get("remember") === "on") await trustThisDevice(supabase);
+  if (form.get("remember") === "on") await trustThisDevice(await createClient());
   const { host } = await requestOrigin();
   redirect(hrefFor("portal", safeNext(form.get("next")), host));
 }

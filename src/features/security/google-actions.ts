@@ -5,14 +5,14 @@ import { redirect } from "next/navigation";
 import { setFirstPassword } from "@/features/auth/first-password";
 import { requestOrigin } from "@/lib/request-origin";
 import { hrefFor } from "@/lib/sites";
-import { createClient } from "@/lib/supabase/server";
+import { createAuthClient, createClient } from "@/lib/supabase/server";
 
 export type GoogleState = { status: "idle" } | { status: "done" } | { status: "error"; error: "single" | "weakPassword" | "generic" };
 
 /** "Összekapcsolás": off to Google; back on the security page through /auth/callback (canvas v2.4 "Kapcsolt fiókok"). */
 export async function linkGoogle() {
   const { origin, host } = await requestOrigin();
-  const supabase = await createClient();
+  const supabase = await createAuthClient();
   const { data, error } = await supabase.auth.linkIdentity({
     provider: "google",
     options: {

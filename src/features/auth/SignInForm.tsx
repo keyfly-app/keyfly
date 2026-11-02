@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { Button, Checkbox, Divider, Notice, TextField, TextLink } from "@/components/ui/form";
 import { AUTH_METHODS } from "@/config/auth";
 import { signIn, type FormState } from "./actions";
+import { Turnstile } from "@/features/bot-check/Turnstile";
 import { GoogleButton } from "./GoogleButton";
 import { PasswordField } from "./PasswordField";
 
@@ -41,6 +42,7 @@ export function SignInForm({ next, forgotHref }: { next: string; forgotHref: str
           {t("signIn.remember")}
         </Checkbox>
         {error && error !== "email" && error !== "password" && <Notice kind="error">{t(`errors.${error}`)}</Notice>}
+        <Turnstile resetKey={state} />
         <Button pending={signingIn}>{signingIn ? t("signIn.submitting") : t("signIn.submit")}</Button>
       </form>
       {AUTH_METHODS.google && (

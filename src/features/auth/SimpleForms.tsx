@@ -3,6 +3,7 @@
 import { useActionState, useId } from "react";
 import { useTranslations } from "next-intl";
 import { Button, Notice, TextField } from "@/components/ui/form";
+import { Turnstile } from "@/features/bot-check/Turnstile";
 import type { AppSite } from "@/lib/sites";
 import { requestPasswordReset, resendConfirmation, updatePassword, type FormState } from "./actions";
 import { PasswordField } from "./PasswordField";
@@ -49,7 +50,8 @@ export function ForgotPasswordForm({ site = "portal" }: { site?: AppSite }) {
         defaultValue={state.status === "error" ? state.email : undefined}
         error={error === "email" ? t("errors.email") : undefined}
       />
-      {error === "rateLimit" && <Notice kind="error">{t("errors.rateLimit")}</Notice>}
+      {(error === "rateLimit" || error === "captcha") && <Notice kind="error">{t(`errors.${error}`)}</Notice>}
+      <Turnstile resetKey={state} />
       <Button pending={pending}>{pending ? t("sending") : t("forgot.submit")}</Button>
     </form>
   );

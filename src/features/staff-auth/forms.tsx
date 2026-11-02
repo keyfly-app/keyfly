@@ -8,6 +8,7 @@ import { CodeInput } from "@/components/ui/CodeInput";
 import { Button, Checkbox, INPUT_CLASS, Label, Notice, TextField, TextLink } from "@/components/ui/form";
 import { InfoTip } from "@/components/ui/InfoTip";
 import { PasswordField } from "@/features/auth/PasswordField";
+import { Turnstile } from "@/features/bot-check/Turnstile";
 import { adminSignIn, startTotpSetup, staffSignUp, verifyTotp, type StaffFormState, type TotpSetupState } from "./actions";
 
 const idle: StaffFormState = { status: "idle" };
@@ -39,6 +40,7 @@ export function AdminSignInForm({ next, forgotHref }: { next: string; forgotHref
         aside={<TextLink href={forgotHref}>{auth("signIn.forgot")}</TextLink>}
       />
       {error && error !== "email" && error !== "password" && <Notice kind="error">{t(`errors.${error}`)}</Notice>}
+      <Turnstile resetKey={state} />
       <Button pending={pending}>{pending ? t("submitting") : t("submit")}</Button>
     </form>
   );

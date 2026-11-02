@@ -9,11 +9,12 @@ import { CONSENT_VERSIONS } from "@/config/consent";
 import { isLocale } from "@/i18n/config";
 import { requestOrigin } from "@/lib/request-origin";
 import { safeNext } from "@/lib/safe-next";
+import { isHuman } from "@/lib/turnstile";
 import { hrefFor, type AppSite } from "@/lib/sites";
 import type { Enums } from "@/lib/supabase/database.types";
 import { forgetTrustedDevices } from "@/features/security/trusted";
 import { hasAcceptedTerms, isFreshGoogleAccount, removeUnfinishedAccount } from "./google";
-import { createClient } from "@/lib/supabase/server";
+import { createAuthClient, createClient } from "@/lib/supabase/server";
 import { REMEMBER_COOKIE } from "@/lib/supabase/session-cookies";
 import { syncEmailLocale } from "./locale-sync";
 import { isValidPassword } from "./password";
@@ -21,7 +22,7 @@ import { PENDING_EMAIL_COOKIE, pendingEmail } from "./pending-email";
 
 const EMAIL_RE = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
 
-export type FormError = "email" | "password" | "name" | "terms" | "credentials" | "unconfirmed" | "noAccount" | "samePassword" | "rateLimit" | "generic";
+export type FormError = "email" | "password" | "name" | "terms" | "credentials" | "unconfirmed" | "noAccount" | "samePassword" | "rateLimit" | "captcha" | "generic";
 export type FormState = { status: "idle" } | { status: "sent" } | { status: "error"; error: FormError; email?: string };
 
 const site = (form: FormData): AppSite => (form.get("site") === "admin" ? "admin" : "portal");
@@ -51,6 +52,7 @@ export async function signIn(_prev: FormState, form: FormData): Promise<FormStat
   const remember = form.get("remember") === "on";
   if (!EMAIL_RE.test(email)) return { status: "error", error: "email", email };
   if (!password) return { status: "error", error: "password", email };
+  if (!(await isHuman(form))) return { status: "error", error: "captcha", email };
 
   (await cookies()).set(REMEMBER_COOKIE, remember ? "1" : "0", {
     path: "/",
@@ -59,7 +61,7 @@ export async function signIn(_prev: FormState, form: FormData): Promise<FormStat
     secure: process.env.NODE_ENV === "production",
     ...(remember ? { maxAge: 60 * 60 * 24 * 400 } : {}),
   });
-  const supabase = await createClient({ remember });
+  const supabase = await createAuthClient({ remember });
   const { data, error } = await supabase.auth.signInWithPassword({ email, password });
   if (error) {
     if (error.code === "invalid_credentials") return { status: "error", error: "credentials", email };
@@ -79,7 +81,7 @@ export async function signIn(_prev: FormState, form: FormData): Promise<FormStat
 export async function continueWithGoogle(form: FormData) {
   const { origin, host } = await requestOrigin();
   const next = safeNext(form.get("next"));
-  const supabase = await createClient();
+  const supabase = await createAuthClient();
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: "google",
     options: {
@@ -140,9 +142,10 @@ export async function signUp(_prev: FormState, form: FormData): Promise<FormStat
   if (!EMAIL_RE.test(email) || email.length > 254) return { status: "error", error: "email", email };
   if (!isValidPassword(password)) return { status: "error", error: "password", email };
   if (form.get("terms") !== "on") return { status: "error", error: "terms", email };
+  if (!(await isHuman(form))) return { status: "error", error: "captcha", email };
 
   const locale = await getLocale();
-  const supabase = await createClient();
+  const supabase = await createAuthClient();
   const { error } = await supabase.auth.signUp({
     email,
     password,
@@ -179,7 +182,7 @@ async function rememberPendingEmail(email: string) {
 export async function resendConfirmation(): Promise<FormState> {
   const email = await pendingEmail();
   if (!email) return { status: "error", error: "email" };
-  const supabase = await createClient();
+  const supabase = await createAuthClient();
   const { error } = await supabase.auth.resend({ type: "signup", email, options: { emailRedirectTo: await emailLinkTarget("portal", "/") } });
   if (error) {
     console.error("resend failed", error.code);
@@ -192,7 +195,8 @@ export async function resendConfirmation(): Promise<FormState> {
 export async function requestPasswordReset(_prev: FormState, form: FormData): Promise<FormState> {
   const email = emailOf(form);
   if (!EMAIL_RE.test(email)) return { status: "error", error: "email", email };
-  const supabase = await createClient();
+  if (!(await isHuman(form))) return { status: "error", error: "captcha", email };
+  const supabase = await createAuthClient();
   const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo: await emailLinkTarget(site(form), "/reset-password") });
   if (error && authError(error.code) === "rateLimit") return { status: "error", error: "rateLimit", email };
   if (error) console.error("password reset failed", error.code);
@@ -203,15 +207,14 @@ export async function requestPasswordReset(_prev: FormState, form: FormData): Pr
 export async function updatePassword(_prev: FormState, form: FormData): Promise<FormState> {
   const password = String(form.get("password") ?? "");
   if (!isValidPassword(password)) return { status: "error", error: "password" };
-  const supabase = await createClient();
-  const { error } = await supabase.auth.updateUser({ password });
+  const { error } = await (await createAuthClient()).auth.updateUser({ password });
   if (error) {
     if (error.code === "same_password") return { status: "error", error: "samePassword" };
     if (error.code === "weak_password") return { status: "error", error: "password" };
     console.error("password update failed", error.code);
     return { status: "error", error: "generic" };
   }
-  await forgetTrustedDevices(supabase);
+  await forgetTrustedDevices(await createClient());
   return goTo(site(form), "/");
 }
 

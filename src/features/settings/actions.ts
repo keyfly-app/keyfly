@@ -3,6 +3,7 @@
 import { randomBytes } from "node:crypto";
 import { createClient as createPlainClient } from "@supabase/supabase-js";
 import { revalidatePath } from "next/cache";
+import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { getLocale } from "next-intl/server";
 import { BRAND } from "@/config/company";
@@ -18,7 +19,8 @@ import { hrefFor } from "@/lib/sites";
 import { checkVerification, startVerification } from "@/lib/sms";
 import type { Database } from "@/lib/supabase/database.types";
 import { supabaseEnv } from "@/lib/supabase/env";
-import { createClient } from "@/lib/supabase/server";
+import { createAuthClient, createClient } from "@/lib/supabase/server";
+import { clientIp, secretKey } from "@/lib/supabase/forwarded";
 
 /** Result of a settings form. `error` and `saved` are message keys under settings.errors / settings.saved. */
 export type SettingsState =
@@ -48,7 +50,13 @@ function done(saved: string, extra: { email?: string } = {}): SettingsState {
  */
 async function passwordMatches(email: string, password: string): Promise<"ok" | "wrong" | "rate"> {
   const { url, key } = supabaseEnv();
-  const probe = createPlainClient<Database>(url, key, { auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false } });
+  // The secret key lets Supabase count the visitor's IP (forwarded) for its sign-in rate limit, not our server's.
+  const secret = secretKey();
+  const ip = clientIp(await headers());
+  const probe = createPlainClient<Database>(url, secret ?? key, {
+    auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false },
+    ...(secret && ip ? { global: { headers: { "sb-forwarded-for": ip } } } : {}),
+  });
   const { error } = await probe.auth.signInWithPassword({ email, password });
   if (error) return error.code === "over_request_rate_limit" ? "rate" : "wrong";
   await probe.auth.signOut({ scope: "local" });
@@ -246,7 +254,7 @@ export async function deleteAccount(_: DeleteState, form: FormData): Promise<Del
   if (factor) {
     const code = String(form.get("code") ?? "").replace(/\s/g, "");
     if (!/^\d{6}$/.test(code)) return { status: "error", error: "code" };
-    const { error } = await supabase.auth.mfa.challengeAndVerify({ factorId: factor.id, code });
+    const { error } = await (await createAuthClient()).auth.mfa.challengeAndVerify({ factorId: factor.id, code });
     if (error) return { status: "error", error: "code" };
   }
   const { data: blockers } = await supabase.rpc("account_deletion_blockers");

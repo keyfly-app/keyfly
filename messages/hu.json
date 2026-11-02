@@ -411,7 +411,8 @@
       "noAccount": "Ehhez az e-mail-címhez nem tartozik fiók.",
       "samePassword": "Az új jelszó nem lehet ugyanaz, mint a régi.",
       "rateLimit": "Túl sok próbálkozás. Próbáld újra néhány perc múlva.",
-      "generic": "Átmeneti hiba történt. Próbáld újra."
+      "generic": "Átmeneti hiba történt. Próbáld újra.",
+      "captcha": "Az ellenőrzés nem sikerült. Frissítsd az oldalt, és próbáld újra."
     },
     "sending": "Küldés…",
     "google": {
@@ -1141,7 +1142,8 @@
       "codeFormat": "A kód 6 számjegyből áll.",
       "expired": "A QR-kód érvényessége lejárt. Kérj újat, és olvasd be azt.",
       "rateLimit": "Túl sok sikertelen próbálkozás. Próbáld újra néhány perc múlva.",
-      "generic": "Átmeneti hiba történt. Próbáld újra."
+      "generic": "Átmeneti hiba történt. Próbáld újra.",
+      "captcha": "Az ellenőrzés nem sikerült. Frissítsd az oldalt, és próbáld újra."
     },
     "signedInAs": "Belépve: <b>{email}</b>",
     "badge": "Admin",

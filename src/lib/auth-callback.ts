@@ -4,7 +4,7 @@ import { SIGN_UP_OPEN } from "@/config/auth";
 import { hasAcceptedTerms, isFreshGoogleAccount, removeUnfinishedAccount } from "@/features/auth/google";
 import { safeNext } from "@/lib/safe-next";
 import { hrefFor, type AppSite } from "@/lib/sites";
-import { createClient } from "@/lib/supabase/server";
+import { createAuthClient, createClient } from "@/lib/supabase/server";
 
 const EMAIL_LINK_TYPES: EmailOtpType[] = ["signup", "recovery", "email_change", "email"];
 
@@ -25,8 +25,7 @@ export async function handleEmailLink(request: NextRequest, site: AppSite) {
   const next = safeNext(searchParams.get("next"));
 
   if (tokenHash && type && EMAIL_LINK_TYPES.includes(type)) {
-    const supabase = await createClient();
-    const { error } = await supabase.auth.verifyOtp({ type, token_hash: tokenHash });
+    const { error } = await (await createAuthClient()).auth.verifyOtp({ type, token_hash: tokenHash });
     if (!error) return respond(request, site, type === "recovery" ? "/reset-password" : next);
     console.error("email link failed", error.code);
   }
@@ -50,9 +49,9 @@ export async function handleAuthCallback(request: NextRequest, site: AppSite) {
     return respond(request, site, failed === "access_denied" ? "/login" : "/login?error=google");
   }
   if (code) {
-    const supabase = await createClient();
-    const { error } = await supabase.auth.exchangeCodeForSession(code);
+    const { error } = await (await createAuthClient()).auth.exchangeCodeForSession(code);
     if (!error) {
+      const supabase = await createClient();
       const {
         data: { user },
       } = await supabase.auth.getUser();

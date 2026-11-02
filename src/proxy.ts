@@ -1,10 +1,11 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { createServerClient } from "@supabase/ssr";
+import { createServerClient, type CookieOptions } from "@supabase/ssr";
 import { DEFAULT_LOCALE, isLocale, LOCALE_COOKIE, resolvePublicPath, type Locale } from "@/i18n/config";
 import { localeCookie } from "@/lib/locale-cookie";
 import { safeNext } from "@/lib/safe-next";
 import { parseTrusted, sha256Hex, TRUSTED_COOKIE } from "@/lib/trusted-device";
 import { hrefFor, isPreviewHost, PRODUCTION_HOSTS, resolveSite, SITE_PATH_PREFIX, type AppSite } from "@/lib/sites";
+import { clientIp, secretKey } from "@/lib/supabase/forwarded";
 import { authCookieOptions, REMEMBER_COOKIE, wantsRemember } from "@/lib/supabase/session-cookies";
 
 /**
@@ -153,19 +154,24 @@ async function refreshSession(request: NextRequest, response: NextResponse, site
   if (!url || !key) return { signedIn: false, aal: null, needsTwoStep: false };
   const remember = wantsRemember(request.cookies.get(REMEMBER_COOKIE)?.value);
 
-  const supabase = createServerClient(url, key, {
-    cookies: {
-      getAll() {
-        return request.cookies.getAll();
-      },
-      setAll(cookiesToSet) {
-        cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value));
-        cookiesToSet.forEach(({ name, value, options }) => response.cookies.set(name, value, authCookieOptions(value, options, remember)));
-      },
+  const cookies = {
+    getAll() {
+      return request.cookies.getAll();
     },
-  });
+    setAll(cookiesToSet: { name: string; value: string; options: CookieOptions }[]) {
+      cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value));
+      cookiesToSet.forEach(({ name, value, options }) => response.cookies.set(name, value, authCookieOptions(value, options, remember)));
+    },
+  };
+  // Refreshing a token is rate-limited per IP by Supabase Auth: with the secret key the visitor's IP is forwarded, so
+  // all visitors do not share our server's few addresses. This client only refreshes the session (auth calls only).
+  const secret = secretKey();
+  const ip = clientIp(request.headers);
+  const refresher = createServerClient(url, secret ?? key, { cookies, ...(secret && ip ? { global: { headers: { "sb-forwarded-for": ip } } } : {}) });
   // Refreshes an expired token; pages and RLS do the actual authorization.
-  const { data } = await supabase.auth.getClaims();
+  const { data } = await refresher.auth.getClaims();
+  // Database calls below act as the visitor (publishable key, the possibly refreshed cookies).
+  const supabase = createServerClient(url, key, { cookies });
   const aal = typeof data?.claims.aal === "string" ? data.claims.aal : null;
   // Read from the session itself (no network): does this person have a verified authenticator still to use?
   let needsTwoStep = false;
