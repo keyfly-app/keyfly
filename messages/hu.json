@@ -4,7 +4,7 @@
     "privacy": "Adatkezelés",
     "imprint": "Impresszum",
     "backHome": "Vissza a főoldalra",
-    "signOut": "Kilépés",
+    "signOut": "Kijelentkezés",
     "privacyNotice": "Adatkezelési tájékoztató",
     "legalNav": "Jogi információk",
     "languageNav": "Nyelv / Language",
@@ -473,7 +473,7 @@
       "banner": "Ez a meghívó a {email} címre szól.",
       "title": "Másik fiókkal vagy belépve",
       "current": "Jelenleg: <b>{email}</b>",
-      "signOutIn": "Kilépés és belépés"
+      "signOutIn": "Kijelentkezés, majd belépés"
     },
     "closed": {
       "title": "Ez a meghívó már nem érvényes",
@@ -2123,7 +2123,6 @@
     "profile": "Profil és biztonság",
     "settings": "Beállítások",
     "companies": "Cégeim",
-    "language": "Nyelv · {name}",
-    "signOut": "Kijelentkezés"
+    "language": "Nyelv · {name}"
   }
 }

@@ -20,11 +20,11 @@ export async function LeaseCard({ item, view }: { item: LeaseItem; view: Account
         <Tag tone={item.tag.tone}>{item.tag.label}</Tag>
       </span>
       <span className="flex items-center justify-between gap-2 border-t border-paper pt-3 text-[13.5px]">
-        <span className="min-w-0 tabular-nums">
+        <span className="flex min-w-0 flex-col gap-0.5 tabular-nums">
           <span className="font-semibold">
             {item.rent} / {p("perMonth")}
           </span>
-          <span className="text-muted"> · {item.period}</span>
+          <span className="whitespace-nowrap text-muted">{item.period}</span>
         </span>
         {item.href && <Icon name="chevronRight" size={16} className="flex-none text-muted" />}
       </span>

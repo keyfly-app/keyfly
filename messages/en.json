@@ -2123,7 +2123,6 @@
     "profile": "Profile and security",
     "settings": "Settings",
     "companies": "My companies",
-    "language": "Language · {name}",
-    "signOut": "Sign out"
+    "language": "Language · {name}"
   }
 }

@@ -33,10 +33,11 @@ const icon = (name: IconName, className = "text-muted") => <Icon name={name} siz
  * company's settings when you work in one, and sign out. `account`: the company account of a /c/<slug>/menu page.
  */
 export async function MenuPage({ account }: { account?: AccountSummary }) {
-  const [t, a, nav, user, accounts, links] = await Promise.all([
+  const [t, a, nav, common, user, accounts, links] = await Promise.all([
     getTranslations("menu"),
     getTranslations("accounts"),
     getTranslations("nav"),
+    getTranslations("common"),
     currentUser(),
     myAccounts(),
     personalSettingsLinks(),
@@ -80,7 +81,7 @@ export async function MenuPage({ account }: { account?: AccountSummary }) {
       <form action={signOut} className="flex justify-center">
         <input type="hidden" name="site" value="portal" />
         <button type="submit" className="flex h-12 items-center rounded-lg px-4 text-[15px] font-semibold text-danger-ink hover:bg-surface">
-          {t("signOut")}
+          {common("signOut")}
         </button>
       </form>
     </div>

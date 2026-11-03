@@ -148,7 +148,10 @@ export async function Shell({ account, settings = false, children }: { account?:
       </header>
       <div className="flex flex-1">
         {current && (
-          <aside className="sticky top-14 hidden h-[calc(100dvh-3.5rem)] w-64 flex-none flex-col overflow-y-auto border-r border-line bg-surface px-3 py-4 lg:flex">
+          // Only the long settings menu scrolls: a scrolling column would clip the account menu that opens beside it.
+          <aside
+            className={`sticky top-14 z-20 hidden h-[calc(100dvh-3.5rem)] w-64 flex-none flex-col border-r border-line bg-surface px-3 py-4 lg:flex ${settingsNav ? "overflow-y-auto" : ""}`}
+          >
             {settingsNav ? (
               <>
                 <Link href={home} className="flex h-10 min-w-0 items-center gap-2 rounded-lg px-2 text-[13.5px] font-semibold hover:bg-paper">
