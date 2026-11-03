@@ -695,10 +695,6 @@
       "declineTitle": "Elutasítod a módosított feltételeket?",
       "declineText": "A szerződést nem rögzítjük, és értesítjük a bérbeadódat. Ezt nem lehet visszavonni."
     },
-    "guarantee": {
-      "title": "Keyfly-garancia",
-      "text": "Hamarosan: kaució helyett kis havi díj. A kaució összege nálad marad."
-    },
     "home": {
       "progressTitle": "Folyamatban",
       "details": "Részletek",
@@ -1007,7 +1003,7 @@
   "portal": {
     "title": "Áttekintés",
     "intro": {
-      "landlord": "Hamarosan itt kezelheted az ingatlanjaidat és a bérleti szerződéseidet."
+      "landlord": "Bérbeadóként a bérlőid meghívóit e-mailben kapod: a levélben lévő linkkel nézed át és hagyod jóvá a bérleti szerződést."
     },
     "applications": "Ajánlatkéréseim",
     "addressLater": "Cím később",
@@ -1750,12 +1746,7 @@
       "details": "Nézd át a cégadatokat",
       "detailsText": "Megjelenő név és a NAV-adatok.",
       "team": "Hívd meg a csapatod",
-      "teamText": "Kollégák saját belépéssel, minden csomagban.",
-      "property": "Vedd fel az első ingatlant",
-      "propertyText": "Hamarosan: ingatlanok és szerződések a cég nevén.",
-      "soon": "Hamarosan",
-      "tenantProperty": "Rögzítsd a bérelt ingatlant",
-      "tenantPropertyText": "Hamarosan: a cég bérleti szerződései egy helyen."
+      "teamText": "Kollégák saját belépéssel, minden csomagban."
     },
     "details": {
       "title": "Cégadatok",
@@ -1826,9 +1817,6 @@
       "approveTitle": "{name} csatlakozik",
       "approveLead": "Válaszd ki, mit érhet el. Később módosíthatod.",
       "role": "Szerepkör",
-      "access": "Hozzáférés",
-      "selectedEnterprise": "Kiválasztott ingatlanokra szűkíteni Enterprise csomagban lehet.",
-      "selectedSoon": "Az ingatlanok kiválasztása hamarosan érkezik.",
       "unlimited": "Minden csomagban korlátlan számú felhasználó lehet. A Pro-funkciókat a fiók csomagja adja.",
       "declineTitle": "Elutasítod a kérést?",
       "declineText": "{name} e-mailt kap róla. Később újra kérhet hozzáférést.",

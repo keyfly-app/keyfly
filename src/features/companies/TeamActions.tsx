@@ -16,12 +16,11 @@ const ROLE_ORDER: Role[] = ["admin", "manager", "viewer"];
 
 const SECONDARY = "inline-flex h-11 items-center justify-center rounded-lg border border-field bg-surface px-4 text-sm font-medium hover:border-ink sm:h-10";
 
-/** Role as selectable cards, and the access switch (selected properties: Enterprise only). */
-function RoleAndAccess({ enterprise }: { enterprise: boolean }) {
+/** Role as selectable cards. Access is every property (choosing properties comes with Enterprise). */
+function RoleAndAccess() {
   const t = useTranslations("companies.team");
   const roles = useTranslations("invite.roles");
   const [role, setRole] = useState<Role>("manager");
-  const hintId = useId();
   return (
     <>
       <fieldset className="flex flex-col gap-2">
@@ -39,22 +38,7 @@ function RoleAndAccess({ enterprise }: { enterprise: boolean }) {
           </label>
         ))}
       </fieldset>
-      <fieldset className="flex flex-col gap-1.5">
-        <legend className="mb-1.5 text-[13px] font-medium">{t("access")}</legend>
-        <div className="flex rounded-lg bg-paper p-0.5">
-          <label className="flex min-h-11 flex-1 cursor-pointer items-center justify-center rounded-md bg-surface px-2 text-center text-[13px] font-medium shadow-[0_1px_2px_rgb(12_31_25/0.12)] has-focus-visible:outline-3 has-focus-visible:outline-offset-2 has-focus-visible:outline-brand sm:min-h-9">
-            <input type="radio" name="scope" value="all" defaultChecked className="sr-only" />
-            {t("accessAll")}
-          </label>
-          <label className="flex min-h-11 flex-1 cursor-not-allowed items-center justify-center rounded-md px-2 text-center text-[13px] font-medium text-muted sm:min-h-9">
-            <input type="radio" name="scope" value="selected" disabled aria-describedby={hintId} className="sr-only" />
-            {t("accessSelected")}
-          </label>
-        </div>
-        <p id={hintId} className="text-[12.5px] leading-[18px] text-muted">
-          {t(enterprise ? "selectedSoon" : "selectedEnterprise")}
-        </p>
-      </fieldset>
+      <input type="hidden" name="scope" value="all" />
     </>
   );
 }
@@ -63,7 +47,7 @@ function errorText(t: ReturnType<typeof useTranslations>, state: TeamState) {
   return state.status === "error" ? t(`errors.${state.error}`) : null;
 }
 
-export function InviteMember({ accountId, enterprise }: { accountId: string; enterprise: boolean }) {
+export function InviteMember({ accountId }: { accountId: string }) {
   const t = useTranslations("companies.team");
   const c = useTranslations("companies");
   const id = useId();
@@ -100,7 +84,7 @@ export function InviteMember({ accountId, enterprise }: { accountId: string; ent
               maxLength={254}
               error={state.status === "error" && state.error === "email" ? t("errors.email") : undefined}
             />
-            <RoleAndAccess enterprise={enterprise} />
+            <RoleAndAccess />
             <Notice kind="info" icon="info">
               {t("unlimited")}
             </Notice>
@@ -121,8 +105,8 @@ export function InviteMember({ accountId, enterprise }: { accountId: string; ent
   );
 }
 
-/** Approve (role, access) or decline an access request. */
-export function RequestActions({ requestId, name, enterprise }: { requestId: string; name: string; enterprise: boolean }) {
+/** Approve (with a role) or decline an access request. */
+export function RequestActions({ requestId, name }: { requestId: string; name: string }) {
   const t = useTranslations("companies.team");
   const c = useTranslations("companies");
   const [dialog, setDialog] = useState<"approve" | "decline" | null>(null);
@@ -147,7 +131,7 @@ export function RequestActions({ requestId, name, enterprise }: { requestId: str
           <form action={action} className="flex flex-col gap-4">
             <input type="hidden" name="requestId" value={requestId} />
             <input type="hidden" name="decision" value="approve" />
-            <RoleAndAccess enterprise={enterprise} />
+            <RoleAndAccess />
             <Notice kind="info" icon="info">
               {t("unlimited")}
             </Notice>

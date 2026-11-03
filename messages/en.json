@@ -695,10 +695,6 @@
       "declineTitle": "Decline the updated terms?",
       "declineText": "We won’t record the lease, and we’ll let your landlord know. This can’t be undone."
     },
-    "guarantee": {
-      "title": "Keyfly guarantee",
-      "text": "Coming soon: a small monthly fee instead of a deposit. The deposit money stays with you."
-    },
     "home": {
       "progressTitle": "In progress",
       "details": "Details",
@@ -1007,7 +1003,7 @@
   "portal": {
     "title": "Overview",
     "intro": {
-      "landlord": "Soon you'll manage your properties and leases here."
+      "landlord": "As a landlord, you get your tenants’ invitations by email: the link in it lets you review and approve the lease."
     },
     "applications": "My quote requests",
     "addressLater": "Address to follow",
@@ -1750,12 +1746,7 @@
       "details": "Check the company details",
       "detailsText": "Display name and NAV data.",
       "team": "Invite your team",
-      "teamText": "Colleagues with their own sign-in, on every plan.",
-      "property": "Add your first property",
-      "propertyText": "Coming soon: properties and leases in the company’s name.",
-      "soon": "Coming soon",
-      "tenantProperty": "Record a rented property",
-      "tenantPropertyText": "Coming soon: the company’s leases in one place."
+      "teamText": "Colleagues with their own sign-in, on every plan."
     },
     "details": {
       "title": "Company details",
@@ -1826,9 +1817,6 @@
       "approveTitle": "{name} joins",
       "approveLead": "Choose what they can access. You can change it later.",
       "role": "Role",
-      "access": "Access",
-      "selectedEnterprise": "Limiting access to selected properties is part of Enterprise.",
-      "selectedSoon": "Choosing properties is coming soon.",
       "unlimited": "Every plan has unlimited users. Pro features come with the account’s plan.",
       "declineTitle": "Decline the request?",
       "declineText": "{name} gets an email about it. They can ask again later.",

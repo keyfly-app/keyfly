@@ -4,7 +4,7 @@ import { Icon } from "@/components/Icon";
 import { ButtonLink } from "@/components/ui/form";
 import { Tag } from "@/components/ui/Tag";
 import type { Enums } from "@/lib/supabase/database.types";
-import { GuaranteeCard, MiniSteps, STATUS_TONE } from "./ui";
+import { MiniSteps, STATUS_TONE } from "./ui";
 
 /** One lease request on the home screen, already formatted for the viewer's language. */
 export type HomeCard = {
@@ -298,10 +298,6 @@ export async function TenantHome({
       </div>
       <div className="flex flex-col gap-4 lg:pt-[30px]">
         {todoCard}
-        <GuaranteeCard
-          title={lr("guarantee.title")}
-          text={lr("guarantee.text")}
-        />
       </div>
     </div>
   );

@@ -51,7 +51,7 @@ export async function TeamView({
         title={t("title")}
         lead={t("lead")}
         tab
-        action={manage ? <InviteMember accountId={accountId} enterprise={enterprise} /> : undefined}
+        action={manage ? <InviteMember accountId={accountId} /> : undefined}
       />
 
       {requests.length > 0 && (
@@ -75,7 +75,7 @@ export async function TeamView({
                     </div>
                   </div>
                   <div className="pl-12 sm:pl-0">
-                    <RequestActions requestId={r.id} name={name} enterprise={enterprise} />
+                    <RequestActions requestId={r.id} name={name} />
                   </div>
                 </li>
               );

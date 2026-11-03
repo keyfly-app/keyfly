@@ -201,17 +201,3 @@ export function TrustLines({ lines }: { lines: [("shield" | "lock"), string][] }
   );
 }
 
-/** Dark "Keyfly guarantee" teaser (coming soon) beside a recorded lease and on the home screen. */
-export function GuaranteeCard({ title, text }: { title: string; text: string }) {
-  return (
-    <section className="flex flex-col gap-3 rounded-xl bg-brand-deep p-5 text-white">
-      <div className="flex items-center gap-2.5">
-        <span aria-hidden="true" className="flex size-[26px] items-center justify-center rounded-[7px] bg-lime text-brand-deep">
-          <Icon name="shield" size={15} strokeWidth={2} />
-        </span>
-        <h2 className="text-sm font-semibold">{title}</h2>
-      </div>
-      <p className="text-[13.5px] leading-5 text-fog">{text}</p>
-    </section>
-  );
-}

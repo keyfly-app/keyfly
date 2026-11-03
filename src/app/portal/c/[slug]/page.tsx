@@ -4,7 +4,6 @@ import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { Icon, type IconName } from "@/components/Icon";
 import { Notice } from "@/components/ui/form";
-import { Tag } from "@/components/ui/Tag";
 import { companyBySlug } from "@/features/companies/accounts";
 import { siteHref } from "@/lib/site-href";
 
@@ -16,8 +15,8 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 }
 
 /**
- * Company overview (canvas "Cégfiók – első lépések", v2.5 "Nézet a cégben"): follows the member's View – a company can
- * let and rent at once. Properties and leases in the company's name come later.
+ * Company overview (canvas "Cégfiók – első lépések", v2.5 "Nézet a cégben"): the member's View and the first steps that
+ * work today. Only finished features show here (Tibi, 2026-11-03).
  */
 export default async function CompanyOverview({ params, searchParams }: { params: Promise<{ slug: string }>; searchParams: Promise<{ created?: string }> }) {
   const [{ slug }, { created }] = await Promise.all([params, searchParams]);
@@ -26,10 +25,9 @@ export default async function CompanyOverview({ params, searchParams }: { params
   const [t, h, n] = await Promise.all([getTranslations("companies.overview"), getTranslations("header"), getTranslations("companies.menu")]);
   const view = account.view ?? "landlord";
   const [details, team] = await Promise.all([siteHref("portal", `/c/${slug}/settings/company`), siteHref("portal", `/c/${slug}/settings/team`)]);
-  const steps: { icon: IconName; title: string; text: string; href?: string; cta?: string }[] = [
+  const steps: { icon: IconName; title: string; text: string; href: string; cta: string }[] = [
     { icon: "building", title: t("details"), text: t("detailsText"), href: details, cta: n("company") },
     { icon: "users", title: t("team"), text: t("teamText"), href: team, cta: n("team") },
-    view === "tenant" ? { icon: "key", title: t("tenantProperty"), text: t("tenantPropertyText") } : { icon: "home", title: t("property"), text: t("propertyText") },
   ];
   return (
     <div className="flex flex-col gap-6">
@@ -44,7 +42,7 @@ export default async function CompanyOverview({ params, searchParams }: { params
         <h2 id="first-steps" className="text-[15px] leading-5 font-semibold">
           {t("firstSteps")}
         </h2>
-        <ul className="grid gap-3 sm:grid-cols-3">
+        <ul className="grid gap-3 sm:grid-cols-2">
           {steps.map((s) => {
             const body = (
               <>
@@ -55,25 +53,17 @@ export default async function CompanyOverview({ params, searchParams }: { params
                   <span className="text-sm font-semibold">{s.title}</span>
                   <span className="text-[13px] text-muted">{s.text}</span>
                 </span>
-                {s.href ? (
-                  <span className="mt-auto inline-flex items-center gap-0.5 text-[13px] font-semibold text-brand">
-                    {s.cta}
-                    <Icon name="chevronRight" size={14} strokeWidth={2} />
-                  </span>
-                ) : (
-                  <Tag tone="neutral">{t("soon")}</Tag>
-                )}
+                <span className="mt-auto inline-flex items-center gap-0.5 text-[13px] font-semibold text-brand">
+                  {s.cta}
+                  <Icon name="chevronRight" size={14} strokeWidth={2} />
+                </span>
               </>
             );
             return (
               <li key={s.title}>
-                {s.href ? (
-                  <Link href={s.href} className="flex h-full flex-col gap-2.5 rounded-xl border border-line bg-surface p-4.5 transition-colors hover:border-field motion-reduce:transition-none">
-                    {body}
-                  </Link>
-                ) : (
-                  <div className="flex h-full flex-col gap-2.5 rounded-xl border border-line bg-surface p-4.5">{body}</div>
-                )}
+                <Link href={s.href} className="flex h-full flex-col gap-2.5 rounded-xl border border-line bg-surface p-4.5 transition-colors hover:border-field motion-reduce:transition-none">
+                  {body}
+                </Link>
               </li>
             );
           })}

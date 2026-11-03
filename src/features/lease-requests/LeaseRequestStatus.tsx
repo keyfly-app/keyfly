@@ -13,7 +13,7 @@ import { date, dateTime, money, until } from "@/lib/format";
 import { siteHref } from "@/lib/site-href";
 import type { Enums, Tables } from "@/lib/supabase/database.types";
 import { ReconfirmActions, RemindButton, RevokeButton } from "./TenantActions";
-import { GuaranteeCard, KeyValues, STATUS_TONE } from "./ui";
+import { KeyValues, STATUS_TONE } from "./ui";
 
 const MAX_REMINDERS = 3;
 const REMINDER_GAP_MS = 24 * 60 * 60 * 1000;
@@ -319,7 +319,6 @@ export async function LeaseRequestStatus({
               <p className="hidden px-1 text-[12.5px] leading-[18px] text-muted sm:block">{waitUntil ?? t("page.remindHint")}</p>
             )}
             {!canAct && open && <p className="px-1 text-[12.5px] leading-[18px] text-muted">{t("page.readOnly")}</p>}
-            {status === "confirmed" && <GuaranteeCard title={t("guarantee.title")} text={t("guarantee.text")} />}
           </div>
         </div>
       </div>
