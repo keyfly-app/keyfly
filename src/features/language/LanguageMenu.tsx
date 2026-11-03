@@ -17,7 +17,6 @@ export function LanguageMenu() {
       icon="globe"
       label={t("language")}
       title={t("language")}
-      heading="eyebrow"
       current={locale}
       name="locale"
       choices={LOCALES.map((l) => ({ value: l, label: t(`languageNames.${l}`), lang: l }))}

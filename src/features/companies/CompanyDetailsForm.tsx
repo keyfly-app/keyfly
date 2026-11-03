@@ -286,7 +286,7 @@ export function CompanyDetailsForm({ accountId, company, manage }: { accountId: 
 
         {manage && (
           <div
-            className={`z-10 flex items-center gap-3 max-sm:sticky max-sm:bottom-0 max-sm:-mx-4 max-sm:border-t max-sm:border-line max-sm:bg-surface max-sm:px-4 max-sm:pt-3 max-sm:pb-[max(16px,env(safe-area-inset-bottom))] ${dirty ? "sm:sticky sm:bottom-4 sm:rounded-xl sm:border sm:border-line sm:bg-surface sm:py-3 sm:pr-3 sm:pl-5 sm:shadow-[0_16px_40px_-16px_rgb(12_31_25/0.3)]" : "sm:justify-end"}`}
+            className={`z-10 flex items-center gap-3 max-sm:sticky max-sm:bottom-(--app-bottom) max-sm:-mx-4 max-sm:border-t max-sm:border-line max-sm:bg-surface max-sm:px-4 max-sm:pt-3 max-sm:pb-4 ${dirty ? "sm:sticky sm:bottom-[calc(var(--app-bottom)+1rem)] sm:rounded-xl sm:border sm:border-line sm:bg-surface sm:py-3 sm:pr-3 sm:pl-5 sm:shadow-[0_16px_40px_-16px_rgb(12_31_25/0.3)]" : "sm:justify-end"}`}
           >
             {dirty && (
               <p role="status" className="hidden items-center gap-2.5 text-sm font-medium sm:flex">

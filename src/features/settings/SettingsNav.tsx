@@ -20,8 +20,9 @@ export type SettingsGroup = { heading?: string; links: SettingsLink[] };
 const pathOf = (href: string) => href.replace(/^https?:\/\/[^/]+/, "");
 
 /**
- * The one settings menu (canvas v2.4 "Beállítások – cég fülekkel"): Összefoglaló, your personal pages, then your
- * companies – each one item, its pages are tabs. The same on every settings page; desktop only (phones use the Summary).
+ * The one settings menu (canvas v2.4 "Beállítások – cég fülekkel", v3 `settings_mode()`): Összefoglaló, your personal
+ * pages, then your companies – each one item, its pages are tabs. In the left column on every settings page; desktop
+ * only (phones use the Summary).
  */
 export function SettingsNav({ label, groups, add }: { label: string; groups: SettingsGroup[]; add?: { href: string; label: string } }) {
   const path = usePathname();
@@ -38,13 +39,13 @@ export function SettingsNav({ label, groups, add }: { label: string; groups: Set
                 key={l.href}
                 href={l.href}
                 aria-current={on ? "page" : undefined}
-                className={`flex h-9 min-w-0 items-center gap-2.5 rounded-lg border px-2.5 text-[13.5px] ${on ? "border-line bg-surface font-semibold text-ink shadow-[0_1px_2px_rgb(12_31_25/0.08)]" : "border-transparent text-ink-soft hover:bg-surface"}`}
+                className={`flex h-9 min-w-0 items-center gap-2.5 rounded-lg px-2.5 text-[13.5px] ${on ? "bg-mist font-semibold text-ink" : "text-ink-soft hover:bg-paper"}`}
               >
                 <span aria-hidden="true" className="flex w-5 flex-none justify-center">
                   {l.initials ? (
                     <CompanyMark logoUrl={l.logoUrl} initials={l.initials} size={20} />
                   ) : (
-                    l.icon && <Icon name={l.icon} size={16} className={on ? "text-ink" : "text-muted"} />
+                    l.icon && <Icon name={l.icon} size={16} strokeWidth={on ? 2 : 1.75} className={on ? "text-brand" : "text-muted"} />
                   )}
                 </span>
                 <span className="truncate">{l.label}</span>
@@ -54,7 +55,7 @@ export function SettingsNav({ label, groups, add }: { label: string; groups: Set
         </div>
       ))}
       {add && (
-        <Link href={add.href} className="flex h-9 items-center gap-2.5 rounded-lg px-2.5 text-[13.5px] font-semibold text-brand hover:bg-surface">
+        <Link href={add.href} className="flex h-9 items-center gap-2.5 rounded-lg px-2.5 text-[13.5px] font-semibold text-brand hover:bg-paper">
           <span aria-hidden="true" className="flex w-5 justify-center">
             <Icon name="plus" size={16} strokeWidth={2} />
           </span>

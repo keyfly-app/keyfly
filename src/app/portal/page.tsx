@@ -5,9 +5,13 @@ import { Shell } from "@/components/Shell";
 import { Icon } from "@/components/Icon";
 import { ButtonLink } from "@/components/ui/form";
 import { Tag } from "@/components/ui/Tag";
-import { TenantHome, type HomeCard } from "@/features/lease-requests/TenantHome";
+import { myAccounts } from "@/features/companies/accounts";
+import { inProgress, isTodo, tenantCards } from "@/features/lease-requests/load";
+import { TenantHome } from "@/features/lease-requests/TenantHome";
+import { LandlordHome } from "@/features/leases/LandlordHome";
+import { leaseItems } from "@/features/leases/load";
+import { currentUser } from "@/features/settings/current-user";
 import { isLocale } from "@/i18n/config";
-import { ADDRESS_COLUMNS, addressFromRow, cityLine, streetLine } from "@/lib/address";
 import { date, money } from "@/lib/format";
 import { siteHref } from "@/lib/site-href";
 import { rootSegmentTitle } from "@/lib/metadata";
@@ -33,61 +37,31 @@ export default async function PortalHome() {
   const locale = isLocale(raw) ? raw : "hu";
   const t = await getTranslations("portal");
   const status = await getTranslations("status");
+  const tenant = view === "tenant";
+  const me = (await myAccounts()).find((acc) => acc.kind === "person");
 
-  const [{ data: applications }, { data: policies }, { data: requests }] = await Promise.all([
+  const [{ data: applications }, { data: policies }, cards, lets, user, lr, nav] = await Promise.all([
     supabase.from("applications").select("id, status, monthly_rent, deposit_amount, address_text, created_at").order("created_at", { ascending: false }),
     supabase.from("policies").select("id, policy_number, status, coverage_amount, premium_amount, billing_period"),
-    view === "tenant"
-      ? supabase
-          .from("lease_requests")
-          .select(
-            `id, status, invitation_expires_at, reminder_count, monthly_rent, start_date, end_date, created_at, decided_at, updated_at, property_kind, ${ADDRESS_COLUMNS}, leases(monthly_rent, start_date, end_date, properties(kind, ${ADDRESS_COLUMNS}))`,
-          )
-          .neq("status", "cancelled")
-          .order("created_at", { ascending: false })
-          .limit(20)
-      : Promise.resolve({ data: null }),
+    tenant && me ? tenantCards(me.id) : Promise.resolve([]),
+    !tenant && me ? leaseItems(me.id, "landlord") : Promise.resolve([]),
+    currentUser(),
+    getTranslations("leaseRequest"),
+    getTranslations("nav"),
   ]);
-  const [lr, kinds] = await Promise.all([getTranslations("leaseRequest"), getTranslations("propertyKinds")]);
   const newRequestHref = await siteHref("portal", "/lease-requests/new");
-  const now = new Date();
-  const cards: HomeCard[] = await Promise.all(
-    (requests ?? []).map(async (r) => {
-      // The row carries the latest link's expiry (a reminder replaces the link), readable by every member of the account.
-      const expired = r.status === "pending_landlord" && new Date(r.invitation_expires_at) <= now;
-      const lease = r.leases;
-      const address = lease?.properties ? addressFromRow(lease.properties) : addressFromRow(r);
-      const start = lease?.start_date ?? r.start_date;
-      const end = lease ? lease.end_date : r.end_date;
-      return {
-        id: r.id,
-        status: expired ? ("expired" as const) : r.status,
-        street: streetLine(address),
-        // "Lakás · 1138 Budapest, XIII. kerület": what is rented, then where.
-        city: `${kinds(lease?.properties?.kind ?? r.property_kind)} · ${cityLine(address)}`,
-        rent: money(lease?.monthly_rent ?? r.monthly_rent, locale),
-        period: `${date(start, locale)} – ${end ? date(end, locale) : lr("terms.openEnded")}`,
-        sent: date(r.created_at, locale),
-        expires: date(r.invitation_expires_at, locale),
-        closed: date(r.decided_at ?? r.updated_at, locale),
-        canResend: r.reminder_count < 3,
-        href: await siteHref("portal", `/lease-requests/${r.id}`),
-      };
-    }),
-  );
-  const tenant = view === "tenant";
   const empty = tenant && cards.length === 0;
   // Live summary under the title (canvas "Fejléc ikonok"): to-dos and invitations still open.
-  const todos = cards.filter((c) => c.status === "pending_tenant" || (c.status === "expired" && c.canResend)).length;
-  const open = cards.filter((c) => c.status === "pending_landlord" || c.status === "expired" || c.status === "pending_tenant").length;
+  const todos = cards.filter(isTodo).length;
+  const open = cards.filter(inProgress).length;
 
   return (
-    <Shell site="portal">
+    <Shell>
       <div className="flex flex-col gap-6">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div className="flex flex-col gap-1">
             <h1 className="font-display text-[22px] leading-7 font-semibold sm:text-[26px] sm:leading-8">{t("title")}</h1>
-            <p className="text-sm text-muted">{tenant ? t("summary", { todos, open }) : t("intro.landlord")}</p>
+            <p className="text-sm text-muted">{tenant ? t("summary", { todos, open }) : `${user?.fullName ?? user?.email ?? ""} · ${nav("views.landlord")}`}</p>
           </div>
           {tenant && !empty && (
             <ButtonLink href={newRequestHref} fit>
@@ -97,9 +71,9 @@ export default async function PortalHome() {
           )}
         </div>
 
-        {tenant && <TenantHome cards={cards} newRequestHref={newRequestHref} />}
+        {tenant ? <TenantHome cards={cards} newRequestHref={newRequestHref} /> : <LandlordHome items={lets} />}
 
-        {view === "tenant" && Boolean(applications?.length || policies?.length) && (
+        {tenant && Boolean(applications?.length || policies?.length) && (
           <div className="grid gap-3 lg:grid-cols-2">
             {Boolean(applications?.length) && (
               <section className="rounded-xl border border-line bg-surface px-4.5 py-4">

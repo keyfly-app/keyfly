@@ -4,7 +4,7 @@ import { useEffect, useSyncExternalStore } from "react";
 import { Icon } from "@/components/Icon";
 
 /**
- * One short confirmation at a time ("Elküldtük a meghívót."), bottom of the screen, read out politely.
+ * One short confirmation at a time ("Elküldtük a meghívót."), bottom of the screen (above the phone's bottom bar), read out politely.
  * A module-level store, so the message outlives the button that triggered it (e.g. a row that disappears).
  */
 type Toast = { id: number; message: string; tone: "ok" | "error" } | null;
@@ -37,7 +37,7 @@ export function Toaster() {
     return () => clearTimeout(timer);
   }, [t]);
   return (
-    <div role="status" aria-live="polite" className="pointer-events-none fixed inset-x-4 bottom-6 z-50 flex justify-center sm:inset-x-auto sm:right-6">
+    <div role="status" aria-live="polite" className="pointer-events-none fixed inset-x-4 bottom-[calc(var(--app-bottom,0px)+1.5rem)] z-50 flex justify-center sm:inset-x-auto sm:right-6">
       {t && (
         <p className="flex items-center gap-2.5 rounded-[10px] bg-ink px-3.5 py-3 text-sm font-medium text-white shadow-[0_12px_32px_rgb(12_31_25/0.3)]">
           <Icon name={t.tone === "ok" ? "check" : "alert"} size={16} strokeWidth={2.25} className={t.tone === "ok" ? "text-lime" : "text-danger-light"} />

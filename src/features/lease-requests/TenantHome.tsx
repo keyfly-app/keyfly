@@ -4,6 +4,7 @@ import { Icon } from "@/components/Icon";
 import { ButtonLink } from "@/components/ui/form";
 import { Tag } from "@/components/ui/Tag";
 import type { Enums } from "@/lib/supabase/database.types";
+import { inProgress } from "./load";
 import { MiniSteps, STATUS_TONE } from "./ui";
 
 /** One lease request on the home screen, already formatted for the viewer's language. */
@@ -12,6 +13,7 @@ export type HomeCard = {
   status: Enums<"lease_request_status"> | "expired";
   street: string;
   city: string;
+  landlord: string;
   rent: string;
   period: string;
   sent: string;
@@ -35,12 +37,7 @@ export async function TenantHome({
   const lr = await getTranslations("leaseRequest");
   const t = await getTranslations("portal");
   const empty = cards.length === 0;
-  const inProgress = cards.filter(
-    (c) =>
-      c.status === "pending_landlord" ||
-      c.status === "expired" ||
-      c.status === "pending_tenant",
-  );
+  const progress = cards.filter(inProgress);
   const leases = cards.filter(
     (c) => c.status === "confirmed" || c.status === "declined",
   );
@@ -164,7 +161,7 @@ export async function TenantHome({
           </section>
         ) : (
           <>
-            {inProgress.length > 0 && (
+            {progress.length > 0 && (
               <section
                 aria-labelledby="progress-title"
                 className="flex flex-col gap-2.5"
@@ -176,7 +173,7 @@ export async function TenantHome({
                   {lr("home.progressTitle")}
                 </h2>
                 <ul className="flex flex-col gap-3">
-                  {inProgress.map((c) => (
+                  {progress.map((c) => (
                     <li key={c.id}>
                       <Link
                         href={c.href}

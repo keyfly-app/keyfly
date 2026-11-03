@@ -1002,9 +1002,6 @@
   },
   "portal": {
     "title": "Overview",
-    "intro": {
-      "landlord": "As a landlord, you get your tenants’ invitations by email: the link in it lets you review and approve the lease."
-    },
     "applications": "My quote requests",
     "addressLater": "Address to follow",
     "applicationLine": "{rent} / month · deposit {deposit} · {date}",
@@ -1618,19 +1615,6 @@
     }
   },
   "header": {
-    "view": "View",
-    "viewSaved": "Switched to the {view, select, tenant {tenant} other {landlord}} view.",
-    "viewError": "Couldn’t switch. Please try again.",
-    "views": {
-      "tenant": {
-        "title": "As tenant",
-        "text": "Rented properties and leases"
-      },
-      "landlord": {
-        "title": "As landlord",
-        "text": "Let properties and tenants"
-      }
-    },
     "language": "Language",
     "languageNames": {
       "hu": "Magyar",
@@ -2061,5 +2045,85 @@
       "residential": "Residential",
       "commercial": "Commercial"
     }
+  },
+  "nav": {
+    "label": "Main menu",
+    "barLabel": "Bottom menu",
+    "overview": "Overview",
+    "leases": {
+      "tenant": "My leases",
+      "landlord": "Leases"
+    },
+    "todos": "{count, plural, one {# to-do} other {# to-dos}}",
+    "settings": "Settings",
+    "companySettings": "Company settings",
+    "menu": "Menu",
+    "new": "New",
+    "newLabel": "New: {action}",
+    "back": "Back: {name}",
+    "views": {
+      "label": "View",
+      "tenant": "As tenant",
+      "landlord": "As landlord"
+    },
+    "context": {
+      "title": "Where are you working?",
+      "view": "View in this account"
+    },
+    "viewSaved": "Switched to the {view, select, tenant {tenant} other {landlord}} view.",
+    "viewError": "Couldn’t switch. Please try again."
+  },
+  "leases": {
+    "lead": {
+      "personalTenant": "Your invitations and recorded leases.",
+      "personalLandlord": "Leases where you are the landlord.",
+      "companyTenant": "Leases where the company is the tenant.",
+      "companyLandlord": "Leases where the company is the landlord."
+    },
+    "empty": {
+      "personalTenant": "No invitation or recorded lease yet. Invite your landlord and follow it here.",
+      "personalLandlord": "No lease with you as landlord yet. When your tenant invites you in Keyfly, you see it here.",
+      "companyTenant": "No lease with the company as tenant yet.",
+      "companyLandlord": "No lease in the company’s name yet. When a tenant invites the company as landlord, you see it here."
+    },
+    "filterEmpty": "No lease matches this filter.",
+    "filter": {
+      "label": "Filter by status",
+      "all": "All",
+      "progress": "In progress",
+      "recorded": "Recorded"
+    },
+    "cols": {
+      "property": "Property",
+      "landlord": "Landlord",
+      "tenant": "Tenant",
+      "rent": "Rent",
+      "term": "Term",
+      "status": "Status"
+    },
+    "party": {
+      "landlord": "Landlord: {name}",
+      "tenant": "Tenant: {name}"
+    },
+    "status": {
+      "pending": "Waiting for tenant",
+      "closed": "Closed"
+    },
+    "section": "Leases",
+    "all": "All leases",
+    "home": {
+      "title": "Properties you let",
+      "empty": "You don’t let any property through Keyfly yet.",
+      "howTitle": "How a lease gets here",
+      "howText": "Your tenant invites you in Keyfly, you get the link by email and approve the terms."
+    }
+  },
+  "menu": {
+    "title": "Menu",
+    "profile": "Profile and security",
+    "settings": "Settings",
+    "companies": "My companies",
+    "language": "Language · {name}",
+    "signOut": "Sign out"
   }
 }

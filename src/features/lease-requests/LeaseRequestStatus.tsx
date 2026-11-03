@@ -191,7 +191,7 @@ export async function LeaseRequestStatus({
     ) : null;
 
   return (
-    <Shell site="portal">
+    <Shell>
       <div className="flex flex-col gap-5">
         <nav aria-label={t("page.crumbs")}>
           <ol className="hidden items-center gap-1.5 text-[13px] text-muted sm:flex">
@@ -324,7 +324,7 @@ export async function LeaseRequestStatus({
       </div>
 
       {bar && (
-        <div className="sticky bottom-0 z-10 -mx-4 mt-6 -mb-6 flex flex-col gap-2 border-t border-line bg-surface px-5 pt-3 pb-[max(16px,env(safe-area-inset-bottom))] sm:hidden">
+        <div className="sticky bottom-(--app-bottom) z-10 -mx-4 mt-6 -mb-6 flex flex-col gap-2 border-t border-line bg-surface px-5 pt-3 pb-4 sm:hidden">
           {bar}
         </div>
       )}

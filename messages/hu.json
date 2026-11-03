@@ -1002,9 +1002,6 @@
   },
   "portal": {
     "title": "Áttekintés",
-    "intro": {
-      "landlord": "Bérbeadóként a bérlőid meghívóit e-mailben kapod: a levélben lévő linkkel nézed át és hagyod jóvá a bérleti szerződést."
-    },
     "applications": "Ajánlatkéréseim",
     "addressLater": "Cím később",
     "applicationLine": "{rent} / hó · kaució {deposit} · {date}",
@@ -1618,19 +1615,6 @@
     }
   },
   "header": {
-    "view": "Nézet",
-    "viewSaved": "{view, select, tenant {Bérlői} other {Bérbeadói}} nézetre váltottál.",
-    "viewError": "Nem sikerült váltani. Próbáld újra.",
-    "views": {
-      "tenant": {
-        "title": "Bérlőként",
-        "text": "Bérelt ingatlanok és szerződések"
-      },
-      "landlord": {
-        "title": "Bérbeadóként",
-        "text": "Kiadott ingatlanok és bérlők"
-      }
-    },
     "language": "Nyelv",
     "languageNames": {
       "hu": "Magyar",
@@ -2061,5 +2045,85 @@
       "residential": "Lakóingatlan",
       "commercial": "Üzleti ingatlan"
     }
+  },
+  "nav": {
+    "label": "Főmenü",
+    "barLabel": "Alsó menü",
+    "overview": "Áttekintés",
+    "leases": {
+      "tenant": "Szerződéseim",
+      "landlord": "Szerződések"
+    },
+    "todos": "{count, plural, other {# teendő}}",
+    "settings": "Beállítások",
+    "companySettings": "Cégbeállítások",
+    "menu": "Menü",
+    "new": "Új",
+    "newLabel": "Új: {action}",
+    "back": "Vissza: {name}",
+    "views": {
+      "label": "Nézet",
+      "tenant": "Bérlőként",
+      "landlord": "Bérbeadóként"
+    },
+    "context": {
+      "title": "Hol dolgozol most?",
+      "view": "Nézet ebben a fiókban"
+    },
+    "viewSaved": "{view, select, tenant {Bérlői} other {Bérbeadói}} nézetre váltottál.",
+    "viewError": "Nem sikerült váltani. Próbáld újra."
+  },
+  "leases": {
+    "lead": {
+      "personalTenant": "A meghívóid és a rögzített bérleti szerződéseid.",
+      "personalLandlord": "Bérleti szerződések, amelyekben te vagy a bérbeadó.",
+      "companyTenant": "Bérleti szerződések, amelyekben a cég a bérlő.",
+      "companyLandlord": "Bérleti szerződések, amelyekben a cég a bérbeadó."
+    },
+    "empty": {
+      "personalTenant": "Még nincs meghívód vagy rögzített bérleti szerződésed. Hívd meg a bérbeadódat, és itt követheted.",
+      "personalLandlord": "Még nincs bérleti szerződés, amelyben te vagy a bérbeadó. Ha a bérlőd meghív a Keyflyban, itt látod.",
+      "companyTenant": "Még nincs bérleti szerződés, amelyben a cég a bérlő.",
+      "companyLandlord": "Még nincs bérleti szerződés a cég nevén. Ha egy bérlő a céget hívja meg bérbeadóként, itt látod."
+    },
+    "filterEmpty": "Ebben a szűrésben nincs bérleti szerződés.",
+    "filter": {
+      "label": "Szűrés állapot szerint",
+      "all": "Mind",
+      "progress": "Folyamatban",
+      "recorded": "Rögzítve"
+    },
+    "cols": {
+      "property": "Ingatlan",
+      "landlord": "Bérbeadó",
+      "tenant": "Bérlő",
+      "rent": "Bérleti díj",
+      "term": "Időtartam",
+      "status": "Állapot"
+    },
+    "party": {
+      "landlord": "Bérbeadó: {name}",
+      "tenant": "Bérlő: {name}"
+    },
+    "status": {
+      "pending": "Bérlőre vár",
+      "closed": "Lezárva"
+    },
+    "section": "Szerződések",
+    "all": "Összes szerződés",
+    "home": {
+      "title": "Kiadott ingatlanaid",
+      "empty": "Még nincs kiadott ingatlanod a Keyflyban.",
+      "howTitle": "Így kerül ide egy bérleti szerződés",
+      "howText": "A bérlőd meghív a Keyflyban, te e-mailben kapod a linket, és jóváhagyod a feltételeket."
+    }
+  },
+  "menu": {
+    "title": "Menü",
+    "profile": "Profil és biztonság",
+    "settings": "Beállítások",
+    "companies": "Cégeim",
+    "language": "Nyelv · {name}",
+    "signOut": "Kijelentkezés"
   }
 }
