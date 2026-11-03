@@ -100,13 +100,13 @@ export function HeaderMenu({
             role="menu"
             aria-label={title}
             onKeyDown={onMenuKey}
-            className={`fixed inset-x-0 bottom-0 z-50 rounded-t-2xl bg-surface px-2 pt-2 pb-[max(28px,env(safe-area-inset-bottom))] shadow-[0_-16px_40px_-16px_rgb(12_31_25/0.3)] sm:absolute sm:inset-x-auto sm:top-full sm:right-0 sm:bottom-auto sm:mt-2 sm:w-[220px] sm:rounded-xl sm:border sm:border-line sm:p-2 sm:shadow-[0_16px_40px_-16px_rgb(12_31_25/0.3)]`}
+            className={`fixed inset-x-0 bottom-0 z-50 rounded-t-2xl bg-surface px-2 pt-2 pb-[max(28px,env(safe-area-inset-bottom))] shadow-[0_-16px_40px_-16px_rgb(12_31_25/0.3)] sm:absolute sm:inset-x-auto sm:top-full sm:right-0 sm:bottom-auto sm:mt-1.5 sm:w-[184px] sm:rounded-xl sm:border sm:border-line sm:p-1.5 sm:shadow-[0_16px_40px_-16px_rgb(12_31_25/0.3)]`}
           >
             <div aria-hidden="true" className="flex justify-center pb-1 sm:hidden">
               <span className="h-1 w-9 rounded-full bg-field" />
             </div>
-            <div className="flex items-start justify-between gap-3 px-3 pt-1 pb-2">
-              <p className="pt-1 text-xs font-semibold tracking-[0.05em] text-muted uppercase">{title}</p>
+            <div className="flex items-start justify-between gap-3 px-3 pt-1 pb-2 sm:px-2.5 sm:pt-1.5 sm:pb-1">
+              <p className="pt-1 text-xs font-semibold text-muted sm:pt-0 sm:text-[11.5px] sm:leading-4">{title}</p>
               <button type="button" onClick={() => setOpen(false)} aria-label={closeLabel} className="-mt-1.5 -mr-2 flex size-11 flex-none items-center justify-center rounded-lg text-muted hover:text-ink sm:hidden">
                 <Icon name="x" size={20} strokeWidth={2} />
               </button>
@@ -125,12 +125,12 @@ export function HeaderMenu({
                     value={c.value}
                     role="menuitemradio"
                     aria-checked={on}
-                    className={`flex min-h-11 w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left hover:bg-paper focus-visible:bg-paper sm:min-h-9 ${on ? "bg-paper" : ""}`}
+                    className={`flex min-h-11 w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left hover:bg-paper focus-visible:bg-paper sm:min-h-9 sm:gap-2 sm:rounded-md sm:px-2.5 sm:py-1.5 ${on ? "bg-paper" : ""}`}
                   >
-                    <span lang={c.lang} className="min-w-0 flex-1 text-sm font-medium">
+                    <span lang={c.lang} className="min-w-0 flex-1 text-sm font-medium sm:text-[13.5px]">
                       {c.label}
                     </span>
-                    {on ? <Icon name="check" size={18} strokeWidth={2.25} className="flex-none" /> : <span className="w-[18px] flex-none" />}
+                    {on ? <Icon name="check" size={16} strokeWidth={2.25} className="flex-none" /> : <span className="w-4 flex-none" />}
                   </button>
                 );
               })}

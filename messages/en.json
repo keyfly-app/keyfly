@@ -1054,8 +1054,22 @@
     "agent": "Agency",
     "company": "Company"
   },
-  "notFound": {
-    "title": "This page doesn't exist."
+  "errors": {
+    "notFound": {
+      "eyebrow": "Error 404",
+      "title": "We can’t find this page",
+      "lead": "The address may be mistyped, or the page is no longer available."
+    },
+    "failed": {
+      "title": "Something went wrong",
+      "lead": "It’s not your fault. Try again, and if it still doesn’t work, write to us.",
+      "retry": "Try again",
+      "code": "Error code: {code}"
+    },
+    "home": "Back to Overview",
+    "site": "Go to the homepage",
+    "signIn": "Sign in",
+    "write": "Write to us"
   },
   "legal": {
     "bindingNote": "This is an informative translation. The Hungarian version is legally binding.",

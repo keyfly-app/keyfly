@@ -16,6 +16,11 @@ const BUTTON = {
 const BUTTON_BASE =
   "inline-flex h-11 w-full items-center justify-center gap-2 rounded-lg px-4 text-sm font-medium whitespace-nowrap transition-colors aria-disabled:cursor-progress aria-disabled:opacity-80 motion-reduce:transition-none sm:h-10";
 
+/** Classes of a button-looking control that is not one of the components below (a mailto link, a client-side retry). */
+export function buttonClass(variant: keyof typeof BUTTON = "primary", fit = false) {
+  return `${BUTTON_BASE} ${BUTTON[variant]} ${fit ? "sm:w-auto" : ""}`;
+}
+
 /** The small spinner shown in a button while its action runs. */
 function Spinner() {
   return <span aria-hidden="true" className="size-3.5 animate-spin rounded-full border-2 border-current border-t-transparent opacity-80 motion-reduce:animate-none" />;
@@ -51,7 +56,7 @@ export function Button({
       value={value}
       aria-disabled={pending || undefined}
       onClick={pending ? (e) => e.preventDefault() : undefined}
-      className={`${BUTTON_BASE} ${BUTTON[variant]} ${fit ? "sm:w-auto" : ""}`}
+      className={buttonClass(variant, fit)}
     >
       {pending && <Spinner />}
       {children}
@@ -61,7 +66,7 @@ export function Button({
 
 export function ButtonLink({ href, children, variant = "primary", fit = false }: { href: string; children: React.ReactNode; variant?: keyof typeof BUTTON; fit?: boolean }) {
   return (
-    <Link href={href} className={`${BUTTON_BASE} ${BUTTON[variant]} ${fit ? "sm:w-auto" : ""}`}>
+    <Link href={href} className={buttonClass(variant, fit)}>
       {children}
     </Link>
   );

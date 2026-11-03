@@ -1,24 +1,27 @@
-"use client";
-
-import Link from "next/link";
-import { useLocale, useTranslations } from "next-intl";
-import { LogoFull } from "@/components/Logo";
+import { headers } from "next/headers";
+import { getLocale, getTranslations } from "next-intl/server";
+import { AppFooter } from "@/components/AppFooter";
+import { ErrorFrame, ErrorState } from "@/components/ErrorState";
+import { LanguageSwitch } from "@/components/site/LanguageSwitch";
 import { isLocale, publicHref } from "@/i18n/config";
+import { appUrlFromPublic } from "@/lib/sites";
 
-export default function NotFound() {
-  const raw = useLocale();
+/** The public site's 404 (canvas v3 "Hibaoldalak", signed out): to the home page, or sign in to the app. */
+export default async function NotFound() {
+  const raw = await getLocale();
   const locale = isLocale(raw) ? raw : "hu";
-  const t = useTranslations("notFound");
-  const c = useTranslations("common");
+  const [t, c, h] = await Promise.all([getTranslations("errors"), getTranslations("common"), headers()]);
+  const home = publicHref("home", locale);
   return (
-    <div className="mx-auto flex min-h-dvh max-w-md flex-col items-start justify-center gap-4 px-4">
-      <Link href={publicHref("home", locale)} aria-label={c("homeLink")} className="flex rounded-md">
-        <LogoFull height={28} />
-      </Link>
-      <h1 className="font-display text-4xl font-bold">{t("title")}</h1>
-      <Link href={publicHref("home", locale)} className="rounded-full bg-brand px-6 py-3 font-bold text-white">
-        {c("backHome")}
-      </Link>
-    </div>
+    <ErrorFrame home={home} homeLabel={c("homeLink")} language={<LanguageSwitch locale={locale} page="home" />} footer={<AppFooter />}>
+      <ErrorState
+        kind="notFound"
+        eyebrow={t("notFound.eyebrow")}
+        title={t("notFound.title")}
+        lead={t("notFound.lead")}
+        primary={{ href: home, label: t("site") }}
+        secondary={{ href: appUrlFromPublic("portal", "/login", h.get("host")), label: t("signIn") }}
+      />
+    </ErrorFrame>
   );
 }

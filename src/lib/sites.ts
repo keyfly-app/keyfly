@@ -47,3 +47,12 @@ export function marketingOrigin(host: string | null, proto = "https"): string {
   if (h.startsWith("app.") || h.startsWith("admin.")) return `${proto}://${h.split(".").slice(1).join(".")}`;
   return `${proto}://${h || PRODUCTION_HOSTS.marketing}`;
 }
+
+/** Link from the public site into an app surface (staging.keyfly.app → https://app-staging.keyfly.app/login). */
+export function appUrlFromPublic(site: AppSite, path: string, host: string | null): string {
+  const h = (host ?? "").toLowerCase();
+  const bare = h.split(":")[0];
+  if (bare.startsWith("staging.")) return `https://${site === "portal" ? "app" : "admin"}-${h}${path}`;
+  if (bare === PRODUCTION_HOSTS.marketing || bare === `www.${PRODUCTION_HOSTS.marketing}`) return `https://${PRODUCTION_HOSTS[site]}${path}`;
+  return SITE_PATH_PREFIX[site] + path;
+}

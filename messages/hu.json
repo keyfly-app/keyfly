@@ -1054,8 +1054,22 @@
     "agent": "Ingatlaniroda",
     "company": "Cég"
   },
-  "notFound": {
-    "title": "Ez az oldal nem létezik."
+  "errors": {
+    "notFound": {
+      "eyebrow": "404-es hiba",
+      "title": "Ezt az oldalt nem találjuk",
+      "lead": "Lehet, hogy elírtad a címet, vagy az oldal már nem érhető el."
+    },
+    "failed": {
+      "title": "Valami elromlott",
+      "lead": "Nem a te hibád. Próbáld újra, és ha továbbra sem megy, írj nekünk.",
+      "retry": "Újrapróbálom",
+      "code": "Hibakód: {code}"
+    },
+    "home": "Vissza az Áttekintéshez",
+    "site": "Ugrás a főoldalra",
+    "signIn": "Belépés",
+    "write": "Írj nekünk"
   },
   "legal": {
     "bindingNote": "A tájékoztató magyar nyelvű változata az irányadó.",
