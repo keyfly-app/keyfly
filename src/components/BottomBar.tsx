@@ -6,8 +6,8 @@ import { Icon } from "@/components/Icon";
 import { isActive, type NavItem } from "@/components/SideNav";
 
 /**
- * Bottom bar on phones and tablets (canvas v3 `bbar()`): Áttekintés · the lease list · a raised round "+" where this
- * View has an action today · Menü. Fixed, above the home indicator; every place is a 64 px tall target.
+ * Bottom bar on phones and tablets (canvas v3 `bbar()`): Áttekintés · (Ingatlanok) · a raised round "+" where this View
+ * has an action today · the lease list · Menü. Fixed, above the home indicator; every place is a 64 px tall target.
  */
 export function BottomBar({ label, items, add }: { label: string; items: NavItem[]; add?: { href: string; label: string; name: string } }) {
   const path = usePathname();
@@ -26,11 +26,12 @@ export function BottomBar({ label, items, add }: { label: string; items: NavItem
       </li>
     );
   };
-  const last = items.length - 1;
+  // The raised "+" sits in the middle: after the first half of the places, rounded up.
+  const middle = Math.ceil(items.length / 2);
   return (
     <nav aria-label={label} className="fixed inset-x-0 bottom-0 z-30 border-t border-line bg-surface pb-[env(safe-area-inset-bottom)] lg:hidden">
       <ul className="mx-auto flex h-16 max-w-[560px]">
-        {items.slice(0, last).map(cell)}
+        {items.slice(0, middle).map(cell)}
         {add && (
           <li className="flex flex-1">
             <Link href={add.href} aria-label={add.name} className="group flex flex-1 flex-col items-center justify-center gap-1 text-[11px] leading-[14px] font-medium text-muted">
@@ -41,7 +42,7 @@ export function BottomBar({ label, items, add }: { label: string; items: NavItem
             </Link>
           </li>
         )}
-        {cell(items[last]!)}
+        {items.slice(middle).map(cell)}
       </ul>
     </nav>
   );

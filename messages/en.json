@@ -2049,6 +2049,7 @@
     "label": "Main menu",
     "barLabel": "Bottom menu",
     "overview": "Overview",
+    "properties": "Properties",
     "leases": {
       "tenant": "My leases",
       "landlord": "Leases"
@@ -2123,5 +2124,196 @@
     "settings": "Settings",
     "companies": "My companies",
     "language": "Language · {name}"
+  },
+  "properties": {
+    "title": "Properties",
+    "summary": "{count, plural, one {# property} other {# properties}} · {let} let · {vacant} vacant",
+    "add": "Add a property",
+    "filters": {
+      "label": "Filter properties",
+      "all": "All",
+      "let": "Let",
+      "vacant": "Vacant"
+    },
+    "search": {
+      "label": "Search properties",
+      "placeholder": "Search by name, address or ID",
+      "clear": "Clear the search"
+    },
+    "noMatch": "No property matches your search.",
+    "columns": {
+      "property": "Property",
+      "type": "Type",
+      "size": "Size",
+      "status": "Status",
+      "tenant": "Tenant",
+      "rent": "Rent"
+    },
+    "status": {
+      "let": "Let",
+      "ending": "Vacant from {date}",
+      "progress": "Being recorded",
+      "vacant": "Vacant"
+    },
+    "area": "{area} m²",
+    "rooms": "{rooms}",
+    "roomsHalf": "{rooms} + {half} half",
+    "halfOnly": "{half} half",
+    "ownRef": "Own:",
+    "empty": {
+      "title": "Add your first property",
+      "lead": "An address and the type are enough to start."
+    },
+    "open": "Open {name}",
+    "new": {
+      "title": "New property",
+      "cancel": "Cancel",
+      "address": "Address",
+      "unit": "Unit within the building",
+      "type": "Type",
+      "otherLabel": "What is it?",
+      "otherPlaceholder": "e.g. studio, boat mooring",
+      "naming": "Name",
+      "name": "Name",
+      "ownRef": "Your own ID",
+      "ownRefPlaceholder": "e.g. B-12",
+      "optional": "(optional)",
+      "submit": "Add the property",
+      "preview": "Preview",
+      "previewEmpty": "The address and type show here.",
+      "errors": {
+        "kind": "Choose the type.",
+        "otherLabel": "Tell us what it is.",
+        "ownRefTaken": "Another of your properties already has this ID. Enter a different one.",
+        "notAllowed": "You can’t add properties in this account.",
+        "generic": "We couldn’t save it. Please try again.",
+        "summary": "{count, plural, one {One field still needs fixing.} other {# fields still need fixing.}}"
+      },
+      "created": "Property added."
+    },
+    "detail": {
+      "back": "Properties",
+      "edit": "Edit",
+      "more": "More actions",
+      "copyId": "Copy the Keyfly ID",
+      "copied": "Copied: {code}",
+      "tabsLabel": "Property pages",
+      "tabs": {
+        "overview": "Overview",
+        "leases": "Leases",
+        "data": "Details"
+      },
+      "archive": {
+        "menu": "Archive",
+        "title": "Archive this property?",
+        "text": "It leaves the property list. Its past leases are kept.",
+        "confirm": "Archive",
+        "cancel": "Cancel",
+        "hasLease": "You can’t archive it while a lease is being recorded or running.",
+        "done": "Property archived.",
+        "error": "We couldn’t archive it. Please try again."
+      },
+      "close": "Close"
+    },
+    "overview": {
+      "lease": {
+        "title": "Current lease",
+        "none": "No lease recorded.",
+        "perMonth": "{rent} / month",
+        "open": "Leases",
+        "tenantUnknown": "Tenant"
+      },
+      "completion": {
+        "title": "Details filled in",
+        "progress": "{done}/{total}",
+        "progressLabel": "{done} of {total} details filled in"
+      },
+      "edit": "Edit"
+    },
+    "leases": {
+      "empty": "No lease recorded for this property yet.",
+      "period": "{start} – {end}",
+      "openEnded": "open-ended",
+      "status": {
+        "draft": "Draft",
+        "pending": "Being recorded",
+        "confirmed": "Recorded",
+        "closed": "Closed"
+      }
+    },
+    "data": {
+      "edit": "Edit",
+      "editLabel": "Edit {section}",
+      "save": "Save",
+      "cancel": "Cancel",
+      "saved": "Saved.",
+      "empty": "—",
+      "errors": {
+        "generic": "We couldn’t save it. Please try again.",
+        "notAllowed": "You can’t change this property.",
+        "ownRefTaken": "Another of your properties already has this ID.",
+        "number": "Enter a number.",
+        "range": "Enter a value between {min} and {max}.",
+        "parcel": "Enter it like 29431/0/A/3.",
+        "otherLabel": "Tell us what it is."
+      },
+      "identity": {
+        "title": "Identification",
+        "name": "Name",
+        "namePlaceholder": "{address}",
+        "code": "Keyfly ID",
+        "ownRef": "Your own ID",
+        "type": "Type",
+        "otherLabel": "What is it?"
+      },
+      "address": {
+        "title": "Address",
+        "address": "Address",
+        "parcel": "Land registry number",
+        "parcelPlaceholder": "e.g. 29431/0/A/3"
+      },
+      "features": {
+        "title": "Features",
+        "area": "Floor area",
+        "rooms": "Rooms",
+        "fullRooms": "Full rooms",
+        "halfRooms": "Half rooms",
+        "builtYear": "Built",
+        "outdoor": "Outdoor space",
+        "outdoorArea": "{name} size",
+        "heating": "Heating",
+        "energy": "Energy rating",
+        "parking": "Parking",
+        "lift": "Lift",
+        "liftYes": "Yes",
+        "liftNo": "No",
+        "furnishing": "Furnished",
+        "extras": "Extras",
+        "extrasOptional": "(optional)",
+        "choose": "Choose",
+        "addExtra": "Your own extra",
+        "addExtraPlaceholder": "e.g. dishwasher",
+        "addExtraButton": "Add",
+        "removeExtra": "Remove {name}",
+        "floor": "Floor",
+        "unit": "m²"
+      },
+      "management": {
+        "title": "Ownership and management",
+        "responsible": "Responsible colleague",
+        "nobody": "Not assigned"
+      },
+      "condo": {
+        "title": "Condominium",
+        "commonCharge": "Common charges",
+        "perMonth": "HUF / month"
+      },
+      "note": {
+        "title": "Internal note",
+        "placeholder": "What the team should know about this property",
+        "hintCompany": "Only the company’s team sees it.",
+        "hintPersonal": "Only you see it."
+      }
+    }
   }
 }

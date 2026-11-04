@@ -2049,6 +2049,7 @@
     "label": "Főmenü",
     "barLabel": "Alsó menü",
     "overview": "Áttekintés",
+    "properties": "Ingatlanok",
     "leases": {
       "tenant": "Szerződéseim",
       "landlord": "Szerződések"
@@ -2123,5 +2124,196 @@
     "settings": "Beállítások",
     "companies": "Cégeim",
     "language": "Nyelv · {name}"
+  },
+  "properties": {
+    "title": "Ingatlanok",
+    "summary": "{count, plural, one {# ingatlan} other {# ingatlan}} · {let} kiadva · {vacant} szabad",
+    "add": "Ingatlan felvétele",
+    "filters": {
+      "label": "Ingatlanok szűrése",
+      "all": "Mind",
+      "let": "Kiadva",
+      "vacant": "Szabad"
+    },
+    "search": {
+      "label": "Keresés az ingatlanok között",
+      "placeholder": "Keresés név, cím vagy azonosító szerint",
+      "clear": "Keresés törlése"
+    },
+    "noMatch": "Nincs a keresésnek megfelelő ingatlan.",
+    "columns": {
+      "property": "Ingatlan",
+      "type": "Típus",
+      "size": "Méret",
+      "status": "Állapot",
+      "tenant": "Bérlő",
+      "rent": "Bérleti díj"
+    },
+    "status": {
+      "let": "Kiadva",
+      "ending": "Szabad lesz {date}",
+      "progress": "Rögzítés alatt",
+      "vacant": "Szabad"
+    },
+    "area": "{area} m²",
+    "rooms": "{rooms}",
+    "roomsHalf": "{rooms} + {half} fél",
+    "halfOnly": "{half} fél",
+    "ownRef": "Saját:",
+    "empty": {
+      "title": "Vedd fel az első ingatlanodat",
+      "lead": "Egy cím és a típus elég az induláshoz."
+    },
+    "open": "{name} megnyitása",
+    "new": {
+      "title": "Új ingatlan",
+      "cancel": "Mégse",
+      "address": "Cím",
+      "unit": "Az ingatlan a házon belül",
+      "type": "Típus",
+      "otherLabel": "Mi ez?",
+      "otherPlaceholder": "pl. műterem, hajóbeálló",
+      "naming": "Elnevezés",
+      "name": "Név",
+      "ownRef": "Saját azonosító",
+      "ownRefPlaceholder": "pl. B-12",
+      "optional": "(nem kötelező)",
+      "submit": "Ingatlan felvétele",
+      "preview": "Előnézet",
+      "previewEmpty": "A cím és a típus itt jelenik meg.",
+      "errors": {
+        "kind": "Válaszd ki a típust.",
+        "otherLabel": "Írd be, mi ez.",
+        "ownRefTaken": "Ez a saját azonosító már egy másik ingatlanodé. Adj meg másikat.",
+        "notAllowed": "Ebben a fiókban nem vehetsz fel ingatlant.",
+        "generic": "Nem sikerült menteni. Próbáld újra.",
+        "summary": "{count, plural, one {Egy mezőt még javíts.} other {# mezőt még javíts.}}"
+      },
+      "created": "Felvetted az ingatlant."
+    },
+    "detail": {
+      "back": "Ingatlanok",
+      "edit": "Szerkesztés",
+      "more": "Több művelet",
+      "copyId": "Keyfly-azonosító másolása",
+      "copied": "Kimásoltad: {code}",
+      "tabsLabel": "Az ingatlan oldalai",
+      "tabs": {
+        "overview": "Áttekintés",
+        "leases": "Szerződések",
+        "data": "Adatok"
+      },
+      "archive": {
+        "menu": "Archiválás",
+        "title": "Archiválod az ingatlant?",
+        "text": "Lekerül az ingatlanok listájáról. A korábbi szerződései megmaradnak.",
+        "confirm": "Archiválás",
+        "cancel": "Mégse",
+        "hasLease": "Amíg rögzítés alatt álló vagy élő szerződés tartozik hozzá, nem archiválhatod.",
+        "done": "Archiváltad az ingatlant.",
+        "error": "Nem sikerült archiválni. Próbáld újra."
+      },
+      "close": "Bezárás"
+    },
+    "overview": {
+      "lease": {
+        "title": "Jelenlegi bérleti szerződés",
+        "none": "Nincs rögzített bérleti szerződés.",
+        "perMonth": "{rent} / hó",
+        "open": "Szerződések",
+        "tenantUnknown": "Bérlő"
+      },
+      "completion": {
+        "title": "Adatok kitöltése",
+        "progress": "{done}/{total}",
+        "progressLabel": "{total} adatból {done} kitöltve"
+      },
+      "edit": "Szerkesztés"
+    },
+    "leases": {
+      "empty": "Ehhez az ingatlanhoz még nincs rögzített bérleti szerződés.",
+      "period": "{start} – {end}",
+      "openEnded": "határozatlan",
+      "status": {
+        "draft": "Piszkozat",
+        "pending": "Rögzítés alatt",
+        "confirmed": "Rögzítve",
+        "closed": "Lezárva"
+      }
+    },
+    "data": {
+      "edit": "Szerkesztés",
+      "editLabel": "{section} szerkesztése",
+      "save": "Mentés",
+      "cancel": "Mégse",
+      "saved": "Elmentettük.",
+      "empty": "—",
+      "errors": {
+        "generic": "Nem sikerült menteni. Próbáld újra.",
+        "notAllowed": "Ezt az ingatlant nem módosíthatod.",
+        "ownRefTaken": "Ez a saját azonosító már egy másik ingatlanodé.",
+        "number": "Adj meg egy számot.",
+        "range": "Adj meg {min} és {max} közötti értéket.",
+        "parcel": "Így add meg: 29431/0/A/3.",
+        "otherLabel": "Írd be, mi ez."
+      },
+      "identity": {
+        "title": "Azonosítás",
+        "name": "Név",
+        "namePlaceholder": "{address}",
+        "code": "Keyfly-azonosító",
+        "ownRef": "Saját azonosító",
+        "type": "Típus",
+        "otherLabel": "Mi ez?"
+      },
+      "address": {
+        "title": "Cím",
+        "address": "Cím",
+        "parcel": "Helyrajzi szám",
+        "parcelPlaceholder": "pl. 29431/0/A/3"
+      },
+      "features": {
+        "title": "Jellemzők",
+        "area": "Alapterület",
+        "rooms": "Szobák",
+        "fullRooms": "Egész szoba",
+        "halfRooms": "Félszoba",
+        "builtYear": "Építés éve",
+        "outdoor": "Kültér",
+        "outdoorArea": "{name} mérete",
+        "heating": "Fűtés",
+        "energy": "Energetikai besorolás",
+        "parking": "Parkolás",
+        "lift": "Lift",
+        "liftYes": "Van",
+        "liftNo": "Nincs",
+        "furnishing": "Bútorozott",
+        "extras": "Extrák",
+        "extrasOptional": "(nem kötelező)",
+        "choose": "Válassz",
+        "addExtra": "Saját extra",
+        "addExtraPlaceholder": "pl. mosogatógép",
+        "addExtraButton": "Hozzáadás",
+        "removeExtra": "{name} eltávolítása",
+        "floor": "Emelet",
+        "unit": "m²"
+      },
+      "management": {
+        "title": "Tulajdon és kezelés",
+        "responsible": "Felelős munkatárs",
+        "nobody": "Nincs kijelölve"
+      },
+      "condo": {
+        "title": "Társasház",
+        "commonCharge": "Közös költség",
+        "perMonth": "Ft / hó"
+      },
+      "note": {
+        "title": "Belső jegyzet",
+        "placeholder": "Amit a csapatnak tudnia kell erről az ingatlanról",
+        "hintCompany": "Csak a cég munkatársai látják.",
+        "hintPersonal": "Csak te látod."
+      }
+    }
   }
 }

@@ -15,6 +15,7 @@ import { accountInitials, myAccounts, type AccountSummary, type AccountView } fr
 import { hasAcceptedTerms } from "@/features/auth/google";
 import { LanguageMenu } from "@/features/language/LanguageMenu";
 import { isTodo, tenantCards } from "@/features/lease-requests/load";
+import { canEditProperties } from "@/features/properties/load";
 import { currentUser } from "@/features/settings/current-user";
 import { settingsMenu } from "@/features/settings/links";
 import { SettingsNav } from "@/features/settings/SettingsNav";
@@ -30,12 +31,13 @@ import { createClient } from "@/lib/supabase/server";
  * chip on top and a bottom bar. `account`: the company account of a /c/<slug> page; otherwise the personal account.
  */
 export async function Shell({ account, settings = false, children }: { account?: AccountSummary; settings?: boolean; children: React.ReactNode }) {
-  const [t, a, inv, nav, lr, common, user, accounts] = await Promise.all([
+  const [t, a, inv, nav, lr, pr, common, user, accounts] = await Promise.all([
     getTranslations("settings"),
     getTranslations("accounts"),
     getTranslations("invite"),
     getTranslations("nav"),
     getTranslations("leaseRequest"),
+    getTranslations("properties"),
     getTranslations("common"),
     currentUser(),
     myAccounts(),
@@ -62,9 +64,11 @@ export async function Shell({ account, settings = false, children }: { account?:
   const current = account ? switcher.find((s) => s.id === account.id) : switcher.find((s) => !s.company);
   const view = current?.view ?? personalView;
   const base = account ? `/c/${account.slug}` : "";
-  const [home, leases, menu, settingsHref, newRequest, requests, summaryHref, profile, security, notifications, bank, companies, data, addCompany, summary] = await Promise.all([
+  const [home, leases, properties, newProperty, menu, settingsHref, newRequest, requests, summaryHref, profile, security, notifications, bank, companies, data, addCompany, summary] = await Promise.all([
     href(base || "/"),
     href(`${base}/leases`),
+    href(`${base}/properties`),
+    href(`${base}/properties/new`),
     href(`${base}/menu`),
     href(`${base}/settings`),
     href("/lease-requests/new"),
@@ -86,8 +90,13 @@ export async function Shell({ account, settings = false, children }: { account?:
       : undefined;
   // The tenant's to-dos on "Szerződéseim", the same rule as the Overview's summary.
   const todos = view === "tenant" && current ? (await tenantCards(current.id)).filter(isTodo).length : 0;
+  // A landlord works from the properties; only roles that may add one get the bar's "+" for it.
+  const landlord = view === "landlord";
+  const role = account?.role ?? "owner";
+  const propertiesItem: NavItem = { href: properties, label: nav("properties"), icon: "home", prefixes: [`${properties}/`] };
   const items: NavItem[] = [
     { href: home, label: nav("overview"), icon: "layout" },
+    ...(landlord ? [propertiesItem] : []),
     {
       href: leases,
       label: nav(`leases.${view}`),
@@ -188,9 +197,17 @@ export async function Shell({ account, settings = false, children }: { account?:
       {current && (
         <BottomBar
           label={nav("barLabel")}
-          items={[items[0]!, items[1]!, menuItem]}
-          // The tenant's one action today; it records in the personal account, so only there.
-          add={view === "tenant" && !account ? { href: newRequest, label: nav("new"), name: nav("newLabel", { action: lr("inviteLandlord") }) } : undefined}
+          items={[...items, menuItem]}
+          // The tenant's one action today records in the personal account, so only there; the landlord's adds a property.
+          add={
+            landlord
+              ? canEditProperties(role)
+                ? { href: newProperty, label: nav("new"), name: nav("newLabel", { action: pr("add") }) }
+                : undefined
+              : !account
+                ? { href: newRequest, label: nav("new"), name: nav("newLabel", { action: lr("inviteLandlord") }) }
+                : undefined
+          }
         />
       )}
       <Toaster />

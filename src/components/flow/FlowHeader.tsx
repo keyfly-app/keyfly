@@ -8,7 +8,7 @@ import { LogoFull } from "@/components/Logo";
  * Header of a focused flow (App v2.3): no app navigation, only the task, its named steps and a way out.
  * From 1024 px: logo · title | stepper | Cancel. Below: back · title + "2/4 · step" · close, with a progress bar.
  * The logo goes home through `onCancel`, so a half-filled flow still asks before leaving. On the first step the
- * back arrow leaves the flow the same way.
+ * back arrow leaves the flow the same way. A one-page task passes no steps: title and Cancel only (canvas "Új ingatlan").
  */
 export function FlowHeader({
   title,
@@ -46,7 +46,10 @@ export function FlowHeader({
           <span aria-hidden="true" className="h-5 w-px bg-line" />
           <span className="truncate text-sm font-semibold">{title}</span>
         </span>
-        <ol aria-label={labels.progress} className="flex items-center gap-2.5">
+        {steps.length === 0 ? (
+          <span />
+        ) : (
+          <ol aria-label={labels.progress} className="flex items-center gap-2.5">
           {steps.map((name, i) => {
             const done = i < current;
             const now = i === current;
@@ -68,7 +71,8 @@ export function FlowHeader({
               </li>
             );
           })}
-        </ol>
+          </ol>
+        )}
         <span className="flex justify-end">
           <button type="button" onClick={onCancel} className="inline-flex h-10 items-center gap-2 rounded-lg px-3 text-sm font-medium hover:bg-paper">
             <Icon name="x" size={16} strokeWidth={2} />
@@ -77,6 +81,14 @@ export function FlowHeader({
         </span>
       </div>
 
+      {steps.length === 0 ? (
+        <div className="flex h-14 items-center justify-between gap-2 pr-1.5 pl-4 lg:hidden">
+          <span className="truncate text-[15px] font-semibold">{title}</span>
+          <button type="button" onClick={onCancel} aria-label={labels.cancel} className="flex size-11 flex-none items-center justify-center rounded-lg hover:bg-paper">
+            <Icon name="x" size={20} strokeWidth={2} />
+          </button>
+        </div>
+      ) : (
       <div className="lg:hidden">
         <div className="flex h-14 items-center justify-between gap-2 px-1.5">
           <button type="button" onClick={onBack ?? onCancel} aria-label={labels.back} className="flex size-11 flex-none items-center justify-center rounded-lg hover:bg-paper">
@@ -98,6 +110,7 @@ export function FlowHeader({
           ))}
         </div>
       </div>
+      )}
     </header>
   );
 }

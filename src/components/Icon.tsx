@@ -229,6 +229,48 @@ const PATHS = {
       <circle cx="3.5" cy="18" r="1" />
     </>
   ),
+  store: (
+    <>
+      <path d="M4 9.5 5.5 4h13L20 9.5" />
+      <path d="M4 9.5h16v1a2.7 2.7 0 0 1-5.3 0 2.7 2.7 0 0 1-5.4 0 2.7 2.7 0 0 1-5.3 0z" />
+      <path d="M5.5 12.5V20h13v-7.5" />
+    </>
+  ),
+  cup: (
+    <>
+      <path d="M5 8h11v5a5 5 0 0 1-5 5h-1a5 5 0 0 1-5-5z" />
+      <path d="M16 9.5h1.5a2.5 2.5 0 0 1 0 5H16" />
+      <path d="M5 21h11" />
+    </>
+  ),
+  box: (
+    <>
+      <path d="M3.5 8 12 4l8.5 4v11.5h-17z" />
+      <path d="M8 19.5v-7h8v7M8 15.5h8" />
+    </>
+  ),
+  car: (
+    <>
+      <path d="M4.5 15 6.5 9h11l2 6" />
+      <rect x="3" y="15" width="18" height="4.5" rx="1.2" />
+      <circle cx="7.5" cy="19.5" r="1.2" />
+      <circle cx="16.5" cy="19.5" r="1.2" />
+    </>
+  ),
+  storage: (
+    <>
+      <rect x="3.5" y="4.5" width="17" height="4" rx="1" />
+      <path d="M5 8.5V19a1.5 1.5 0 0 0 1.5 1.5h11A1.5 1.5 0 0 0 19 19V8.5M10 12.5h4" />
+    </>
+  ),
+  grid: (
+    <>
+      <rect x="4" y="4" width="7" height="7" rx="1.5" />
+      <rect x="13" y="4" width="7" height="7" rx="1.5" />
+      <rect x="4" y="13" width="7" height="7" rx="1.5" />
+      <rect x="13" y="13" width="7" height="7" rx="1.5" />
+    </>
+  ),
   chevronDown: <path d="m7 10 5 5 5-5" />,
   chevronRight: <path d="m9 6 6 6-6 6" />,
   globe: (
@@ -278,3 +320,6 @@ export function Icon({
     </svg>
   );
 }
+
+/** For icon names that come from data (e.g. the catalogue): unknown names fall back to the caller's default. */
+export const isIconName = (value: unknown): value is IconName => typeof value === "string" && Object.hasOwn(PATHS, value);
