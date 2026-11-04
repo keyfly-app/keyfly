@@ -2472,6 +2472,7 @@ export type Database = {
         }[]
       }
       add_email_identity: { Args: { p_user: string }; Returns: boolean }
+      archive_property: { Args: { p_property_id: string }; Returns: undefined }
       cancel_access_request: {
         Args: { p_request_id: string }
         Returns: undefined
@@ -2561,6 +2562,29 @@ export type Database = {
           expires_at: string
           request_id: string
           token: string
+        }[]
+      }
+      create_property: {
+        Args: {
+          p_account_id: string
+          p_building?: string
+          p_city: string
+          p_door?: string
+          p_floor_number?: number
+          p_floor_type?: Database["public"]["Enums"]["floor_type"]
+          p_house_number: string
+          p_kind: string
+          p_label?: string
+          p_other_kind_label?: string
+          p_own_ref?: string
+          p_postal_code: string
+          p_staircase?: string
+          p_street_name: string
+          p_street_type: string
+        }
+        Returns: {
+          property_id: string
+          public_code: string
         }[]
       }
       create_staff_invitation: {
@@ -2694,6 +2718,25 @@ export type Database = {
       reset_staff_mfa: { Args: { p_user_id: string }; Returns: undefined }
       revoke_invitation: {
         Args: { p_invitation_id: string }
+        Returns: undefined
+      }
+      save_property_features: {
+        Args: {
+          p_account_extras?: string[]
+          p_area_m2: number
+          p_built_year: number
+          p_energy_rating: string
+          p_extras?: string[]
+          p_furnishing: string
+          p_half_rooms: number
+          p_heating: string
+          p_lift: boolean
+          p_new_extras?: string[]
+          p_outdoor?: Json
+          p_parking: string
+          p_property_id: string
+          p_rooms: number
+        }
         Returns: undefined
       }
       set_account_view: {
