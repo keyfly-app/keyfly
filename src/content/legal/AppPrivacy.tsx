@@ -91,13 +91,16 @@ export function AppPrivacyContent({ locale }: { locale: Locale }) {
           <tr>
             <td>C</td>
             <td>Ingatlanok és bérleti jogviszonyok nyilvántartása</td>
-            <td>Bérbeadó, Bérlő, Bérlőtárs</td>
+            <td>Bérbeadó, Bérlő, Bérlőtárs; a Bérbeadó által rögzített kapcsolatok (pl. tulajdonos, közös képviselő, gondnok, szolgáltató)</td>
             <td>
               ingatlan strukturált címe és típusa (lakás, ház, szoba, iroda, üzlethelyiség, vendéglátóhely, raktár/ipari ingatlan, garázs/parkolóhely
-              vagy egyéb), helyrajzi szám (opcionális), bérleti időszak, bérleti díj, kaució összege, felek neve és elérhetősége, a bérleti szerződés
-              állapota
+              vagy egyéb), helyrajzi szám (opcionális), jellemzők, fotók, bérbeadási feltételek és hirdetési szöveg, közmű- és szolgáltatásadatok
+              (szolgáltató, felhasználási hely- és ügyfélazonosítók, mérőórák gyári száma, elszámolás módja), a kapcsolatok neve, szerepe, e-mail-címe,
+              telefonszáma, címe és a róluk írt megjegyzés, belső jegyzet; Excel/CSV-importnál a fájl neve (a fájl tartalmát a böngésződ dolgozza fel,
+              magát a fájlt nem tároljuk), illetve az import által felülírt korábbi értékek a visszavonhatóság idejére; bérleti időszak, bérleti díj,
+              kaució összege, felek neve és elérhetősége, a bérleti szerződés állapota
             </td>
-            <td>b) szerződés teljesítése</td>
+            <td>b) szerződés teljesítése; a Bérbeadó által rögzített kapcsolatok adataira f) jogos érdek (az ingatlan kezelése és a bérlés lebonyolítása)</td>
             <td>M2</td>
           </tr>
           <tr>
@@ -308,7 +311,9 @@ export function AppPrivacyContent({ locale }: { locale: Locale }) {
         <p>
           2.1. <strong>Más személyektől kapott adatok.</strong> Ha adataidat más Felhasználó adja meg (pl. meghívott, Bérlőtársként vagy
           Együttlakóként rögzített), az első kapcsolatfelvételkor (meghívó e-mail), de legkésőbb egy hónapon belül tájékoztatunk erről a
-          tájékoztatóról (GDPR 14. cikk).
+          tájékoztatóról (GDPR 14. cikk). A Bérbeadó által rögzített kapcsolatokat (pl. tulajdonos, közös képviselő, gondnok, szolgáltató) a Keyfly
+          nem keresi meg; adataikat csak a Bérbeadó fiókjának tagjai, illetve – ha a Bérbeadó így jelöli – az ingatlan Bérlője látja. Jogaikat (8.
+          pont) nálunk is gyakorolhatják.
         </p>
         <p>
           2.2. <strong>Jogos érdek.</strong> A jogos érdeken alapuló adatkezelésekhez érdekmérlegelési tesztet készítünk, amelyet kérésedre
@@ -388,6 +393,8 @@ export function AppPrivacyContent({ locale }: { locale: Locale }) {
             <td>
               A Bérleti jogviszony lezárásától (a bérleti szerződés vége + 60 nap, vagy a kárigény lezárása) számított 5 év; folyamatban lévő
               megtérítés vagy jogvita esetén annak lezárásáig. A lezárt bérleti szerződés adataihoz a Bérlő ez alatt csak olvasási hozzáférést kap.
+              Bérleti jogviszony nélküli ingatlanadatok, fotók és kapcsolatok: amíg a Bérbeadó törli őket, illetve a Fiók (Céges fiók) törléséig. Az
+              import által felülírt korábbi értékek: az import után 2 nap (napi automatikus törlés).
             </td>
             <td>A bérleti szerződésből és a garanciából eredő igények 5 éves elévülése (Ptk. 6:22. §).</td>
           </tr>
@@ -711,6 +718,7 @@ export function AppPrivacyContent({ locale }: { locale: Locale }) {
             kódja szükséges;
           </li>
           <li>a profilképet privát tárhelyen tároljuk, csak a Felhasználó fér hozzá, és rövid lejáratú hivatkozással jelenik meg;</li>
+          <li>az ingatlanfotókat privát tárhelyen tároljuk, csak a fiók tagjai és – ügyfélszolgálati célból – a Keyfly munkatársai férnek hozzájuk, és rövid lejáratú hivatkozással jelennek meg;</li>
           <li>csak hozzáfűzhető, utólag nem módosítható változásnapló;</li>
           <li>az ellenőrzések nyers adatainak gyors törlése (3. pont, M5);</li>
           <li>adatfeldolgozási szerződések a szolgáltatókkal; rendszeres biztonsági mentés.</li>
@@ -905,13 +913,15 @@ export function AppPrivacyContent({ locale }: { locale: Locale }) {
         <tr>
           <td>C</td>
           <td>Properties and leases</td>
-          <td>Landlord, Tenant, Co-tenant</td>
+          <td>Landlord, Tenant, Co-tenant; contacts recorded by the Landlord (e.g. owner, condominium manager, caretaker, provider)</td>
           <td>
             structured property address and property type (flat, house, room, office, retail unit, hospitality venue, warehouse/industrial property,
-            garage/parking space or other), land-registry no. (optional), lease period, rent, deposit amount, parties&apos; names and contact details,
-            lease status
+            garage/parking space or other), land-registry no. (optional), features, photos, letting terms and listing text, utility and service data
+            (provider, supply-point and customer IDs, meter serial numbers, settlement), contacts&apos; name, role, email, phone, address and the note
+            about them, internal note; for Excel/CSV imports the file name (your browser reads the file; the file itself is not stored) and the values
+            an import overwrote while it can be undone; lease period, rent, deposit amount, parties&apos; names and contact details, lease status
           </td>
-          <td>(b) contract</td>
+          <td>(b) contract; for contacts recorded by the Landlord, (f) legitimate interest (managing the property and the lease)</td>
           <td>M2</td>
         </tr>
         <tr>
@@ -1118,7 +1128,9 @@ export function AppPrivacyContent({ locale }: { locale: Locale }) {
       </LegalTable>
       <p>
         2.1. <strong>Data received from others.</strong> If another User provides your data (e.g. as invitee, Co-tenant or Occupant), we inform you of
-        this notice at first contact (invitation email), and at the latest within one month (GDPR Art. 14).
+        this notice at first contact (invitation email), and at the latest within one month (GDPR Art. 14). Keyfly does not contact the people a
+        Landlord records as contacts (e.g. owner, condominium manager, caretaker, provider); only members of the Landlord&apos;s account and, where
+        the Landlord marks it, the property&apos;s Tenant can see their data. They can exercise their rights (section 8) with us as well.
       </p>
       <p>
         2.2. <strong>Legitimate interest.</strong> We carry out a balancing test for processing based on legitimate interest, available on request.
@@ -1194,7 +1206,8 @@ export function AppPrivacyContent({ locale }: { locale: Locale }) {
           <td>Leases, property data, Co-tenants/Occupants, data passed to the Partner Insurer, claims</td>
           <td>
             5 years from Lease closure (lease end + 60 days, or claim closure); if recovery or a dispute is pending, until it closes. During this time
-            the Tenant has read-only access to the closed Lease.
+            the Tenant has read-only access to the closed Lease. Property data, photos and contacts with no Lease: until the Landlord deletes them or the
+            Account (Company account) is deleted. Values an import overwrote: 2 days after the import (daily automatic deletion).
           </td>
           <td>5-year limitation of claims under the lease and the guarantee (Civil Code s. 6:22).</td>
         </tr>
@@ -1502,6 +1515,7 @@ export function AppPrivacyContent({ locale }: { locale: Locale }) {
           two-step verification code;
         </li>
         <li>profile photos are kept in private storage, accessible only to the User, and shown through short-lived links;</li>
+        <li>property photos are kept in private storage, accessible only to the account&apos;s members and, for support, Keyfly staff, and shown through short-lived links;</li>
         <li>an append-only, immutable audit log;</li>
         <li>prompt deletion of raw check data (section 3, M5);</li>
         <li>data processing agreements with providers; regular backups.</li>

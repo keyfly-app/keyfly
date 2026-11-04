@@ -13,7 +13,7 @@ export const LEGAL_EFFECTIVE = {
   privacy: "2026-10-31",
   imprint: "2026-10-31",
   terms: "2026-11-02",
-  appPrivacy: "2026-11-02",
+  appPrivacy: "2026-11-04",
 } as const;
 
 /** Hungarian data protection authority – for the "right to complain" section. */

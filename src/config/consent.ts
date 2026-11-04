@@ -14,5 +14,5 @@ export const CONSENT_VERSIONS = {
    * (/adatvedelem/app), published on keyfly.app from src/content/legal; lawyer review pending. Bump on every change.
    */
   accountTerms: "terms-2026-11-02",
-  accountPrivacy: "account-privacy-2026-11-02",
+  accountPrivacy: "account-privacy-2026-11-04",
 } as const;

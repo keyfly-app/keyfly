@@ -102,5 +102,15 @@ select tests.ok((select count(*) = 0 from public.properties where import_batch_i
 select tests.ok((select parcel_number is null and area_m2 = 54 from public.properties where id = (select v::uuid from r where k = 'p1')), '… and restores what it overwrote');
 select tests.throws($$select public.undo_import((select v::uuid from r where k = 'b1'))$$, 'an import is undone once');
 
+reset role;
+insert into r select 'b9', id::text from public.import_batches order by created_at desc limit 1;
+insert into public.import_batch_changes (batch_id, property_id, before)
+select (select v::uuid from r where k = 'b9'), (select v::uuid from r where k = 'p1'), '{}' on conflict do nothing;
+update public.import_batches set created_at = now() - interval '3 days' where id = (select v::uuid from r where k = 'b9');
+select private.purge_import_changes();
+select tests.ok((select count(*) = 0 from public.import_batch_changes where batch_id = (select v::uuid from r where k = 'b9')),
+  'the values an import overwrote are purged once it can no longer be undone');
+select tests.ok((select count(*) = 1 from public.import_batches where id = (select v::uuid from r where k = 'b9')), '… the import history stays');
+
 rollback;
 \echo '=== PROPERTY TOOLS TESTS PASSED ==='
