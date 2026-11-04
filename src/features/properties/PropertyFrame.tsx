@@ -100,8 +100,13 @@ export async function PropertyFrame({
         </Link>
         <div className="flex items-start justify-between gap-3">
           <div className="flex min-w-0 items-start gap-4">
-            <span aria-hidden="true" className="flex size-14 flex-none items-center justify-center rounded-xl bg-mist text-brand sm:size-[72px]">
-              <Icon name={kindIcon(catalog.property_type, p.kind)} size={26} strokeWidth={1.6} />
+            <span aria-hidden="true" className="flex size-14 flex-none items-center justify-center overflow-hidden rounded-xl bg-mist text-brand sm:size-[72px]">
+              {p.coverUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element -- signed links to the private bucket change every hour
+                <img src={p.coverUrl} alt="" className="size-full object-cover" />
+              ) : (
+                <Icon name={kindIcon(catalog.property_type, p.kind)} size={26} strokeWidth={1.6} />
+              )}
             </span>
             <div className="flex min-w-0 flex-col gap-1">
               <div className="flex flex-wrap items-center gap-x-3 gap-y-1">

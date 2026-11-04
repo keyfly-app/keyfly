@@ -198,10 +198,16 @@ export async function PropertiesPage({ account, base, filter, query }: { account
 
 type Tr = Awaited<ReturnType<typeof getTranslations<"properties">>>;
 
-function KindTile({ icon, size = 40 }: { icon: Row["icon"]; size?: number }) {
+/** The cover photo, or the type's icon on a mist tile. */
+function KindTile({ icon, url, size = 40 }: { icon: Row["icon"]; url: string | null; size?: number }) {
   return (
-    <span aria-hidden="true" style={{ width: size, height: size }} className="flex flex-none items-center justify-center rounded-lg bg-mist text-brand">
-      <Icon name={icon} size={18} strokeWidth={1.75} />
+    <span aria-hidden="true" style={{ width: size, height: size }} className="flex flex-none items-center justify-center overflow-hidden rounded-lg bg-mist text-brand">
+      {url ? (
+        // eslint-disable-next-line @next/next/no-img-element -- signed links to the private bucket change every hour
+        <img src={url} alt="" className="size-full object-cover" />
+      ) : (
+        <Icon name={icon} size={18} strokeWidth={1.75} />
+      )}
     </span>
   );
 }
@@ -230,7 +236,7 @@ function PropertyTable({ rows, t, className }: { rows: Row[]; t: Tr; className: 
             <tr key={r.p.id} className="relative hover:bg-paper">
               <td className="border-b border-paper px-3 py-3">
                 <span className="flex items-center gap-3">
-                  <KindTile icon={r.icon} />
+                  <KindTile icon={r.icon} url={r.p.coverUrl} />
                   <span className="flex min-w-0 flex-col">
                     <Link
                       href={r.href}
@@ -274,7 +280,7 @@ function PropertyCards({ rows, t, className }: { rows: Row[]; t: Tr; className: 
             className="flex flex-col gap-3 rounded-xl border border-line bg-surface p-4 transition-colors hover:border-field motion-reduce:transition-none"
           >
             <span className="flex items-start gap-3">
-              <KindTile icon={r.icon} size={44} />
+              <KindTile icon={r.icon} url={r.p.coverUrl} size={44} />
               <span className="flex min-w-0 flex-col gap-0.5">
                 <span className="text-[15px] leading-[21px] font-semibold [overflow-wrap:anywhere]">{r.name}</span>
                 <span className="text-[13px] leading-[18px] text-muted [overflow-wrap:anywhere]">{r.address}</span>

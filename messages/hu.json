@@ -2496,6 +2496,90 @@
       "pausedToast": "Szünetelteted: {name}.",
       "resumed": "Újra fut: {name}.",
       "ended": "Megszüntetted: {name}."
+    },
+    "listing": {
+      "photos": {
+        "title": "Fotók",
+        "count": "{count, plural, one {# fotó} other {# fotó}}",
+        "upload": "Feltöltés",
+        "uploadSub": "JPG, PNG, WEBP",
+        "uploading": "Feltöltés…",
+        "cover": "Borítókép",
+        "makeCover": "Legyen a borítókép",
+        "delete": "Törlés",
+        "more": "Műveletek: {n}. fotó",
+        "photoAlt": "{name} – {n}. fotó",
+        "empty": "Még nincs fotó.",
+        "uploaded": "{count, plural, one {Feltöltöttünk egy fotót.} other {Feltöltöttünk # fotót.}}",
+        "deleted": "Törölted a fotót.",
+        "coverSet": "Ez lett a borítókép.",
+        "errors": {
+          "type": "Ezt a fájlt nem tudjuk feltölteni. JPG, PNG vagy WEBP képet válassz.",
+          "limit": "Egy ingatlanhoz legfeljebb {max} fotó tölthető fel.",
+          "generic": "Nem sikerült feltölteni. Próbáld újra."
+        }
+      },
+      "terms": {
+        "title": "Bérleti feltételek",
+        "rent": "Kért bérleti díj",
+        "perMonth": "/ hó",
+        "currency": "Pénznem",
+        "huf": "Ft",
+        "eur": "EUR",
+        "deposit": "Kaució",
+        "depositUnit": "havi",
+        "available": "Költözhető",
+        "now": "Azonnal",
+        "fromDate": "Dátumtól",
+        "availableFrom": "Költözhető ettől",
+        "minTerm": "Minimum bérleti idő",
+        "months": "hónap",
+        "pets": "Kisállat",
+        "smoking": "Dohányzás",
+        "choose": "Válassz",
+        "bills": "Becsült rezsi",
+        "billsUnit": "/ hó",
+        "parking": "Bérelhető parkoló",
+        "parkingNone": "Nincs",
+        "parkingRent": "A parkoló díja",
+        "optional": "(nem kötelező)",
+        "save": "Mentés",
+        "saved": "Elmentettük."
+      },
+      "ad": {
+        "title": "Hirdetési szöveg",
+        "copy": "Másolás",
+        "copied": "Kimásoltad a hirdetést.",
+        "heading": "Cím",
+        "description": "Leírás",
+        "count": "{count} / {max}",
+        "save": "Mentés",
+        "saved": "Elmentettük."
+      },
+      "links": {
+        "title": "Hirdetések",
+        "add": "Link hozzáadása",
+        "label": "Megnevezés",
+        "labelPlaceholder": "pl. ingatlan.com",
+        "url": "Link",
+        "urlPlaceholder": "https://…",
+        "save": "Hozzáadás",
+        "cancel": "Mégse",
+        "open": "{name} megnyitása új lapon",
+        "remove": "{name} törlése",
+        "empty": "Még nincs hirdetési link.",
+        "added": "Hozzáadtad a linket.",
+        "removed": "Törölted a linket."
+      },
+      "errors": {
+        "amount": "Adj meg egy összeget.",
+        "range": "Adj meg {min} és {max} közötti értéket.",
+        "date": "Adj meg egy dátumot.",
+        "url": "Adj meg egy teljes linket (https://…).",
+        "label": "Adj nevet a linknek.",
+        "generic": "Nem sikerült menteni. Próbáld újra.",
+        "notAllowed": "Ezt az ingatlant nem módosíthatod."
+      }
     }
   }
 }

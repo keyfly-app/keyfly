@@ -85,7 +85,7 @@ export function occupancyOf(leases: LeaseRow[], today = todayIso()): Occupancy {
 }
 
 const LEASE_COLUMNS = "id, status, start_date, end_date, termination_date, monthly_rent, lease_parties(side, name)";
-const LIST_COLUMNS = `id, public_code, label, kind, other_kind_label, own_ref, area_m2, rooms, half_rooms, ${ADDRESS_COLUMNS}, leases(${LEASE_COLUMNS})`;
+const LIST_COLUMNS = `id, public_code, label, kind, other_kind_label, own_ref, area_m2, rooms, half_rooms, ${ADDRESS_COLUMNS}, leases(${LEASE_COLUMNS}), property_media(path)`;
 
 export type PropertyListRow = AddressRow & {
   id: string;
@@ -98,7 +98,17 @@ export type PropertyListRow = AddressRow & {
   rooms: number | null;
   half_rooms: number | null;
   occupancy: Occupancy;
+  /** Signed link to the cover photo (1 hour); null: the type's icon shows. */
+  coverUrl: string | null;
 };
+
+/** Signed links (1 hour) for cover photos in the private bucket, by path. */
+async function coverLinks(paths: string[]): Promise<Map<string, string>> {
+  if (!paths.length) return new Map();
+  const supabase = await createClient();
+  const { data } = await supabase.storage.from("property-media").createSignedUrls(paths, 60 * 60);
+  return new Map((data ?? []).flatMap((x) => (x.path && x.signedUrl ? [[x.path, x.signedUrl] as const] : [])));
+}
 
 /** The account's live properties, newest first, each with its occupancy. Once per request. */
 export const propertyList = cache(async (accountId: string): Promise<PropertyListRow[]> => {
@@ -109,12 +119,15 @@ export const propertyList = cache(async (accountId: string): Promise<PropertyLis
     .eq("account_id", accountId)
     .is("archived_at", null)
     .neq("leases.status", "cancelled")
+    .eq("property_media.is_cover", true)
     .order("created_at", { ascending: false });
   if (error) throw new Error(`properties unavailable (${error.code})`);
   const today = todayIso();
-  return data.map(({ leases, ...p }) => ({
+  const links = await coverLinks(data.flatMap((p) => p.property_media.map((m) => m.path)));
+  return data.map(({ leases, property_media, ...p }) => ({
     ...p,
     occupancy: occupancyOf(leases, today),
+    coverUrl: property_media[0] ? (links.get(property_media[0].path) ?? null) : null,
   }));
 });
 
@@ -127,7 +140,7 @@ const DETAIL_COLUMNS = `id, account_id, public_code, label, kind, other_kind_lab
   property_services(id, type_key, custom_label, provider_id, provider_name, network_provider_id, contact_id, settlement_key, fee_amount,
     fee_currency, reading_required, reading_frequency, reading_due, paused_from, paused_until, ended_on, sort,
     service_identifiers(id, label, value, sort), meters(id, name, tariff_key, unit_key, serial, registers, location, sort, archived_at)),
-  leases(${LEASE_COLUMNS})`;
+  leases(${LEASE_COLUMNS}), property_media(path)`;
 
 /** One live property of the account by its Keyfly ID ("KF-48Q7M"); null when it is not there or not visible. */
 export const propertyByCode = cache(async (accountId: string, code: string) => {
@@ -140,10 +153,12 @@ export const propertyByCode = cache(async (accountId: string, code: string) => {
     .eq("public_code", code)
     .is("archived_at", null)
     .neq("leases.status", "cancelled")
+    .eq("property_media.is_cover", true)
     .maybeSingle();
   if (!data) return null;
-  const { leases, ...p } = data;
-  return { ...p, leases, occupancy: occupancyOf(leases) };
+  const { leases, property_media, ...p } = data;
+  const links = await coverLinks(property_media.map((m) => m.path));
+  return { ...p, leases, occupancy: occupancyOf(leases), coverUrl: property_media[0] ? (links.get(property_media[0].path) ?? null) : null };
 });
 
 export type PropertyDetail = NonNullable<Awaited<ReturnType<typeof propertyByCode>>>;

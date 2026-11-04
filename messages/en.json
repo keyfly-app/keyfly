@@ -2496,6 +2496,90 @@
       "pausedToast": "{name} paused.",
       "resumed": "{name} resumed.",
       "ended": "{name} ended."
+    },
+    "listing": {
+      "photos": {
+        "title": "Photos",
+        "count": "{count, plural, one {# photo} other {# photos}}",
+        "upload": "Upload",
+        "uploadSub": "JPG, PNG, WEBP",
+        "uploading": "Uploading…",
+        "cover": "Cover photo",
+        "makeCover": "Make it the cover",
+        "delete": "Delete",
+        "more": "Actions: photo {n}",
+        "photoAlt": "{name} – photo {n}",
+        "empty": "No photos yet.",
+        "uploaded": "{count, plural, one {Photo uploaded.} other {# photos uploaded.}}",
+        "deleted": "Photo deleted.",
+        "coverSet": "Cover photo set.",
+        "errors": {
+          "type": "We can’t upload this file. Choose a JPG, PNG or WEBP image.",
+          "limit": "A property can have up to {max} photos.",
+          "generic": "We couldn’t upload it. Please try again."
+        }
+      },
+      "terms": {
+        "title": "Rental terms",
+        "rent": "Asking rent",
+        "perMonth": "/ month",
+        "currency": "Currency",
+        "huf": "HUF",
+        "eur": "EUR",
+        "deposit": "Deposit",
+        "depositUnit": "months",
+        "available": "Available",
+        "now": "Now",
+        "fromDate": "From a date",
+        "availableFrom": "Available from",
+        "minTerm": "Minimum term",
+        "months": "months",
+        "pets": "Pets",
+        "smoking": "Smoking",
+        "choose": "Choose",
+        "bills": "Estimated bills",
+        "billsUnit": "/ month",
+        "parking": "Parking to rent",
+        "parkingNone": "None",
+        "parkingRent": "Parking fee",
+        "optional": "(optional)",
+        "save": "Save",
+        "saved": "Saved."
+      },
+      "ad": {
+        "title": "Listing text",
+        "copy": "Copy",
+        "copied": "Listing copied.",
+        "heading": "Title",
+        "description": "Description",
+        "count": "{count} / {max}",
+        "save": "Save",
+        "saved": "Saved."
+      },
+      "links": {
+        "title": "Listings",
+        "add": "Add a link",
+        "label": "Name",
+        "labelPlaceholder": "e.g. ingatlan.com",
+        "url": "Link",
+        "urlPlaceholder": "https://…",
+        "save": "Add",
+        "cancel": "Cancel",
+        "open": "Open {name} in a new tab",
+        "remove": "Delete {name}",
+        "empty": "No listing links yet.",
+        "added": "Link added.",
+        "removed": "Link deleted."
+      },
+      "errors": {
+        "amount": "Enter an amount.",
+        "range": "Enter a value between {min} and {max}.",
+        "date": "Enter a date.",
+        "url": "Enter a full link (https://…).",
+        "label": "Give the link a name.",
+        "generic": "We couldn’t save it. Please try again.",
+        "notAllowed": "You can’t change this property."
+      }
     }
   }
 }
