@@ -62,6 +62,21 @@ select tests.act_as('00000000-0000-0000-0000-0000000ae001');
 select tests.throws($$select public.save_property_owner((select v::uuid from r where k = 'p1'), 'other', '00000000-0000-0000-0000-0000000aec02')$$,
   'a contact of another account cannot be the owner');
 
+-- copy_property: the owner link follows "Tulajdon és kezelés"
+select public.save_property_owner((select v::uuid from r where k = 'p1'), 'other', '00000000-0000-0000-0000-0000000aec01');
+insert into public.contacts (id, account_id, name, created_by)
+select '00000000-0000-0000-0000-0000000aec03', id, 'Gondnok Géza', '00000000-0000-0000-0000-0000000ae001' from tco;
+insert into public.property_contacts (property_id, contact_id, role_key) select v::uuid, '00000000-0000-0000-0000-0000000aec03', 'caretaker' from r where k = 'p1';
+insert into r select 'cp1', property_id::text from public.copy_property((select v::uuid from r where k = 'p1'), '1138', 'Budapest', 'Hajóépítő', 'sétány', '6.',
+  p_door => '7.', p_contacts => true, p_management => false);
+select tests.ok((select count(*) = 1 and bool_and(role_key = 'caretaker') from public.property_contacts where property_id = (select v::uuid from r where k = 'cp1')),
+  'a copy without ownership takes the contacts but not the owner');
+insert into r select 'cp2', property_id::text from public.copy_property((select v::uuid from r where k = 'p1'), '1138', 'Budapest', 'Hajóépítő', 'sétány', '6.',
+  p_door => '8.', p_contacts => false, p_management => true);
+select tests.ok((select owner_contact_id = '00000000-0000-0000-0000-0000000aec01' from public.property_management where property_id = (select v::uuid from r where k = 'cp2'))
+  and (select count(*) = 1 from public.property_contacts where property_id = (select v::uuid from r where k = 'cp2') and role_key = 'owner'),
+  'a copy with ownership brings the owner, also among the contacts');
+
 select tests.act_as('00000000-0000-0000-0000-0000000ae002');
 select tests.throws($$select public.save_property_owner((select v::uuid from r where k = 'p1'), 'self')$$, 'a viewer cannot change the owner');
 select tests.throws($$select public.save_property_owner((select v::uuid from r where k = 'p1'), 'other', null, '{"name":"Új"}')$$,
@@ -69,7 +84,7 @@ select tests.throws($$select public.save_property_owner((select v::uuid from r w
 select tests.act_as('00000000-0000-0000-0000-0000000ae003');
 select tests.throws($$select public.save_property_owner((select v::uuid from r where k = 'p1'), 'self')$$, 'an outsider cannot either');
 select tests.act_as('00000000-0000-0000-0000-0000000ae001');
-select tests.ok((select count(*) = 2 from public.contacts where account_id = (select id from tco)), 'refused saves leave no stray contact');
+select tests.ok((select count(*) = 3 from public.contacts where account_id = (select id from tco)), 'refused saves leave no stray contact');
 
 reset role;
 rollback;
