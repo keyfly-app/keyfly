@@ -134,21 +134,37 @@ function Photos({ p }: { p: ListingProps }) {
                   align="end"
                   width={220}
                   trigger={({ ref, open, toggle, menuId }) => (
-                    <button ref={ref} type="button" onClick={toggle} aria-haspopup="menu" aria-expanded={open} aria-controls={open ? menuId : undefined}
-                      aria-label={t("more", { n: i + 1 })} className="flex size-9 items-center justify-center rounded-lg bg-surface/95 text-ink shadow-sm hover:bg-surface">
+                    <button
+                      ref={ref}
+                      type="button"
+                      onClick={toggle}
+                      aria-haspopup="menu"
+                      aria-expanded={open}
+                      aria-controls={open ? menuId : undefined}
+                      aria-label={t("more", { n: i + 1 })}
+                      className="flex size-9 items-center justify-center rounded-lg bg-surface/95 text-ink shadow-sm hover:bg-surface"
+                    >
                       <Icon name="more" size={16} />
                     </button>
                   )}
                 >
                   {!ph.cover && (
-                    <button type="button" role="menuitem" onClick={() => act(() => setCover(p.propertyId, ph.id), t("coverSet"))}
-                      className="flex min-h-11 items-center gap-2.5 rounded-lg px-3 text-left text-sm hover:bg-paper focus-visible:bg-paper sm:min-h-10">
+                    <button
+                      type="button"
+                      role="menuitem"
+                      onClick={() => act(() => setCover(p.propertyId, ph.id), t("coverSet"))}
+                      className="flex min-h-11 items-center gap-2.5 rounded-lg px-3 text-left text-sm hover:bg-paper focus-visible:bg-paper sm:min-h-10"
+                    >
                       <Icon name="star" size={16} strokeWidth={1.75} className="flex-none text-muted" />
                       {t("makeCover")}
                     </button>
                   )}
-                  <button type="button" role="menuitem" onClick={() => act(() => deletePhoto(p.propertyId, ph.id), t("deleted"))}
-                    className="flex min-h-11 items-center gap-2.5 rounded-lg px-3 text-left text-sm text-danger-ink hover:bg-paper focus-visible:bg-paper sm:min-h-10">
+                  <button
+                    type="button"
+                    role="menuitem"
+                    onClick={() => act(() => deletePhoto(p.propertyId, ph.id), t("deleted"))}
+                    className="flex min-h-11 items-center gap-2.5 rounded-lg px-3 text-left text-sm text-danger-ink hover:bg-paper focus-visible:bg-paper sm:min-h-10"
+                  >
                     <Icon name="trash" size={16} strokeWidth={1.75} className="flex-none" />
                     {t("delete")}
                   </button>
@@ -159,8 +175,18 @@ function Photos({ p }: { p: ListingProps }) {
         ))}
         {p.editable && p.photos.length < p.maxPhotos && (
           <li className="aspect-[4/3]">
-            <label className={`flex size-full cursor-pointer flex-col items-center justify-center gap-1 rounded-lg border border-dashed border-field text-center hover:border-ink has-focus-visible:outline-3 has-focus-visible:outline-brand ${busy ? "cursor-progress opacity-70" : ""}`}>
-              <input ref={input} type="file" accept="image/jpeg,image/png,image/webp" multiple disabled={busy} onChange={(e) => void upload(e.target.files)} className="sr-only" />
+            <label
+              className={`flex size-full cursor-pointer flex-col items-center justify-center gap-1 rounded-lg border border-dashed border-field text-center hover:border-ink has-focus-visible:outline-3 has-focus-visible:outline-brand ${busy ? "cursor-progress opacity-70" : ""}`}
+            >
+              <input
+                ref={input}
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
+                multiple
+                disabled={busy}
+                onChange={(e) => void upload(e.target.files)}
+                className="sr-only"
+              />
               <Icon name="upload" size={18} strokeWidth={1.9} className="text-brand" />
               <span className="text-[13.5px] font-semibold text-brand">{t(busy ? "uploading" : "upload")}</span>
               <span className="text-[11.5px] text-muted">{t("uploadSub")}</span>
@@ -173,8 +199,26 @@ function Photos({ p }: { p: ListingProps }) {
   );
 }
 
-function Unit({ id, label, value, onChange, unit, error, optional, max = 11, disabled }: {
-  id: string; label: string; value: string; onChange: (v: string) => void; unit: string; error?: string; optional?: string; max?: number; disabled?: boolean;
+function Unit({
+  id,
+  label,
+  value,
+  onChange,
+  unit,
+  error,
+  optional,
+  max = 11,
+  disabled,
+}: {
+  id: string;
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+  unit: string;
+  error?: string;
+  optional?: string;
+  max?: number;
+  disabled?: boolean;
 }) {
   return (
     <div className="flex flex-col gap-1.5">
@@ -182,9 +226,20 @@ function Unit({ id, label, value, onChange, unit, error, optional, max = 11, dis
         {label} {optional && <Optional>{optional}</Optional>}
       </Label>
       <div className="relative">
-        <input id={id} inputMode="numeric" value={value} onChange={(e) => onChange(e.target.value)} maxLength={max} disabled={disabled}
-          aria-invalid={error ? true : undefined} aria-describedby={error ? `${id}-error` : undefined} className={`${INPUT_CLASS} pr-16 tabular-nums disabled:opacity-60`} />
-        <span aria-hidden="true" className="pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 text-[13px] text-muted">{unit}</span>
+        <input
+          id={id}
+          inputMode="numeric"
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          maxLength={max}
+          disabled={disabled}
+          aria-invalid={error ? true : undefined}
+          aria-describedby={error ? `${id}-error` : undefined}
+          className={`${INPUT_CLASS} pr-16 tabular-nums disabled:opacity-60`}
+        />
+        <span aria-hidden="true" className="pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 text-[13px] text-muted">
+          {unit}
+        </span>
       </div>
       {error && <FieldError id={`${id}-error`} message={error} />}
     </div>
@@ -200,12 +255,21 @@ function Terms({ p }: { p: ListingProps }) {
   const [state, setState] = useState<ListingState>({ status: "idle" });
   const [pending, start] = useTransition();
   const f = state.status === "error" ? (state.fields ?? {}) : {};
-  const set = <K extends keyof typeof v>(k: K) => (x: (typeof v)[K]) => setV((s) => ({ ...s, [k]: x }));
+  const set =
+    <K extends keyof typeof v>(k: K) =>
+    (x: (typeof v)[K]) =>
+      setV((s) => ({ ...s, [k]: x }));
   const err = (k: string, min = 0, max = 0) => (f[k] === "range" ? e("range", { min, max }) : f[k] ? e(f[k] === "date" ? "date" : "amount") : undefined);
   const select = (key: "pets" | "smoking", label: string, options: CatalogOption[]) => (
     <div className="flex flex-col gap-1.5">
       <Label htmlFor={`${id}-${key}`}>{label}</Label>
-      <select id={`${id}-${key}`} value={v[key]} onChange={(ev) => set(key)(ev.target.value)} disabled={!p.editable} className={`${INPUT_CLASS} appearance-auto ${v[key] ? "" : "text-muted"}`}>
+      <select
+        id={`${id}-${key}`}
+        value={v[key]}
+        onChange={(ev) => set(key)(ev.target.value)}
+        disabled={!p.editable}
+        className={`${INPUT_CLASS} appearance-auto ${v[key] ? "" : "text-muted"}`}
+      >
         <option value="">{t("choose")}</option>
         {offered(options).map((o) => (
           <option key={o.key} value={o.key} className="text-ink">
@@ -226,7 +290,8 @@ function Terms({ p }: { p: ListingProps }) {
       }
     });
   };
-  const seg = "flex min-h-11 flex-1 cursor-pointer items-center justify-center rounded-md px-2 text-[13px] font-medium text-muted has-checked:bg-surface has-checked:text-ink has-checked:shadow-[0_1px_2px_rgb(12_31_25/0.12)] has-focus-visible:outline-3 has-focus-visible:outline-brand sm:min-h-10";
+  const seg =
+    "flex min-h-11 flex-1 cursor-pointer items-center justify-center rounded-md px-2 text-[13px] font-medium text-muted has-checked:bg-surface has-checked:text-ink has-checked:shadow-[0_1px_2px_rgb(12_31_25/0.12)] has-focus-visible:outline-3 has-focus-visible:outline-brand sm:min-h-10";
   return (
     <Card title={t("title")}>
       <form onSubmit={submit} noValidate className="flex flex-col gap-4">
@@ -244,7 +309,15 @@ function Terms({ p }: { p: ListingProps }) {
               ))}
             </div>
           </fieldset>
-          <Unit id={`${id}-dep`} label={t("deposit")} value={v.depositMonths} onChange={set("depositMonths")} unit={t("depositUnit")} max={2} error={err("depositMonths", 0, 12)} />
+          <Unit
+            id={`${id}-dep`}
+            label={t("deposit")}
+            value={v.depositMonths}
+            onChange={set("depositMonths")}
+            unit={t("depositUnit")}
+            max={2}
+            error={err("depositMonths", 0, 12)}
+          />
           <fieldset>
             <legend className="mb-1.5 text-[13px] font-medium">{t("available")}</legend>
             <div className="flex rounded-lg bg-paper p-0.5">
@@ -259,8 +332,15 @@ function Terms({ p }: { p: ListingProps }) {
           {!v.availableNow && (
             <div className="flex flex-col gap-1.5 sm:col-span-2 sm:max-w-[calc(50%-6px)]">
               <Label htmlFor={`${id}-from`}>{t("availableFrom")}</Label>
-              <input id={`${id}-from`} type="date" max="9999-12-31" value={v.availableFrom} onChange={(ev) => set("availableFrom")(ev.target.value)}
-                aria-invalid={f.availableFrom ? true : undefined} className={INPUT_CLASS} />
+              <input
+                id={`${id}-from`}
+                type="date"
+                max="9999-12-31"
+                value={v.availableFrom}
+                onChange={(ev) => set("availableFrom")(ev.target.value)}
+                aria-invalid={f.availableFrom ? true : undefined}
+                className={INPUT_CLASS}
+              />
               {f.availableFrom && <FieldError id={`${id}-from-error`} message={e("date")} />}
             </div>
           )}
@@ -274,7 +354,12 @@ function Terms({ p }: { p: ListingProps }) {
                 <Label htmlFor={`${id}-park`}>
                   {t("parking")} <Optional>{t("optional")}</Optional>
                 </Label>
-                <select id={`${id}-park`} value={v.parkingPropertyId} onChange={(ev) => set("parkingPropertyId")(ev.target.value)} className={`${INPUT_CLASS} appearance-auto`}>
+                <select
+                  id={`${id}-park`}
+                  value={v.parkingPropertyId}
+                  onChange={(ev) => set("parkingPropertyId")(ev.target.value)}
+                  className={`${INPUT_CLASS} appearance-auto`}
+                >
                   <option value="">{t("parkingNone")}</option>
                   {p.parkingOptions.map((o) => (
                     <option key={o.id} value={o.id}>
@@ -283,7 +368,16 @@ function Terms({ p }: { p: ListingProps }) {
                   ))}
                 </select>
               </div>
-              {v.parkingPropertyId && <Unit id={`${id}-prent`} label={t("parkingRent")} value={v.parkingRent} onChange={set("parkingRent")} unit={t("perMonth")} error={err("parkingRent", 0, 99999999)} />}
+              {v.parkingPropertyId && (
+                <Unit
+                  id={`${id}-prent`}
+                  label={t("parkingRent")}
+                  value={v.parkingRent}
+                  onChange={set("parkingRent")}
+                  unit={t("perMonth")}
+                  error={err("parkingRent", 0, 99999999)}
+                />
+              )}
             </>
           )}
         </fieldset>
@@ -331,7 +425,12 @@ function Ad({ p }: { p: ListingProps }) {
     <Card
       title={t("title")}
       action={
-        <button type="button" onClick={copy} disabled={!title.trim() && !text.trim()} className={`${buttonClass("secondary", true)} w-auto disabled:opacity-50`}>
+        <button
+          type="button"
+          onClick={copy}
+          disabled={!title.trim() && !text.trim()}
+          className={`${buttonClass("secondary", true)} w-auto disabled:opacity-50`}
+        >
           <Icon name="copy" size={15} strokeWidth={1.9} />
           {t("copy")}
         </button>
@@ -346,8 +445,15 @@ function Ad({ p }: { p: ListingProps }) {
           </div>
           <div className="flex flex-col gap-1.5">
             <Label htmlFor={`${id}-text`}>{t("description")}</Label>
-            <textarea id={`${id}-text`} value={text} onChange={(ev) => setText(ev.target.value)} maxLength={3000} rows={6} aria-describedby={`${id}-count`}
-              className={`${INPUT_CLASS} h-auto min-h-36 py-2.5 leading-[22px]`} />
+            <textarea
+              id={`${id}-text`}
+              value={text}
+              onChange={(ev) => setText(ev.target.value)}
+              maxLength={3000}
+              rows={6}
+              aria-describedby={`${id}-count`}
+              className={`${INPUT_CLASS} h-auto min-h-36 py-2.5 leading-[22px]`}
+            />
             <p id={`${id}-count`} className="text-right text-[12px] text-muted tabular-nums">
               {t("count", { count: text.length, max: 3000 })}
             </p>
@@ -404,7 +510,11 @@ function Links({ p }: { p: ListingProps }) {
       action={
         p.editable &&
         !adding && (
-          <button type="button" onClick={() => setAdding(true)} className="inline-flex min-h-11 items-center text-[13.5px] font-semibold text-brand hover:underline sm:min-h-6">
+          <button
+            type="button"
+            onClick={() => setAdding(true)}
+            className="inline-flex min-h-11 items-center text-[13.5px] font-semibold text-brand hover:underline sm:min-h-6"
+          >
             {t("add")}
           </button>
         )
@@ -415,20 +525,32 @@ function Links({ p }: { p: ListingProps }) {
         <ul className="flex flex-col">
           {p.links.map((l) => (
             <li key={l.id} className="flex items-center gap-3 border-t border-paper py-2.5 first:border-t-0 first:pt-0">
-              <span aria-hidden="true" className="flex size-8 flex-none items-center justify-center rounded-lg bg-ink text-[13px] font-semibold text-lime uppercase">
+              <span
+                aria-hidden="true"
+                className="flex size-8 flex-none items-center justify-center rounded-lg bg-ink text-[13px] font-semibold text-lime uppercase"
+              >
                 {l.label.slice(0, 1)}
               </span>
               <span className="flex min-w-0 flex-1 flex-col">
                 <span className="text-sm font-semibold [overflow-wrap:anywhere]">{l.label}</span>
                 <span className="truncate text-[12.5px] text-muted">{l.host}</span>
               </span>
-              <a href={l.url} target="_blank" rel="noopener noreferrer" aria-label={t("open", { name: l.label })}
-                className="flex size-11 flex-none items-center justify-center rounded-lg text-brand hover:bg-paper sm:size-9">
+              <a
+                href={l.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={t("open", { name: l.label })}
+                className="flex size-11 flex-none items-center justify-center rounded-lg text-brand hover:bg-paper sm:size-9"
+              >
                 <Icon name="external" size={16} strokeWidth={1.8} />
               </a>
               {p.editable && (
-                <button type="button" onClick={() => remove(l)} aria-label={t("remove", { name: l.label })}
-                  className="flex size-11 flex-none items-center justify-center rounded-lg text-muted hover:bg-paper hover:text-danger-ink sm:size-9">
+                <button
+                  type="button"
+                  onClick={() => remove(l)}
+                  aria-label={t("remove", { name: l.label })}
+                  className="flex size-11 flex-none items-center justify-center rounded-lg text-muted hover:bg-paper hover:text-danger-ink sm:size-9"
+                >
                   <Icon name="trash" size={15} strokeWidth={1.8} />
                 </button>
               )}
@@ -441,14 +563,31 @@ function Links({ p }: { p: ListingProps }) {
           <div className="grid gap-3 sm:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]">
             <div className="flex flex-col gap-1.5">
               <Label htmlFor={`${id}-label`}>{t("label")}</Label>
-              <input id={`${id}-label`} value={label} onChange={(ev) => setLabel(ev.target.value)} placeholder={t("labelPlaceholder")} maxLength={60}
-                aria-invalid={f.label ? true : undefined} className={INPUT_CLASS} autoFocus />
+              <input
+                id={`${id}-label`}
+                value={label}
+                onChange={(ev) => setLabel(ev.target.value)}
+                placeholder={t("labelPlaceholder")}
+                maxLength={60}
+                aria-invalid={f.label ? true : undefined}
+                className={INPUT_CLASS}
+                autoFocus
+              />
               {f.label && <FieldError id={`${id}-label-error`} message={e("label")} />}
             </div>
             <div className="flex flex-col gap-1.5">
               <Label htmlFor={`${id}-url`}>{t("url")}</Label>
-              <input id={`${id}-url`} type="url" inputMode="url" value={url} onChange={(ev) => setUrl(ev.target.value)} placeholder={t("urlPlaceholder")} maxLength={500}
-                aria-invalid={f.url ? true : undefined} className={INPUT_CLASS} />
+              <input
+                id={`${id}-url`}
+                type="url"
+                inputMode="url"
+                value={url}
+                onChange={(ev) => setUrl(ev.target.value)}
+                placeholder={t("urlPlaceholder")}
+                maxLength={500}
+                aria-invalid={f.url ? true : undefined}
+                className={INPUT_CLASS}
+              />
               {f.url && <FieldError id={`${id}-url-error`} message={e("url")} />}
             </div>
           </div>

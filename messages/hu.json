@@ -2137,8 +2137,7 @@
     },
     "search": {
       "label": "Keresés az ingatlanok között",
-      "placeholder": "Név, cím vagy azonosító",
-      "clear": "Keresés törlése"
+      "placeholder": "Név, cím vagy azonosító"
     },
     "noMatch": "Nincs a keresésnek megfelelő ingatlan.",
     "columns": {
@@ -2218,7 +2217,33 @@
         "done": "Archiváltad az ingatlant.",
         "error": "Nem sikerült archiválni. Próbáld újra."
       },
-      "close": "Bezárás"
+      "close": "Bezárás",
+      "copy": {
+        "menu": "Másolás új ingatlanként",
+        "title": "Ingatlan másolása",
+        "base": "Alap: {name}",
+        "address": "Cím",
+        "name": "Név",
+        "ownRef": "Saját azonosító",
+        "optional": "(nem kötelező)",
+        "take": "Mit veszünk át?",
+        "features": "Jellemzők",
+        "featuresSub": "Alapterület, szobák, fűtés …",
+        "services": "Szolgáltatások",
+        "servicesSub": "Szolgáltatók és diktálás – azonosítók és mérők nélkül",
+        "contacts": "Kapcsolatok",
+        "contactsSub": "Közös képviselő, gondnok …",
+        "management": "Tulajdon és kezelés",
+        "photos": "Fotók",
+        "submit": "Másolat létrehozása",
+        "cancel": "Mégse",
+        "created": "Elkészült a másolat.",
+        "errors": {
+          "ownRefTaken": "Ez a saját azonosító már egy másik ingatlanodé.",
+          "generic": "Nem sikerült a másolás. Próbáld újra.",
+          "notAllowed": "Ezt az ingatlant nem másolhatod."
+        }
+      }
     },
     "overview": {
       "lease": {
@@ -2579,6 +2604,128 @@
         "label": "Adj nevet a linknek.",
         "generic": "Nem sikerült menteni. Próbáld újra.",
         "notAllowed": "Ezt az ingatlant nem módosíthatod."
+      }
+    },
+    "import": {
+      "entry": "Importálás Excelből",
+      "title": "Ingatlanok importálása",
+      "steps": {
+        "file": "Fájl",
+        "review": "Ellenőrzés",
+        "done": "Kész"
+      },
+      "cancel": "Mégse",
+      "back": "Vissza",
+      "home": "Vissza az ingatlanokhoz",
+      "desktopOnly": "Az importálás számítógépen érhető el.",
+      "file": {
+        "template": "Minta letöltése",
+        "templateSub": "Excel (.xlsx), kitöltési példával",
+        "drop": "Húzd ide a fájlt, vagy válaszd ki",
+        "dropSub": "XLSX vagy CSV · legfeljebb {max} sor",
+        "choose": "Fájl kiválasztása",
+        "reading": "Beolvasás…",
+        "columns": "Oszlopok",
+        "required": "Kötelező",
+        "optional": "Nem kötelező",
+        "more": "Másik programból hozod át? A saját oszlopneveidet a következő lépésben párosítjuk.",
+        "errors": {
+          "type": "Ezt a fájlt nem tudjuk beolvasni. XLSX vagy CSV fájlt válassz.",
+          "empty": "A fájlban nincs adat.",
+          "tooMany": "Egyszerre legfeljebb {max} sort importálhatsz. Oszd több fájlra.",
+          "header": "Az első sorban az oszlopneveknek kell lenniük."
+        }
+      },
+      "columns": {
+        "postalCode": "Irányítószám",
+        "city": "Település",
+        "streetName": "Közterület neve",
+        "streetType": "Közterület jellege",
+        "houseNumber": "Házszám",
+        "building": "Épület",
+        "staircase": "Lépcsőház",
+        "floor": "Emelet",
+        "door": "Ajtó",
+        "kind": "Típus",
+        "label": "Név",
+        "ownRef": "Saját azonosító",
+        "area": "Alapterület (m²)",
+        "rooms": "Szobák",
+        "halfRooms": "Félszobák",
+        "parcel": "Helyrajzi szám"
+      },
+      "example": {
+        "postalCode": "1138",
+        "city": "Budapest",
+        "streetName": "Hajóépítő",
+        "streetType": "sétány",
+        "houseNumber": "4",
+        "building": "",
+        "staircase": "C",
+        "floor": "földszint",
+        "door": "4",
+        "kind": "Lakás",
+        "label": "Duna-parti lakás",
+        "ownRef": "B-12",
+        "area": "54",
+        "rooms": "2",
+        "halfRooms": "1",
+        "parcel": "29431/0/A/3"
+      },
+      "templateName": "keyfly-ingatlanok-minta.xlsx",
+      "badRowsName": "javitando-sorok.xlsx",
+      "problemColumn": "Teendő",
+      "review": {
+        "rows": "{count, plural, one {# sor} other {# sor}}",
+        "ok": "{count} rendben",
+        "fix": "{count} javítandó",
+        "dup": "{count} már megvan",
+        "otherFile": "Másik fájl",
+        "unknownTitle": "{count, plural, one {Egy oszlopot nem ismertünk fel} other {# oszlopot nem ismertünk fel}}",
+        "skip": "Kihagyjuk",
+        "mapLabel": "„{name}” oszlop",
+        "cols": {
+          "address": "Cím",
+          "kind": "Típus",
+          "size": "Méret",
+          "name": "Név / azonosító"
+        },
+        "moreRows": "+ {count} további sor",
+        "rowOk": "Rendben",
+        "rowFix": "Javítandó",
+        "rowDup": "Már megvan",
+        "existing": "Már megvan: {name}",
+        "duplicateAction": "Mi legyen vele?",
+        "skipDup": "Kihagyás",
+        "updateDup": "Frissítés",
+        "kindChoose": "Válassz",
+        "badRows": "Javítandó sorok letöltése",
+        "submit": "{count, plural, one {# ingatlan importálása} other {# ingatlan importálása}}",
+        "nothing": "Nincs importálható sor."
+      },
+      "problems": {
+        "required": "Hiányzik: {field}",
+        "postalCode": "Az irányítószám 4 számjegy",
+        "kind": "Ismeretlen típus – válassz",
+        "number": "Nem szám: {field}",
+        "floor": "Ismeretlen emelet",
+        "parcel": "Hibás helyrajzi szám",
+        "ownRef": "A saját azonosító kétszer szerepel a fájlban"
+      },
+      "done": {
+        "title": "{count, plural, one {# ingatlan importálva} other {# ingatlan importálva}}",
+        "updated": "{count, plural, one {# meglévő ingatlant frissítettünk.} other {# meglévő ingatlant frissítettünk.}}",
+        "lead": "Az ingatlanok bekerültek a listába. Ha valami nem stimmel, 24 órán belül visszavonhatod az egészet.",
+        "undo": "Visszavonás",
+        "undone": "Visszavontad az importálást.",
+        "toList": "Ingatlanok megnyitása"
+      },
+      "errors": {
+        "generic": "Nem sikerült az importálás. Próbáld újra.",
+        "notAllowed": "Ebben a fiókban nem importálhatsz.",
+        "ownRefTaken": "Egy saját azonosító már egy meglévő ingatlanodé. Töltsd le a javítandó sorokat.",
+        "undoInUse": "Már szerződés tartozik egy importált ingatlanhoz, ezért nem vonható vissza.",
+        "undoLate": "Ez az importálás már nem vonható vissza."
       }
     }
   }

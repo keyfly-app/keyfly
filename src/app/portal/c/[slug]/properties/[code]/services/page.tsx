@@ -9,7 +9,13 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   return { title: await propertyTitle(slug, code), robots: { index: false } };
 }
 
-export default async function CompanyPropertyServices({ params, searchParams }: { params: Promise<{ slug: string; code: string }>; searchParams: Promise<{ add?: string }> }) {
+export default async function CompanyPropertyServices({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ slug: string; code: string }>;
+  searchParams: Promise<{ add?: string }>;
+}) {
   const [{ slug, code }, { add }] = await Promise.all([params, searchParams]);
   const ctx = await propertyContext(slug, code);
   return (

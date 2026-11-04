@@ -26,7 +26,12 @@ export async function ListingTab({ ctx }: { ctx: PropertyContext }) {
     loadCatalog("pets", "smoking"),
   ]);
   const photos = media ?? [];
-  const { data: signed } = photos.length ? await supabase.storage.from("property-media").createSignedUrls(photos.map((m) => m.path), LINK_SECONDS) : { data: [] };
+  const { data: signed } = photos.length
+    ? await supabase.storage.from("property-media").createSignedUrls(
+        photos.map((m) => m.path),
+        LINK_SECONDS,
+      )
+    : { data: [] };
   const urlOf = new Map((signed ?? []).filter((s) => s.path && s.signedUrl).map((s) => [s.path!, s.signedUrl]));
   const host = (url: string) => {
     try {
@@ -41,7 +46,9 @@ export async function ListingTab({ ctx }: { ctx: PropertyContext }) {
       propertyId={p.id}
       name={displayName(p.label, addressFromRow(p))}
       editable={editable}
-      photos={[...photos].sort((a, b) => Number(b.is_cover) - Number(a.is_cover)).map((m) => ({ id: m.id, url: urlOf.get(m.path) ?? null, cover: m.is_cover, width: m.width, height: m.height }))}
+      photos={[...photos]
+        .sort((a, b) => Number(b.is_cover) - Number(a.is_cover))
+        .map((m) => ({ id: m.id, url: urlOf.get(m.path) ?? null, cover: m.is_cover, width: m.width, height: m.height }))}
       maxPhotos={MAX_PHOTOS}
       terms={{
         rent: listing?.asking_rent != null ? String(listing.asking_rent) : "",

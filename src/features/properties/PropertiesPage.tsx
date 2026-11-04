@@ -55,7 +55,12 @@ export async function PropertiesPage({ account, base, filter, query }: { account
     getLocale(),
   ]);
   const locale: Locale = isLocale(raw) ? raw : "hu";
-  const [listHref, newHref] = await Promise.all([siteHref("portal", `${base}/properties`), siteHref("portal", `${base}/properties/new`)]);
+  const [listHref, newHref, importHref, it] = await Promise.all([
+    siteHref("portal", `${base}/properties`),
+    siteHref("portal", `${base}/properties/new`),
+    siteHref("portal", `${base}/properties/import`),
+    getTranslations("properties.import"),
+  ]);
   const canAdd = canEditProperties(account.role);
   const letCount = all.filter((p) => isLet(p.occupancy)).length;
 
@@ -75,7 +80,11 @@ export async function PropertiesPage({ account, base, filter, query }: { account
       </div>
       {/* Phones and tablets add from the bottom bar's "+". */}
       {canAdd && all.length > 0 && (
-        <div className="hidden lg:block">
+        <div className="hidden gap-2 lg:flex">
+          <ButtonLink href={importHref} variant="secondary" fit>
+            <Icon name="upload" size={16} strokeWidth={2} />
+            {it("entry")}
+          </ButtonLink>
           <ButtonLink href={newHref} fit>
             <Icon name="plus" size={16} strokeWidth={2} />
             {t("add")}
@@ -96,11 +105,18 @@ export async function PropertiesPage({ account, base, filter, query }: { account
           <h2 className="text-[15px] font-semibold">{t("empty.title")}</h2>
           <p className="text-sm text-muted">{t("empty.lead")}</p>
           {canAdd && (
-            <div className="mt-4">
+            <div className="mt-4 flex flex-col gap-2 sm:flex-row">
               <ButtonLink href={newHref} fit>
                 <Icon name="plus" size={16} strokeWidth={2} />
                 {t("add")}
               </ButtonLink>
+              {/* Importing works on a computer. */}
+              <span className="hidden lg:block">
+                <ButtonLink href={importHref} variant="secondary" fit>
+                  <Icon name="upload" size={16} strokeWidth={2} />
+                  {it("entry")}
+                </ButtonLink>
+              </span>
             </div>
           )}
         </div>
@@ -201,7 +217,11 @@ type Tr = Awaited<ReturnType<typeof getTranslations<"properties">>>;
 /** The cover photo, or the type's icon on a mist tile. */
 function KindTile({ icon, url, size = 40 }: { icon: Row["icon"]; url: string | null; size?: number }) {
   return (
-    <span aria-hidden="true" style={{ width: size, height: size }} className="flex flex-none items-center justify-center overflow-hidden rounded-lg bg-mist text-brand">
+    <span
+      aria-hidden="true"
+      style={{ width: size, height: size }}
+      className="flex flex-none items-center justify-center overflow-hidden rounded-lg bg-mist text-brand"
+    >
       {url ? (
         // eslint-disable-next-line @next/next/no-img-element -- signed links to the private bucket change every hour
         <img src={url} alt="" className="size-full object-cover" />

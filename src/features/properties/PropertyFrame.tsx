@@ -100,7 +100,10 @@ export async function PropertyFrame({
         </Link>
         <div className="flex items-start justify-between gap-3">
           <div className="flex min-w-0 items-start gap-4">
-            <span aria-hidden="true" className="flex size-14 flex-none items-center justify-center overflow-hidden rounded-xl bg-mist text-brand sm:size-[72px]">
+            <span
+              aria-hidden="true"
+              className="flex size-14 flex-none items-center justify-center overflow-hidden rounded-xl bg-mist text-brand sm:size-[72px]"
+            >
               {p.coverUrl ? (
                 // eslint-disable-next-line @next/next/no-img-element -- signed links to the private bucket change every hour
                 <img src={p.coverUrl} alt="" className="size-full object-cover" />
@@ -145,7 +148,26 @@ export async function PropertyFrame({
                   {list("edit")}
                 </ButtonLink>
               </span>
-              <PropertyMenu propertyId={p.id} accountId={account.id} listHref={listHref} />
+              <PropertyMenu
+                propertyId={p.id}
+                accountId={account.id}
+                listHref={listHref}
+                copy={{
+                  id: p.id,
+                  name: displayName(p.label, a),
+                  address: {
+                    postalCode: p.postal_code,
+                    city: p.city,
+                    streetName: p.street_name,
+                    streetType: p.street_type,
+                    houseNumber: p.house_number,
+                    building: p.building ?? "",
+                    staircase: p.staircase ?? "",
+                    floor: "",
+                    door: "",
+                  },
+                }}
+              />
             </div>
           )}
         </div>

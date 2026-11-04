@@ -8,7 +8,8 @@ const MAX_PHOTOS = 30;
 const MAX_BYTES = 1024 * 1024 * 0.95; // the browser sends a resized WEBP below the server action's 1 MB limit
 const TYPES: Record<string, string> = { "image/webp": "webp", "image/jpeg": "jpg", "image/png": "png" };
 
-export type ListingState = { status: "idle" } | { status: "saved" } | { status: "error"; error?: "generic" | "notAllowed" | "type" | "limit"; fields?: Record<string, string> };
+export type ListingState =
+  { status: "idle" } | { status: "saved" } | { status: "error"; error?: "generic" | "notAllowed" | "type" | "limit"; fields?: Record<string, string> };
 
 function failed(error: { code?: string; message?: string } | null): ListingState {
   if (!error) return { status: "saved" };
@@ -32,7 +33,9 @@ export async function uploadPhoto(form: FormData): Promise<ListingState> {
   if (!property || !auth?.claims) return { status: "error", error: "notAllowed" };
   if (property.property_media.length >= MAX_PHOTOS) return { status: "error", error: "limit" };
 
-  const path = `${property.account_id}/${property.id}/${randomBytes(12).toString("base64url").replace(/[^A-Za-z0-9_-]/g, "")}.${ext}`;
+  const path = `${property.account_id}/${property.id}/${randomBytes(12)
+    .toString("base64url")
+    .replace(/[^A-Za-z0-9_-]/g, "")}.${ext}`;
   const { error: upload } = await supabase.storage.from(MEDIA_BUCKET).upload(path, file, { contentType: file.type, upsert: false });
   if (upload) {
     console.error("photo upload failed", upload.message);
@@ -136,7 +139,10 @@ export async function saveAd(propertyId: string, title: string, description: str
   const supabase = await createClient();
   const { error } = await supabase
     .from("property_listing")
-    .upsert({ property_id: propertyId, title: title.trim().replace(/\s+/g, " ").slice(0, 120) || null, description: description.trim().slice(0, 3000) || null }, { onConflict: "property_id" });
+    .upsert(
+      { property_id: propertyId, title: title.trim().replace(/\s+/g, " ").slice(0, 120) || null, description: description.trim().slice(0, 3000) || null },
+      { onConflict: "property_id" },
+    );
   return failed(error);
 }
 

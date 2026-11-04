@@ -2137,8 +2137,7 @@
     },
     "search": {
       "label": "Search properties",
-      "placeholder": "Name, address or ID",
-      "clear": "Clear the search"
+      "placeholder": "Name, address or ID"
     },
     "noMatch": "No property matches your search.",
     "columns": {
@@ -2218,7 +2217,33 @@
         "done": "Property archived.",
         "error": "We couldn’t archive it. Please try again."
       },
-      "close": "Close"
+      "close": "Close",
+      "copy": {
+        "menu": "Copy as a new property",
+        "title": "Copy property",
+        "base": "Based on: {name}",
+        "address": "Address",
+        "name": "Name",
+        "ownRef": "Your own ID",
+        "optional": "(optional)",
+        "take": "What should we copy?",
+        "features": "Features",
+        "featuresSub": "Floor area, rooms, heating …",
+        "services": "Services",
+        "servicesSub": "Providers and readings – without identifiers and meters",
+        "contacts": "Contacts",
+        "contactsSub": "Building manager, caretaker …",
+        "management": "Ownership and management",
+        "photos": "Photos",
+        "submit": "Create the copy",
+        "cancel": "Cancel",
+        "created": "Copy created.",
+        "errors": {
+          "ownRefTaken": "Another of your properties already has this ID.",
+          "generic": "We couldn’t copy it. Please try again.",
+          "notAllowed": "You can’t copy this property."
+        }
+      }
     },
     "overview": {
       "lease": {
@@ -2579,6 +2604,128 @@
         "label": "Give the link a name.",
         "generic": "We couldn’t save it. Please try again.",
         "notAllowed": "You can’t change this property."
+      }
+    },
+    "import": {
+      "entry": "Import from Excel",
+      "title": "Import properties",
+      "steps": {
+        "file": "File",
+        "review": "Review",
+        "done": "Done"
+      },
+      "cancel": "Cancel",
+      "back": "Back",
+      "home": "Back to properties",
+      "desktopOnly": "Importing works on a computer.",
+      "file": {
+        "template": "Download the template",
+        "templateSub": "Excel (.xlsx) with an example row",
+        "drop": "Drop the file here or choose it",
+        "dropSub": "XLSX or CSV · up to {max} rows",
+        "choose": "Choose a file",
+        "reading": "Reading…",
+        "columns": "Columns",
+        "required": "Required",
+        "optional": "Optional",
+        "more": "Bringing them from another program? You match your own column names in the next step.",
+        "errors": {
+          "type": "We can’t read this file. Choose an XLSX or CSV file.",
+          "empty": "The file has no data.",
+          "tooMany": "You can import up to {max} rows at once. Split it into several files.",
+          "header": "The first row must hold the column names."
+        }
+      },
+      "columns": {
+        "postalCode": "Postcode",
+        "city": "City",
+        "streetName": "Street name",
+        "streetType": "Street type",
+        "houseNumber": "House number",
+        "building": "Building",
+        "staircase": "Staircase",
+        "floor": "Floor",
+        "door": "Door",
+        "kind": "Type",
+        "label": "Name",
+        "ownRef": "Your own ID",
+        "area": "Floor area (m²)",
+        "rooms": "Rooms",
+        "halfRooms": "Half rooms",
+        "parcel": "Land registry number"
+      },
+      "example": {
+        "postalCode": "1138",
+        "city": "Budapest",
+        "streetName": "Hajóépítő",
+        "streetType": "sétány",
+        "houseNumber": "4",
+        "building": "",
+        "staircase": "C",
+        "floor": "ground floor",
+        "door": "4",
+        "kind": "Flat",
+        "label": "Riverside flat",
+        "ownRef": "B-12",
+        "area": "54",
+        "rooms": "2",
+        "halfRooms": "1",
+        "parcel": "29431/0/A/3"
+      },
+      "templateName": "keyfly-properties-template.xlsx",
+      "badRowsName": "rows-to-fix.xlsx",
+      "problemColumn": "To fix",
+      "review": {
+        "rows": "{count, plural, one {# row} other {# rows}}",
+        "ok": "{count} fine",
+        "fix": "{count} to fix",
+        "dup": "{count} already there",
+        "otherFile": "Another file",
+        "unknownTitle": "{count, plural, one {We didn’t recognise one column} other {We didn’t recognise # columns}}",
+        "skip": "Skip it",
+        "mapLabel": "Column “{name}”",
+        "cols": {
+          "address": "Address",
+          "kind": "Type",
+          "size": "Size",
+          "name": "Name / ID"
+        },
+        "moreRows": "+ {count} more rows",
+        "rowOk": "Fine",
+        "rowFix": "To fix",
+        "rowDup": "Already there",
+        "existing": "Already there: {name}",
+        "duplicateAction": "What should happen to it?",
+        "skipDup": "Skip",
+        "updateDup": "Update",
+        "kindChoose": "Choose",
+        "badRows": "Download the rows to fix",
+        "submit": "{count, plural, one {Import # property} other {Import # properties}}",
+        "nothing": "No row can be imported."
+      },
+      "problems": {
+        "required": "Missing: {field}",
+        "postalCode": "The postcode has 4 digits",
+        "kind": "Unknown type – choose one",
+        "number": "Not a number: {field}",
+        "floor": "Unknown floor",
+        "parcel": "Invalid land registry number",
+        "ownRef": "This own ID appears twice in the file"
+      },
+      "done": {
+        "title": "{count, plural, one {# property imported} other {# properties imported}}",
+        "updated": "{count, plural, one {# existing property updated.} other {# existing properties updated.}}",
+        "lead": "They are in your list now. If something is off, you can undo the whole import within 24 hours.",
+        "undo": "Undo",
+        "undone": "Import undone.",
+        "toList": "Open properties"
+      },
+      "errors": {
+        "generic": "We couldn’t import them. Please try again.",
+        "notAllowed": "You can’t import in this account.",
+        "ownRefTaken": "An own ID already belongs to one of your properties. Download the rows to fix.",
+        "undoInUse": "A lease already belongs to an imported property, so it can’t be undone.",
+        "undoLate": "This import can no longer be undone."
       }
     }
   }
