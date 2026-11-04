@@ -2173,7 +2173,7 @@
       "type": "Type",
       "otherLabel": "What is it?",
       "otherPlaceholder": "e.g. studio, boat mooring",
-      "naming": "Name",
+      "naming": "Name and ID",
       "name": "Name",
       "ownRef": "Your own ID",
       "ownRefPlaceholder": "e.g. B-12",
@@ -2190,7 +2190,8 @@
         "summary": "{count, plural, one {One field still needs fixing.} other {# fields still need fixing.}}"
       },
       "created": "Property added.",
-      "floorPlaceholder": "e.g. 3"
+      "floorPlaceholder": "e.g. 3",
+      "previewNoAddress": "The address goes here."
     },
     "detail": {
       "back": "Properties",

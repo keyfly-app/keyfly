@@ -125,12 +125,12 @@ export async function PropertyFrame({
                 </span>
                 <CopyCode code={p.public_code} />
                 {p.own_ref && (
-                  <>
-                    <span aria-hidden="true">·</span>
-                    <span>
-                      {t("ownRef")} <span className="font-mono font-semibold tracking-[0.04em] text-ink">{p.own_ref}</span>
+                  <span className="whitespace-nowrap">
+                    <span aria-hidden="true" className="mr-2">
+                      ·
                     </span>
-                  </>
+                    {t("ownRef")} <span className="font-mono font-semibold tracking-[0.04em] text-ink">{p.own_ref}</span>
+                  </span>
                 )}
               </p>
             </div>

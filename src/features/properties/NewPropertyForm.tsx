@@ -179,7 +179,11 @@ export function NewPropertyForm({ accountId, types, listHref }: { accountId: str
                   <Icon name={kindIcon(types, kind)} size={20} strokeWidth={1.75} />
                 </span>
                 <span className="flex min-w-0 flex-col gap-0.5">
-                  <span className="text-[15px] leading-5 font-semibold [overflow-wrap:anywhere]">{label.trim() || street || "–"}</span>
+                  {label.trim() || street ? (
+                    <span className="text-[15px] leading-5 font-semibold [overflow-wrap:anywhere]">{label.trim() || street}</span>
+                  ) : (
+                    <span className="text-[13px] leading-5 text-muted">{t("previewNoAddress")}</span>
+                  )}
                   {hasStreet && address.postalCode && (
                     <span className="text-[12.5px] leading-[17px] text-muted [overflow-wrap:anywhere]">{addressLine(parts)}</span>
                   )}
