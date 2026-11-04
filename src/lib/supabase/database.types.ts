@@ -641,6 +641,39 @@ export type Database = {
           },
         ]
       }
+      import_batch_changes: {
+        Row: {
+          batch_id: string
+          before: Json
+          property_id: string
+        }
+        Insert: {
+          batch_id: string
+          before: Json
+          property_id: string
+        }
+        Update: {
+          batch_id?: string
+          before?: Json
+          property_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "import_batch_changes_batch_id_fkey"
+            columns: ["batch_id"]
+            isOneToOne: false
+            referencedRelation: "import_batches"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "import_batch_changes_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       import_batches: {
         Row: {
           account_id: string
@@ -2508,6 +2541,31 @@ export type Database = {
       }
       confirm_two_step_email: { Args: { p_code_hash: string }; Returns: string }
       consume_recovery_code: { Args: { p_hash: string }; Returns: boolean }
+      copy_property: {
+        Args: {
+          p_building?: string
+          p_city: string
+          p_contacts?: boolean
+          p_door?: string
+          p_features?: boolean
+          p_floor_number?: number
+          p_floor_type?: Database["public"]["Enums"]["floor_type"]
+          p_house_number: string
+          p_label?: string
+          p_management?: boolean
+          p_own_ref?: string
+          p_postal_code: string
+          p_services?: boolean
+          p_source: string
+          p_staircase?: string
+          p_street_name: string
+          p_street_type: string
+        }
+        Returns: {
+          property_id: string
+          public_code: string
+        }[]
+      }
       create_account_invitation: {
         Args: {
           p_account_id: string
@@ -2611,6 +2669,14 @@ export type Database = {
       decline_invitation: { Args: { p_token: string }; Returns: undefined }
       delete_recovery_codes: { Args: never; Returns: undefined }
       end_my_session: { Args: { p_session_id: string }; Returns: boolean }
+      import_properties: {
+        Args: { p_account_id: string; p_file_name: string; p_rows: Json }
+        Returns: {
+          batch_id: string
+          created: number
+          updated: number
+        }[]
+      }
       invitation_preview: {
         Args: { p_token: string }
         Returns: {
@@ -2739,6 +2805,16 @@ export type Database = {
         }
         Returns: undefined
       }
+      save_service: {
+        Args: {
+          p_identifiers?: Json
+          p_meters?: Json
+          p_property_id: string
+          p_service: Json
+          p_service_id: string
+        }
+        Returns: string
+      }
       set_account_view: {
         Args: {
           p_account_id: string
@@ -2798,6 +2874,7 @@ export type Database = {
       }
       trusted_device_ok: { Args: { p_token_hash: string }; Returns: boolean }
       two_step_pass_ok: { Args: never; Returns: boolean }
+      undo_import: { Args: { p_batch_id: string }; Returns: undefined }
       undo_phone_check: { Args: never; Returns: undefined }
       undo_two_step_email: { Args: never; Returns: undefined }
     }
