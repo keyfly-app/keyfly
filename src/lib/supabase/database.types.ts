@@ -1696,6 +1696,7 @@ export type Database = {
         Row: {
           created_at: string
           id: string
+          kind: string
           label: string
           property_id: string
           sort: number
@@ -1704,6 +1705,7 @@ export type Database = {
         Insert: {
           created_at?: string
           id?: string
+          kind?: string
           label: string
           property_id: string
           sort?: number
@@ -1712,6 +1714,7 @@ export type Database = {
         Update: {
           created_at?: string
           id?: string
+          kind?: string
           label?: string
           property_id?: string
           sort?: number
@@ -1850,33 +1853,39 @@ export type Database = {
       }
       property_media: {
         Row: {
+          bytes: number | null
           created_at: string
           created_by: string | null
           height: number | null
           id: string
           is_cover: boolean
+          kind: string
           path: string
           property_id: string
           sort: number
           width: number | null
         }
         Insert: {
+          bytes?: number | null
           created_at?: string
           created_by?: string | null
           height?: number | null
           id?: string
           is_cover?: boolean
+          kind?: string
           path: string
           property_id: string
           sort?: number
           width?: number | null
         }
         Update: {
+          bytes?: number | null
           created_at?: string
           created_by?: string | null
           height?: number | null
           id?: string
           is_cover?: boolean
+          kind?: string
           path?: string
           property_id?: string
           sort?: number

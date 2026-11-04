@@ -102,6 +102,26 @@ select tests.ok((select count(*) = 0 from public.properties where import_batch_i
 select tests.ok((select parcel_number is null and area_m2 = 54 from public.properties where id = (select v::uuid from r where k = 'p1')), '… and restores what it overwrote');
 select tests.throws($$select public.undo_import((select v::uuid from r where k = 'b1'))$$, 'an import is undone once');
 
+-- ---------- videos ----------
+select tests.act_as('00000000-0000-0000-0000-0000000ad001');
+select tests.throws($$insert into public.property_media (property_id, path, kind, is_cover, created_by)
+  select p.id, p.account_id || '/' || p.id || '/c.mp4', 'video', true, '00000000-0000-0000-0000-0000000ad001' from public.properties p where p.id = (select v::uuid from r where k = 'p1')$$,
+  'a video cannot be the cover');
+select tests.throws($$insert into public.property_media (property_id, path, kind, bytes, created_by)
+  select p.id, p.account_id || '/' || p.id || '/big.mp4', 'video', 60000000, '00000000-0000-0000-0000-0000000ad001' from public.properties p where p.id = (select v::uuid from r where k = 'p1')$$,
+  'videos are at most 50 MB');
+insert into public.property_media (property_id, path, kind, bytes, sort, created_by)
+select p.id, p.account_id || '/' || p.id || '/v' || n || '.mp4', 'video', 1000000, n, '00000000-0000-0000-0000-0000000ad001'
+from public.properties p, generate_series(1, 3) n where p.id = (select v::uuid from r where k = 'p1');
+select tests.ok((select count(*) = 3 from public.property_media where property_id = (select v::uuid from r where k = 'p1') and kind = 'video'),
+  'a property takes up to three videos');
+select tests.throws($$insert into public.property_media (property_id, path, kind, bytes, created_by)
+  select p.id, p.account_id || '/' || p.id || '/v4.mp4', 'video', 1000, '00000000-0000-0000-0000-0000000ad001' from public.properties p where p.id = (select v::uuid from r where k = 'p1')$$,
+  'a fourth video is refused');
+insert into public.property_links (property_id, label, url, kind) select v::uuid, 'YouTube', 'https://youtu.be/abc', 'video' from r where k = 'p1';
+select tests.ok((select count(*) = 1 from public.property_links where property_id = (select v::uuid from r where k = 'p1') and kind = 'video'),
+  'a video can also be a link');
+
 reset role;
 insert into r select 'b9', id::text from public.import_batches order by created_at desc limit 1;
 insert into public.import_batch_changes (batch_id, property_id, before)

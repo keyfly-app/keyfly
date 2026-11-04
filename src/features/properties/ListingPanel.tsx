@@ -10,9 +10,23 @@ import { Button, FieldError, INPUT_CLASS, Label, Notice, Optional, buttonClass }
 import { MenuPopover } from "@/components/ui/MenuPopover";
 import { offered, type CatalogOption } from "@/features/catalog/types";
 import { groupDigits } from "./format";
-import { addLink, deletePhoto, removeLink, saveAd, saveTerms, setCover, uploadPhoto, type ListingState, type TermsInput } from "./listing-actions";
+import {
+  addLink,
+  cancelVideoUpload,
+  deletePhoto,
+  finishVideoUpload,
+  removeLink,
+  saveAd,
+  saveTerms,
+  setCover,
+  startVideoUpload,
+  uploadPhoto,
+  type ListingState,
+  type TermsInput,
+} from "./listing-actions";
 
 export type PhotoView = { id: string; url: string | null; cover: boolean; width: number | null; height: number | null };
+export type VideoView = { id: string; url: string | null; bytes: number | null };
 export type LinkView = { id: string; label: string; url: string; host: string };
 export type ListingProps = {
   propertyId: string;
@@ -20,6 +34,9 @@ export type ListingProps = {
   editable: boolean;
   photos: PhotoView[];
   maxPhotos: number;
+  videos: VideoView[];
+  maxVideos: number;
+  videoLinks: LinkView[];
   terms: Omit<TermsInput, "propertyId">;
   pets: CatalogOption[];
   smoking: CatalogOption[];
@@ -69,21 +86,117 @@ function Card({ title, action, children }: { title: string; action?: React.React
   );
 }
 
-function Photos({ p }: { p: ListingProps }) {
+const PHOTO_TYPES = ["image/jpeg", "image/png", "image/webp"];
+const VIDEO_TYPES = ["video/mp4", "video/quicktime", "video/webm"];
+const MAX_PHOTO_FILE = 25 * 1024 * 1024;
+const MAX_VIDEO_FILE = 50 * 1024 * 1024;
+
+/** Some systems hand over a .mov or .mp4 without a type; the extension decides then. */
+function videoType(file: File) {
+  if (VIDEO_TYPES.includes(file.type)) return file.type;
+  if (file.type) return null;
+  if (/\.mov$/i.test(file.name)) return "video/quicktime";
+  if (/\.mp4$/i.test(file.name)) return "video/mp4";
+  if (/\.webm$/i.test(file.name)) return "video/webm";
+  return null;
+}
+
+/** Sends a video to its one-off upload link, reporting progress (the Supabase client has no progress events). */
+function putVideo(signedUrl: string, file: File, type: string, onProgress: (percent: number) => void) {
+  return new Promise<boolean>((resolve) => {
+    const body = new FormData();
+    body.append("cacheControl", "3600");
+    body.append("", new File([file], file.name, { type }));
+    const xhr = new XMLHttpRequest();
+    xhr.open("PUT", signedUrl);
+    xhr.setRequestHeader("x-upsert", "false");
+    xhr.upload.onprogress = (e) => e.lengthComputable && onProgress(Math.round((e.loaded / e.total) * 100));
+    xhr.onload = () => resolve(xhr.status >= 200 && xhr.status < 300);
+    xhr.onerror = () => resolve(false);
+    xhr.send(body);
+  });
+}
+
+function TileMenu({ label, closeLabel, children }: { label: string; closeLabel: string; children: React.ReactNode }) {
+  return (
+    <div className="absolute top-1.5 right-1.5">
+      <MenuPopover
+        title={label}
+        closeLabel={closeLabel}
+        align="end"
+        width={220}
+        trigger={({ ref, open, toggle, menuId }) => (
+          <button
+            ref={ref}
+            type="button"
+            onClick={toggle}
+            aria-haspopup="menu"
+            aria-expanded={open}
+            aria-controls={open ? menuId : undefined}
+            aria-label={label}
+            className="flex size-9 items-center justify-center rounded-lg bg-surface/95 text-ink shadow-sm hover:bg-surface"
+          >
+            <Icon name="more" size={16} />
+          </button>
+        )}
+      >
+        {children}
+      </MenuPopover>
+    </div>
+  );
+}
+
+const MENU_ITEM = "flex min-h-11 items-center gap-2.5 rounded-lg px-3 text-left text-sm hover:bg-paper focus-visible:bg-paper sm:min-h-10";
+
+/** "Fotók és videók": photos (resized in the browser, one is the cover), uploaded videos and video links. */
+function Media({ p }: { p: ListingProps }) {
   const t = useTranslations("properties.listing.photos");
   const router = useRouter();
   const input = useRef<HTMLInputElement>(null);
-  const [busy, setBusy] = useState(false);
-  const [deleting, setDeleting] = useState<string | null>(null);
+  const [busy, setBusy] = useState<number | "photos" | null>(null);
+  const [deleting, setDeleting] = useState<{ id: string; video: boolean } | null>(null);
+  const [playing, setPlaying] = useState<VideoView | null>(null);
   const [pending, start] = useTransition();
+  const photosLeft = p.maxPhotos - p.photos.length;
+  const videosLeft = p.maxVideos - p.videos.length;
+
+  const uploadVideo = async (file: File, type: string) => {
+    if (file.size > MAX_VIDEO_FILE) return toast(t("errors.videoSize"), "error"), false;
+    setBusy(0);
+    const s = await startVideoUpload(p.propertyId, type, file.size);
+    if (s.status !== "ready") {
+      const key = s.error === "limit" ? "videoLimit" : s.error === "size" ? "videoSize" : s.error === "type" ? "videoType" : "generic";
+      return toast(t(`errors.${key}`, { max: p.maxVideos }), "error"), false;
+    }
+    const sent = await putVideo(s.signedUrl, file, type, setBusy);
+    const r = sent ? await finishVideoUpload(p.propertyId, s.path) : null;
+    if (!sent) await cancelVideoUpload(p.propertyId, s.path);
+    if (r?.status === "saved") return true;
+    const key = r?.status === "error" && r.error === "limit" ? "videoLimit" : r?.status === "error" && r.error === "type" ? "videoType" : "generic";
+    toast(t(`errors.${key}`, { max: p.maxVideos }), "error");
+    return false;
+  };
+
   const upload = async (files: FileList | null) => {
     if (!files?.length) return;
-    const list = [...files].slice(0, Math.max(0, p.maxPhotos - p.photos.length));
-    if (list.length < files.length) toast(t("errors.limit", { max: p.maxPhotos }), "error");
-    setBusy(true);
-    let done = 0;
-    for (const file of list) {
-      const small = file.type.startsWith("image/") ? await shrink(file) : null;
+    let photos = 0;
+    let videos = 0;
+    const list = [...files];
+    const images = list.filter((f) => !videoType(f));
+    const clips = list.flatMap((f) => (videoType(f) ? [{ file: f, type: videoType(f)! }] : []));
+    if (images.length > photosLeft) toast(t("errors.limit", { max: p.maxPhotos }), "error");
+    if (clips.length > videosLeft) toast(t("errors.videoLimit", { max: p.maxVideos }), "error");
+    for (const file of images.slice(0, Math.max(0, photosLeft))) {
+      setBusy("photos");
+      if (!PHOTO_TYPES.includes(file.type)) {
+        toast(t("errors.type"), "error");
+        continue;
+      }
+      if (file.size > MAX_PHOTO_FILE) {
+        toast(t("errors.photoSize"), "error");
+        continue;
+      }
+      const small = await shrink(file);
       if (!small) {
         toast(t("errors.type"), "error");
         continue;
@@ -94,16 +207,17 @@ function Photos({ p }: { p: ListingProps }) {
       data.set("width", String(small.width));
       data.set("height", String(small.height));
       const r = await uploadPhoto(data);
-      if (r.status === "saved") done += 1;
+      if (r.status === "saved") photos += 1;
       else toast(t(`errors.${r.status === "error" && (r.error === "type" || r.error === "limit") ? r.error : "generic"}`, { max: p.maxPhotos }), "error");
     }
-    setBusy(false);
+    for (const c of clips.slice(0, Math.max(0, videosLeft))) if (await uploadVideo(c.file, c.type)) videos += 1;
+    setBusy(null);
     if (input.current) input.current.value = "";
-    if (done) {
-      toast(t("uploaded", { count: done }));
-      router.refresh();
-    }
+    if (photos) toast(t("uploaded", { count: photos }));
+    if (videos) toast(t("videoUploaded", { count: videos }));
+    if (photos || videos) router.refresh();
   };
+
   const act = (fn: () => Promise<ListingState>, ok: string) =>
     start(async () => {
       const r = await fn();
@@ -114,8 +228,14 @@ function Photos({ p }: { p: ListingProps }) {
       } else toast(t("errors.save"), "error");
     });
 
+  const counts = [
+    p.photos.length > 0 && t("count", { count: p.photos.length }),
+    p.videos.length > 0 && t("videoCount", { count: p.videos.length }),
+  ].filter(Boolean);
+  const accept = [...(photosLeft > 0 ? PHOTO_TYPES : []), ...(videosLeft > 0 ? [...VIDEO_TYPES, ".mov"] : [])].join(",");
+
   return (
-    <Card title={t("title")} action={p.photos.length > 0 && <span className="text-[13px] text-muted">{t("count", { count: p.photos.length })}</span>}>
+    <Card title={t("title")} action={counts.length > 0 && <span className="text-[13px] text-muted">{counts.join(" · ")}</span>}>
       <ul className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 lg:grid-cols-6">
         {p.photos.map((ph, i) => (
           <li key={ph.id} className="relative aspect-[4/3] rounded-lg bg-mist">
@@ -131,82 +251,90 @@ function Photos({ p }: { p: ListingProps }) {
               </span>
             )}
             {p.editable && (
-              <div className="absolute top-1.5 right-1.5">
-                <MenuPopover
-                  title={t("more", { n: i + 1 })}
-                  closeLabel={t("close")}
-                  align="end"
-                  width={220}
-                  trigger={({ ref, open, toggle, menuId }) => (
-                    <button
-                      ref={ref}
-                      type="button"
-                      onClick={toggle}
-                      aria-haspopup="menu"
-                      aria-expanded={open}
-                      aria-controls={open ? menuId : undefined}
-                      aria-label={t("more", { n: i + 1 })}
-                      className="flex size-9 items-center justify-center rounded-lg bg-surface/95 text-ink shadow-sm hover:bg-surface"
-                    >
-                      <Icon name="more" size={16} />
-                    </button>
-                  )}
-                >
-                  {!ph.cover && (
-                    <button
-                      type="button"
-                      role="menuitem"
-                      onClick={() => act(() => setCover(p.propertyId, ph.id), t("coverSet"))}
-                      className="flex min-h-11 items-center gap-2.5 rounded-lg px-3 text-left text-sm hover:bg-paper focus-visible:bg-paper sm:min-h-10"
-                    >
-                      <Icon name="star" size={16} strokeWidth={1.75} className="flex-none text-muted" />
-                      {t("makeCover")}
-                    </button>
-                  )}
-                  <button
-                    type="button"
-                    role="menuitem"
-                    onClick={() => setDeleting(ph.id)}
-                    className="flex min-h-11 items-center gap-2.5 rounded-lg px-3 text-left text-sm text-danger-ink hover:bg-paper focus-visible:bg-paper sm:min-h-10"
-                  >
-                    <Icon name="trash" size={16} strokeWidth={1.75} className="flex-none" />
-                    {t("delete")}
+              <TileMenu label={t("more", { n: i + 1 })} closeLabel={t("close")}>
+                {!ph.cover && (
+                  <button type="button" role="menuitem" onClick={() => act(() => setCover(p.propertyId, ph.id), t("coverSet"))} className={MENU_ITEM}>
+                    <Icon name="star" size={16} strokeWidth={1.75} className="flex-none text-muted" />
+                    {t("makeCover")}
                   </button>
-                </MenuPopover>
-              </div>
+                )}
+                <button type="button" role="menuitem" onClick={() => setDeleting({ id: ph.id, video: false })} className={`${MENU_ITEM} text-danger-ink`}>
+                  <Icon name="trash" size={16} strokeWidth={1.75} className="flex-none" />
+                  {t("delete")}
+                </button>
+              </TileMenu>
             )}
           </li>
         ))}
-        {p.editable && p.photos.length < p.maxPhotos && (
+        {p.videos.map((v, i) => (
+          <li key={v.id} className="relative aspect-[4/3] rounded-lg bg-ink">
+            <button
+              type="button"
+              onClick={() => setPlaying(v)}
+              disabled={!v.url}
+              aria-label={t("play", { n: i + 1 })}
+              className="group relative block size-full overflow-hidden rounded-lg"
+            >
+              {v.url && <video src={`${v.url}#t=0.1`} preload="metadata" muted playsInline className="size-full object-cover" aria-hidden="true" />}
+              <span className="absolute inset-0 flex items-center justify-center">
+                <span className="flex size-11 items-center justify-center rounded-full bg-surface/95 text-ink shadow-sm group-hover:bg-surface">
+                  <Icon name="play" size={18} strokeWidth={2} />
+                </span>
+              </span>
+              <span className="absolute bottom-2 left-2 inline-flex h-6 items-center rounded-md bg-ink/80 px-2 text-[11.5px] font-semibold text-surface">
+                {t("video")}
+              </span>
+            </button>
+            {p.editable && (
+              <TileMenu label={t("videoMore", { n: i + 1 })} closeLabel={t("close")}>
+                <button type="button" role="menuitem" onClick={() => setDeleting({ id: v.id, video: true })} className={`${MENU_ITEM} text-danger-ink`}>
+                  <Icon name="trash" size={16} strokeWidth={1.75} className="flex-none" />
+                  {t("delete")}
+                </button>
+              </TileMenu>
+            )}
+          </li>
+        ))}
+        {p.editable && (photosLeft > 0 || videosLeft > 0) && (
           <li className="aspect-[4/3]">
             <label
-              className={`flex size-full cursor-pointer flex-col items-center justify-center gap-1 rounded-lg border border-dashed border-field text-center hover:border-ink has-focus-visible:outline-3 has-focus-visible:outline-brand ${busy ? "cursor-progress opacity-70" : ""}`}
+              className={`flex size-full cursor-pointer flex-col items-center justify-center gap-1 rounded-lg border border-dashed border-field px-2 text-center hover:border-ink has-focus-visible:outline-3 has-focus-visible:outline-brand ${busy !== null ? "cursor-progress opacity-70" : ""}`}
             >
-              <input
-                ref={input}
-                type="file"
-                accept="image/jpeg,image/png,image/webp"
-                multiple
-                disabled={busy}
-                onChange={(e) => void upload(e.target.files)}
-                className="sr-only"
-              />
+              <input ref={input} type="file" accept={accept} multiple disabled={busy !== null} onChange={(e) => void upload(e.target.files)} className="sr-only" />
               <Icon name="upload" size={18} strokeWidth={1.9} className="text-brand" />
-              <span className="text-[13.5px] font-semibold text-brand">{t(busy ? "uploading" : "upload")}</span>
-              <span className="text-[11.5px] text-muted">{t("uploadSub")}</span>
+              <span className="text-[13.5px] font-semibold text-brand" aria-live="polite">
+                {busy === null ? t("upload") : typeof busy === "number" ? t("uploadingPercent", { percent: busy }) : t("uploading")}
+              </span>
+              <span className="text-[11.5px] text-muted">{t(photosLeft > 0 && videosLeft > 0 ? "uploadSub" : photosLeft > 0 ? "uploadPhoto" : "uploadVideo")}</span>
             </label>
           </li>
         )}
       </ul>
-      {!p.editable && p.photos.length === 0 && <p className="text-sm text-muted">{t("empty")}</p>}
-      <Dialog open={deleting !== null} onClose={() => setDeleting(null)} title={t("deleteDialog.title")} closeLabel={t("close")}>
+      {p.editable && (
+        <ul className="flex flex-col gap-0.5 text-[12.5px] leading-[18px] text-muted">
+          <li>{t("photoRules", { max: p.maxPhotos })}</li>
+          <li>{t("videoRules", { max: p.maxVideos })}</li>
+        </ul>
+      )}
+      {!p.editable && p.photos.length === 0 && p.videos.length === 0 && <p className="text-sm text-muted">{t("empty")}</p>}
+      {(p.editable || p.videoLinks.length > 0) && (
+        <div className="border-t border-paper pt-4">
+          <LinkSection p={p} kind="video" />
+        </div>
+      )}
+      <Dialog
+        open={deleting !== null}
+        onClose={() => setDeleting(null)}
+        title={t(deleting?.video ? "deleteDialog.videoTitle" : "deleteDialog.title")}
+        closeLabel={t("close")}
+      >
         <DialogActions>
           <button type="button" onClick={() => setDeleting(null)} className={buttonClass("secondary")} data-autofocus>
             {t("deleteDialog.cancel")}
           </button>
           <form
             action={() => {
-              if (deleting) act(() => deletePhoto(p.propertyId, deleting), t("deleted"));
+              if (deleting) act(() => deletePhoto(p.propertyId, deleting.id), t(deleting.video ? "videoDeleted" : "deleted"));
             }}
           >
             <Button variant="danger" pending={pending}>
@@ -214,6 +342,9 @@ function Photos({ p }: { p: ListingProps }) {
             </Button>
           </form>
         </DialogActions>
+      </Dialog>
+      <Dialog open={playing !== null} onClose={() => setPlaying(null)} title={t("video")} closeLabel={t("close")} wide>
+        {playing?.url && <video src={playing.url} controls autoPlay playsInline className="max-h-[70vh] w-full rounded-lg bg-ink" />}
       </Dialog>
     </Card>
   );
@@ -492,11 +623,13 @@ function Ad({ p }: { p: ListingProps }) {
   );
 }
 
-function Links({ p }: { p: ListingProps }) {
-  const t = useTranslations("properties.listing.links");
+/** A list of links with an inline add form: listing links ("Hirdetések") or video links (inside "Fotók és videók"). */
+function LinkSection({ p, kind }: { p: ListingProps; kind: "listing" | "video" }) {
+  const t = useTranslations(kind === "video" ? "properties.listing.videoLinks" : "properties.listing.links");
   const e = useTranslations("properties.listing.errors");
   const id = useId();
   const router = useRouter();
+  const links = kind === "video" ? p.videoLinks : p.links;
   const [adding, setAdding] = useState(false);
   const [label, setLabel] = useState("");
   const [url, setUrl] = useState("");
@@ -506,7 +639,7 @@ function Links({ p }: { p: ListingProps }) {
   const add = (ev: React.FormEvent) => {
     ev.preventDefault();
     start(async () => {
-      const r = await addLink(p.propertyId, label, url);
+      const r = await addLink(p.propertyId, label, url, kind);
       setState(r);
       if (r.status === "saved") {
         toast(t("added"));
@@ -525,12 +658,12 @@ function Links({ p }: { p: ListingProps }) {
         router.refresh();
       } else toast(e("generic"), "error");
     });
+  const Heading = kind === "video" ? "h3" : "h2";
   return (
-    <Card
-      title={t("title")}
-      action={
-        p.editable &&
-        !adding && (
+    <div className="flex flex-col gap-4">
+      <div className="flex min-h-9 items-center justify-between gap-3">
+        <Heading className={kind === "video" ? "text-sm font-semibold" : "text-[15px] leading-5 font-semibold"}>{t("title")}</Heading>
+        {p.editable && !adding && (
           <button
             type="button"
             onClick={() => setAdding(true)}
@@ -538,19 +671,18 @@ function Links({ p }: { p: ListingProps }) {
           >
             {t("add")}
           </button>
-        )
-      }
-    >
-      {p.links.length === 0 && !adding && <p className="text-sm text-muted">{t("empty")}</p>}
-      {p.links.length > 0 && (
+        )}
+      </div>
+      {links.length === 0 && !adding && <p className="text-sm text-muted">{t("empty")}</p>}
+      {links.length > 0 && (
         <ul className="flex flex-col">
-          {p.links.map((l) => (
+          {links.map((l) => (
             <li key={l.id} className="flex items-center gap-3 border-t border-paper py-2.5 first:border-t-0 first:pt-0">
               <span
                 aria-hidden="true"
                 className="flex size-8 flex-none items-center justify-center rounded-lg bg-ink text-[13px] font-semibold text-lime uppercase"
               >
-                {l.label.slice(0, 1)}
+                {kind === "video" ? <Icon name="play" size={14} strokeWidth={2} /> : l.label.slice(0, 1)}
               </span>
               <span className="flex min-w-0 flex-1 flex-col">
                 <span className="text-sm font-semibold [overflow-wrap:anywhere]">{l.label}</span>
@@ -581,9 +713,12 @@ function Links({ p }: { p: ListingProps }) {
       )}
       {adding && (
         <form onSubmit={add} noValidate className="flex flex-col gap-3 rounded-lg bg-paper p-3.5">
-          <div className="grid gap-3 sm:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]">
+          <div className={`grid gap-3 ${kind === "video" ? "sm:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]" : "sm:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]"}`}>
+            {kind === "video" && urlField()}
             <div className="flex flex-col gap-1.5">
-              <Label htmlFor={`${id}-label`}>{t("label")}</Label>
+              <Label htmlFor={`${id}-label`}>
+                {t("label")} {kind === "video" && <Optional>{t("optional")}</Optional>}
+              </Label>
               <input
                 id={`${id}-label`}
                 value={label}
@@ -592,25 +727,11 @@ function Links({ p }: { p: ListingProps }) {
                 maxLength={60}
                 aria-invalid={f.label ? true : undefined}
                 className={INPUT_CLASS}
-                autoFocus
+                autoFocus={kind === "listing"}
               />
               {f.label && <FieldError id={`${id}-label-error`} message={e("label")} />}
             </div>
-            <div className="flex flex-col gap-1.5">
-              <Label htmlFor={`${id}-url`}>{t("url")}</Label>
-              <input
-                id={`${id}-url`}
-                type="url"
-                inputMode="url"
-                value={url}
-                onChange={(ev) => setUrl(ev.target.value)}
-                placeholder={t("urlPlaceholder")}
-                maxLength={500}
-                aria-invalid={f.url ? true : undefined}
-                className={INPUT_CLASS}
-              />
-              {f.url && <FieldError id={`${id}-url-error`} message={e("url")} />}
-            </div>
+            {kind === "listing" && urlField()}
           </div>
           <div className="flex flex-col gap-2 sm:flex-row">
             <Button pending={pending} fit>
@@ -622,15 +743,44 @@ function Links({ p }: { p: ListingProps }) {
           </div>
         </form>
       )}
-    </Card>
+    </div>
+  );
+
+  function urlField() {
+    return (
+      <div className="flex flex-col gap-1.5">
+        <Label htmlFor={`${id}-url`}>{t("url")}</Label>
+        <input
+          id={`${id}-url`}
+          type="url"
+          inputMode="url"
+          value={url}
+          onChange={(ev) => setUrl(ev.target.value)}
+          placeholder={t("urlPlaceholder")}
+          maxLength={500}
+          aria-invalid={f.url ? true : undefined}
+          className={INPUT_CLASS}
+          autoFocus={kind === "video"}
+        />
+        {f.url && <FieldError id={`${id}-url-error`} message={e("url")} />}
+      </div>
+    );
+  }
+}
+
+function Links({ p }: { p: ListingProps }) {
+  return (
+    <section className="rounded-xl border border-line bg-surface p-5">
+      <LinkSection p={p} kind="listing" />
+    </section>
   );
 }
 
-/** "Fotók és hirdetés" (canvas "Ingatlan – fotók és hirdetés"): photos with a cover, rental terms, listing text and links. */
+/** "Fotók és hirdetés" (canvas "Ingatlan – fotók és hirdetés"): photos and videos, rental terms, listing text and links. */
 export function ListingPanel(p: ListingProps) {
   return (
     <div className="flex flex-col gap-4">
-      <Photos p={p} />
+      <Media p={p} />
       <div className="grid items-start gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.25fr)]">
         <Terms p={p} />
         <div className="flex flex-col gap-4">

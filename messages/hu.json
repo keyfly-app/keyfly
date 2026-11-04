@@ -2524,10 +2524,10 @@
     },
     "listing": {
       "photos": {
-        "title": "Fotók",
+        "title": "Fotók és videók",
         "count": "{count, plural, one {# fotó} other {# fotó}}",
         "upload": "Feltöltés",
-        "uploadSub": "JPG, PNG, WEBP",
+        "uploadSub": "Fotó vagy videó",
         "uploading": "Feltöltés…",
         "cover": "Borítókép",
         "makeCover": "Legyen a borítókép",
@@ -2542,14 +2542,30 @@
           "type": "Ezt a fájlt nem tudjuk feltölteni. JPG, PNG vagy WEBP képet válassz.",
           "limit": "Egy ingatlanhoz legfeljebb {max} fotó tölthető fel.",
           "generic": "Nem sikerült feltölteni. Próbáld újra.",
-          "save": "Nem sikerült menteni. Próbáld újra."
+          "save": "Nem sikerült menteni. Próbáld újra.",
+          "photoSize": "Ez a fotó nagyobb 25 MB-nál. Válassz kisebb fájlt.",
+          "videoSize": "Ez a videó nagyobb 50 MB-nál. Válassz rövidebb vagy tömörebb fájlt, vagy add hozzá linkként.",
+          "videoType": "Ezt a videót nem tudjuk feltölteni. MP4, MOV vagy WEBM fájlt válassz.",
+          "videoLimit": "Egy ingatlanhoz legfeljebb {max} videó tölthető fel. Továbbiakat linkként adhatsz hozzá."
         },
         "close": "Bezárás",
         "deleteDialog": {
           "title": "Törlöd a fotót?",
           "confirm": "Törlés",
-          "cancel": "Mégse"
-        }
+          "cancel": "Mégse",
+          "videoTitle": "Törlöd a videót?"
+        },
+        "videoCount": "{count, plural, one {# videó} other {# videó}}",
+        "video": "Videó",
+        "play": "{n}. videó lejátszása",
+        "videoMore": "Műveletek: {n}. videó",
+        "uploadPhoto": "Fotó",
+        "uploadVideo": "Videó",
+        "uploadingPercent": "Feltöltés… {percent}%",
+        "photoRules": "Fotó: JPG, PNG vagy WEBP, legfeljebb 25 MB, ingatlanonként {max}. Feltöltéskor az optimális méretre (2000 px) kicsinyítjük.",
+        "videoRules": "Videó: MP4, MOV vagy WEBM, legfeljebb 50 MB, ingatlanonként {max}.",
+        "videoUploaded": "{count, plural, one {Feltöltöttünk egy videót.} other {Feltöltöttünk # videót.}}",
+        "videoDeleted": "Törölted a videót."
       },
       "terms": {
         "title": "Bérleti feltételek",
@@ -2602,6 +2618,22 @@
         "empty": "Még nincs hirdetési link.",
         "added": "Hozzáadtad a linket.",
         "removed": "Törölted a linket."
+      },
+      "videoLinks": {
+        "title": "Videólinkek",
+        "add": "Videólink hozzáadása",
+        "label": "Megnevezés",
+        "optional": "nem kötelező",
+        "labelPlaceholder": "pl. Videós bejárás",
+        "url": "Link",
+        "urlPlaceholder": "https://youtube.com/…",
+        "save": "Hozzáadás",
+        "cancel": "Mégse",
+        "open": "{name} megnyitása új lapon",
+        "remove": "{name} törlése",
+        "empty": "Még nincs videólink.",
+        "added": "Hozzáadtad a videólinket.",
+        "removed": "Törölted a videólinket."
       },
       "errors": {
         "amount": "Adj meg egy összeget.",

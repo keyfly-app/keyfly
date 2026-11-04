@@ -298,7 +298,7 @@ export async function copyProperty(input: CopyInput): Promise<SaveState> {
 async function copyPhotos(fromId: string, accountId: string, toId: string) {
   const supabase = await createClient();
   const { data: auth } = await supabase.auth.getClaims();
-  const { data: media } = await supabase.from("property_media").select("path, is_cover, sort, width, height").eq("property_id", fromId).order("sort");
+  const { data: media } = await supabase.from("property_media").select("path, is_cover, sort, width, height").eq("property_id", fromId).eq("kind", "photo").order("sort");
   for (const m of media ?? []) {
     const path = `${accountId}/${toId}/${m.path.split("/").pop()}`;
     const { error } = await supabase.storage.from("property-media").copy(m.path, path);

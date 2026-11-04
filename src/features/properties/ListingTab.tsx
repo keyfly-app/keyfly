@@ -6,6 +6,7 @@ import { ListingPanel } from "./ListingPanel";
 import type { PropertyContext } from "./PropertyFrame";
 
 const MAX_PHOTOS = 30;
+const MAX_VIDEOS = 3;
 const LINK_SECONDS = 60 * 60;
 
 /** Server side of "Fotók és hirdetés": photos with signed links (1 hour), terms, listing text, links, parking to offer. */
@@ -14,8 +15,8 @@ export async function ListingTab({ ctx }: { ctx: PropertyContext }) {
   const supabase = await createClient();
   const [{ data: listing }, { data: links }, { data: media }, { data: parking }, catalog] = await Promise.all([
     supabase.from("property_listing").select("*").eq("property_id", p.id).maybeSingle(),
-    supabase.from("property_links").select("id, label, url, sort").eq("property_id", p.id).order("sort"),
-    supabase.from("property_media").select("id, path, is_cover, sort, width, height").eq("property_id", p.id).order("sort").order("created_at"),
+    supabase.from("property_links").select("id, label, url, sort, kind").eq("property_id", p.id).order("sort"),
+    supabase.from("property_media").select("id, path, kind, bytes, is_cover, sort, width, height").eq("property_id", p.id).order("sort").order("created_at"),
     supabase
       .from("properties")
       .select("id, label, kind, postal_code, city, street_name, street_type, house_number, building, staircase, floor_type, floor_number, door")
@@ -25,10 +26,10 @@ export async function ListingTab({ ctx }: { ctx: PropertyContext }) {
       .neq("id", p.id),
     loadCatalog("pets", "smoking"),
   ]);
-  const photos = media ?? [];
-  const { data: signed } = photos.length
+  const all = media ?? [];
+  const { data: signed } = all.length
     ? await supabase.storage.from("property-media").createSignedUrls(
-        photos.map((m) => m.path),
+        all.map((m) => m.path),
         LINK_SECONDS,
       )
     : { data: [] };
@@ -46,10 +47,13 @@ export async function ListingTab({ ctx }: { ctx: PropertyContext }) {
       propertyId={p.id}
       name={displayName(p.label, addressFromRow(p))}
       editable={editable}
-      photos={[...photos]
+      photos={all
+        .filter((m) => m.kind === "photo")
         .sort((a, b) => Number(b.is_cover) - Number(a.is_cover))
         .map((m) => ({ id: m.id, url: urlOf.get(m.path) ?? null, cover: m.is_cover, width: m.width, height: m.height }))}
       maxPhotos={MAX_PHOTOS}
+      videos={all.filter((m) => m.kind === "video").map((m) => ({ id: m.id, url: urlOf.get(m.path) ?? null, bytes: m.bytes }))}
+      maxVideos={MAX_VIDEOS}
       terms={{
         rent: groupDigits(listing?.asking_rent),
         currency: listing?.currency === "EUR" ? "EUR" : "HUF",
@@ -67,7 +71,8 @@ export async function ListingTab({ ctx }: { ctx: PropertyContext }) {
       smoking={catalog.smoking}
       parkingOptions={(parking ?? []).map((x) => ({ id: x.id, name: displayName(x.label, addressFromRow(x)) }))}
       ad={{ title: listing?.title ?? "", description: listing?.description ?? "" }}
-      links={(links ?? []).map((l) => ({ id: l.id, label: l.label, url: l.url, host: host(l.url) }))}
+      links={(links ?? []).filter((l) => l.kind === "listing").map((l) => ({ id: l.id, label: l.label, url: l.url, host: host(l.url) }))}
+      videoLinks={(links ?? []).filter((l) => l.kind === "video").map((l) => ({ id: l.id, label: l.label, url: l.url, host: host(l.url) }))}
     />
   );
 }

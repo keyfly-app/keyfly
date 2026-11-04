@@ -2524,10 +2524,10 @@
     },
     "listing": {
       "photos": {
-        "title": "Photos",
+        "title": "Photos and videos",
         "count": "{count, plural, one {# photo} other {# photos}}",
         "upload": "Upload",
-        "uploadSub": "JPG, PNG, WEBP",
+        "uploadSub": "Photo or video",
         "uploading": "Uploading…",
         "cover": "Cover photo",
         "makeCover": "Make it the cover",
@@ -2542,14 +2542,30 @@
           "type": "We can’t upload this file. Choose a JPG, PNG or WEBP image.",
           "limit": "A property can have up to {max} photos.",
           "generic": "We couldn’t upload it. Please try again.",
-          "save": "We couldn’t save it. Please try again."
+          "save": "We couldn’t save it. Please try again.",
+          "photoSize": "This photo is larger than 25 MB. Choose a smaller file.",
+          "videoSize": "This video is larger than 50 MB. Choose a shorter or more compressed file, or add it as a link.",
+          "videoType": "We can’t upload this video. Choose an MP4, MOV or WEBM file.",
+          "videoLimit": "A property can have up to {max} videos. Add more as links."
         },
         "close": "Close",
         "deleteDialog": {
           "title": "Delete this photo?",
           "confirm": "Delete",
-          "cancel": "Cancel"
-        }
+          "cancel": "Cancel",
+          "videoTitle": "Delete this video?"
+        },
+        "videoCount": "{count, plural, one {# video} other {# videos}}",
+        "video": "Video",
+        "play": "Play video {n}",
+        "videoMore": "Actions: video {n}",
+        "uploadPhoto": "Photo",
+        "uploadVideo": "Video",
+        "uploadingPercent": "Uploading… {percent}%",
+        "photoRules": "Photos: JPG, PNG or WEBP, up to 25 MB, {max} per property. We resize them to the optimal size (2,000 px) on upload.",
+        "videoRules": "Videos: MP4, MOV or WEBM, up to 50 MB, {max} per property.",
+        "videoUploaded": "{count, plural, one {Video uploaded.} other {# videos uploaded.}}",
+        "videoDeleted": "Video deleted."
       },
       "terms": {
         "title": "Rental terms",
@@ -2602,6 +2618,22 @@
         "empty": "No listing links yet.",
         "added": "Link added.",
         "removed": "Link deleted."
+      },
+      "videoLinks": {
+        "title": "Video links",
+        "add": "Add a video link",
+        "label": "Name",
+        "optional": "optional",
+        "labelPlaceholder": "e.g. Video tour",
+        "url": "Link",
+        "urlPlaceholder": "https://youtube.com/…",
+        "save": "Add",
+        "cancel": "Cancel",
+        "open": "Open {name} in a new tab",
+        "remove": "Delete {name}",
+        "empty": "No video links yet.",
+        "added": "Video link added.",
+        "removed": "Video link deleted."
       },
       "errors": {
         "amount": "Enter an amount.",
