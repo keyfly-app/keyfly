@@ -10,6 +10,7 @@ import { hrefFor } from "@/lib/sites";
 import { requestOrigin } from "@/lib/request-origin";
 import type { Enums } from "@/lib/supabase/database.types";
 import { createClient } from "@/lib/supabase/server";
+import { savePropertyRow } from "./property-row";
 
 export type PropertyError = "notAllowed" | "generic" | "hasLease";
 export type FieldProblem = "required" | "postalCode" | "kind" | "otherLabel" | "ownRefTaken" | "number" | "range" | "parcel";
@@ -228,8 +229,7 @@ export async function saveManagement(_prev: SaveState, form: FormData): Promise<
   }
   if ("note" in v) patch.note = (v.note ?? "").trim().slice(0, 2000) || null;
   const supabase = await createClient();
-  const { error } = await supabase.from("property_management").upsert({ property_id: v.propertyId ?? "", ...patch }, { onConflict: "property_id" });
-  return dbProblem(error);
+  return dbProblem(await savePropertyRow(supabase, "property_management", v.propertyId ?? "", patch));
 }
 
 /** Archive from the ⋯ menu (the page then returns to the list). */

@@ -2,6 +2,7 @@
 
 import { randomBytes } from "node:crypto";
 import { createClient } from "@/lib/supabase/server";
+import { savePropertyRow } from "./property-row";
 
 const MEDIA_BUCKET = "property-media";
 const MAX_PHOTOS = 30;
@@ -115,34 +116,28 @@ export async function saveTerms(input: TermsInput): Promise<ListingState> {
   if (!input.availableNow && !/^\d{4}-\d{2}-\d{2}$/.test(input.availableFrom)) fields.availableFrom = "date";
   if (Object.keys(fields).length) return { status: "error", fields };
   const supabase = await createClient();
-  const { error } = await supabase.from("property_listing").upsert(
-    {
-      property_id: input.propertyId,
-      asking_rent: rent,
-      currency: input.currency === "EUR" ? "EUR" : "HUF",
-      deposit_months: deposit,
-      available_now: input.availableNow,
-      available_from: input.availableNow ? null : input.availableFrom,
-      min_term_months: minTerm,
-      pets: input.pets || null,
-      smoking: input.smoking || null,
-      est_bills: bills,
-      parking_property_id: input.parkingPropertyId || null,
-      parking_rent: input.parkingPropertyId ? parkingRent : null,
-    },
-    { onConflict: "property_id" },
-  );
+  const error = await savePropertyRow(supabase, "property_listing", input.propertyId, {
+    asking_rent: rent,
+    currency: input.currency === "EUR" ? "EUR" : "HUF",
+    deposit_months: deposit,
+    available_now: input.availableNow,
+    available_from: input.availableNow ? null : input.availableFrom,
+    min_term_months: minTerm,
+    pets: input.pets || null,
+    smoking: input.smoking || null,
+    est_bills: bills,
+    parking_property_id: input.parkingPropertyId || null,
+    parking_rent: input.parkingPropertyId ? parkingRent : null,
+  });
   return failed(error);
 }
 
 export async function saveAd(propertyId: string, title: string, description: string): Promise<ListingState> {
   const supabase = await createClient();
-  const { error } = await supabase
-    .from("property_listing")
-    .upsert(
-      { property_id: propertyId, title: title.trim().replace(/\s+/g, " ").slice(0, 120) || null, description: description.trim().slice(0, 3000) || null },
-      { onConflict: "property_id" },
-    );
+  const error = await savePropertyRow(supabase, "property_listing", propertyId, {
+    title: title.trim().replace(/\s+/g, " ").slice(0, 120) || null,
+    description: description.trim().slice(0, 3000) || null,
+  });
   return failed(error);
 }
 

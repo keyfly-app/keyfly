@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, useTransition } from "react";
+import { useEffect, useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { Icon } from "@/components/Icon";
@@ -10,6 +10,7 @@ import { Dialog, DialogActions } from "@/components/ui/Dialog";
 import { Button, FieldError, INPUT_CLASS, Label, Notice, TextField, buttonClass } from "@/components/ui/form";
 import { MenuPopover } from "@/components/ui/MenuPopover";
 import { offered, type CatalogOption } from "@/features/catalog/types";
+import { dropQueryParam } from "@/lib/drop-query-param";
 import { addPropertyContact, removePropertyContact, updatePropertyContact, type ContactInput, type ContactState } from "./contact-actions";
 
 export type LinkedContact = {
@@ -332,6 +333,7 @@ export function ContactsPanel({
   const t = useTranslations("properties.contacts");
   const router = useRouter();
   const [dialog, setDialog] = useState<{ editing: LinkedContact | null; key: number } | null>(openAdd && editable ? { editing: null, key: 0 } : null);
+  useEffect(() => dropQueryParam("add"), []);
   const [removing, setRemoving] = useState<LinkedContact | null>(null);
   const [pending, start] = useTransition();
   const remove = () =>

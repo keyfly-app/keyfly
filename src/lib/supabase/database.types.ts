@@ -2805,6 +2805,15 @@ export type Database = {
         }
         Returns: undefined
       }
+      save_property_owner: {
+        Args: {
+          p_contact_id?: string
+          p_kind: string
+          p_new_contact?: Json
+          p_property_id: string
+        }
+        Returns: string
+      }
       save_service: {
         Args: {
           p_identifiers?: Json

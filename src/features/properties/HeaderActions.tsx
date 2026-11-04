@@ -10,6 +10,7 @@ import { Button, Notice, TextField, buttonClass } from "@/components/ui/form";
 import { MenuPopover } from "@/components/ui/MenuPopover";
 import { archiveProperty, copyProperty, type SaveState } from "./actions";
 import { AddressFields, type AddressValues } from "./AddressFields";
+import { dropQueryParam } from "@/lib/drop-query-param";
 
 /** The Keyfly ID with a copy button next to it. */
 export function CopyCode({ code }: { code: string }) {
@@ -123,9 +124,7 @@ export function CreatedToast() {
   const t = useTranslations("properties.new");
   useEffect(() => {
     toast(t("created"));
-    const url = new URL(window.location.href);
-    url.searchParams.delete("created");
-    window.history.replaceState(window.history.state, "", url);
+    dropQueryParam("created");
   }, [t]);
   return null;
 }

@@ -16,6 +16,26 @@ type Sheet = { fileName: string; headers: string[]; rows: string[][] };
 type Done = { batchId: string; created: number; updated: number };
 const SHOWN = 60;
 
+/** Every row checked with the columns matched and the fixes typed on screen. */
+function checkSheet(sheet: Sheet, mapping: (ImportField | null)[], edits: Record<number, Partial<Record<ImportField, string>>>, lookup: Lookup) {
+  const seen = new Map<string, number>();
+  return sheet.rows.map((r, i) => {
+    const values = Object.fromEntries(IMPORT_FIELDS.map((f) => [f, ""])) as Record<ImportField, string>;
+    mapping.forEach((f, c) => {
+      if (f) values[f] = String(r[c] ?? "");
+    });
+    Object.assign(values, edits[i] ?? {});
+    return checkRow(i, values, lookup, seen);
+  });
+}
+
+/** Fields fixed in place, by the column they show in (address, size, name). */
+const FIX_IN = {
+  address: ["postalCode", "city", "streetName", "streetType", "houseNumber", "floor", "parcel"],
+  size: ["area", "rooms", "halfRooms"],
+  name: ["ownRef"],
+} as const satisfies Record<string, readonly ImportField[]>;
+
 /**
  * "Ingatlanok importálása" (canvas "Import – fájl", "… – ellenőrzés", "… – kész"): template, file, column matching,
  * row checks with fixes in place, duplicates skipped or updated, the rows to fix downloadable; imported in one go and
@@ -81,24 +101,19 @@ export function ImportFlow({
     }
   };
 
-  const checked: CheckedRow[] = useMemo(() => {
-    if (!sheet) return [];
-    const seen = new Map<string, number>();
-    return sheet.rows.map((r, i) => {
-      const values = Object.fromEntries(IMPORT_FIELDS.map((f) => [f, ""])) as Record<ImportField, string>;
-      mapping.forEach((f, c) => {
-        if (f) values[f] = String(r[c] ?? "");
-      });
-      Object.assign(values, edits[i] ?? {});
-      return checkRow(i, values, lookup, seen);
-    });
-  }, [sheet, mapping, edits, lookup]);
+  const checked: CheckedRow[] = useMemo(() => (sheet ? checkSheet(sheet, mapping, edits, lookup) : []), [sheet, mapping, edits, lookup]);
+  // Rows keep the place they got when the file was read (to fix first, then duplicates, then the good ones): a row being
+  // fixed does not jump away under the cursor.
+  const rank = useMemo(
+    () => new Map((sheet ? checkSheet(sheet, mapping, {}, lookup) : []).map((r) => [r.index, !r.payload ? 0 : r.duplicateOf ? 1 : 2])),
+    [sheet, mapping, lookup],
+  );
 
   const ok = checked.filter((r) => r.payload && !r.duplicateOf);
   const dups = checked.filter((r) => r.payload && r.duplicateOf);
   const bad = checked.filter((r) => !r.payload);
   const toImport = [...ok, ...dups.filter((r) => dupAction[r.index] === "update")];
-  const ordered = [...bad, ...dups, ...ok];
+  const ordered = [...checked].sort((a, b) => (rank.get(a.index) ?? 0) - (rank.get(b.index) ?? 0) || a.index - b.index);
 
   const downloadTemplate = async () => {
     const { default: writeXlsxFile } = await import("write-excel-file/browser");
@@ -141,6 +156,15 @@ export function ImportFlow({
   const status = (r: CheckedRow) => (!r.payload ? "fix" : r.duplicateOf ? "dup" : "ok");
   const iconOf = { ok: "check", fix: "alert", dup: "info" } as const;
   const setEdit = (i: number, f: ImportField, value: string) => setEdits((e) => ({ ...e, [i]: { ...e[i], [f]: value } }));
+  const fixInput = (r: CheckedRow, f: ImportField) => (
+    <input
+      aria-label={label(f)}
+      value={r.values[f]}
+      placeholder={label(f)}
+      onChange={(e) => setEdit(r.index, f, e.target.value)}
+      className={`${INPUT_CLASS} h-9 border-warning-ink sm:h-9`}
+    />
+  );
 
   return (
     <div className="flex min-h-dvh flex-col bg-paper">
@@ -303,7 +327,7 @@ export function ImportFlow({
                     {ordered.slice(0, SHOWN).map((r) => {
                       const s = status(r);
                       const has = (f: ImportField) => r.problems.some((p) => p.field === f);
-                      const addrField = (["postalCode", "city", "streetName", "streetType", "houseNumber"] as ImportField[]).find(has);
+                      const [addrField, sizeField, nameField] = [FIX_IN.address, FIX_IN.size, FIX_IN.name].map((fs) => fs.find(has));
                       return (
                         <tr key={r.index} className={s === "fix" ? "bg-warning-soft/30" : s === "dup" ? "bg-info-soft/30" : undefined}>
                           <td className="border-b border-paper px-3 py-2.5">
@@ -314,13 +338,7 @@ export function ImportFlow({
                           </td>
                           <td className="border-b border-paper px-3 py-2.5">
                             {addrField ? (
-                              <input
-                                aria-label={label(addrField)}
-                                value={r.values[addrField]}
-                                placeholder={label(addrField)}
-                                onChange={(e) => setEdit(r.index, addrField, e.target.value)}
-                                className={`${INPUT_CLASS} h-9 border-warning-ink sm:h-9`}
-                              />
+                              fixInput(r, addrField)
                             ) : (
                               <span className="[overflow-wrap:anywhere]">
                                 {`${r.values.postalCode} ${r.values.city}, ${r.values.streetName} ${r.values.streetType} ${r.values.houseNumber}`}
@@ -348,8 +366,12 @@ export function ImportFlow({
                               (kindOptions.find((k) => k.key === r.payload?.kind)?.label ?? r.values.kind)
                             )}
                           </td>
-                          <td className="border-b border-paper px-3 py-2.5 whitespace-nowrap tabular-nums">{r.values.area ? `${r.values.area} m²` : "–"}</td>
-                          <td className="border-b border-paper px-3 py-2.5 [overflow-wrap:anywhere]">{r.values.ownRef || r.values.label || "–"}</td>
+                          <td className="border-b border-paper px-3 py-2.5 whitespace-nowrap tabular-nums">
+                            {sizeField ? fixInput(r, sizeField) : r.values.area ? `${r.values.area} m²` : "–"}
+                          </td>
+                          <td className="border-b border-paper px-3 py-2.5 [overflow-wrap:anywhere]">
+                            {nameField ? fixInput(r, nameField) : r.values.ownRef || r.values.label || "–"}
+                          </td>
                           <td className="border-b border-paper px-3 py-2.5">
                             {s === "fix" && <span className="text-[12.5px] font-medium text-warning-ink">{r.problems.map(problemText).join(" · ")}</span>}
                             {s === "dup" && (

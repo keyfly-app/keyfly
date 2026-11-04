@@ -130,41 +130,20 @@ export type OwnerInput = {
  * among the property's contacts as "Tulajdonos".
  */
 export async function saveOwner(input: OwnerInput): Promise<ContactState> {
+  const other = input.kind === "other";
+  const details = other && !input.contactId && input.newContact ? { ...input.newContact, address: "", note: "" } : null;
+  if (other && !input.contactId && !details) return { status: "error", fields: { pick: "pick" } };
+  if (details) {
+    const fields = checkDetails(details);
+    if (Object.keys(fields).length) return { status: "error", fields };
+  }
   const supabase = await createClient();
-  const { data: auth } = await supabase.auth.getClaims();
-  const { data: property } = await supabase.from("properties").select("account_id").eq("id", input.propertyId).maybeSingle();
-  if (!property || !auth?.claims) return { status: "error", error: "notAllowed" };
-  let contactId: string | null = null;
-  if (input.kind === "other") {
-    if (input.contactId) contactId = input.contactId;
-    else if (input.newContact) {
-      const d = { ...input.newContact, address: "", note: "" };
-      const fields = checkDetails(d);
-      if (Object.keys(fields).length) return { status: "error", fields };
-      const { data, error } = await supabase
-        .from("contacts")
-        .insert({ account_id: property.account_id, ...detailsRow(d), default_role_key: "owner", created_by: auth.claims.sub })
-        .select("id")
-        .single();
-      if (error || !data) return failed(error ?? { message: "no_row" });
-      contactId = data.id;
-    } else return { status: "error", fields: { pick: "pick" } };
-  }
-  const { error } = await supabase
-    .from("property_management")
-    .upsert({ property_id: input.propertyId, owner_kind: input.kind || null, owner_contact_id: contactId }, { onConflict: "property_id" });
-  if (error) return failed(error);
-  if (contactId) {
-    const { data: linked } = await supabase
-      .from("property_contacts")
-      .select("id")
-      .eq("property_id", input.propertyId)
-      .eq("contact_id", contactId)
-      .eq("role_key", "owner");
-    if (!linked?.length) {
-      const { error: le } = await supabase.from("property_contacts").insert({ property_id: input.propertyId, contact_id: contactId, role_key: "owner" });
-      if (le && le.code !== "23505") return failed(le);
-    }
-  }
-  return { status: "saved" };
+  const row = details ? detailsRow(details) : null;
+  const { error } = await supabase.rpc("save_property_owner", {
+    p_property_id: input.propertyId,
+    p_kind: (input.kind || null) as string,
+    p_contact_id: (other && input.contactId) || undefined,
+    p_new_contact: row ? { name: row.name, phone: row.phone ?? "", email: row.email ?? "" } : undefined,
+  });
+  return failed(error);
 }

@@ -470,7 +470,7 @@ export function ServiceForm({
             ))}
           </datalist>
           {v.identifiers.map((it, i) => (
-            <div key={i} className="grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto] items-center gap-2">
+            <div key={i} className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-1 gap-y-2 rounded-lg border border-line p-2">
               <input
                 aria-label={f("idLabel")}
                 list={`${id}-id-suggestions`}
@@ -480,15 +480,6 @@ export function ServiceForm({
                 onChange={(e) => set("identifiers")(v.identifiers.map((x, j) => (j === i ? { ...x, label: e.target.value } : x)))}
                 className={INPUT_CLASS}
               />
-              <input
-                aria-label={f("idValue")}
-                value={it.value}
-                placeholder={f("idValue")}
-                maxLength={120}
-                spellCheck={false}
-                onChange={(e) => set("identifiers")(v.identifiers.map((x, j) => (j === i ? { ...x, value: e.target.value } : x)))}
-                className={`${INPUT_CLASS} font-mono text-[13px]`}
-              />
               <button
                 type="button"
                 aria-label={f("removeIdentifier")}
@@ -497,6 +488,15 @@ export function ServiceForm({
               >
                 <Icon name="x" size={16} strokeWidth={2} />
               </button>
+              <input
+                aria-label={f("idValue")}
+                value={it.value}
+                placeholder={f("idValue")}
+                maxLength={120}
+                spellCheck={false}
+                onChange={(e) => set("identifiers")(v.identifiers.map((x, j) => (j === i ? { ...x, value: e.target.value } : x)))}
+                className={`${INPUT_CLASS} col-span-2 font-mono text-[13px]`}
+              />
             </div>
           ))}
           <button

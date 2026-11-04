@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { Icon, type IconName } from "@/components/Icon";
@@ -9,6 +9,7 @@ import { Dialog, DialogActions } from "@/components/ui/Dialog";
 import { Button, Optional, TextField, buttonClass } from "@/components/ui/form";
 import { MenuPopover } from "@/components/ui/MenuPopover";
 import { Tag } from "@/components/ui/Tag";
+import { dropQueryParam } from "@/lib/drop-query-param";
 import { ServiceForm, type ContactOption, type ProviderOption, type ServiceCatalog, type ServiceDraft } from "./ServiceForm";
 import { endService, pauseService, resumeService } from "./service-actions";
 
@@ -241,6 +242,7 @@ export function ServicesPanel({
   const [form, setForm] = useState<{ group: "utility" | "other"; service: ServiceView | null; key: number } | null>(
     editable && openAdd ? { group: openAdd, service: null, key: 0 } : null,
   );
+  useEffect(() => dropQueryParam("add"), []);
   const [pausing, setPausing] = useState<ServiceView | null>(null);
   const [ending, setEnding] = useState<ServiceView | null>(null);
   const today = new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/Budapest" }).format(new Date());
