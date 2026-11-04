@@ -2158,7 +2158,7 @@
     "rooms": "{rooms}",
     "roomsHalf": "{rooms} + {half} half",
     "halfOnly": "{half} half",
-    "ownRef": "Own:",
+    "ownRef": "Your ID:",
     "empty": {
       "title": "Add your first property",
       "lead": "An address and the type are enough to start."
