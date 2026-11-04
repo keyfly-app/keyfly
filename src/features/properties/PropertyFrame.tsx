@@ -112,7 +112,9 @@ export async function PropertyFrame({
                 <h1 className="font-display text-[22px] leading-7 font-semibold [overflow-wrap:anywhere] sm:text-[26px] sm:leading-8">
                   {displayName(p.label, a)}
                 </h1>
-                <Tag tone={STATUS_TONE[o.state]}>{status}</Tag>
+                <span className="flex">
+                  <Tag tone={STATUS_TONE[o.state]}>{status}</Tag>
+                </span>
               </div>
               <p className="text-sm text-muted [overflow-wrap:anywhere]">
                 {addressLine(a)} · {kindLabel(catalog.property_type, p.kind, p.other_kind_label)}

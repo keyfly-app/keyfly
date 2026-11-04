@@ -2189,7 +2189,8 @@
         "generic": "We couldn’t save it. Please try again.",
         "summary": "{count, plural, one {One field still needs fixing.} other {# fields still need fixing.}}"
       },
-      "created": "Property added."
+      "created": "Property added.",
+      "floorPlaceholder": "e.g. 3"
     },
     "detail": {
       "back": "Properties",

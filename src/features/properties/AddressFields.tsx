@@ -171,7 +171,7 @@ export function AddressFields({
           onChange={(e) => set("staircase")(e.target.value)}
           maxLength={20}
         />
-        <FloorInput id={`${id}-floor`} value={values.floor} onChange={set("floor")} />
+        <FloorInput id={`${id}-floor`} value={values.floor} onChange={set("floor")} placeholder={p("floorPlaceholder")} />
         <TextField id={`${id}-door`} label={t("address.door")} value={values.door} onChange={(e) => set("door")(e.target.value)} maxLength={20} />
       </fieldset>
     </div>

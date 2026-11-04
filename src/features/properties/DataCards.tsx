@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useEffect, useId, useRef, useState, useTransition } from "react";
+import { useEffect, useId, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { Icon } from "@/components/Icon";
@@ -52,6 +52,21 @@ export type DataCardsProps = {
   condo: { rows: Row[]; commonCharge: string };
   note: { text: string };
 };
+
+/**
+ * Submits the form to a server action without React's form reset: after a refused save the person keeps what they
+ * typed and sees what to fix.
+ */
+function useFormSave(fn: (prev: SaveState, form: FormData) => Promise<SaveState>) {
+  const [state, setState] = useState<SaveState>({ status: "idle" });
+  const [pending, start] = useTransition();
+  const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const data = new FormData(e.currentTarget);
+    start(async () => setState(await fn(state, data)));
+  };
+  return [state, onSubmit, pending] as const;
+}
 
 /** The saved state turns into a toast and a fresh page; a refusal stays in the card. */
 function useSaved(state: SaveState, close: () => void) {
@@ -138,9 +153,7 @@ function IdentityForm({ p, types, close }: { p: DataCardsProps; types: CatalogOp
   const n = useTranslations("properties.new");
   const id = useId();
   const form = useRef<HTMLFormElement>(null);
-  const [state, action, pending] = useActionState(saveIdentity, {
-    status: "idle",
-  } as SaveState);
+  const [state, onSubmit, pending] = useFormSave(saveIdentity);
   useSaved(state, close);
   useFocusError(state, form);
   const [kind, setKind] = useState(p.identity.kind);
@@ -149,7 +162,7 @@ function IdentityForm({ p, types, close }: { p: DataCardsProps; types: CatalogOp
   // A retired type stays selectable for the property that already has it.
   const options = types.filter((o) => o.active || o.key === p.identity.kind);
   return (
-    <form ref={form} action={action} noValidate className="flex flex-col gap-4">
+    <form ref={form} onSubmit={onSubmit} noValidate className="flex flex-col gap-4">
       <input type="hidden" name="propertyId" value={p.propertyId} />
       <GeneralError state={state} />
       <div className="grid gap-4 sm:grid-cols-2 sm:gap-3">
@@ -197,16 +210,14 @@ function AddressForm({ p, close }: { p: DataCardsProps; close: () => void }) {
   const lr = useTranslations("leaseRequest.errors");
   const id = useId();
   const form = useRef<HTMLFormElement>(null);
-  const [state, action, pending] = useActionState(saveAddress, {
-    status: "idle",
-  } as SaveState);
+  const [state, onSubmit, pending] = useFormSave(saveAddress);
   useSaved(state, close);
   useFocusError(state, form);
   const [values, setValues] = useState(p.address.values);
   const f = state.status === "error" ? (state.fields ?? {}) : {};
   const err = (k: keyof AddressValues) => (f[k] ? lr(f[k] === "postalCode" ? "postalCode" : "required") : undefined);
   return (
-    <form ref={form} action={action} noValidate className="flex flex-col gap-4">
+    <form ref={form} onSubmit={onSubmit} noValidate className="flex flex-col gap-4">
       <input type="hidden" name="propertyId" value={p.propertyId} />
       <GeneralError state={state} />
       <AddressFields
@@ -441,42 +452,44 @@ function FeaturesForm({ p, close }: { p: DataCardsProps; close: () => void }) {
       </div>
 
       {has("outdoor") && (
-        <fieldset className="flex flex-col gap-2 border-t border-paper pt-4">
-          <legend className="mb-1 text-[13px] font-medium">{t("features.outdoor")}</legend>
-          {offered(p.features.options.outdoor).map((o) => {
-            const cur = outdoorOf(o.key);
-            return (
-              <div key={o.key} className="grid min-h-11 grid-cols-[minmax(0,1fr)_9rem] items-center gap-3">
-                <label className="flex min-h-11 cursor-pointer items-center gap-2.5 text-sm">
-                  <input
-                    type="checkbox"
-                    checked={Boolean(cur)}
-                    onChange={() => set("outdoor")(cur ? v.outdoor.filter((x) => x.kind !== o.key) : [...v.outdoor, { kind: o.key, area: "" }])}
-                    className="size-5 flex-none accent-ink"
-                  />
-                  {o.label}
-                </label>
-                {cur && (
-                  <div className="relative">
+        <div className="border-t border-paper pt-4">
+          <fieldset className="flex flex-col">
+            <legend className="mb-1 text-[13px] font-medium">{t("features.outdoor")}</legend>
+            {offered(p.features.options.outdoor).map((o) => {
+              const cur = outdoorOf(o.key);
+              return (
+                <div key={o.key} className="grid grid-cols-[minmax(0,11rem)_8rem] items-center gap-x-3">
+                  <label className="flex min-h-11 cursor-pointer items-center gap-2.5 text-sm">
                     <input
-                      aria-label={t("features.outdoorArea", { name: o.label })}
-                      inputMode="decimal"
-                      maxLength={7}
-                      value={cur.area}
-                      onChange={(e) => set("outdoor")(v.outdoor.map((x) => (x.kind === o.key ? { ...x, area: e.target.value } : x)))}
-                      aria-invalid={f[`outdoor.${o.key}`] ? true : undefined}
-                      className={`${INPUT_CLASS} pr-11`}
+                      type="checkbox"
+                      checked={Boolean(cur)}
+                      onChange={() => set("outdoor")(cur ? v.outdoor.filter((x) => x.kind !== o.key) : [...v.outdoor, { kind: o.key, area: "" }])}
+                      className="size-5 flex-none accent-ink"
                     />
-                    <span aria-hidden="true" className="pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 text-[13px] text-muted">
-                      {t("features.unit")}
-                    </span>
-                  </div>
-                )}
-                {f[`outdoor.${o.key}`] && <FieldError id={`${id}-out-${o.key}`} message={t("errors.number")} className="col-span-2" />}
-              </div>
-            );
-          })}
-        </fieldset>
+                    {o.label}
+                  </label>
+                  {cur && (
+                    <div className="relative">
+                      <input
+                        aria-label={t("features.outdoorArea", { name: o.label })}
+                        inputMode="decimal"
+                        maxLength={7}
+                        value={cur.area}
+                        onChange={(e) => set("outdoor")(v.outdoor.map((x) => (x.kind === o.key ? { ...x, area: e.target.value } : x)))}
+                        aria-invalid={f[`outdoor.${o.key}`] ? true : undefined}
+                        className={`${INPUT_CLASS} pr-11`}
+                      />
+                      <span aria-hidden="true" className="pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 text-[13px] text-muted">
+                        {t("features.unit")}
+                      </span>
+                    </div>
+                  )}
+                  {f[`outdoor.${o.key}`] && <FieldError id={`${id}-out-${o.key}`} message={t("errors.number")} className="col-span-2" />}
+                </div>
+              );
+            })}
+          </fieldset>
+        </div>
       )}
 
       {(has("heating") || has("energy_rating") || has("parking")) && (
@@ -544,73 +557,80 @@ function FeaturesForm({ p, close }: { p: DataCardsProps; close: () => void }) {
       )}
 
       {has("extras") && (
-        <fieldset className="flex flex-col gap-2.5 border-t border-paper pt-4">
-          <legend className="mb-1 text-[13px] font-medium">
-            {t("features.extras")} <Optional>{t("features.extrasOptional")}</Optional>
-          </legend>
-          <div className="flex flex-wrap gap-2">
-            {offered(p.features.options.extras).map((o) => (
-              <button
-                key={o.key}
-                type="button"
-                aria-pressed={v.extras.includes(o.key)}
-                onClick={() => toggle("extras", o.key)}
-                className={v.extras.includes(o.key) ? on : off}
-              >
-                <Icon name={v.extras.includes(o.key) ? "check" : "plus"} size={14} strokeWidth={2.25} />
-                {o.label}
-              </button>
-            ))}
-            {p.features.accountExtras.map((e) => (
-              <button
-                key={e.id}
-                type="button"
-                aria-pressed={v.ownExtras.includes(e.id)}
-                onClick={() => toggle("ownExtras", e.id)}
-                className={v.ownExtras.includes(e.id) ? on : off}
-              >
-                <Icon name={v.ownExtras.includes(e.id) ? "check" : "plus"} size={14} strokeWidth={2.25} />
-                {e.label}
-              </button>
-            ))}
-            {newExtras.map((label) => (
-              <span key={label} className={`${on} pr-1`}>
-                <Icon name="check" size={14} strokeWidth={2.25} />
-                {label}
+        <div className="border-t border-paper pt-4">
+          <fieldset className="flex flex-col gap-2.5">
+            <legend className="mb-1 text-[13px] font-medium">
+              {t("features.extras")} <Optional>{t("features.extrasOptional")}</Optional>
+            </legend>
+            <div className="flex flex-wrap gap-2">
+              {offered(p.features.options.extras).map((o) => (
                 <button
+                  key={o.key}
                   type="button"
-                  aria-label={t("features.removeExtra", { name: label })}
-                  onClick={() => setNewExtras((n) => n.filter((x) => x !== label))}
-                  className="flex size-8 items-center justify-center rounded-full text-muted hover:text-ink sm:size-6"
+                  aria-pressed={v.extras.includes(o.key)}
+                  onClick={() => toggle("extras", o.key)}
+                  className={v.extras.includes(o.key) ? on : off}
                 >
-                  <Icon name="x" size={13} strokeWidth={2.25} />
+                  <Icon name={v.extras.includes(o.key) ? "check" : "plus"} size={14} strokeWidth={2.25} />
+                  {o.label}
                 </button>
-              </span>
-            ))}
-          </div>
-          <div className="flex max-w-[360px] gap-2">
-            <label htmlFor={`${id}-extra`} className="sr-only">
-              {t("features.addExtra")}
-            </label>
-            <input
-              id={`${id}-extra`}
-              value={typed}
-              onChange={(e) => setTyped(e.target.value)}
-              placeholder={t("features.addExtraPlaceholder")}
-              maxLength={40}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  e.preventDefault();
-                  addTyped();
-                }
-              }}
-              className={INPUT_CLASS}
-            />
-            <button type="button" onClick={addTyped} disabled={!typed.trim()} className={`${buttonClass("secondary")} w-auto flex-none disabled:opacity-50`}>
-              {t("features.addExtraButton")}
-            </button>
-          </div>
-        </fieldset>
+              ))}
+              {p.features.accountExtras.map((e) => (
+                <button
+                  key={e.id}
+                  type="button"
+                  aria-pressed={v.ownExtras.includes(e.id)}
+                  onClick={() => toggle("ownExtras", e.id)}
+                  className={v.ownExtras.includes(e.id) ? on : off}
+                >
+                  <Icon name={v.ownExtras.includes(e.id) ? "check" : "plus"} size={14} strokeWidth={2.25} />
+                  {e.label}
+                </button>
+              ))}
+              {newExtras.map((label) => (
+                <span key={label} className={`${on} pr-1`}>
+                  <Icon name="check" size={14} strokeWidth={2.25} />
+                  {label}
+                  <button
+                    type="button"
+                    aria-label={t("features.removeExtra", { name: label })}
+                    onClick={() => setNewExtras((n) => n.filter((x) => x !== label))}
+                    className="flex size-8 items-center justify-center rounded-full text-muted hover:text-ink sm:size-6"
+                  >
+                    <Icon name="x" size={13} strokeWidth={2.25} />
+                  </button>
+                </span>
+              ))}
+            </div>
+            <div className="flex max-w-[360px] gap-2">
+              <label htmlFor={`${id}-extra`} className="sr-only">
+                {t("features.addExtra")}
+              </label>
+              <input
+                id={`${id}-extra`}
+                value={typed}
+                onChange={(e) => setTyped(e.target.value)}
+                placeholder={t("features.addExtraPlaceholder")}
+                maxLength={40}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    addTyped();
+                  }
+                }}
+                className={`${INPUT_CLASS} flex-1`}
+              />
+              <button
+                type="button"
+                onClick={addTyped}
+                disabled={!typed.trim()}
+                className="inline-flex h-11 flex-none items-center rounded-lg border border-field bg-surface px-4 text-sm font-medium hover:border-ink disabled:cursor-not-allowed disabled:opacity-50 sm:h-10"
+              >
+                {t("features.addExtraButton")}
+              </button>
+            </div>
+          </fieldset>
+        </div>
       )}
       <FormActions pending={pending} onCancel={close} />
     </form>
@@ -621,14 +641,12 @@ function ManagementForm({ p, field, close }: { p: DataCardsProps; field: "manage
   const t = useTranslations("properties.data");
   const id = useId();
   const form = useRef<HTMLFormElement>(null);
-  const [state, action, pending] = useActionState(saveManagement, {
-    status: "idle",
-  } as SaveState);
+  const [state, onSubmit, pending] = useFormSave(saveManagement);
   useSaved(state, close);
   useFocusError(state, form);
   const f = state.status === "error" ? (state.fields ?? {}) : {};
   return (
-    <form ref={form} action={action} noValidate className="flex flex-col gap-4">
+    <form ref={form} onSubmit={onSubmit} noValidate className="flex flex-col gap-4">
       <input type="hidden" name="propertyId" value={p.propertyId} />
       <GeneralError state={state} />
       {field === "management" && (

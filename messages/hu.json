@@ -2189,7 +2189,8 @@
         "generic": "Nem sikerült menteni. Próbáld újra.",
         "summary": "{count, plural, one {Egy mezőt még javíts.} other {# mezőt még javíts.}}"
       },
-      "created": "Felvetted az ingatlant."
+      "created": "Felvetted az ingatlant.",
+      "floorPlaceholder": "pl. 3"
     },
     "detail": {
       "back": "Ingatlanok",

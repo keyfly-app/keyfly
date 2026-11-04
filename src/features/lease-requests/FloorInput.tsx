@@ -12,7 +12,7 @@ const fold = (s: string) => s.normalize("NFD").replace(/\p{Diacritic}/gu, "").to
  * Floor field (canvas "Meghívás 1 – emelet bármilyen számmal"): type a number ("28" → "28. emelet", up to 99) or pick a
  * named level (ground floor, mezzanine, basement, attic…). Value: "" | a named floor | "numbered:28".
  */
-export function FloorInput({ id, value, onChange }: { id: string; value: string; onChange: (value: string) => void }) {
+export function FloorInput({ id, value, onChange, placeholder }: { id: string; value: string; onChange: (value: string) => void; placeholder?: string }) {
   const t = useTranslations("leaseRequest.address");
   const listId = useId();
   const [text, setText] = useState<string | null>(null); // null: not editing, the chosen value is shown
@@ -86,7 +86,7 @@ export function FloorInput({ id, value, onChange }: { id: string; value: string;
         }}
         onBlur={() => setTimeout(commit, 120)}
         onKeyDown={onKey}
-        placeholder={t("floorPlaceholder")}
+        placeholder={placeholder ?? t("floorPlaceholder")}
         autoComplete="off"
         spellCheck={false}
         className={`${INPUT_CLASS} pr-8`}
