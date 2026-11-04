@@ -73,11 +73,14 @@ export async function PropertiesPage({ account, base, filter, query }: { account
           </p>
         )}
       </div>
+      {/* Phones and tablets add from the bottom bar's "+". */}
       {canAdd && all.length > 0 && (
-        <ButtonLink href={newHref} fit>
-          <Icon name="plus" size={16} strokeWidth={2} />
-          {t("add")}
-        </ButtonLink>
+        <div className="hidden lg:block">
+          <ButtonLink href={newHref} fit>
+            <Icon name="plus" size={16} strokeWidth={2} />
+            {t("add")}
+          </ButtonLink>
+        </div>
       )}
     </div>
   );

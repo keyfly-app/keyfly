@@ -2137,7 +2137,7 @@
     },
     "search": {
       "label": "Search properties",
-      "placeholder": "Search by name, address or ID",
+      "placeholder": "Name, address or ID",
       "clear": "Clear the search"
     },
     "noMatch": "No property matches your search.",

@@ -102,7 +102,7 @@ export async function PropertyFrame({
           <Icon name="back" size={16} strokeWidth={2} />
           {list("back")}
         </Link>
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+        <div className="flex items-start justify-between gap-3">
           <div className="flex min-w-0 items-start gap-4">
             <span aria-hidden="true" className="flex size-14 flex-none items-center justify-center rounded-xl bg-mist text-brand sm:size-[72px]">
               <Icon name={kindIcon(catalog.property_type, p.kind)} size={26} strokeWidth={1.6} />
@@ -112,7 +112,7 @@ export async function PropertyFrame({
                 <h1 className="font-display text-[22px] leading-7 font-semibold [overflow-wrap:anywhere] sm:text-[26px] sm:leading-8">
                   {displayName(p.label, a)}
                 </h1>
-                <span className="flex">
+                <span className="hidden sm:flex">
                   <Tag tone={STATUS_TONE[o.state]}>{status}</Tag>
                 </span>
               </div>
@@ -120,6 +120,9 @@ export async function PropertyFrame({
                 {addressLine(a)} · {kindLabel(catalog.property_type, p.kind, p.other_kind_label)}
               </p>
               <p className="flex flex-wrap items-center gap-x-2 text-[12.5px] text-muted">
+                <span className="mr-1 flex sm:hidden">
+                  <Tag tone={STATUS_TONE[o.state]}>{status}</Tag>
+                </span>
                 <CopyCode code={p.public_code} />
                 {p.own_ref && (
                   <>
@@ -134,10 +137,13 @@ export async function PropertyFrame({
           </div>
           {editable && (
             <div className="flex flex-none items-center gap-2">
-              <ButtonLink href={editHref} variant="secondary" fit>
-                <Icon name="edit" size={15} strokeWidth={2} />
-                {list("edit")}
-              </ButtonLink>
+              {/* Phones edit from the cards; the header keeps the ⋯ menu only. */}
+              <span className="hidden sm:block">
+                <ButtonLink href={editHref} variant="secondary" fit>
+                  <Icon name="edit" size={15} strokeWidth={2} />
+                  {list("edit")}
+                </ButtonLink>
+              </span>
               <PropertyMenu propertyId={p.id} accountId={account.id} listHref={listHref} />
             </div>
           )}

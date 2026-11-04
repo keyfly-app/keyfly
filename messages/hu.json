@@ -2137,7 +2137,7 @@
     },
     "search": {
       "label": "Keresés az ingatlanok között",
-      "placeholder": "Keresés név, cím vagy azonosító szerint",
+      "placeholder": "Név, cím vagy azonosító",
       "clear": "Keresés törlése"
     },
     "noMatch": "Nincs a keresésnek megfelelő ingatlan.",
