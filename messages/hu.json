@@ -2541,7 +2541,14 @@
         "errors": {
           "type": "Ezt a fájlt nem tudjuk feltölteni. JPG, PNG vagy WEBP képet válassz.",
           "limit": "Egy ingatlanhoz legfeljebb {max} fotó tölthető fel.",
-          "generic": "Nem sikerült feltölteni. Próbáld újra."
+          "generic": "Nem sikerült feltölteni. Próbáld újra.",
+          "save": "Nem sikerült menteni. Próbáld újra."
+        },
+        "close": "Bezárás",
+        "deleteDialog": {
+          "title": "Törlöd a fotót?",
+          "confirm": "Törlés",
+          "cancel": "Mégse"
         }
       },
       "terms": {

@@ -1,7 +1,7 @@
 import { loadCatalog } from "@/features/catalog/load";
 import { addressFromRow } from "@/lib/address";
 import { createClient } from "@/lib/supabase/server";
-import { displayName } from "./format";
+import { displayName, groupDigits } from "./format";
 import { ListingPanel } from "./ListingPanel";
 import type { PropertyContext } from "./PropertyFrame";
 
@@ -51,7 +51,7 @@ export async function ListingTab({ ctx }: { ctx: PropertyContext }) {
         .map((m) => ({ id: m.id, url: urlOf.get(m.path) ?? null, cover: m.is_cover, width: m.width, height: m.height }))}
       maxPhotos={MAX_PHOTOS}
       terms={{
-        rent: listing?.asking_rent != null ? String(listing.asking_rent) : "",
+        rent: groupDigits(listing?.asking_rent),
         currency: listing?.currency === "EUR" ? "EUR" : "HUF",
         depositMonths: listing?.deposit_months != null ? String(listing.deposit_months) : "",
         availableNow: listing?.available_now ?? true,
@@ -59,9 +59,9 @@ export async function ListingTab({ ctx }: { ctx: PropertyContext }) {
         minTerm: listing?.min_term_months != null ? String(listing.min_term_months) : "",
         pets: listing?.pets ?? "",
         smoking: listing?.smoking ?? "",
-        bills: listing?.est_bills != null ? String(listing.est_bills) : "",
+        bills: groupDigits(listing?.est_bills),
         parkingPropertyId: listing?.parking_property_id ?? "",
-        parkingRent: listing?.parking_rent != null ? String(listing.parking_rent) : "",
+        parkingRent: groupDigits(listing?.parking_rent),
       }}
       pets={catalog.pets}
       smoking={catalog.smoking}

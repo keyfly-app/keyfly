@@ -47,3 +47,9 @@ export function roomsText(t: T, rooms: number | null, half: number | null): stri
   if (half) return t("halfOnly", { half });
   return "";
 }
+
+/** 320000 → "320 000" for amount fields (the saves accept spaces); anything that is not a whole number stays as typed. */
+export const groupDigits = (v: number | string | null | undefined) => {
+  const digits = v == null ? "" : String(v).replace(/\s/g, "");
+  return /^\d+$/.test(digits) ? digits.replace(/\B(?=(\d{3})+(?!\d))/g, " ") : v == null ? "" : String(v);
+};

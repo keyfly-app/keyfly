@@ -5,9 +5,11 @@ import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { Icon } from "@/components/Icon";
 import { toast } from "@/components/Toaster";
+import { Dialog, DialogActions } from "@/components/ui/Dialog";
 import { Button, FieldError, INPUT_CLASS, Label, Notice, Optional, buttonClass } from "@/components/ui/form";
 import { MenuPopover } from "@/components/ui/MenuPopover";
 import { offered, type CatalogOption } from "@/features/catalog/types";
+import { groupDigits } from "./format";
 import { addLink, deletePhoto, removeLink, saveAd, saveTerms, setCover, uploadPhoto, type ListingState, type TermsInput } from "./listing-actions";
 
 export type PhotoView = { id: string; url: string | null; cover: boolean; width: number | null; height: number | null };
@@ -72,7 +74,8 @@ function Photos({ p }: { p: ListingProps }) {
   const router = useRouter();
   const input = useRef<HTMLInputElement>(null);
   const [busy, setBusy] = useState(false);
-  const [, start] = useTransition();
+  const [deleting, setDeleting] = useState<string | null>(null);
+  const [pending, start] = useTransition();
   const upload = async (files: FileList | null) => {
     if (!files?.length) return;
     const list = [...files].slice(0, Math.max(0, p.maxPhotos - p.photos.length));
@@ -104,21 +107,22 @@ function Photos({ p }: { p: ListingProps }) {
   const act = (fn: () => Promise<ListingState>, ok: string) =>
     start(async () => {
       const r = await fn();
+      setDeleting(null);
       if (r.status === "saved") {
         toast(ok);
         router.refresh();
-      } else toast(t("errors.generic"), "error");
+      } else toast(t("errors.save"), "error");
     });
 
   return (
     <Card title={t("title")} action={p.photos.length > 0 && <span className="text-[13px] text-muted">{t("count", { count: p.photos.length })}</span>}>
       <ul className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 lg:grid-cols-6">
         {p.photos.map((ph, i) => (
-          <li key={ph.id} className="relative aspect-[4/3] overflow-hidden rounded-lg bg-mist">
+          <li key={ph.id} className="relative aspect-[4/3] rounded-lg bg-mist">
             {ph.url && (
               // Signed links to the private bucket change every hour; Next's optimiser would cache them.
               // eslint-disable-next-line @next/next/no-img-element
-              <img src={ph.url} alt={t("photoAlt", { name: p.name, n: i + 1 })} loading="lazy" className="size-full object-cover" />
+              <img src={ph.url} alt={t("photoAlt", { name: p.name, n: i + 1 })} loading="lazy" className="size-full rounded-lg object-cover" />
             )}
             {ph.cover && (
               <span className="absolute top-2 left-2 inline-flex h-6 items-center gap-1 rounded-md bg-surface/95 px-2 text-[11.5px] font-semibold shadow-sm">
@@ -130,7 +134,7 @@ function Photos({ p }: { p: ListingProps }) {
               <div className="absolute top-1.5 right-1.5">
                 <MenuPopover
                   title={t("more", { n: i + 1 })}
-                  closeLabel={t("delete")}
+                  closeLabel={t("close")}
                   align="end"
                   width={220}
                   trigger={({ ref, open, toggle, menuId }) => (
@@ -162,7 +166,7 @@ function Photos({ p }: { p: ListingProps }) {
                   <button
                     type="button"
                     role="menuitem"
-                    onClick={() => act(() => deletePhoto(p.propertyId, ph.id), t("deleted"))}
+                    onClick={() => setDeleting(ph.id)}
                     className="flex min-h-11 items-center gap-2.5 rounded-lg px-3 text-left text-sm text-danger-ink hover:bg-paper focus-visible:bg-paper sm:min-h-10"
                   >
                     <Icon name="trash" size={16} strokeWidth={1.75} className="flex-none" />
@@ -195,6 +199,22 @@ function Photos({ p }: { p: ListingProps }) {
         )}
       </ul>
       {!p.editable && p.photos.length === 0 && <p className="text-sm text-muted">{t("empty")}</p>}
+      <Dialog open={deleting !== null} onClose={() => setDeleting(null)} title={t("deleteDialog.title")} closeLabel={t("close")}>
+        <DialogActions>
+          <button type="button" onClick={() => setDeleting(null)} className={buttonClass("secondary")} data-autofocus>
+            {t("deleteDialog.cancel")}
+          </button>
+          <form
+            action={() => {
+              if (deleting) act(() => deletePhoto(p.propertyId, deleting), t("deleted"));
+            }}
+          >
+            <Button variant="danger" pending={pending}>
+              {t("deleteDialog.confirm")}
+            </Button>
+          </form>
+        </DialogActions>
+      </Dialog>
     </Card>
   );
 }
@@ -231,6 +251,7 @@ function Unit({
           inputMode="numeric"
           value={value}
           onChange={(e) => onChange(e.target.value)}
+          onBlur={(e) => max > 3 && onChange(groupDigits(e.target.value))}
           maxLength={max}
           disabled={disabled}
           aria-invalid={error ? true : undefined}
@@ -452,7 +473,7 @@ function Ad({ p }: { p: ListingProps }) {
               maxLength={3000}
               rows={6}
               aria-describedby={`${id}-count`}
-              className={`${INPUT_CLASS} h-auto min-h-36 py-2.5 leading-[22px]`}
+              className={`${INPUT_CLASS} h-auto min-h-36 py-2.5 leading-[22px] normal-nums`}
             />
             <p id={`${id}-count`} className="text-right text-[12px] text-muted tabular-nums">
               {t("count", { count: text.length, max: 3000 })}

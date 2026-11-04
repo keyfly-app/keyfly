@@ -681,7 +681,7 @@ function ManagementForm({ p, field, close }: { p: DataCardsProps; field: "condo"
             placeholder={t("note.placeholder")}
             maxLength={2000}
             rows={4}
-            className={`${INPUT_CLASS} h-auto min-h-28 py-2.5 leading-5`}
+            className={`${INPUT_CLASS} h-auto min-h-28 py-2.5 leading-5 normal-nums`}
           />
         </div>
       )}

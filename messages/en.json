@@ -2541,7 +2541,14 @@
         "errors": {
           "type": "We can’t upload this file. Choose a JPG, PNG or WEBP image.",
           "limit": "A property can have up to {max} photos.",
-          "generic": "We couldn’t upload it. Please try again."
+          "generic": "We couldn’t upload it. Please try again.",
+          "save": "We couldn’t save it. Please try again."
+        },
+        "close": "Close",
+        "deleteDialog": {
+          "title": "Delete this photo?",
+          "confirm": "Delete",
+          "cancel": "Cancel"
         }
       },
       "terms": {
