@@ -46,7 +46,68 @@ export type Database = {
           status?: Database["public"]["Enums"]["access_request_status"]
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "account_access_requests_account_id_fkey"
+            columns: ["account_id"]
+            isOneToOne: false
+            referencedRelation: "accounts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "account_access_requests_decided_by_fkey"
+            columns: ["decided_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "account_access_requests_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      account_extras: {
+        Row: {
+          account_id: string
+          created_at: string
+          created_by: string | null
+          id: string
+          label: string
+        }
+        Insert: {
+          account_id: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          label: string
+        }
+        Update: {
+          account_id?: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          label?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "account_extras_account_id_fkey"
+            columns: ["account_id"]
+            isOneToOne: false
+            referencedRelation: "accounts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "account_extras_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       account_member_properties: {
         Row: {
@@ -87,27 +148,27 @@ export type Database = {
           created_at: string
           invited_by: string | null
           property_scope: Database["public"]["Enums"]["property_scope"]
-          view: Database["public"]["Enums"]["start_view"] | null
           role: Database["public"]["Enums"]["account_role"]
           user_id: string
+          view: Database["public"]["Enums"]["start_view"] | null
         }
         Insert: {
           account_id: string
           created_at?: string
           invited_by?: string | null
           property_scope?: Database["public"]["Enums"]["property_scope"]
-          view?: Database["public"]["Enums"]["start_view"] | null
           role: Database["public"]["Enums"]["account_role"]
           user_id: string
+          view?: Database["public"]["Enums"]["start_view"] | null
         }
         Update: {
           account_id?: string
           created_at?: string
           invited_by?: string | null
           property_scope?: Database["public"]["Enums"]["property_scope"]
-          view?: Database["public"]["Enums"]["start_view"] | null
           role?: Database["public"]["Enums"]["account_role"]
           user_id?: string
+          view?: Database["public"]["Enums"]["start_view"] | null
         }
         Relationships: [
           {
@@ -139,22 +200,22 @@ export type Database = {
           company_reg_number: string | null
           contact_email: string | null
           contact_phone: string | null
-          eu_vat_number: string | null
-          mailing_address: Json | null
-          office_address: Json | null
           created_at: string
           created_by: string | null
+          eu_vat_number: string | null
           id: string
           is_referral_partner: boolean
           kind: Database["public"]["Enums"]["account_kind"]
           legal_name: string | null
           logo_path: string | null
+          mailing_address: Json | null
           name: string
           nav_verified_at: string | null
+          office_address: Json | null
           personal_user_id: string | null
           plan: Database["public"]["Enums"]["account_plan"]
-          slug: string | null
           registered_address: string | null
+          slug: string | null
           tax_number: string | null
           updated_at: string
         }
@@ -163,22 +224,22 @@ export type Database = {
           company_reg_number?: string | null
           contact_email?: string | null
           contact_phone?: string | null
-          eu_vat_number?: string | null
-          mailing_address?: Json | null
-          office_address?: Json | null
           created_at?: string
           created_by?: string | null
+          eu_vat_number?: string | null
           id?: string
           is_referral_partner?: boolean
           kind: Database["public"]["Enums"]["account_kind"]
           legal_name?: string | null
           logo_path?: string | null
+          mailing_address?: Json | null
           name: string
           nav_verified_at?: string | null
+          office_address?: Json | null
           personal_user_id?: string | null
           plan?: Database["public"]["Enums"]["account_plan"]
-          slug?: string | null
           registered_address?: string | null
+          slug?: string | null
           tax_number?: string | null
           updated_at?: string
         }
@@ -187,22 +248,22 @@ export type Database = {
           company_reg_number?: string | null
           contact_email?: string | null
           contact_phone?: string | null
-          eu_vat_number?: string | null
-          mailing_address?: Json | null
-          office_address?: Json | null
           created_at?: string
           created_by?: string | null
+          eu_vat_number?: string | null
           id?: string
           is_referral_partner?: boolean
           kind?: Database["public"]["Enums"]["account_kind"]
           legal_name?: string | null
           logo_path?: string | null
+          mailing_address?: Json | null
           name?: string
           nav_verified_at?: string | null
+          office_address?: Json | null
           personal_user_id?: string | null
           plan?: Database["public"]["Enums"]["account_plan"]
-          slug?: string | null
           registered_address?: string | null
+          slug?: string | null
           tax_number?: string | null
           updated_at?: string
         }
@@ -335,6 +396,102 @@ export type Database = {
           },
         ]
       }
+      bank_accounts: {
+        Row: {
+          account_id: string
+          created_at: string
+          created_by: string | null
+          currency: string
+          holder_name: string
+          iban: string
+          id: string
+          is_primary: boolean
+          label: string | null
+          updated_at: string
+        }
+        Insert: {
+          account_id: string
+          created_at?: string
+          created_by?: string | null
+          currency: string
+          holder_name: string
+          iban: string
+          id?: string
+          is_primary?: boolean
+          label?: string | null
+          updated_at?: string
+        }
+        Update: {
+          account_id?: string
+          created_at?: string
+          created_by?: string | null
+          currency?: string
+          holder_name?: string
+          iban?: string
+          id?: string
+          is_primary?: boolean
+          label?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bank_accounts_account_id_fkey"
+            columns: ["account_id"]
+            isOneToOne: false
+            referencedRelation: "accounts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "bank_accounts_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      catalog_items: {
+        Row: {
+          active: boolean
+          icon: string | null
+          key: string
+          label_en: string
+          label_hu: string
+          list: string
+          meta: Json
+          short_en: string | null
+          short_hu: string | null
+          sort: number
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          icon?: string | null
+          key: string
+          label_en: string
+          label_hu: string
+          list: string
+          meta?: Json
+          short_en?: string | null
+          short_hu?: string | null
+          sort?: number
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          icon?: string | null
+          key?: string
+          label_en?: string
+          label_hu?: string
+          list?: string
+          meta?: Json
+          short_en?: string | null
+          short_hu?: string | null
+          sort?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       claims: {
         Row: {
           amount_claimed: number
@@ -415,6 +572,117 @@ export type Database = {
           {
             foreignKeyName: "consents_user_id_fkey"
             columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      contacts: {
+        Row: {
+          account_id: string
+          address: string | null
+          archived_at: string | null
+          created_at: string
+          created_by: string | null
+          default_role_key: string | null
+          default_role_label: string | null
+          email: string | null
+          id: string
+          name: string
+          note: string | null
+          phone: string | null
+          updated_at: string
+        }
+        Insert: {
+          account_id: string
+          address?: string | null
+          archived_at?: string | null
+          created_at?: string
+          created_by?: string | null
+          default_role_key?: string | null
+          default_role_label?: string | null
+          email?: string | null
+          id?: string
+          name: string
+          note?: string | null
+          phone?: string | null
+          updated_at?: string
+        }
+        Update: {
+          account_id?: string
+          address?: string | null
+          archived_at?: string | null
+          created_at?: string
+          created_by?: string | null
+          default_role_key?: string | null
+          default_role_label?: string | null
+          email?: string | null
+          id?: string
+          name?: string
+          note?: string | null
+          phone?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "contacts_account_id_fkey"
+            columns: ["account_id"]
+            isOneToOne: false
+            referencedRelation: "accounts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "contacts_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      import_batches: {
+        Row: {
+          account_id: string
+          created_at: string
+          created_by: string | null
+          file_name: string
+          id: string
+          rows_imported: number
+          rows_total: number
+          undone_at: string | null
+        }
+        Insert: {
+          account_id: string
+          created_at?: string
+          created_by?: string | null
+          file_name: string
+          id?: string
+          rows_imported?: number
+          rows_total: number
+          undone_at?: string | null
+        }
+        Update: {
+          account_id?: string
+          created_at?: string
+          created_by?: string | null
+          file_name?: string
+          id?: string
+          rows_imported?: number
+          rows_total?: number
+          undone_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "import_batches_account_id_fkey"
+            columns: ["account_id"]
+            isOneToOne: false
+            referencedRelation: "accounts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "import_batches_created_by_fkey"
+            columns: ["created_by"]
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
@@ -672,7 +940,7 @@ export type Database = {
           lease_id: string | null
           monthly_rent: number
           postal_code: string
-          property_kind: Database["public"]["Enums"]["property_kind"]
+          property_kind: string
           reminder_count: number
           staircase: string | null
           start_date: string
@@ -704,7 +972,7 @@ export type Database = {
           lease_id?: string | null
           monthly_rent: number
           postal_code: string
-          property_kind?: Database["public"]["Enums"]["property_kind"]
+          property_kind?: string
           reminder_count?: number
           staircase?: string | null
           start_date: string
@@ -736,7 +1004,7 @@ export type Database = {
           lease_id?: string | null
           monthly_rent?: number
           postal_code?: string
-          property_kind?: Database["public"]["Enums"]["property_kind"]
+          property_kind?: string
           reminder_count?: number
           staircase?: string | null
           start_date?: string
@@ -869,23 +1137,136 @@ export type Database = {
           },
         ]
       }
+      meters: {
+        Row: {
+          archived_at: string | null
+          created_at: string
+          id: string
+          location: string | null
+          name: string
+          registers: number
+          serial: string | null
+          service_id: string
+          sort: number
+          tariff_key: string | null
+          unit_key: string
+        }
+        Insert: {
+          archived_at?: string | null
+          created_at?: string
+          id?: string
+          location?: string | null
+          name: string
+          registers?: number
+          serial?: string | null
+          service_id: string
+          sort?: number
+          tariff_key?: string | null
+          unit_key?: string
+        }
+        Update: {
+          archived_at?: string | null
+          created_at?: string
+          id?: string
+          location?: string | null
+          name?: string
+          registers?: number
+          serial?: string | null
+          service_id?: string
+          sort?: number
+          tariff_key?: string | null
+          unit_key?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "meters_service_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "property_services"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       mfa_recovery_codes: {
-        Row: { code_hash: string; created_at: string; id: string; used_at: string | null; user_id: string }
-        Insert: { code_hash: string; created_at?: string; id?: string; used_at?: string | null; user_id: string }
-        Update: { code_hash?: string; created_at?: string; id?: string; used_at?: string | null; user_id?: string }
-        Relationships: []
+        Row: {
+          code_hash: string
+          created_at: string
+          id: string
+          used_at: string | null
+          user_id: string
+        }
+        Insert: {
+          code_hash: string
+          created_at?: string
+          id?: string
+          used_at?: string | null
+          user_id: string
+        }
+        Update: {
+          code_hash?: string
+          created_at?: string
+          id?: string
+          used_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mfa_recovery_codes_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
-      bank_accounts: {
-        Row: { account_id: string; created_at: string; created_by: string | null; currency: string; holder_name: string; iban: string; id: string; is_primary: boolean; label: string | null; updated_at: string }
-        Insert: { account_id: string; created_at?: string; created_by?: string | null; currency: string; holder_name: string; iban: string; id?: string; is_primary?: boolean; label?: string | null; updated_at?: string }
-        Update: { account_id?: string; created_at?: string; created_by?: string | null; currency?: string; holder_name?: string; iban?: string; id?: string; is_primary?: boolean; label?: string | null; updated_at?: string }
-        Relationships: []
+      mfa_recovery_failures: {
+        Row: {
+          at: string
+          user_id: string
+        }
+        Insert: {
+          at?: string
+          user_id: string
+        }
+        Update: {
+          at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mfa_recovery_failures_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
-      trusted_devices: {
-        Row: { created_at: string; expires_at: string; id: string; label: string; last_used_at: string | null; token_hash: string; user_id: string }
-        Insert: { created_at?: string; expires_at?: string; id?: string; label: string; last_used_at?: string | null; token_hash: string; user_id: string }
-        Update: { created_at?: string; expires_at?: string; id?: string; label?: string; last_used_at?: string | null; token_hash?: string; user_id?: string }
-        Relationships: []
+      phone_verifications: {
+        Row: {
+          expires_at: string
+          phone: string
+          user_id: string
+        }
+        Insert: {
+          expires_at: string
+          phone: string
+          user_id: string
+        }
+        Update: {
+          expires_at?: string
+          phone?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "phone_verifications_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       policies: {
         Row: {
@@ -991,9 +1372,9 @@ export type Database = {
           email_prefs: Json
           full_name: string | null
           home_address: Json | null
-          mailing_address: Json | null
           id: string
           locale: Database["public"]["Enums"]["locale"]
+          mailing_address: Json | null
           password_changed_at: string | null
           phone: string | null
           phone_verified_at: string | null
@@ -1009,9 +1390,9 @@ export type Database = {
           email_prefs?: Json
           full_name?: string | null
           home_address?: Json | null
-          mailing_address?: Json | null
           id: string
           locale?: Database["public"]["Enums"]["locale"]
+          mailing_address?: Json | null
           password_changed_at?: string | null
           phone?: string | null
           phone_verified_at?: string | null
@@ -1027,9 +1408,9 @@ export type Database = {
           email_prefs?: Json
           full_name?: string | null
           home_address?: Json | null
-          mailing_address?: Json | null
           id?: string
           locale?: Database["public"]["Enums"]["locale"]
+          mailing_address?: Json | null
           password_changed_at?: string | null
           phone?: string | null
           phone_verified_at?: string | null
@@ -1044,24 +1425,38 @@ export type Database = {
           account_id: string
           address_note: string | null
           archived_at: string | null
+          area_m2: number | null
           building: string | null
+          built_year: number | null
           city: string
+          copied_from: string | null
           country_code: string
           created_at: string
           created_by: string | null
           district: number | null
           door: string | null
+          energy_rating: string | null
           floor_number: number | null
           floor_type: Database["public"]["Enums"]["floor_type"] | null
+          furnishing: string | null
           google_place_id: string | null
+          half_rooms: number | null
+          heating: string | null
           house_number: string
           id: string
-          kind: Database["public"]["Enums"]["property_kind"]
+          import_batch_id: string | null
+          kind: string
           label: string | null
           latitude: number | null
+          lift: boolean | null
           longitude: number | null
+          other_kind_label: string | null
+          own_ref: string | null
           parcel_number: string | null
+          parking: string | null
           postal_code: string
+          public_code: string
+          rooms: number | null
           staircase: string | null
           street_name: string
           street_type: string
@@ -1071,24 +1466,38 @@ export type Database = {
           account_id: string
           address_note?: string | null
           archived_at?: string | null
+          area_m2?: number | null
           building?: string | null
+          built_year?: number | null
           city: string
+          copied_from?: string | null
           country_code?: string
           created_at?: string
           created_by?: string | null
           district?: number | null
           door?: string | null
+          energy_rating?: string | null
           floor_number?: number | null
           floor_type?: Database["public"]["Enums"]["floor_type"] | null
+          furnishing?: string | null
           google_place_id?: string | null
+          half_rooms?: number | null
+          heating?: string | null
           house_number: string
           id?: string
-          kind?: Database["public"]["Enums"]["property_kind"]
+          import_batch_id?: string | null
+          kind?: string
           label?: string | null
           latitude?: number | null
+          lift?: boolean | null
           longitude?: number | null
+          other_kind_label?: string | null
+          own_ref?: string | null
           parcel_number?: string | null
+          parking?: string | null
           postal_code: string
+          public_code: string
+          rooms?: number | null
           staircase?: string | null
           street_name: string
           street_type: string
@@ -1098,24 +1507,38 @@ export type Database = {
           account_id?: string
           address_note?: string | null
           archived_at?: string | null
+          area_m2?: number | null
           building?: string | null
+          built_year?: number | null
           city?: string
+          copied_from?: string | null
           country_code?: string
           created_at?: string
           created_by?: string | null
           district?: number | null
           door?: string | null
+          energy_rating?: string | null
           floor_number?: number | null
           floor_type?: Database["public"]["Enums"]["floor_type"] | null
+          furnishing?: string | null
           google_place_id?: string | null
+          half_rooms?: number | null
+          heating?: string | null
           house_number?: string
           id?: string
-          kind?: Database["public"]["Enums"]["property_kind"]
+          import_batch_id?: string | null
+          kind?: string
           label?: string | null
           latitude?: number | null
+          lift?: boolean | null
           longitude?: number | null
+          other_kind_label?: string | null
+          own_ref?: string | null
           parcel_number?: string | null
+          parking?: string | null
           postal_code?: string
+          public_code?: string
+          rooms?: number | null
           staircase?: string | null
           street_name?: string
           street_type?: string
@@ -1130,8 +1553,556 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "properties_copied_from_fkey"
+            columns: ["copied_from"]
+            isOneToOne: false
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "properties_created_by_fkey"
             columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "properties_import_batch_id_fkey"
+            columns: ["import_batch_id"]
+            isOneToOne: false
+            referencedRelation: "import_batches"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      property_contacts: {
+        Row: {
+          contact_id: string
+          created_at: string
+          id: string
+          property_id: string
+          role_key: string | null
+          role_label: string | null
+          sort: number
+          tenant_visible: boolean
+        }
+        Insert: {
+          contact_id: string
+          created_at?: string
+          id?: string
+          property_id: string
+          role_key?: string | null
+          role_label?: string | null
+          sort?: number
+          tenant_visible?: boolean
+        }
+        Update: {
+          contact_id?: string
+          created_at?: string
+          id?: string
+          property_id?: string
+          role_key?: string | null
+          role_label?: string | null
+          sort?: number
+          tenant_visible?: boolean
+        }
+        Relationships: [
+          {
+            foreignKeyName: "property_contacts_contact_id_fkey"
+            columns: ["contact_id"]
+            isOneToOne: false
+            referencedRelation: "contacts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "property_contacts_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      property_extras: {
+        Row: {
+          account_extra_id: string | null
+          extra_key: string | null
+          id: string
+          property_id: string
+        }
+        Insert: {
+          account_extra_id?: string | null
+          extra_key?: string | null
+          id?: string
+          property_id: string
+        }
+        Update: {
+          account_extra_id?: string | null
+          extra_key?: string | null
+          id?: string
+          property_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "property_extras_account_extra_id_fkey"
+            columns: ["account_extra_id"]
+            isOneToOne: false
+            referencedRelation: "account_extras"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "property_extras_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      property_links: {
+        Row: {
+          created_at: string
+          id: string
+          label: string
+          property_id: string
+          sort: number
+          url: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          label: string
+          property_id: string
+          sort?: number
+          url: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          label?: string
+          property_id?: string
+          sort?: number
+          url?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "property_links_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      property_listing: {
+        Row: {
+          asking_rent: number | null
+          available_from: string | null
+          available_now: boolean
+          currency: string
+          deposit_months: number | null
+          description: string | null
+          est_bills: number | null
+          min_term_months: number | null
+          parking_property_id: string | null
+          parking_rent: number | null
+          pets: string | null
+          property_id: string
+          smoking: string | null
+          title: string | null
+          updated_at: string
+        }
+        Insert: {
+          asking_rent?: number | null
+          available_from?: string | null
+          available_now?: boolean
+          currency?: string
+          deposit_months?: number | null
+          description?: string | null
+          est_bills?: number | null
+          min_term_months?: number | null
+          parking_property_id?: string | null
+          parking_rent?: number | null
+          pets?: string | null
+          property_id: string
+          smoking?: string | null
+          title?: string | null
+          updated_at?: string
+        }
+        Update: {
+          asking_rent?: number | null
+          available_from?: string | null
+          available_now?: boolean
+          currency?: string
+          deposit_months?: number | null
+          description?: string | null
+          est_bills?: number | null
+          min_term_months?: number | null
+          parking_property_id?: string | null
+          parking_rent?: number | null
+          pets?: string | null
+          property_id?: string
+          smoking?: string | null
+          title?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "property_listing_parking_property_id_fkey"
+            columns: ["parking_property_id"]
+            isOneToOne: false
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "property_listing_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: true
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      property_management: {
+        Row: {
+          common_charge: number | null
+          note: string | null
+          owner_contact_id: string | null
+          owner_kind: string | null
+          property_id: string
+          responsible_user_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          common_charge?: number | null
+          note?: string | null
+          owner_contact_id?: string | null
+          owner_kind?: string | null
+          property_id: string
+          responsible_user_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          common_charge?: number | null
+          note?: string | null
+          owner_contact_id?: string | null
+          owner_kind?: string | null
+          property_id?: string
+          responsible_user_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "property_management_owner_contact_id_fkey"
+            columns: ["owner_contact_id"]
+            isOneToOne: false
+            referencedRelation: "contacts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "property_management_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: true
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "property_management_responsible_user_id_fkey"
+            columns: ["responsible_user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      property_media: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          height: number | null
+          id: string
+          is_cover: boolean
+          path: string
+          property_id: string
+          sort: number
+          width: number | null
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          height?: number | null
+          id?: string
+          is_cover?: boolean
+          path: string
+          property_id: string
+          sort?: number
+          width?: number | null
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          height?: number | null
+          id?: string
+          is_cover?: boolean
+          path?: string
+          property_id?: string
+          sort?: number
+          width?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "property_media_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "property_media_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      property_outdoor: {
+        Row: {
+          area_m2: number | null
+          kind: string
+          property_id: string
+        }
+        Insert: {
+          area_m2?: number | null
+          kind: string
+          property_id: string
+        }
+        Update: {
+          area_m2?: number | null
+          kind?: string
+          property_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "property_outdoor_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      property_services: {
+        Row: {
+          contact_id: string | null
+          created_at: string
+          created_by: string | null
+          custom_label: string | null
+          ended_on: string | null
+          fee_amount: number | null
+          fee_currency: string
+          id: string
+          network_provider_id: string | null
+          paused_from: string | null
+          paused_until: string | null
+          property_id: string
+          provider_id: string | null
+          provider_name: string | null
+          reading_due: string | null
+          reading_frequency: string | null
+          reading_required: boolean
+          settlement_key: string
+          sort: number
+          type_key: string
+          updated_at: string
+        }
+        Insert: {
+          contact_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          custom_label?: string | null
+          ended_on?: string | null
+          fee_amount?: number | null
+          fee_currency?: string
+          id?: string
+          network_provider_id?: string | null
+          paused_from?: string | null
+          paused_until?: string | null
+          property_id: string
+          provider_id?: string | null
+          provider_name?: string | null
+          reading_due?: string | null
+          reading_frequency?: string | null
+          reading_required?: boolean
+          settlement_key?: string
+          sort?: number
+          type_key: string
+          updated_at?: string
+        }
+        Update: {
+          contact_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          custom_label?: string | null
+          ended_on?: string | null
+          fee_amount?: number | null
+          fee_currency?: string
+          id?: string
+          network_provider_id?: string | null
+          paused_from?: string | null
+          paused_until?: string | null
+          property_id?: string
+          provider_id?: string | null
+          provider_name?: string | null
+          reading_due?: string | null
+          reading_frequency?: string | null
+          reading_required?: boolean
+          settlement_key?: string
+          sort?: number
+          type_key?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "property_services_contact_id_fkey"
+            columns: ["contact_id"]
+            isOneToOne: false
+            referencedRelation: "contacts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "property_services_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "property_services_network_provider_id_fkey"
+            columns: ["network_provider_id"]
+            isOneToOne: false
+            referencedRelation: "providers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "property_services_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "property_services_provider_id_fkey"
+            columns: ["provider_id"]
+            isOneToOne: false
+            referencedRelation: "providers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      providers: {
+        Row: {
+          active: boolean
+          fault_phone: string | null
+          former_names: string[]
+          id: string
+          legal_name: string
+          phone: string | null
+          postcode_prefixes: string[]
+          role: string
+          service_types: string[]
+          short_name: string
+          sort: number
+          source_url: string | null
+          updated_at: string
+          verified_at: string | null
+          website: string | null
+        }
+        Insert: {
+          active?: boolean
+          fault_phone?: string | null
+          former_names?: string[]
+          id?: string
+          legal_name: string
+          phone?: string | null
+          postcode_prefixes?: string[]
+          role?: string
+          service_types: string[]
+          short_name: string
+          sort?: number
+          source_url?: string | null
+          updated_at?: string
+          verified_at?: string | null
+          website?: string | null
+        }
+        Update: {
+          active?: boolean
+          fault_phone?: string | null
+          former_names?: string[]
+          id?: string
+          legal_name?: string
+          phone?: string | null
+          postcode_prefixes?: string[]
+          role?: string
+          service_types?: string[]
+          short_name?: string
+          sort?: number
+          source_url?: string | null
+          updated_at?: string
+          verified_at?: string | null
+          website?: string | null
+        }
+        Relationships: []
+      }
+      service_identifiers: {
+        Row: {
+          id: string
+          label: string
+          service_id: string
+          sort: number
+          value: string
+        }
+        Insert: {
+          id?: string
+          label: string
+          service_id: string
+          sort?: number
+          value: string
+        }
+        Update: {
+          id?: string
+          label?: string
+          service_id?: string
+          sort?: number
+          value?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "service_identifiers_service_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "property_services"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      sms_sends: {
+        Row: {
+          at: string
+          user_id: string
+        }
+        Insert: {
+          at?: string
+          user_id: string
+        }
+        Update: {
+          at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sms_sends_user_id_fkey"
+            columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
@@ -1215,6 +2186,122 @@ export type Database = {
           {
             foreignKeyName: "staff_invitations_invited_by_fkey"
             columns: ["invited_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      trusted_devices: {
+        Row: {
+          created_at: string
+          expires_at: string
+          id: string
+          label: string
+          last_used_at: string | null
+          token_hash: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          expires_at?: string
+          id?: string
+          label: string
+          last_used_at?: string | null
+          token_hash: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          expires_at?: string
+          id?: string
+          label?: string
+          last_used_at?: string | null
+          token_hash?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "trusted_devices_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      two_step_email_codes: {
+        Row: {
+          attempts: number
+          code_hash: string
+          expires_at: string
+          user_id: string
+        }
+        Insert: {
+          attempts?: number
+          code_hash: string
+          expires_at: string
+          user_id: string
+        }
+        Update: {
+          attempts?: number
+          code_hash?: string
+          expires_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "two_step_email_codes_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      two_step_email_sends: {
+        Row: {
+          at: string
+          user_id: string
+        }
+        Insert: {
+          at?: string
+          user_id: string
+        }
+        Update: {
+          at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "two_step_email_sends_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      two_step_passes: {
+        Row: {
+          created_at: string
+          session_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          session_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          session_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "two_step_passes_user_id_fkey"
+            columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
@@ -1318,56 +2405,6 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      account_deletion_blockers: { Args: never; Returns: { kind: string; name: string | null }[] }
-      consume_recovery_code: { Args: { p_hash: string }; Returns: boolean }
-      delete_recovery_codes: { Args: never; Returns: undefined }
-      recovery_codes_left: { Args: never; Returns: number }
-      set_recovery_codes: { Args: { p_hashes: string[] }; Returns: undefined }
-      my_access_requests: { Args: never; Returns: { account_id: string; created_at: string; id: string; name: string; tax_number: string | null }[] }
-      start_phone_check: { Args: { p_phone: string }; Returns: number }
-      pending_phone: { Args: never; Returns: string }
-      undo_phone_check: { Args: never; Returns: undefined }
-      add_email_identity: { Args: { p_user: string }; Returns: boolean }
-      set_two_step_email: { Args: { p_on: boolean }; Returns: undefined }
-      start_two_step_email: { Args: { p_code_hash: string }; Returns: undefined }
-      undo_two_step_email: { Args: never; Returns: undefined }
-      confirm_two_step_email: { Args: { p_code_hash: string }; Returns: string }
-      two_step_pass_ok: { Args: never; Returns: boolean }
-      set_confirmed_phone: { Args: { p_user: string; p_phone: string }; Returns: boolean }
-      remove_phone: { Args: never; Returns: undefined }
-      trust_device: { Args: { p_token_hash: string; p_label: string }; Returns: string }
-      trusted_device_ok: { Args: { p_token_hash: string }; Returns: boolean }
-      account_access_requests_list: {
-        Args: { p_account_id: string }
-        Returns: { created_at: string; email: string; full_name: string | null; id: string; message: string | null; user_id: string }[]
-      }
-      account_members_list: {
-        Args: { p_account_id: string }
-        Returns: {
-          email: string
-          full_name: string | null
-          joined_at: string
-          property_scope: Database["public"]["Enums"]["property_scope"]
-          role: Database["public"]["Enums"]["account_role"]
-          user_id: string
-        }[]
-      }
-      cancel_access_request: { Args: { p_request_id: string }; Returns: undefined }
-      company_lookup: {
-        Args: { p_tax8: string }
-        Returns: { account_id: string; i_am_member: boolean; invitation_only: boolean; name: string; requested_at: string | null; slug: string | null }[]
-      }
-      decide_access_request: {
-        Args: { p_approve: boolean; p_request_id: string; p_role?: Database["public"]["Enums"]["account_role"] }
-        Returns: {
-          account_name: string
-          account_slug: string
-          requester_email: string
-          requester_locale: Database["public"]["Enums"]["locale"]
-          requester_name: string | null
-        }[]
-      }
-      request_company_access: { Args: { p_account_id: string; p_message?: string }; Returns: string }
       accept_invitation: {
         Args: { p_tenant_account_id?: string; p_token: string }
         Returns: string
@@ -1391,6 +2428,35 @@ export type Database = {
         }[]
       }
       accept_staff_invitation: { Args: { p_token: string }; Returns: undefined }
+      account_access_requests_list: {
+        Args: { p_account_id: string }
+        Returns: {
+          created_at: string
+          email: string
+          full_name: string
+          id: string
+          message: string
+          user_id: string
+        }[]
+      }
+      account_deletion_blockers: {
+        Args: never
+        Returns: {
+          kind: string
+          name: string
+        }[]
+      }
+      account_members_list: {
+        Args: { p_account_id: string }
+        Returns: {
+          email: string
+          full_name: string
+          joined_at: string
+          property_scope: Database["public"]["Enums"]["property_scope"]
+          role: Database["public"]["Enums"]["account_role"]
+          user_id: string
+        }[]
+      }
       activity_log: {
         Args: { p_account_id?: string; p_limit?: number }
         Returns: {
@@ -1405,6 +2471,11 @@ export type Database = {
           table_name: string
         }[]
       }
+      add_email_identity: { Args: { p_user: string }; Returns: boolean }
+      cancel_access_request: {
+        Args: { p_request_id: string }
+        Returns: undefined
+      }
       cancel_lease: { Args: { p_lease_id: string }; Returns: undefined }
       cancel_lease_request: {
         Args: { p_request_id: string }
@@ -1415,6 +2486,17 @@ export type Database = {
         }[]
       }
       close_lease: { Args: { p_lease_id: string }; Returns: undefined }
+      company_lookup: {
+        Args: { p_tax8: string }
+        Returns: {
+          account_id: string
+          i_am_member: boolean
+          invitation_only: boolean
+          name: string
+          requested_at: string
+          slug: string
+        }[]
+      }
       confirm_lease_request: {
         Args: { p_request_id: string }
         Returns: {
@@ -1423,6 +2505,8 @@ export type Database = {
           lease_id: string
         }[]
       }
+      confirm_two_step_email: { Args: { p_code_hash: string }; Returns: string }
+      consume_recovery_code: { Args: { p_hash: string }; Returns: boolean }
       create_account_invitation: {
         Args: {
           p_account_id: string
@@ -1434,7 +2518,13 @@ export type Database = {
         Returns: string
       }
       create_company_account: {
-        Args: { p_legal_name: string; p_name?: string; p_owner: string; p_registered_address?: string; p_tax_number: string }
+        Args: {
+          p_legal_name: string
+          p_name?: string
+          p_owner: string
+          p_registered_address?: string
+          p_tax_number: string
+        }
         Returns: string
       }
       create_lease_invitation: {
@@ -1460,7 +2550,7 @@ export type Database = {
           p_landlord_name?: string
           p_monthly_rent: number
           p_postal_code: string
-          p_property_kind?: Database["public"]["Enums"]["property_kind"]
+          p_property_kind?: string
           p_staircase?: string
           p_start_date: string
           p_street_name: string
@@ -1480,23 +2570,23 @@ export type Database = {
         }
         Returns: string
       }
-      decline_invitation: { Args: { p_token: string }; Returns: undefined }
-      end_my_session: { Args: { p_session_id: string }; Returns: boolean }
-      invitation_teaser: {
-        Args: { p_token: string }
+      decide_access_request: {
+        Args: {
+          p_approve: boolean
+          p_request_id: string
+          p_role?: Database["public"]["Enums"]["account_role"]
+        }
         Returns: {
-          city: string
-          expires_at: string
-          house_number: string
-          inviter_name: string
-          is_open: boolean
-          kind: Database["public"]["Enums"]["invitation_kind"]
-          masked_email: string
-          postal_code: string
-          property_kind: Database["public"]["Enums"]["property_kind"]
-          street: string
+          account_name: string
+          account_slug: string
+          requester_email: string
+          requester_locale: Database["public"]["Enums"]["locale"]
+          requester_name: string
         }[]
       }
+      decline_invitation: { Args: { p_token: string }; Returns: undefined }
+      delete_recovery_codes: { Args: never; Returns: undefined }
+      end_my_session: { Args: { p_session_id: string }; Returns: boolean }
       invitation_preview: {
         Args: { p_token: string }
         Returns: {
@@ -1513,6 +2603,21 @@ export type Database = {
           occupant_role: Database["public"]["Enums"]["occupant_role"]
           property_address: string
           start_date: string
+        }[]
+      }
+      invitation_teaser: {
+        Args: { p_token: string }
+        Returns: {
+          city: string
+          expires_at: string
+          house_number: string
+          inviter_name: string
+          is_open: boolean
+          kind: Database["public"]["Enums"]["invitation_kind"]
+          masked_email: string
+          postal_code: string
+          property_kind: string
+          street: string
         }[]
       }
       lease_phase: {
@@ -1533,13 +2638,23 @@ export type Database = {
           house_number: string
           monthly_rent: number
           postal_code: string
+          property_kind: string
           request_id: string
           staircase: string
           start_date: string
           street_name: string
           street_type: string
-          property_kind: Database["public"]["Enums"]["property_kind"]
           tenant_name: string
+        }[]
+      }
+      my_access_requests: {
+        Args: never
+        Returns: {
+          account_id: string
+          created_at: string
+          id: string
+          name: string
+          tax_number: string
         }[]
       }
       my_sessions: {
@@ -1553,6 +2668,8 @@ export type Database = {
           user_agent: string
         }[]
       }
+      pending_phone: { Args: never; Returns: string }
+      recovery_codes_left: { Args: never; Returns: number }
       referral_status: {
         Args: { p_account_id: string }
         Returns: {
@@ -1569,11 +2686,37 @@ export type Database = {
           token: string
         }[]
       }
+      remove_phone: { Args: never; Returns: undefined }
+      request_company_access: {
+        Args: { p_account_id: string; p_message?: string }
+        Returns: string
+      }
       reset_staff_mfa: { Args: { p_user_id: string }; Returns: undefined }
       revoke_invitation: {
         Args: { p_invitation_id: string }
         Returns: undefined
       }
+      set_account_view: {
+        Args: {
+          p_account_id: string
+          p_view: Database["public"]["Enums"]["start_view"]
+        }
+        Returns: undefined
+      }
+      set_confirmed_phone: {
+        Args: { p_phone: string; p_user: string }
+        Returns: boolean
+      }
+      set_member_role: {
+        Args: {
+          p_account_id: string
+          p_role: Database["public"]["Enums"]["account_role"]
+          p_user_id: string
+        }
+        Returns: undefined
+      }
+      set_recovery_codes: { Args: { p_hashes: string[] }; Returns: undefined }
+      set_two_step_email: { Args: { p_on: boolean }; Returns: undefined }
       staff_invitation_preview: {
         Args: { p_token: string }
         Returns: {
@@ -1597,21 +2740,23 @@ export type Database = {
           user_id: string
         }[]
       }
-      set_account_view: {
-        Args: {
-          p_account_id: string
-          p_view: Database["public"]["Enums"]["start_view"]
-        }
-        Returns: undefined
-      }
-      set_member_role: {
-        Args: { p_account_id: string; p_role: Database["public"]["Enums"]["account_role"]; p_user_id: string }
+      start_phone_check: { Args: { p_phone: string }; Returns: number }
+      start_two_step_email: {
+        Args: { p_code_hash: string }
         Returns: undefined
       }
       transfer_account_ownership: {
         Args: { p_account_id: string; p_new_owner: string }
         Returns: undefined
       }
+      trust_device: {
+        Args: { p_label: string; p_token_hash: string }
+        Returns: string
+      }
+      trusted_device_ok: { Args: { p_token_hash: string }; Returns: boolean }
+      two_step_pass_ok: { Args: never; Returns: boolean }
+      undo_phone_check: { Args: never; Returns: undefined }
+      undo_two_step_email: { Args: never; Returns: undefined }
     }
     Enums: {
       access_request_status: "pending" | "approved" | "declined" | "cancelled"
@@ -1656,12 +2801,6 @@ export type Database = {
         | "lease_landlord"
       landlord_kind: "private" | "company"
       lease_party_side: "landlord" | "tenant"
-      lease_request_status:
-        | "pending_landlord"
-        | "pending_tenant"
-        | "confirmed"
-        | "declined"
-        | "cancelled"
       lease_phase:
         | "draft"
         | "pending"
@@ -1669,6 +2808,12 @@ export type Database = {
         | "active"
         | "closing"
         | "closed"
+        | "cancelled"
+      lease_request_status:
+        | "pending_landlord"
+        | "pending_tenant"
+        | "confirmed"
+        | "declined"
         | "cancelled"
       lease_status: "draft" | "pending" | "confirmed" | "closed" | "cancelled"
       locale: "hu" | "en"
@@ -1679,7 +2824,6 @@ export type Database = {
         | "cancelled"
         | "ended"
         | "claimed"
-      property_kind: "flat" | "room" | "house" | "office" | "retail" | "hospitality" | "industrial" | "parking" | "other"
       property_scope: "all" | "selected"
       staff_role: "superadmin" | "admin" | "insurance" | "support" | "finance"
       start_view: "tenant" | "landlord" | "manager"
@@ -1865,13 +3009,6 @@ export const Constants = {
       ],
       landlord_kind: ["private", "company"],
       lease_party_side: ["landlord", "tenant"],
-      lease_request_status: [
-        "pending_landlord",
-        "pending_tenant",
-        "confirmed",
-        "declined",
-        "cancelled",
-      ],
       lease_phase: [
         "draft",
         "pending",
@@ -1879,6 +3016,13 @@ export const Constants = {
         "active",
         "closing",
         "closed",
+        "cancelled",
+      ],
+      lease_request_status: [
+        "pending_landlord",
+        "pending_tenant",
+        "confirmed",
+        "declined",
         "cancelled",
       ],
       lease_status: ["draft", "pending", "confirmed", "closed", "cancelled"],
@@ -1891,7 +3035,6 @@ export const Constants = {
         "ended",
         "claimed",
       ],
-      property_kind: ["flat", "room", "house", "office", "retail", "hospitality", "industrial", "parking", "other"],
       property_scope: ["all", "selected"],
       staff_role: ["superadmin", "admin", "insurance", "support", "finance"],
       start_view: ["tenant", "landlord", "manager"],

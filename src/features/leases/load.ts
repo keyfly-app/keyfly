@@ -8,6 +8,8 @@ import { isLocale } from "@/i18n/config";
 import { ADDRESS_COLUMNS, addressFromRow, cityLine, streetLine } from "@/lib/address";
 import { date, money } from "@/lib/format";
 import { createClient } from "@/lib/supabase/server";
+import { loadCatalog } from "@/features/catalog/load";
+import { labelOf } from "@/features/catalog/types";
 
 export type LeasePhase = "progress" | "recorded" | "other";
 
@@ -58,7 +60,7 @@ export async function leaseItems(accountId: string, view: AccountView): Promise<
     .order("start_date", { ascending: false });
   const raw = await getLocale();
   const locale = isLocale(raw) ? raw : "hu";
-  const [t, kinds] = await Promise.all([getTranslations("leases"), getTranslations("propertyKinds")]);
+  const [t, { property_type: kinds }] = await Promise.all([getTranslations("leases"), loadCatalog("property_type")]);
   return (data ?? []).flatMap((l) => {
     if (l.status !== "pending" && l.status !== "confirmed" && l.status !== "closed") return [];
     const address = addressFromRow(l.properties);
@@ -66,7 +68,7 @@ export async function leaseItems(accountId: string, view: AccountView): Promise<
       {
         id: l.id,
         street: streetLine(address),
-        place: `${kinds(l.properties.kind)} · ${cityLine(address)}`,
+        place: `${labelOf(kinds, l.properties.kind)} · ${cityLine(address)}`,
         party: l.lease_parties.find((p) => p.side === "tenant")?.name ?? "–",
         rent: money(l.monthly_rent, locale),
         period: `${date(l.start_date, locale)} – ${l.end_date ? date(l.end_date, locale) : lr("terms.openEnded")}`,

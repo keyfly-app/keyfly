@@ -11,9 +11,11 @@ import { isLocale, type Locale } from "@/i18n/config";
 import { addressFromRow, cityLine, streetLine, type AddressRow } from "@/lib/address";
 import { date, dateTime, money, until } from "@/lib/format";
 import { siteHref } from "@/lib/site-href";
-import type { Enums, Tables } from "@/lib/supabase/database.types";
+import type { Tables } from "@/lib/supabase/database.types";
 import { ReconfirmActions, RemindButton, RevokeButton } from "./TenantActions";
 import { KeyValues, STATUS_TONE } from "./ui";
+import { loadCatalog } from "@/features/catalog/load";
+import { labelOf } from "@/features/catalog/types";
 
 const MAX_REMINDERS = 3;
 const REMINDER_GAP_MS = 24 * 60 * 60 * 1000;
@@ -22,7 +24,7 @@ const REMINDER_GAP_MS = 24 * 60 * 60 * 1000;
 export type TakenOverLease = Pick<
   Tables<"leases">,
   "start_date" | "end_date" | "monthly_rent" | "deposit_amount" | "payment_day" | "created_at" | "landlord_confirmed_at"
-> & { properties: (AddressRow & { kind: Enums<"property_kind"> }) | null };
+> & { properties: (AddressRow & { kind: string }) | null };
 
 type Change = "changed" | "added" | null;
 
@@ -58,7 +60,7 @@ export async function LeaseRequestStatus({
   reminded?: boolean;
   now?: Date;
 }) {
-  const [t, kinds] = await Promise.all([getTranslations("leaseRequest"), getTranslations("propertyKinds")]);
+  const [t, { property_type: kinds }] = await Promise.all([getTranslations("leaseRequest"), loadCatalog("property_type")]);
   const raw = await getLocale();
   const locale: Locale = isLocale(raw) ? raw : "hu";
   const place = lease?.properties ? addressFromRow(lease.properties) : addressFromRow(r);
@@ -220,7 +222,7 @@ export async function LeaseRequestStatus({
             <p className="text-xs font-semibold tracking-[0.05em] text-muted uppercase">{t("page.label")}</p>
             <h1 className="font-display text-[20px] leading-[26px] font-semibold [overflow-wrap:anywhere] sm:text-2xl sm:leading-[30px]">{streetLine(place)}</h1>
             <div className="flex flex-wrap items-center gap-2.5">
-              <span className="text-sm text-muted">{`${kinds(lease?.properties?.kind ?? r.property_kind)} · ${cityLine(place)}`}</span>
+              <span className="text-sm text-muted">{`${labelOf(kinds, lease?.properties?.kind ?? r.property_kind)} · ${cityLine(place)}`}</span>
               <Tag tone={STATUS_TONE[status]}>{t(`status.${status}`)}</Tag>
             </div>
           </div>

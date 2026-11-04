@@ -9,6 +9,8 @@ import type { Enums } from "@/lib/supabase/database.types";
 import { createClient } from "@/lib/supabase/server";
 import { landlordEmail, leaseApprovedEmail, requestCancelledEmail, termsAcceptedEmail, termsChangedEmail } from "@/features/invitations/emails";
 import { appUrl, myDisplayName, sendEmail, senderLocale } from "@/features/invitations/send";
+import { loadCatalog } from "@/features/catalog/load";
+import { offered } from "@/features/catalog/types";
 import { hasErrors, parseAmount, parseFloor, validateAddress, validateLandlord, validateTerms, type Errors, type Values } from "./validate";
 
 export type GeneralError =
@@ -91,7 +93,8 @@ export async function createLeaseRequest(_prev: RequestState, form: FormData): P
   const v = read(form);
   const supabase = await createClient();
   const { data: claims } = await supabase.auth.getClaims();
-  const fields = { ...validateAddress(v), ...validateTerms(v), ...validateLandlord(v, String(claims?.claims.email ?? "")) };
+  const { property_type: kinds } = await loadCatalog("property_type");
+  const fields = { ...validateAddress(v, offered(kinds).map((k) => k.key)), ...validateTerms(v), ...validateLandlord(v, String(claims?.claims.email ?? "")) };
   if (hasErrors(fields)) return { status: "error", fields };
 
   const { floorType, floorNumber } = parseFloor(v.floor);
@@ -112,7 +115,7 @@ export async function createLeaseRequest(_prev: RequestState, form: FormData): P
     p_deposit_amount: parseAmount(v.deposit) ?? undefined,
     p_landlord_email: v.landlordEmail.trim().toLowerCase(),
     p_landlord_name: optional(v.landlordName),
-    p_property_kind: v.propertyKind as Enums<"property_kind">,
+    p_property_kind: v.propertyKind,
   });
   const created = data?.[0];
   if (error || !created) {

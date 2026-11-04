@@ -10,6 +10,10 @@ https://claude.ai/artifact/AttVCwnk4JJP3kqG7mV1Ns
 - **Every UI is bilingual** (hu default at `/`, en at `/en`). No user-facing string in components – all copy comes
   from message files by key, both languages filled. Use the handbook glossary for terms.
 - **Single source of truth**: company data, brand tokens and copy each live in one central file. Never hardcode.
+- **Lists live in the database, shaped in admin**: every option list and catalogue (property types, features and
+  extras, service types, meter tariffs, reading frequencies, settlement options, identifier suggestions, provider
+  catalogue …) is a database table with HU/EN labels, sort order and an active flag – never an enum or array in code –
+  so admin.keyfly.app can edit it later. Code may only depend on stable keys, not on labels or the set of values.
 - **Design and copy first**: every feature – and every change the owner asks for – is first shown in the Keyfly
   design canvas (desktop 1440 + mobile 390, all states, both languages, final wording) and coded only after the
   owner has reviewed and approved it. Use only design-system tokens (`globals.css`) and components.
@@ -30,6 +34,9 @@ https://claude.ai/artifact/AttVCwnk4JJP3kqG7mV1Ns
   top-right user menu and are the same in every account; account things (details, team, plan, invoices, referral)
   hang off the top-left account switcher and are per account. Company accounts carry their slug in the URL
   (`/c/<slug>/…`). Insurance, policies and claims are free on every plan and never locked.
+- **Text never spills out of its box** (buttons, chips, tiles, fields, tags), in both languages – English labels run
+  longer. Labels wrap to a second line or get a shorter wording; designs and screens are checked for overflow before
+  the owner sees them.
 - **Mobile first, WCAG 2.2 AA**: no horizontal scroll 320–1440 px, 44×44 px touch targets, labelled fields,
   visible focus, 4.5:1 text contrast, keyboard and screen-reader friendly.
 - **Terminology**: the lease is "bérleti szerződés" in Hungarian ("szerződés" when the context is clear) – never

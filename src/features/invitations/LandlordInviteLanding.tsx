@@ -6,7 +6,8 @@ import { SIGN_UP_OPEN } from "@/config/auth";
 import { isLocale } from "@/i18n/config";
 import { cityLine, withDot } from "@/lib/address";
 import { until } from "@/lib/format";
-import type { Enums } from "@/lib/supabase/database.types";
+import { loadCatalog } from "@/features/catalog/load";
+import { labelOf } from "@/features/catalog/types";
 
 export type InvitationTeaser = {
   inviter_name: string;
@@ -16,7 +17,7 @@ export type InvitationTeaser = {
   city: string;
   expires_at: string;
   masked_email: string;
-  property_kind: Enums<"property_kind">;
+  property_kind: string;
 };
 
 /**
@@ -26,7 +27,7 @@ export type InvitationTeaser = {
 export async function LandlordInviteLanding({ teaser, loginHref, registerHref }: { teaser: InvitationTeaser; loginHref: string; registerHref: string }) {
   const t = await getTranslations("invite");
   const l = await getTranslations("invite.landlord");
-  const kinds = await getTranslations("propertyKinds");
+  const { property_type: kinds } = await loadCatalog("property_type");
   const raw = await getLocale();
   const locale = isLocale(raw) ? raw : "hu";
   return (
@@ -40,7 +41,7 @@ export async function LandlordInviteLanding({ teaser, loginHref, registerHref }:
           <span className="flex flex-col">
             <span className="text-[12.5px] text-muted">{l("property")}</span>
             <span className="text-sm font-semibold">{`${teaser.street} ${withDot(teaser.house_number)}`}</span>
-            <span className="text-[13px] text-muted">{`${kinds(teaser.property_kind)} · ${cityLine({ postalCode: teaser.postal_code, city: teaser.city })}`}</span>
+            <span className="text-[13px] text-muted">{`${labelOf(kinds, teaser.property_kind)} · ${cityLine({ postalCode: teaser.postal_code, city: teaser.city })}`}</span>
           </span>
         </div>
         <p className="flex items-center gap-2 text-[13px] text-muted">

@@ -2045,21 +2045,6 @@
     "back": "Vissza",
     "codeOf": "Országkód: {country}, {code}"
   },
-  "propertyKinds": {
-    "flat": "Lakás",
-    "house": "Ház",
-    "room": "Szoba",
-    "office": "Iroda",
-    "retail": "Üzlethelyiség",
-    "hospitality": "Vendéglátóhely",
-    "industrial": "Raktár, ipari ingatlan",
-    "parking": "Garázs, parkolóhely",
-    "other": "Egyéb",
-    "groups": {
-      "residential": "Lakóingatlan",
-      "commercial": "Üzleti ingatlan"
-    }
-  },
   "nav": {
     "label": "Főmenü",
     "barLabel": "Alsó menü",

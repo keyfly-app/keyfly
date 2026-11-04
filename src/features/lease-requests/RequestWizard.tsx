@@ -11,7 +11,7 @@ import { Timeline } from "@/components/ui/Timeline";
 import { isLocale } from "@/i18n/config";
 import { AddressSearch } from "@/features/address-search/AddressSearch";
 import type { FoundAddress } from "@/features/address-search/places";
-import { PROPERTY_KIND_GROUPS } from "@/config/property-kinds";
+import { labelOf, offered, type CatalogOption } from "@/features/catalog/types";
 import { STREET_TYPES, cityLine, fullAddress, streetLine, withDot, type AddressParts } from "@/lib/address";
 import { date, money, number } from "@/lib/format";
 import type { Enums } from "@/lib/supabase/database.types";
@@ -74,10 +74,12 @@ function endAfter(start: string, years: number): string {
  * One form; every step is checked before moving on, the review shows what the landlord gets, and the server checks
  * everything again. Desktop: a live summary rail; phones: a sticky action bar.
  */
-export function RequestWizard({ myEmail, homeHref }: { myEmail: string; homeHref: string }) {
+export function RequestWizard({ myEmail, homeHref, kinds }: { myEmail: string; homeHref: string; kinds: CatalogOption[] }) {
   const t = useTranslations("leaseRequest");
   const s = useTranslations("leaseRequest.addressSearch");
-  const k = useTranslations("propertyKinds");
+  const kindOptions = offered(kinds);
+  const kindKeys = kindOptions.map((o) => o.key);
+  const k = (key: string) => labelOf(kinds, key);
   const raw = useLocale();
   const locale = isLocale(raw) ? raw : "hu";
   const router = useRouter();
@@ -118,7 +120,7 @@ export function RequestWizard({ myEmail, homeHref }: { myEmail: string; homeHref
     setValues((v) => ({ ...v, ...picked }));
     setErrors((e) => Object.keys(picked).reduce(clearError, e));
     // Anything Google left out (e.g. a street without a house number) is completed by hand.
-    setAddressMode(hasErrors(clearError(validateAddress({ ...values, ...picked }), "propertyKind")) ? "manual" : "picked");
+    setAddressMode(hasErrors(clearError(validateAddress({ ...values, ...picked }, kindKeys), "propertyKind")) ? "manual" : "picked");
   };
   const err = (key: string) => (errors[key] ? t(`errors.${errors[key]}`) : undefined);
   const formatAmount = (key: string) => () => {
@@ -133,7 +135,7 @@ export function RequestWizard({ myEmail, homeHref }: { myEmail: string; homeHref
     focusTop();
   };
   const check = (at: number) =>
-    at === 0 ? validateAddress(values) : at === 1 ? validateTerms(values) : at === 2 ? validateLandlord(values, myEmail) : {};
+    at === 0 ? validateAddress(values, kindKeys) : at === 1 ? validateTerms(values) : at === 2 ? validateLandlord(values, myEmail) : {};
   const next = () => {
     const found = check(step);
     setErrors(found);
@@ -147,7 +149,7 @@ export function RequestWizard({ myEmail, homeHref }: { myEmail: string; homeHref
       e.preventDefault();
       return next();
     }
-    const found = { ...validateAddress(values), ...validateTerms(values), ...validateLandlord(values, myEmail) };
+    const found = { ...validateAddress(values, kindKeys), ...validateTerms(values), ...validateLandlord(values, myEmail) };
     if (hasErrors(found)) {
       e.preventDefault();
       setErrors(found);
@@ -265,23 +267,11 @@ export function RequestWizard({ myEmail, homeHref }: { myEmail: string; homeHref
                       <option value="" disabled>
                         {t("address.typePlaceholder")}
                       </option>
-                      {PROPERTY_KIND_GROUPS.map(({ group, kinds }) =>
-                        group ? (
-                          <optgroup key={group} label={k(`groups.${group}`)}>
-                            {kinds.map((kind) => (
-                              <option key={kind} value={kind} className="text-ink">
-                                {k(kind)}
-                              </option>
-                            ))}
-                          </optgroup>
-                        ) : (
-                          kinds.map((kind) => (
-                            <option key={kind} value={kind} className="text-ink">
-                              {k(kind)}
-                            </option>
-                          ))
-                        ),
-                      )}
+                      {kindOptions.map((o) => (
+                        <option key={o.key} value={o.key} className="text-ink">
+                          {o.label}
+                        </option>
+                      ))}
                     </select>
                     {errors.propertyKind && <FieldError id={`${id}-kind-error`} message={t(`errors.${errors.propertyKind}`)} />}
                   </div>

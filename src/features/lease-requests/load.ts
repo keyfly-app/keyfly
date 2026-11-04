@@ -7,6 +7,8 @@ import { date, money } from "@/lib/format";
 import { siteHref } from "@/lib/site-href";
 import { createClient } from "@/lib/supabase/server";
 import type { HomeCard } from "./TenantHome";
+import { loadCatalog } from "@/features/catalog/load";
+import { labelOf } from "@/features/catalog/types";
 
 /**
  * The lease requests an account sent as tenant, newest first, formatted for the viewer's language (Overview, the
@@ -24,7 +26,7 @@ export const tenantCards = cache(async (accountId: string): Promise<HomeCard[]> 
     .order("created_at", { ascending: false });
   const raw = await getLocale();
   const locale = isLocale(raw) ? raw : "hu";
-  const [lr, kinds] = await Promise.all([getTranslations("leaseRequest"), getTranslations("propertyKinds")]);
+  const [lr, { property_type: kinds }] = await Promise.all([getTranslations("leaseRequest"), loadCatalog("property_type")]);
   const now = new Date();
   return Promise.all(
     (requests ?? []).map(async (r) => {
@@ -39,7 +41,7 @@ export const tenantCards = cache(async (accountId: string): Promise<HomeCard[]> 
         status: expired ? ("expired" as const) : r.status,
         street: streetLine(address),
         // "Lakás · 1138 Budapest, XIII. kerület": what is rented, then where.
-        city: `${kinds(lease?.properties?.kind ?? r.property_kind)} · ${cityLine(address)}`,
+        city: `${labelOf(kinds, lease?.properties?.kind ?? r.property_kind)} · ${cityLine(address)}`,
         // The landlord as recorded on the lease; before that, as the tenant named them.
         landlord: lease?.lease_parties.find((p) => p.side === "landlord")?.name ?? r.landlord_name ?? r.landlord_email,
         rent: money(lease?.monthly_rent ?? r.monthly_rent, locale),

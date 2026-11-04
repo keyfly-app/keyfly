@@ -2,8 +2,6 @@
  * Field rules for the tenant's lease request and the landlord's review – shared by the forms (instant feedback)
  * and the server actions (authoritative, together with the database checks).
  */
-import { isPropertyKind } from "@/config/property-kinds";
-
 export type FieldError = "required" | "kind" | "postalCode" | "amount" | "date" | "endBeforeStart" | "ended" | "email" | "self";
 export type Values = Record<string, string>;
 export type Errors = Partial<Record<string, FieldError>>;
@@ -45,9 +43,10 @@ export function todayIso(): string {
 
 const filled = (v: Values, key: string) => (v[key] ?? "").trim() !== "";
 
-export function validateAddress(v: Values): Errors {
+/** `kinds`: the property types on offer (catalogue keys); the database checks the key again. */
+export function validateAddress(v: Values, kinds: readonly string[]): Errors {
   const e: Errors = {};
-  if (!isPropertyKind(v.propertyKind)) e.propertyKind = "kind";
+  if (!kinds.includes(v.propertyKind ?? "")) e.propertyKind = "kind";
   for (const key of ["postalCode", "city", "streetName", "streetType", "houseNumber"]) if (!filled(v, key)) e[key] = "required";
   if (!e.postalCode && !/^\d{4}$/.test(v.postalCode.trim())) e.postalCode = "postalCode";
   return e;
