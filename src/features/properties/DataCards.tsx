@@ -10,6 +10,7 @@ import { offered, type CatalogOption } from "@/features/catalog/types";
 import { saveAddress, saveFeatures, saveIdentity, saveManagement, type FeaturesInput, type SaveState } from "./actions";
 import { AddressFields, type AddressValues } from "./AddressFields";
 import type { FeatureField } from "./kinds";
+import { OwnerForm, type OwnerProps } from "./OwnerForm";
 import { TypeTiles } from "./TypeTiles";
 
 export type Section = "identity" | "address" | "features" | "management" | "condo" | "note";
@@ -44,11 +45,7 @@ export type DataCardsProps = {
     };
     accountExtras: { id: string; label: string }[];
   };
-  management: {
-    rows: Row[];
-    responsible: string;
-    team: { id: string; name: string }[];
-  };
+  management: { owner: OwnerProps; rows: Row[] };
   condo: { rows: Row[]; commonCharge: string };
   note: { text: string };
 };
@@ -637,7 +634,7 @@ function FeaturesForm({ p, close }: { p: DataCardsProps; close: () => void }) {
   );
 }
 
-function ManagementForm({ p, field, close }: { p: DataCardsProps; field: "management" | "condo" | "note"; close: () => void }) {
+function ManagementForm({ p, field, close }: { p: DataCardsProps; field: "condo" | "note"; close: () => void }) {
   const t = useTranslations("properties.data");
   const id = useId();
   const form = useRef<HTMLFormElement>(null);
@@ -649,19 +646,6 @@ function ManagementForm({ p, field, close }: { p: DataCardsProps; field: "manage
     <form ref={form} onSubmit={onSubmit} noValidate className="flex flex-col gap-4">
       <input type="hidden" name="propertyId" value={p.propertyId} />
       <GeneralError state={state} />
-      {field === "management" && (
-        <div className="flex flex-col gap-1.5 sm:max-w-[320px]">
-          <Label htmlFor={`${id}-resp`}>{t("management.responsible")}</Label>
-          <select id={`${id}-resp`} name="responsible" defaultValue={p.management.responsible} className={`${INPUT_CLASS} appearance-auto`}>
-            <option value="">{t("management.nobody")}</option>
-            {p.management.team.map((m) => (
-              <option key={m.id} value={m.id}>
-                {m.name}
-              </option>
-            ))}
-          </select>
-        </div>
-      )}
       {field === "condo" && (
         <div className="sm:max-w-[240px]">
           <div className="flex flex-col gap-1.5">
@@ -734,9 +718,9 @@ export function DataCards(p: DataCardsProps) {
       {open === "features" ? <FeaturesForm p={p} close={close} /> : <Rows rows={p.features.rows} />}
     </CardFrame>
   );
-  const management = p.company && (
+  const management = (
     <CardFrame id="card-management" title={t("management.title")} onEdit={edit("management")} editing={open === "management"}>
-      {open === "management" ? <ManagementForm p={p} field="management" close={close} /> : <Rows rows={p.management.rows} />}
+      {open === "management" ? <OwnerForm p={p.management.owner} close={close} /> : <Rows rows={p.management.rows} />}
     </CardFrame>
   );
   const condo = (

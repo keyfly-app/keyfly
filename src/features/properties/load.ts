@@ -122,7 +122,11 @@ const DETAIL_COLUMNS = `id, account_id, public_code, label, kind, other_kind_lab
   area_m2, rooms, half_rooms, built_year, heating, energy_rating, parking, lift, furnishing, created_at, ${ADDRESS_COLUMNS},
   property_outdoor(kind, area_m2),
   property_extras(extra_key, account_extra_id, account_extras(label)),
-  property_management(owner_kind, responsible_user_id, common_charge, note),
+  property_management(owner_kind, owner_contact_id, responsible_user_id, common_charge, note),
+  property_contacts(id, role_key, role_label, tenant_visible, sort, contacts(id, name, email, phone, address, note)),
+  property_services(id, type_key, custom_label, provider_id, provider_name, network_provider_id, contact_id, settlement_key, fee_amount,
+    fee_currency, reading_required, reading_frequency, reading_due, paused_from, paused_until, ended_on, sort,
+    service_identifiers(id, label, value, sort), meters(id, name, tariff_key, unit_key, serial, registers, location, sort, archived_at)),
   leases(${LEASE_COLUMNS})`;
 
 /** One live property of the account by its Keyfly ID ("KF-48Q7M"); null when it is not there or not visible. */
@@ -159,3 +163,16 @@ export async function responsibleOptions(accountId: string) {
   });
   return (data ?? []).filter((m) => m.role !== "viewer").map((m) => ({ id: m.user_id, name: m.full_name || m.email }));
 }
+
+/** The account's contacts (newest first) with how many properties each is linked to – the "from your list" picker. */
+export async function accountContacts(accountId: string) {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("contacts")
+    .select("id, name, email, phone, address, note, default_role_key, default_role_label, property_contacts(property_id)")
+    .eq("account_id", accountId)
+    .is("archived_at", null)
+    .order("name");
+  return (data ?? []).map(({ property_contacts, ...c }) => ({ ...c, properties: new Set(property_contacts.map((x) => x.property_id)).size }));
+}
+export type AccountContact = Awaited<ReturnType<typeof accountContacts>>[number];

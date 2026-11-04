@@ -5,7 +5,7 @@ import { DataCards, type DataCardsProps, type Section } from "./DataCards";
 import { featureFacts } from "./facts";
 import { addressLine } from "./format";
 import { fieldsOf, kindLabel } from "./kinds";
-import { accountExtras, responsibleOptions } from "./load";
+import { accountContacts, accountExtras, responsibleOptions } from "./load";
 import type { PropertyContext } from "./PropertyFrame";
 
 const SECTIONS: Section[] = ["identity", "address", "features", "management", "condo", "note"];
@@ -24,6 +24,15 @@ export async function DataTab({ ctx, open }: { ctx: PropertyContext; open: Secti
   ]);
   const a = addressFromRow(p);
   const m = p.property_management;
+  const contacts = editable ? await accountContacts(account.id) : [];
+  const ownerContact =
+    p.property_contacts.find((l) => l.contacts?.id === m?.owner_contact_id)?.contacts?.name ?? contacts.find((c) => c.id === m?.owner_contact_id)?.name;
+  const ownerText =
+    m?.owner_kind === "other" ? `${ownerContact ?? t("owner.other")} · ${t("owner.otherShort")}` : m?.owner_kind ? t(`owner.${m.owner_kind}`) : null;
+  const managers = p.property_contacts
+    .filter((l) => l.role_key === "condo_manager" && l.contacts)
+    .map((l) => l.contacts!.name)
+    .join(", ");
   const decimal = (n: number | null) => (n == null ? "" : locale === "hu" ? String(Number(n)).replace(".", ",") : String(Number(n)));
   const floor = p.floor_type ? (p.floor_type === "numbered" ? `numbered:${p.floor_number}` : p.floor_type) : "";
 
@@ -95,12 +104,25 @@ export async function DataTab({ ctx, open }: { ctx: PropertyContext; open: Secti
       accountExtras: extras,
     },
     management: {
-      rows: [[t("management.responsible"), team.find((x) => x.id === m?.responsible_user_id)?.name ?? null]],
-      responsible: m?.responsible_user_id ?? "",
-      team,
+      rows: [
+        [t("owner.title"), ownerText],
+        ...(company ? ([[t("management.responsible"), team.find((x) => x.id === m?.responsible_user_id)?.name ?? null]] as [string, string | null][]) : []),
+      ],
+      owner: {
+        propertyId: p.id,
+        company,
+        kind: (m?.owner_kind ?? "") as "" | "self" | "account" | "other",
+        contactId: m?.owner_contact_id ?? "",
+        contacts: contacts.map((c) => ({ id: c.id, name: c.name })),
+        responsible: m?.responsible_user_id ?? "",
+        team,
+      },
     },
     condo: {
-      rows: [[t("condo.commonCharge"), m?.common_charge != null ? o("lease.perMonth", { rent: money(m.common_charge, locale) }) : null]],
+      rows: [
+        [t("condo.manager"), managers || null],
+        [t("condo.commonCharge"), m?.common_charge != null ? o("lease.perMonth", { rent: money(m.common_charge, locale) }) : null],
+      ],
       commonCharge: m?.common_charge != null ? String(m.common_charge) : "",
     },
     note: { text: m?.note ?? "" },

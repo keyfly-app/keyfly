@@ -16,7 +16,7 @@ import { kindIcon, kindLabel } from "./kinds";
 import { canEditProperties, propertyByCode } from "./load";
 import { STATUS_TONE } from "./PropertiesPage";
 
-export type PropertyTab = "overview" | "leases" | "data";
+export type PropertyTab = "overview" | "leases" | "services" | "contacts" | "listing" | "data";
 
 /** Everything a property page needs: the account (personal or /c/<slug>), the property by its Keyfly ID, the types. */
 export async function propertyContext(slug: string | undefined, code: string) {
@@ -70,27 +70,23 @@ export async function PropertyFrame({
   const a = addressFromRow(p);
   const o = p.occupancy;
   const status = o.state === "ending" ? t("status.ending", { date: shortDate(o.end, locale) }) : t(`status.${o.state}`);
-  const [listHref, overviewHref, leasesHref, dataHref, editHref] = await Promise.all([
+  const [listHref, overviewHref, leasesHref, servicesHref, contactsHref, listingHref, dataHref, editHref] = await Promise.all([
     siteHref("portal", `${ctx.base}/properties`),
     siteHref("portal", root),
     siteHref("portal", `${root}/leases`),
+    siteHref("portal", `${root}/services`),
+    siteHref("portal", `${root}/contacts`),
+    siteHref("portal", `${root}/listing`),
     siteHref("portal", `${root}/data`),
     siteHref("portal", `${root}/data?edit=identity`),
   ]);
-  const leaseCount = p.leases.length;
-  const tabs: {
-    key: PropertyTab;
-    href: string;
-    label: string;
-    count?: number;
-  }[] = [
+  const services = p.property_services.filter((x) => !x.ended_on).length;
+  const tabs: { key: PropertyTab; href: string; label: string; count?: number }[] = [
     { key: "overview", href: overviewHref, label: list("tabs.overview") },
-    {
-      key: "leases",
-      href: leasesHref,
-      label: list("tabs.leases"),
-      count: leaseCount || undefined,
-    },
+    { key: "leases", href: leasesHref, label: list("tabs.leases"), count: p.leases.length || undefined },
+    { key: "services", href: servicesHref, label: list("tabs.services"), count: services || undefined },
+    { key: "contacts", href: contactsHref, label: list("tabs.contacts"), count: p.property_contacts.length || undefined },
+    { key: "listing", href: listingHref, label: list("tabs.listing") },
     { key: "data", href: dataHref, label: list("tabs.data") },
   ];
 

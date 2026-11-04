@@ -7,7 +7,10 @@ import { accountInitials } from "@/features/companies/accounts";
 import { date, money } from "@/lib/format";
 import { siteHref } from "@/lib/site-href";
 import { featureFacts } from "./facts";
+import { loadCatalog } from "@/features/catalog/load";
+import { labelOf } from "@/features/catalog/types";
 import { fieldsOf } from "./kinds";
+import { providerOptions, serviceViews } from "./ServicesTab";
 import { responsibleOptions } from "./load";
 import type { PropertyContext } from "./PropertyFrame";
 
@@ -27,16 +30,37 @@ const linkCls = "inline-flex min-h-11 items-center gap-1 text-[13.5px] font-semi
 
 /**
  * "Áttekintés" (canvas "Ingatlan – áttekintés"): the current lease and the features on the left; what is still missing
- * and who looks after it on the right. Services and contacts join when those modules ship.
+ * and the services on the left; what is still missing, contacts and who owns and looks after it on the right.
  */
 export async function OverviewTab({ ctx }: { ctx: PropertyContext }) {
   const { property: p, locale, root, editable, account, catalog } = ctx;
-  const [t, lt, d] = await Promise.all([getTranslations("properties.overview"), getTranslations("properties.leases"), getTranslations("properties.data")]);
-  const [facts, leasesHref, featuresHref] = await Promise.all([
+  const [t, lt, d, tabs] = await Promise.all([
+    getTranslations("properties.overview"),
+    getTranslations("properties.leases"),
+    getTranslations("properties.data"),
+    getTranslations("properties.detail.tabs"),
+  ]);
+  const [facts, leasesHref, featuresHref, servicesHref, contactsHref, addContactHref, ct, st, roles, providers] = await Promise.all([
     featureFacts(ctx),
     siteHref("portal", `${root}/leases`),
     siteHref("portal", `${root}/data?edit=features`),
+    siteHref("portal", `${root}/services`),
+    siteHref("portal", `${root}/contacts`),
+    siteHref("portal", `${root}/contacts?add=1`),
+    getTranslations("properties.contacts"),
+    getTranslations("properties.services"),
+    loadCatalog("contact_role"),
+    providerOptions(),
   ]);
+  const { views: services } = await serviceViews(ctx, providers);
+  const contacts = p.property_contacts
+    .filter((l) => l.contacts)
+    .sort((a, b) => a.sort - b.sort)
+    .slice(0, 4)
+    .map((l) => ({ ...l.contacts!, role: l.role_key ? labelOf(roles.contact_role, l.role_key) : (l.role_label ?? "") }));
+  const m = p.property_management;
+  const ownerName = p.property_contacts.find((l) => l.contacts?.id === m?.owner_contact_id)?.contacts?.name;
+  const owner = m?.owner_kind === "other" ? (ownerName ?? d("owner.other")) : m?.owner_kind ? d(`owner.${m.owner_kind}`) : null;
   const o = p.occupancy;
   const lease = o.state === "vacant" ? null : p.leases.find((l) => l.id === o.leaseId);
   const company = account.kind === "company";
@@ -157,6 +181,33 @@ export async function OverviewTab({ ctx }: { ctx: PropertyContext }) {
             ))}
           </dl>
         </Card>
+
+        {services.length > 0 && (
+          <Card
+            title={tabs("services")}
+            action={
+              <Link href={servicesHref} className={linkCls}>
+                {st("all", { count: services.length })}
+                <Icon name="chevronRight" size={14} strokeWidth={2.25} />
+              </Link>
+            }
+          >
+            <ul className="flex flex-col">
+              {services.slice(0, 5).map((s) => (
+                <li key={s.id} className="flex items-center gap-3 border-t border-paper py-2.5">
+                  <span aria-hidden="true" className="flex size-8 flex-none items-center justify-center rounded-lg bg-mist text-brand">
+                    <Icon name={s.icon} size={15} strokeWidth={1.8} />
+                  </span>
+                  <span className="flex min-w-0 flex-1 flex-col">
+                    <span className="text-sm font-semibold [overflow-wrap:anywhere]">{s.name}</span>
+                    {s.subtitle && <span className="text-[12.5px] text-muted [overflow-wrap:anywhere]">{s.subtitle}</span>}
+                  </span>
+                  <span className="flex-none text-right text-[13px] text-ink-soft">{s.paused ?? s.settlement}</span>
+                </li>
+              ))}
+            </ul>
+          </Card>
+        )}
       </div>
 
       <div className="flex flex-col gap-4">
@@ -195,11 +246,73 @@ export async function OverviewTab({ ctx }: { ctx: PropertyContext }) {
             </ul>
           </Card>
         )}
-        {company && (
+        <Card
+          title={ct("title")}
+          action={
+            editable && (
+              <Link href={addContactHref} className={linkCls}>
+                {ct("dialog.save")}
+              </Link>
+            )
+          }
+        >
+          {contacts.length === 0 ? (
+            <p className="text-sm text-muted">{ct("empty")}</p>
+          ) : (
+            <ul className="flex flex-col">
+              {contacts.map((c) => (
+                <li key={c.id} className="flex items-center gap-3 border-t border-paper py-2.5 first:border-t-0 first:pt-0">
+                  <Avatar initials={accountInitials(c.name)} size={34} />
+                  <span className="flex min-w-0 flex-1 flex-col">
+                    <span className="text-sm font-semibold [overflow-wrap:anywhere]">{c.name}</span>
+                    <span className="text-[12.5px] text-muted [overflow-wrap:anywhere]">{c.role}</span>
+                  </span>
+                  {c.phone && (
+                    <a
+                      href={`tel:${c.phone.replace(/[^+0-9]/g, "")}`}
+                      aria-label={ct("call", { name: c.name })}
+                      className="flex size-11 flex-none items-center justify-center rounded-lg text-brand hover:bg-paper sm:size-9"
+                    >
+                      <Icon name="phone" size={16} strokeWidth={1.8} />
+                    </a>
+                  )}
+                  {c.email && (
+                    <a
+                      href={`mailto:${c.email}`}
+                      aria-label={ct("mail", { name: c.name })}
+                      className="flex size-11 flex-none items-center justify-center rounded-lg text-brand hover:bg-paper sm:size-9"
+                    >
+                      <Icon name="mail" size={16} strokeWidth={1.8} />
+                    </a>
+                  )}
+                </li>
+              ))}
+              {p.property_contacts.length > contacts.length && (
+                <li className="border-t border-paper pt-2.5">
+                  <Link href={contactsHref} className={linkCls}>
+                    {st("all", { count: p.property_contacts.length })}
+                    <Icon name="chevronRight" size={14} strokeWidth={2.25} />
+                  </Link>
+                </li>
+              )}
+            </ul>
+          )}
+        </Card>
+        {(owner || company) && (
           <Card title={d("management.title")}>
-            <dl className="flex items-center justify-between gap-4 text-sm">
-              <dt className="text-muted">{d("management.responsible")}</dt>
-              <dd className="text-right font-semibold [overflow-wrap:anywhere]">{responsible ?? d("management.nobody")}</dd>
+            <dl className="flex flex-col text-sm">
+              {owner && (
+                <div className="flex items-center justify-between gap-4 py-1.5">
+                  <dt className="text-muted">{d("owner.title")}</dt>
+                  <dd className="text-right font-semibold [overflow-wrap:anywhere]">{owner}</dd>
+                </div>
+              )}
+              {company && (
+                <div className="flex items-center justify-between gap-4 border-t border-paper py-1.5 first:border-t-0">
+                  <dt className="text-muted">{d("management.responsible")}</dt>
+                  <dd className="text-right font-semibold [overflow-wrap:anywhere]">{responsible ?? d("management.nobody")}</dd>
+                </div>
+              )}
             </dl>
           </Card>
         )}
